@@ -14,6 +14,6 @@ class HomeController extends Controller
 
     public function index(Request $request): View
     {
-        return view('home');
+        return view('welcome');
     }
 }
