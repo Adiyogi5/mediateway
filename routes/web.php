@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\FireController;
 use App\Http\Controllers\Common\CommonController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\FrontController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +16,12 @@ use App\Http\Controllers\HomeController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/',[HomeController::class, 'index'])->name('home');
+Route::controller(FrontController::class)->name('front.')->group(function () {
+    Route::get('/', 'index')->name('home');
+    Route::get('/home', 'index')->name('home');
+    Route::get('{cms}', 'showCms')->name('show-cms')->whereIn('cms', ['about-us', 'terms-condition', 'privacy-policy']);
+});
+
 // Route::patch('fcm-token', [FireController::class, 'updateToken'])->name('fcmToken');
 
 
@@ -30,7 +35,6 @@ Route::redirect('admin/dashboard', '/dashboard');
 
 
 Route::middleware(['authCheck'])->group(function () {
-
     // Open Routes
     Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');
     Route::post('upload-image', [CommonController::class, 'upload_image'])->name('upload_image');

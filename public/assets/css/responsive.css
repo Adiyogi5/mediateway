@@ -1,0 +1,375 @@
+@media (min-width: 1200px) and (max-width: 1400px) {
+}
+
+@media (min-width: 992px) and (max-width: 1200px) {
+    .nav-title {
+        margin: 0px 3px;
+    }
+    .btn-warning{
+        padding: 2px 14px;
+    }
+    .carousel-caption h2 {
+        font-size: 42px;
+    }
+    .carousel-caption p {
+        font-size: 18px;
+    }
+    .carousel-caption a {
+        margin-top: 8px;
+        font-size: 14px;
+        padding: 4px 18px;
+    }
+    .btn-learn-more
+    {
+        font-size: 14px;
+        padding: 4px 14px;
+    }
+    .icon-border {
+        padding: 14px;
+    }
+    .process-card img {
+        height: 50px;
+    }
+    .process-card-1 img {
+        height: 50px;
+    }
+    .process-card-2 img {
+        height: 50px;
+    }
+    .process-card p {
+        font-size: 18px;
+        margin-top: 14px;
+    }
+    .process-card-1 p {
+        font-size: 18px;
+        margin-top: 14px;
+    }
+    .process-card-2 p {
+        font-size: 18px;
+        margin-top: 14px;
+    }
+    .process-card::after {
+        width: 70px;
+        height: 30px;
+    }
+    .process-card-1::after {
+        width: 70px;
+        height: 30px;
+    }
+    .process-card-2::after {
+        width: 70px;
+        height: 30px;
+    }
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 34px;
+        top: -30px;
+    }
+    .footer-title {
+        font-size: 16px !important;
+    }
+    .nav-item-footer .nav-link-footer {
+        font-size: 13px !important;
+    }
+    footer .contact p {
+        font-size: 14px !important;
+    }
+    .footer-search .search input {
+        height: 46px;
+    }
+    .footer-search .search button {
+        height: 36px;
+        width: 90px;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+    footer .social-icon .icon {
+        height: 25px;
+        width: 25px;
+    }
+
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+    .nav-title {
+        margin: 0px 3px;
+    }
+    .btn-warning{
+        padding: 2px 14px;
+    }
+    .carousel-caption h2 {
+        font-size: 32px;
+    }
+    .carousel-caption p {
+        font-size: 16px;
+    }
+    .carousel-caption a {
+        margin-top: 0px;
+        font-size: 14px;
+        padding: 3px 16px;
+    }
+    .btn-learn-more
+    {
+        font-size: 14px;
+        padding: 4px 14px;
+    }
+    .section-title {
+        font-size: 20px !important;
+        margin-bottom: 10px;
+    }
+    .section-content {
+        font-size: 14px !important;
+        margin-bottom: 16px;
+    }
+    .how-it-works-carousel .owl-carousel .item {
+        padding: 32px 20px;
+    }
+    .how-it-works-carousel .tab-container {
+        gap: 26px;
+        margin-bottom: 10px;
+    }
+    .how-it-works-carousel .tab {
+        font-size: 15px;
+        padding: 6px 44px;
+    }
+    .how-it-works-carousel h3 {
+        font-size: 18px;
+        margin-bottom: 14px;
+    }
+    .how-it-works-carousel p {
+        font-size: 13px;
+    }
+    .list-style{
+        padding-left: 4px !important;
+    }
+    .how-it-works-carousel .pagination {
+        margin-top: 20px;
+    }
+    .how-it-works-carousel .pagination span {
+        font-size: 16px;
+        padding: 5px 12px;
+    }
+    .btn-about-cms {
+        font-size: 15px;
+        padding: 4px 10px;
+    }
+    .icon-border {
+        padding: 14px;
+    }
+    .process-card img {
+        height: 50px;
+    }
+    .process-card-1 img {
+        height: 50px;
+    }
+    .process-card-2 img {
+        height: 50px;
+    }
+    .process-card p {
+        font-size: 18px;
+        margin-top: 14px;
+    }
+    .process-card-1 p {
+        font-size: 18px;
+        margin-top: 14px;
+    }
+    .process-card-2 p {
+        font-size: 18px;
+        margin-top: 14px;
+    }
+    .process-card::after {
+        width: 70px;
+        height: 30px;
+    }
+    .process-card-1::after {
+        width: 70px;
+        height: 30px;
+    }
+    .process-card-2::after {
+        width: 70px;
+        height: 30px;
+    }
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 34px;
+        top: -30px;
+    }
+    .footer-title {
+        font-size: 15px !important;
+    }
+    .nav-item-footer .nav-link-footer {
+        font-size: 13px !important;
+    }
+    footer .contact p {
+        font-size: 13px !important;
+    }
+    .footer-search .search input {
+        height: 40px;
+        text-indent: 0px;
+    }
+    .footer-search .search button {
+        height: 31px;
+        width: 68px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    footer .social-icon .icon {
+        height: 25px;
+        width: 25px;
+    }
+    .form-control {
+        font-size: 13px !important;
+    }
+   
+}
+
+@media (min-width: 426px) and (max-width: 767px) {
+    .nav-title {
+        margin: 0px 3px;
+    }
+    .btn-warning{
+        padding: 2px 14px;
+    }
+    .carousel-caption h2 {
+        font-size: 32px;
+    }
+    .carousel-caption p {
+        font-size: 16px;
+    }
+    .carousel-caption a {
+        margin-top: 0px;
+        font-size: 14px;
+        padding: 3px 16px;
+    }
+    .btn-learn-more
+    {
+        font-size: 14px;
+        padding: 4px 14px;
+    }
+    .section-title {
+        font-size: 20px !important;
+        margin-bottom: 10px;
+    }
+    .section-content {
+        font-size: 14px !important;
+        margin-bottom: 16px;
+    }
+    .how-it-works-carousel .owl-carousel .item {
+        padding: 32px 20px;
+    }
+    .how-it-works-carousel .tab-container {
+        gap: 26px;
+        margin-bottom: 10px;
+    }
+    .how-it-works-carousel .tab {
+        font-size: 15px;
+        padding: 6px 44px;
+    }
+    .how-it-works-carousel h3 {
+        font-size: 18px;
+        margin-bottom: 14px;
+    }
+    .how-it-works-carousel p {
+        font-size: 13px;
+    }
+    .list-style{
+        padding-left: 4px !important;
+    }
+    .how-it-works-carousel .pagination {
+        margin-top: 20px;
+    }
+    .how-it-works-carousel .pagination span {
+        font-size: 16px;
+        padding: 5px 12px;
+    }
+    .btn-about-cms {
+        font-size: 15px;
+        padding: 4px 10px;
+    }
+    .icon-border {
+        padding: 14px;
+    }
+    .process-card img {
+        height: 50px;
+    }
+    .process-card-1 img {
+        height: 50px;
+    }
+    .process-card-2 img {
+        height: 50px;
+    }
+    .process-card p {
+        font-size: 18px;
+        margin-top: 14px;
+    }
+    .process-card-1 p {
+        font-size: 18px;
+        margin-top: 14px;
+    }
+    .process-card-2 p {
+        font-size: 18px;
+        margin-top: 14px;
+    }
+    .process-card::after {
+        width: 70px;
+        height: 30px;
+    }
+    .process-card-1::after {
+        width: 70px;
+        height: 30px;
+    }
+    .process-card-2::after {
+        width: 70px;
+        height: 30px;
+    }
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 34px;
+        top: -30px;
+    }
+    .footer-title {
+        font-size: 15px !important;
+    }
+    .nav-item-footer .nav-link-footer {
+        font-size: 13px !important;
+    }
+    footer .contact p {
+        font-size: 13px !important;
+    }
+    .footer-search .search input {
+        height: 40px;
+        text-indent: 0px;
+    }
+    .footer-search .search button {
+        height: 31px;
+        width: 68px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    footer .social-icon .icon {
+        height: 25px;
+        width: 25px;
+    }
+    .form-control {
+        font-size: 13px !important;
+    }
+
+}
+
+@media (min-width: 320px) and (max-width: 429px) {
+    /* ################## Navbar ################## */
+    
+}
+
+@media (min-width: 320px) and (max-width: 375px) {
+    /* ################## Navbar ################## */
+    
+}
+
+@media (max-width: 320px) {
+    /* ################## Navbar ################## */
+   
+}

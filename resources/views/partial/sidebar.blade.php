@@ -36,9 +36,9 @@
         @endif
 
         @if(Helper::userCan([104]))
-        <li class="menu @routeis('sliders,testimonials,cms,faq,enquiries,admin-banners') active @endrouteis">
+        <li class="menu @routeis('sliders,testimonials,cms,faq,enquiries,banners,clients') active @endrouteis">
             <a href="#static_content" data-bs-toggle="collapse"
-                aria-expanded="{{ Helper::routeis('sliders,testimonials,cms,faq,enquiries,admin-banners') }}"
+                aria-expanded="{{ Helper::routeis('sliders,testimonials,cms,faq,enquiries,banners,clients') }}"
                 class="dropdown-toggle">
                 <div class="">
                     <i class="fa-sharp fa-solid fa-photo-film"></i>
@@ -46,12 +46,36 @@
                 </div>
                 <div> <i class="fa-solid fa-chevron-right"></i> </div>
             </a>
-            <ul class="collapse submenu list-unstyled @routeis('sliders,testimonials,cms,faq,enquiries,admin-banners') show @endrouteis"
+            <ul class="collapse submenu list-unstyled @routeis('sliders,testimonials,cms,faq,enquiries,banners,clients') show @endrouteis"
                 id="static_content" data-bs-parent="#accordionExample">
 
+                @if(Helper::userCan(112))
+                <li class="@routeis('banners') active @endrouteis">
+                    <a href="{{ route('banners') }}">Banners</a>
+                </li>
+                @endif
+                
                 @if(Helper::userCan(104))
                 <li class="@routeis('cms') active @endrouteis">
                     <a href="{{ route('cms') }}">CMS</a>
+                </li>
+                @endif
+                
+                @if(Helper::userCan(110))
+                <li class="@routeis('faqs') active @endrouteis">
+                    <a href="{{ route('faqs') }}">FAQs</a>
+                </li>
+                @endif
+
+                @if(Helper::userCan(110))
+                <li class="@routeis('testimonials') active @endrouteis">
+                    <a href="{{ route('testimonials') }}">Testimonials</a>
+                </li>
+                @endif
+
+                @if(Helper::userCan(110))
+                <li class="@routeis('clients') active @endrouteis">
+                    <a href="{{ route('clients') }}">Clients</a>
                 </li>
                 @endif
             </ul>

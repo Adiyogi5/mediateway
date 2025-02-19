@@ -1,14 +1,18 @@
 <?php
 
+use App\Http\Controllers\BannerController;
 use App\Routes\Profile;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CmsController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\TestimonialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,6 +77,42 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::post('cms', 'slug')->name('cms.slug')->middleware('isAllow:104,can_edit');
         Route::post('cms/{id}', 'update')->name('cms.edit')->middleware('isAllow:104,can_edit');
         Route::delete('cms', 'delete')->name('cms')->middleware('isAllow:104,can_delete');
+    });
+    
+    // ----------------------- Banner Routes ----------------------------------------------------
+    Route::controller(BannerController::class)->group(function () {
+        Route::get('banners', 'index')->name('banners')->middleware('isAllow:112,can_view');
+        Route::post('banners', 'save')->name('banners')->middleware('isAllow:112,can_add');
+        Route::put('banners', 'update')->name('banners')->middleware('isAllow:112,can_edit');
+        Route::delete('banners', 'delete')->name('banners')->middleware('isAllow:112,can_delete');
+    });
+
+    // ----------------------- FAQs Routes ----------------------------------------------------
+    Route::controller(FaqController::class)->name('faqs')->group(function () {
+        Route::get('faqs-list', 'index')->middleware('isAllow:110,can_view');
+        Route::post('faqs-list', 'save')->middleware('isAllow:110,can_add');
+        Route::put('faqs-list', 'update')->middleware('isAllow:110,can_edit');
+        Route::delete('faqs-list', 'delete')->middleware('isAllow:110,can_delete');
+    });
+
+    // ----------------------- Testimonial Routes ----------------------------------------------------
+    Route::controller(TestimonialController::class)->group(function () {
+        Route::get('testimonials', 'index')->name('testimonials')->middleware('isAllow:111,can_view');
+        Route::get('testimonials/add', 'add')->name('testimonials.add')->middleware('isAllow:111,can_add');
+        Route::post('testimonials/add', 'save')->name('testimonials.add')->middleware('isAllow:111,can_add');
+        Route::get('testimonials/{id}', 'edit')->name('testimonials.edit')->middleware('isAllow:111,can_edit');
+        Route::post('testimonials/{id}', 'update')->name('testimonials.edit')->middleware('isAllow:111,can_edit');
+        Route::delete('testimonials', 'delete')->name('testimonials.delete')->middleware('isAllow:111,can_delete');
+    });
+
+     // ----------------------- Client Routes ----------------------------------------------------
+     Route::controller(ClientController::class)->group(function () {
+        Route::get('clients', 'index')->name('clients')->middleware('isAllow:111,can_view');
+        Route::get('clients/add', 'add')->name('clients.add')->middleware('isAllow:111,can_add');
+        Route::post('clients/add', 'save')->name('clients.add')->middleware('isAllow:111,can_add');
+        Route::get('clients/{id}', 'edit')->name('clients.edit')->middleware('isAllow:111,can_edit');
+        Route::post('clients/{id}', 'update')->name('clients.edit')->middleware('isAllow:111,can_edit');
+        Route::delete('clients', 'delete')->name('clients.delete')->middleware('isAllow:111,can_delete');
     });
 
     Route::any('setting/{id}', [SettingController::class, 'setting'])->name('setting')->middleware('isAllow:101,can_view');
