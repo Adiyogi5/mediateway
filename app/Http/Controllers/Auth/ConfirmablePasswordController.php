@@ -13,7 +13,7 @@ use Illuminate\Validation\ValidationException;
 
 class ConfirmablePasswordController extends Controller
 {
-    public function show(Request $request, $guard = 'web'): View
+    public function show(Request $request, $guard = 'admin'): View
     {
         $guard  = Helper::getGuardFromURL($request);
         $user   = $request->user($guard);

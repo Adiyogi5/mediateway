@@ -82,16 +82,75 @@
                             <img class="img-fluid header-logo" src="{{ asset('storage/' . $site_settings['logo']) }}"
                                 alt="">
                         </a>
-                        <ul class="nav ms-auto d-flex">
-                            <li class="nav-item my-auto d-xl-none d-lg-none d-md-block d-none">
-                                <a class="nav-title btn btn-sm btn-warning" href="{{ route('front.home') }}"><i
-                                        class="fa-solid fa-right-to-bracket"></i> &nbsp;&nbsp;&nbsp;Login</a>
-                            </li>
-                            <li class="nav-item my-auto d-xl-none d-lg-none d-md-block d-none me-1">
-                                <a class="nav-title btn btn-sm btn-warning" href="{{ route('front.home') }}"><i
-                                        class="fa-solid fa-user-plus"></i> &nbsp;&nbsp;&nbsp;Register</a>
-                            </li>
-                        </ul>
+
+                        @php
+                            $guards = ['individual', 'organization', 'drp'];
+                            $currentGuard = null;
+
+                            foreach ($guards as $guard) {
+                                if (auth($guard)->check()) {
+                                    $currentGuard = $guard;
+                                    break;
+                                }
+                            }
+                        @endphp
+
+                        @if ($currentGuard)
+                            <ul class="nav ms-auto d-flex">
+                                <li class="nav-item dropdown rounded-2 d-xl-none d-lg-none d-md-block d-block">
+                                    <a class="nav-link text-dark dropdown-toggle d-flex align-items-center"
+                                        href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+
+                                        {{-- <img src="{{ basename(auth($currentGuard)->user()->image) == 'img-not-found.png' ? asset('assets/img/dummy-user.png') : asset('storage/' . auth($currentGuard)->user()->image) }}"
+                                            class="rounded-circle me-2" alt="" width="40px" height="40px"> --}}
+                                            <img src="{{ auth($currentGuard)->user() && auth($currentGuard)->user()->image && basename(auth($currentGuard)->user()->image) != 'img-not-found.png' 
+                                            ? asset('storage/' . auth($currentGuard)->user()->image) 
+                                            : asset('assets/img/dummy-user.png') }}" 
+                                    class="rounded-circle me-2" 
+                                    alt="" 
+                                    width="40px" 
+                                    height="40px">
+                                
+                                        {{ auth($currentGuard)->user()->name }}
+                                    </a>
+                                    <ul class="dropdown-menu py-1" aria-labelledby="navbarDropdown">
+                                        <li class="border-bottom">
+                                            <a class="dropdown-item" href="{{ route($currentGuard . '.dashboard') }}">
+                                                <i class="fa-duotone fa-chalkboard me-1"></i>
+                                                <span>Dashboard</span>
+                                            </a>
+                                        </li>
+                                        <li class="border-bottom">
+                                            <a class="dropdown-item" href="{{ route($currentGuard . '.' . 'profile') }}">
+                                                <i class="fa-duotone fa-user me-1"></i>
+                                                <span>Profile</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="#" 
+                                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                <i class="fa-solid fa-right-from-bracket me-1"></i>
+                                                <span>Log Out</span>
+                                            </a>
+                                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                                @csrf
+                                            </form>
+                                        </li>                                        
+                                    </ul>
+                                </li>
+                            @else
+                                <li class="nav-item my-auto d-xl-none d-lg-none d-md-block d-block ms-auto">
+                                    <a class="nav-title btn btn-sm btn-warning" href="{{ url('individual/login') }}"><i
+                                            class="fa-solid fa-right-to-bracket"></i> &nbsp;&nbsp;Login</a>
+                                </li>
+                                <li class="nav-item my-auto d-xl-none d-lg-none d-md-block d-block me-1">
+                                    <a class="nav-title btn btn-sm btn-warning" href="{{ route('register') }}"><i
+                                            class="fa-solid fa-user-plus"></i> &nbsp;&nbsp;Register</a>
+                                </li>
+                            </ul>
+                        @endif
+
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                             data-bs-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false"
                             aria-label="Toggle navigation">
@@ -100,15 +159,15 @@
 
                         <div class="collapse navbar-collapse" id="navbarsExample05">
                             <ul class="nav navbar-nav ms-auto">
-                                <li class="nav-item">
+                                <li class="nav-item my-auto">
                                     <a class="nav-link nav-title {{ request()->is('/') ? 'active-nav' : '' }}"
                                         href="{{ url('/') }}">Home</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link nav-title {{ request()->routeis('front.home') ? 'active-nav' : '' }}"
-                                        href="{{ route('front.home') }}">About us</a>
+                                <li class="nav-item my-auto">
+                                    <a class="nav-link nav-title {{ request()->route()->getName() === 'front.show-cms' && request()->route('cms') === 'about-us' ? 'active-nav' : '' }}"
+                                        href="{{ route('front.show-cms', 'about-us') }}">About us</a>
                                 </li>
-                                <li class="nav-item dropdown">
+                                <li class="nav-item dropdown my-auto">
                                     <a class="nav-link nav-title dropdown-toggle {{ request()->routeIs('front.home') ? 'active-nav' : '' }}"
                                         href="#" id="serviceDropdown" role="button">
                                         Service
@@ -121,12 +180,14 @@
                                         </span>
                                     </a>
                                     <ul class="dropdown-menu py-1" aria-labelledby="serviceDropdown">
-                                        <li class="border-bottom"><a class="dropdown-item" href="">Web Development</a></li>
-                                        <li class="border-bottom"><a class="dropdown-item" href="">App Development</a></li>
+                                        <li class="border-bottom"><a class="dropdown-item" href="">Web
+                                                Development</a></li>
+                                        <li class="border-bottom"><a class="dropdown-item" href="">App
+                                                Development</a></li>
                                         <li><a class="dropdown-item" href="">Digital Marketing</a></li>
                                     </ul>
                                 </li>
-                                <li class="nav-item dropdown me-xl-5 me-xl-4 me-md-3 me-auto">
+                                <li class="nav-item dropdown me-xl-5 me-xl-4 me-md-3 me-auto my-auto">
                                     <a class="nav-link nav-title dropdown-toggle {{ request()->routeIs('front.home') ? 'active-nav' : '' }}"
                                         href="#" id="serviceDropdown" role="button">
                                         Product
@@ -139,22 +200,86 @@
                                         </span>
                                     </a>
                                     <ul class="dropdown-menu py-1" aria-labelledby="serviceDropdown">
-                                        <li class="border-bottom"><a class="dropdown-item" href="">Web Development</a></li>
-                                        <li class="border-bottom"><a class="dropdown-item" href="">App Development</a></li>
+                                        <li class="border-bottom"><a class="dropdown-item" href="">Web
+                                                Development</a></li>
+                                        <li class="border-bottom"><a class="dropdown-item" href="">App
+                                                Development</a></li>
                                         <li><a class="dropdown-item" href="">Digital Marketing</a></li>
                                     </ul>
                                 </li>
                                 {{-- <li class="nav-item">
                                     <a class="nav-link nav-title {{ request()->route('slug') === 'about-us' ? 'active-nav' : '' }}" href="{{ route('front.cms', ['slug' => 'about-us']) }}">Product</a>
                                 </li> --}}
-                                <li class="nav-item my-auto d-block d-md-none d-lg-block d-xl-block">
-                                    <a class="nav-title btn btn-sm btn-warning" href="{{ route('front.home') }}"><i
-                                            class="fa-solid fa-right-to-bracket"></i> &nbsp;&nbsp;&nbsp;Login</a>
-                                </li>
-                                <li class="nav-item my-auto d-block d-md-none d-lg-block d-xl-block">
-                                    <a class="nav-title btn btn-sm btn-warning me-0" href="{{ route('front.home') }}"><i
-                                            class="fa-solid fa-user-plus"></i> &nbsp;&nbsp;&nbsp;Register</a>
-                                </li>
+
+                                @php
+                                    $guards = ['individual', 'organization', 'drp'];
+                                    $currentGuard = null;
+
+                                    foreach ($guards as $guard) {
+                                        if (auth($guard)->check()) {
+                                            $currentGuard = $guard;
+                                            break;
+                                        }
+                                    }
+                                @endphp
+
+                                @if ($currentGuard)
+                                    <li class="nav-item dropdown rounded-2 d-none d-md-none d-lg-block d-xl-block">
+                                        <a class="nav-link text-dark dropdown-toggle d-flex align-items-center"
+                                            href="#" id="navbarDropdown" role="button"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+
+                                            {{-- <img src="{{ basename(auth($currentGuard)->user()->image) == 'img-not-found.png' ? asset('assets/img/dummy-user.png') : asset('storage/' . auth($currentGuard)->user()->image) }}" class="rounded-circle me-2" alt="" width="40px" height="40px"> --}}
+                                            <img src="{{ auth($currentGuard)->user() && auth($currentGuard)->user()->image && basename(auth($currentGuard)->user()->image) != 'img-not-found.png' 
+                                            ? asset('storage/' . auth($currentGuard)->user()->image) 
+                                            : asset('assets/img/dummy-user.png') }}" 
+                                    class="rounded-circle me-2" 
+                                    alt="" 
+                                    width="40px" 
+                                    height="40px">
+                                
+                                            {{ auth($currentGuard)->user()->name }}
+                                        </a>
+                                        <ul class="dropdown-menu py-1" aria-labelledby="navbarDropdown">
+                                            <li class="border-bottom">
+                                                <a class="dropdown-item"
+                                                    href="{{ route($currentGuard . '.dashboard') }}">
+                                                    <i class="fa-duotone fa-chalkboard me-1"></i>
+                                                    <span>Dashboard</span>
+                                                </a>
+                                            </li>
+                                            <li class="border-bottom">
+                                                <a class="dropdown-item"
+                                                    href="{{ route($currentGuard . '.' . 'profile') }}">
+                                                    <i class="fa-duotone fa-user me-1"></i>
+                                                    <span>Profile</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                    <i class="fa-solid fa-right-from-bracket me-1"></i>
+                                                    <span>Log Out</span>
+                                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                                        @csrf
+                                                    </form>
+                                                </a>
+                                            </li>                                            
+                                        </ul>
+                                    </li>
+                                @else
+                                    <li class="nav-item my-auto d-none d-md-none d-lg-block d-xl-block">
+                                        <a class="nav-title btn btn-sm btn-warning" href="{{ url('individual/login') }}">
+                                            <i class="fa-solid fa-right-to-bracket"></i> &nbsp;&nbsp;Login
+                                        </a>
+                                    </li>
+                                    <li class="nav-item my-auto d-none d-md-none d-lg-block d-xl-block">
+                                        <a class="nav-title btn btn-sm btn-warning me-0"
+                                            href="{{ route('register') }}">
+                                            <i class="fa-solid fa-user-plus"></i> &nbsp;&nbsp;Register
+                                        </a>
+                                    </li>
+                                @endif
                             </ul>
                         </div>
                     </div>

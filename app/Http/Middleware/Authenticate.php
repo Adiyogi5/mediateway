@@ -17,37 +17,36 @@ class Authenticate extends Middleware
         if (!$request->expectsJson()) {
             $guard = Helper::getGuardFromURL($request);
 
-            $redirectTo = null;
-            if ($guard    == 'web') {
-                $redirectTo     = 'admin';
+            // Redirect individuals, organizations, and drp users to login-front
+            if (in_array($guard, ['individual', 'organization', 'drp'])) {
+                return route('loginPage', ['guard' => $guard]);
             }
 
-            if ($redirectTo != null) return route('loginPage', $redirectTo);
-
+            // Admin users go to normal login page
             return route('login');
-        } else {
-            return abort(response()->json([
-                'status'    => false,
-                'message'   => 'Unauthenticated Access..!!',
-                'data'      => []
-            ], 401));
         }
+
+        return abort(response()->json([
+            'status' => false,
+            'message' => 'Unauthenticated Access..!!',
+            'data' => []
+        ], 401));
     }
 
     protected function unauthenticated($request, array $guards)
     {
         if ($request->is('api/*')) {
             return abort(response()->json([
-                'status'    => false,
-                'message'   => 'Unauthenticated Access..!!',
-                'data'      => []
+                'status' => false,
+                'message' => 'Unauthenticated Access..!!',
+                'data' => []
             ], 401));
-        } else {
-            throw new AuthenticationException(
-                'Unauthenticated.',
-                $guards,
-                $this->redirectTo($request)
-            );
         }
+
+        throw new AuthenticationException(
+            'Unauthenticated.',
+            $guards,
+            $this->redirectTo($request)
+        );
     }
 }

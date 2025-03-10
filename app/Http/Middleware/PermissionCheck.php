@@ -10,7 +10,7 @@ class PermissionCheck
 {
     public function handle(Request $request, Closure $next, int $module = 0, string $type = '')
     {
-        if (auth('web')->check()) {
+        if (auth('admin')->check()) {
             try {
 
                 $permission = $request->permission;

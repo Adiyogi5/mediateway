@@ -1,8 +1,8 @@
 <footer class="border-top">
     <section>
         <div class="container">
-            <div class="row py-lg-5 py-md-4 py-3">
-                <div class="col-4">
+            <div class="row g-md-0 g-4 py-lg-5 py-md-4 py-3">
+                <div class="col-md-4 col-12">
                     <div class="row">
                         <div class="col">
                             <ul class="nav flex-column footer-list">
@@ -29,17 +29,17 @@
                             <ul class="nav flex-column footer-list">
                                 <h3 class="footer-title">LEGAL</h3>
                                 <li class="nav-item-footer mb-2">
-                                    <a href="{{ route('front.home') }}" class="nav-link-footer ">
+                                    <a href="{{ route('front.show-cms', 'privacy-policy') }}" class="nav-link-footer ">
                                         Privacy Policy
                                     </a>
                                 </li>
                                 <li class="nav-item-footer mb-2">
-                                    <a href="{{ route('front.show-cms', 'about-us') }}" class="nav-link-footer">
+                                    <a href="{{ route('front.show-cms', 'terms-conditions') }}" class="nav-link-footer">
                                         Terms & Conditions
                                     </a>
                                 </li>
                                 <li class="nav-item-footer mb-2">
-                                    <a href="{{ route('front.home') }}" class="nav-link-footer">
+                                    <a href="{{ route('front.show-cms', 'rules') }}" class="nav-link-footer">
                                         Rules
                                     </a>
                                 </li>
@@ -55,7 +55,7 @@
                     </div>
                 </div>
 
-                <div class="col mb-4 mb-lg-0">
+                <div class="col-md col-6 mb-4 mb-lg-0">
                     <ul class="nav flex-column footer-list">
                         <h3 class="footer-title">CONNECT TO US</h3>
                         <li class="nav-item-footer mb-2">
@@ -63,11 +63,13 @@
                                 BUY AGREEMENT
                             </a>
                         </li>
+                        @if (auth('individual')->check())
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('front.show-cms', 'about-us') }}" class="nav-link-footer">
+                            <a href="{{ route('individual.file-case') }}" class="nav-link-footer">
                                 FILE A CASE/DISPUTE
                             </a>
                         </li>
+                        @endif
                         <li class="nav-item-footer mb-2">
                             <a href="{{ route('front.home') }}" class="nav-link-footer">
                                 APPOINMENT
@@ -86,7 +88,7 @@
                     </ul>
                 </div>
 
-                <div class="col mb-4 mb-lg-0">
+                <div class="col-md col-6 mb-4 mb-lg-0">
                     <ul class="nav flex-column footer-list">
                         <h3 class="footer-title">JOIN US</h3>
                         <li class="nav-item-footer mb-2">
@@ -122,7 +124,7 @@
                     </ul>
                 </div>
 
-                <div class="col-3 mb-4  mb-lg-0 contact">
+                <div class="col-md-3 col-12 mb-4 mb-lg-0 contact">
                     <h3 class="footer-title">CONTACT</h3>
                     <div class="d-flex gap-2 align-items-center mb-2">
                         <div class="icon"><i class="fa fa-phone"></i></div>
@@ -156,7 +158,7 @@
                     </div>
                 </div>
 
-                <div class="col-12">
+                <div class="col-12 copyright">
                     <div class="d-flex my-md-2 my-1">
                         <p class="text-copiright text-center text-lg-start mb-0">
                             {{ $site_settings['copyright'] }} &nbsp;

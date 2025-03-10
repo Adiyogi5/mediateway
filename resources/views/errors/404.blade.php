@@ -13,7 +13,7 @@
             <p class="h4">Ooops!</p>
             <p class="h6 mb-3 mt-1">The page you requested was not found.!</p>
             <div>
-                <a href="{{ route('home') }}" class="btn btn-dark mt-3">Go to Home Page</a>
+                <a href="{{ route('front.home') }}" class="btn btn-dark mt-3">Go to Home Page</a>
             </div>
         </div>
     </div>

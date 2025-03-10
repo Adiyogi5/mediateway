@@ -13,7 +13,7 @@
                 <h1 class="error-number">403</h1>
                 <h2>Forbidden Error</h2>
                 <h5>(I'm sorry buddy...)</h5>
-                <a href="{{ route('home') }}" class="btn btn-dark mt-3">Go to Home Page</a>
+                <a href="{{ route('front.home') }}" class="btn btn-dark mt-3">Go to Home Page</a>
             </div>
         </div>
     </div>

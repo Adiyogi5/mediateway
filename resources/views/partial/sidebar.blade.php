@@ -36,9 +36,9 @@
         @endif
 
         @if(Helper::userCan([104]))
-        <li class="menu @routeis('sliders,testimonials,cms,faq,enquiries,banners,clients') active @endrouteis">
+        <li class="menu @routeis('sliders,testimonials,homecms,cms,faq,enquiries,banners,features,clients') active @endrouteis">
             <a href="#static_content" data-bs-toggle="collapse"
-                aria-expanded="{{ Helper::routeis('sliders,testimonials,cms,faq,enquiries,banners,clients') }}"
+                aria-expanded="{{ Helper::routeis('sliders,testimonials,homecms,cms,faq,enquiries,banners,features,clients') }}"
                 class="dropdown-toggle">
                 <div class="">
                     <i class="fa-sharp fa-solid fa-photo-film"></i>
@@ -46,12 +46,18 @@
                 </div>
                 <div> <i class="fa-solid fa-chevron-right"></i> </div>
             </a>
-            <ul class="collapse submenu list-unstyled @routeis('sliders,testimonials,cms,faq,enquiries,banners,clients') show @endrouteis"
+            <ul class="collapse submenu list-unstyled @routeis('sliders,testimonials,homecms,cms,faq,features,enquiries,banners,clients') show @endrouteis"
                 id="static_content" data-bs-parent="#accordionExample">
 
                 @if(Helper::userCan(112))
                 <li class="@routeis('banners') active @endrouteis">
                     <a href="{{ route('banners') }}">Banners</a>
+                </li>
+                @endif
+
+                @if(Helper::userCan(104))
+                <li class="@routeis('homecms') active @endrouteis">
+                    <a href="{{ route('homecms') }}">Home CMS</a>
                 </li>
                 @endif
                 
@@ -64,6 +70,12 @@
                 @if(Helper::userCan(110))
                 <li class="@routeis('faqs') active @endrouteis">
                     <a href="{{ route('faqs') }}">FAQs</a>
+                </li>
+                @endif
+
+                @if(Helper::userCan(110))
+                <li class="@routeis('features') active @endrouteis">
+                    <a href="{{ route('features') }}">Features</a>
                 </li>
                 @endif
 

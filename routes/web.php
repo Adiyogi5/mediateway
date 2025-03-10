@@ -1,46 +1,52 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CityController;
-use App\Http\Controllers\FireController;
 use App\Http\Controllers\Common\CommonController;
+use App\Http\Controllers\FireController;
 use App\Http\Controllers\FrontController;
+use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+// ================== Frontend Routes ==================
 Route::controller(FrontController::class)->name('front.')->group(function () {
     Route::get('/', 'index')->name('home');
     Route::get('/home', 'index')->name('home');
-    Route::get('{cms}', 'showCms')->name('show-cms')->whereIn('cms', ['about-us', 'terms-condition', 'privacy-policy']);
+    Route::get('{cms}', 'showCms')->name('show-cms')->whereIn('cms', ['about-us', 'terms-conditions', 'privacy-policy', 'rules']);
+
 });
 
-// Route::patch('fcm-token', [FireController::class, 'updateToken'])->name('fcmToken');
-
-
+// ================== Push Notification Routes ==================
 Route::get('/push-notificaiton', [FireController::class, 'index'])->name('push-notificaiton');
 Route::post('/store-token', [FireController::class, 'storeToken'])->name('store.token');
 Route::post('/send-web-notification', [FireController::class, 'sendWebNotification'])->name('send.web-notification');
 
+// ================== Common Routes ==================
 Route::get('test', [CommonController::class, 'test'])->name('test');
-Route::get('{guard}', fn ($guard) => redirect($guard == 'admin' ?  url('/admin/login') : url("/$guard/login")))->whereIn('guard', ['admin']);
-Route::redirect('admin/dashboard', '/dashboard');
+Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');
+Route::post('upload-image', [CommonController::class, 'upload_image'])->name('upload_image');
+Route::get('get-user-list-filter', [CommonController::class, 'get_user_list_filter'])->name('get_user_list_filter');
 
+// Redirects based on guard type
+Route::get('{guard}', function ($guard) {
+    if (in_array($guard, ['admin', 'individual', 'organization', 'drp'])) {
+        return redirect(url("/$guard/login"));
+    }
+    abort(404);
+})->whereIn('guard', ['admin', 'individual', 'organization', 'drp']);
 
-Route::middleware(['authCheck'])->group(function () {
-    // Open Routes
-    Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');
-    Route::post('upload-image', [CommonController::class, 'upload_image'])->name('upload_image');
-    Route::get('get-user-list-filter', [CommonController::class, 'get_user_list_filter'])->name('get_user_list_filter');
-});
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
+// ================== Dashboard Route ==================
+// Route::redirect('admin/dashboard', '/dashboard');
+
+// ================== Protected Routes (Authenticated Users Only) ==================
+// Route::middleware(['authCheck'])->group(function () {
+//     Route::get('/dashboard', function () {
+//         return view('home');
+//     })->name('dashboard');
+// });
+
+// Handle any undefined routes
 Route::fallback(function () {
     abort(404);
 });

@@ -30,7 +30,7 @@ class Kernel extends HttpKernel
      * @var array<string, array<int, class-string|string>>
      */
     protected $middlewareGroups = [
-        'web' => [
+        'admin' => [
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
@@ -63,6 +63,9 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+        'ensure.individual.session' => \App\Http\Middleware\EnsureIndividualSession::class,
+        'ensure.organization.session' => \App\Http\Middleware\EnsureOrganizationSession::class,
+        'ensure.drp.session' => \App\Http\Middleware\EnsureDrpSession::class,
 
         'mail' => \App\Http\Middleware\MailMiddleware::class,
         'settings' => \App\Http\Middleware\SettingMiddleware::class,

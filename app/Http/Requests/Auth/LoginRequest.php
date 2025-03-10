@@ -21,11 +21,18 @@ class LoginRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'email'     => ['required', 'string'],
-            'login_as'  => ['required'],
-            'password'  => ['required', 'string'],
-        ];
+        if ($this->login_as == 'admin') {
+            return [
+                'email'     => ['required', 'string'],
+                'password'  => ['required', 'string'],
+            ];
+        } else {
+            return [
+                'mobile'     => ['required'],
+                'otp'  => ['required'],
+            ];
+        }
+        
     }
 
     public function authenticate()

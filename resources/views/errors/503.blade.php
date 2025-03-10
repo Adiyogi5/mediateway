@@ -52,7 +52,7 @@
             <p class="fs-6">We are currently working on making some improvements <br /> to give you better user
                 experience.</p>
             <p class="fs-6">Please visit us again shortly.</p>
-            <a href="{{ route('home') }}" class="btn btn-dark mt-3">Go to Home Page</a>
+            <a href="{{ route('front.home') }}" class="btn btn-dark mt-3">Go to Home Page</a>
         </div>
     </div>
 </div>

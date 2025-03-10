@@ -29,7 +29,7 @@ class NewPasswordController extends Controller
             return to_route('loginPage', 'company');
         }
 
-        $loginUrl = route('loginPage', $token_data->guard == 'web' ? 'admin' : $token_data->guard);
+        $loginUrl = route('loginPage', $token_data->guard == 'admin' ? 'admin' : $token_data->guard);
         return view('auth.passwords.reset', ['token' => $token, 'email' => $request->email, 'loginUrl' => $loginUrl]);
     }
 
@@ -69,7 +69,7 @@ class NewPasswordController extends Controller
         // the application's home authenticated view. If there is an error we can
         // redirect them back to where they came from with their error message.
         return $status == Password::PASSWORD_RESET
-            ? to_route('loginPage', $token_data->guard == 'web' ? 'admin' : $token_data->guard)->withSuccess(__($status))
+            ? to_route('loginPage', $token_data->guard == 'admin' ? 'admin' : $token_data->guard)->withSuccess(__($status))
             : back()->withInput($request->only('email'))
             ->withErrors(['email' => __($status)]);
     }

@@ -22,7 +22,7 @@ class EnsureEmailIsVerified
             $guard  = Helper::getGuardFromURL($request);
             $user   = $request->user($guard);
             if (!$user ||  ($user instanceof MustVerifyEmail && !$user->hasVerifiedEmail())) {
-                $guard  = $guard == 'web' ? 'admin' : $guard;
+                $guard  = $guard == 'admin' ? 'admin' : $guard;
                 return $request->expectsJson() ? abort(403, 'Your email address is not verified.')  : Redirect::guest(route('verification.notice', $guard));
             }
         }

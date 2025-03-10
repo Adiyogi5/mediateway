@@ -53,20 +53,15 @@
             </div>
             <div class="row">
                 <div class="col-md-7 col-12 order-md-1 order-2">
-                    <h3 class="section-title">Mediateway</h3>
-                    <p class="section-content">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                        Lorem Ipsum has been the industry's standard dummy Lorem Ipsum is simply dummy text of the printing
-                        and typesetting industry. Lorem Ipsum has been the industry's standard dummyLorem Ipsum is simply
-                        dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
-                        dummy Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
-                        been the industry's standard dummy Lorem Ipsum is simply dummy text of the printing and typesetting
-                        industry. Lorem Ipsum has been the industry's standard dummy Lorem Ipsum is simply dummy text of the
-                        printing and typesetting industry. Lorem Ipsum has been the </p>
+                    <h3 class="section-title">{{ $frontHomecmsWelcome->title }}</h3>
+                    <p class="section-content">
+                        {{ $frontHomecmsWelcome->description }}
+                    </p>
                     <a href="#" class="btn btn-learn-more">Learn More &nbsp;&nbsp;&nbsp;<i
                             class="fa-solid fa-arrow-right"></i></a>
                 </div>
                 <div class="col-md-5 col-12 order-md-2 order-1 position-relative">
-                    <img class="img-fluid" src="{{ asset('assets/img/welcome-cms.png') }}" alt="">
+                    <img class="img-fluid" src="{{ asset('storage/' . $frontHomecmsWelcome->image) }}" alt="{{ $frontHomecmsWelcome->title }}">
                 </div>
             </div>
         </div>
@@ -119,7 +114,7 @@
                         </div>
 
                         <!-- Step 4 -->
-                        <div class="process-card">
+                        <div class="process-card-1">
                             <div class="icon-border">
                                 <div class="icon-box">
                                     <img src="{{ asset('assets/img/digital-court-room/legal.png') }}"
@@ -158,10 +153,10 @@
                     <div class="owl-carousel mediation-carousel">
                         <div class="item">
                             <div class="row gx-3">
-                                <div class="col">
+                                <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}" alt="">
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (Pre-Existing)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -184,7 +179,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (in case of non-existing agreement)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -203,10 +198,10 @@
                         </div>
                         <div class="item">
                             <div class="row gx-3">
-                                <div class="col">
+                                <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}" alt="">
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (Pre-Existing)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -229,7 +224,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (in case of non-existing agreement)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -248,11 +243,11 @@
                         </div>
                         <div class="item">
                             <div class="row gx-3">
-                                <div class="col">
+                                <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}"
                                         alt="">
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (Pre-Existing)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -275,7 +270,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (in case of non-existing agreement)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -300,11 +295,11 @@
                     <div class="owl-carousel conciliation-carousel">
                         <div class="item">
                             <div class="row gx-3">
-                                <div class="col">
+                                <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}"
                                         alt="">
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (Pre-Existing)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -327,7 +322,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (in case of non-existing agreement)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -346,11 +341,11 @@
                         </div>
                         <div class="item">
                             <div class="row gx-3">
-                                <div class="col">
+                                <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}"
                                         alt="">
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (Pre-Existing)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -373,7 +368,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (in case of non-existing agreement)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -392,11 +387,11 @@
                         </div>
                         <div class="item">
                             <div class="row gx-3">
-                                <div class="col">
+                                <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}"
                                         alt="">
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (Pre-Existing)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -419,7 +414,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (in case of non-existing agreement)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -444,11 +439,11 @@
                     <div class="owl-carousel arbitration-carousel">
                         <div class="item">
                             <div class="row gx-3">
-                                <div class="col">
+                                <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}"
                                         alt="">
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (Pre-Existing)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -471,7 +466,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (in case of non-existing agreement)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -490,11 +485,11 @@
                         </div>
                         <div class="item">
                             <div class="row gx-3">
-                                <div class="col">
+                                <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}"
                                         alt="">
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (Pre-Existing)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -517,7 +512,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (in case of non-existing agreement)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -536,11 +531,11 @@
                         </div>
                         <div class="item">
                             <div class="row gx-3">
-                                <div class="col">
+                                <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}"
                                         alt="">
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (Pre-Existing)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -563,7 +558,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col">
+                                <div class="col-md col-12">
                                     <h3>Case Initiation (in case of non-existing agreement)</h3>
                                     <ul class="list-style">
                                         <li>
@@ -599,23 +594,19 @@
             </div>
             <div class="row">
                 <div class="col-md-6 col-12 position-relative">
-                    <img class="img-fluid" src="{{ asset('assets/img/about-cms.png') }}" alt="">
+                    <img class="img-fluid" src="{{ asset('storage/' . $frontHomecmsAbout->image) }}" alt="{{ $frontHomecmsAbout->title }}">
                 </div>
                 <div class="col-md-6 col-12 my-auto">
-                    <h3 class="section-title">Trusted legal services</h3>
-                    <p class="section-content">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                        Lorem Ipsum has been the industry's standard dummy Lorem Ipsum is simply dummy text of the printing
-                        and typesetting industry. Lorem Ipsum has been the industry's standard dummyLorem Ipsum is simply
-                        dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
-                        dummy Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
-                        been the industry's standard dummy </p>
-                    <div class="d-flex justify-content-between">
+                    <h3 class="section-title">{{ $frontHomecmsAbout->title }}</h3>
+                    <p class="section-content">
+                        {{ $frontHomecmsAbout->description }}
+                    </p>
+                    <div class="d-flex justify-content-md-between justify-content-around">
                         <a href="#" class="btn btn-about-cms"> <i class="fa-solid fa-award"></i>&nbsp;&nbsp;&nbsp;
-                            20+
-                            Years Exp</a>
+                            {{$site_settings['years_experience']}}</a>
                         <a href="#" class="btn btn-about-cms"> <i
                                 class="fa-solid fa-user-tag"></i>&nbsp;&nbsp;&nbsp;
-                            1100+ Cases</a>
+                            {{$site_settings['cases_count']}}</a>
                     </div>
                 </div>
             </div>
@@ -633,71 +624,18 @@
                 </div>
             </div>
             <div class="row g-xl-5 g-lg-4 g-3">
-                <!-- Card 1 -->
-                <div class="col-lg-4 col-md-6 col-12 mb-4">
-                    <div class="feature-card mx-xl-3 mx-md-2 mx-1">
-                        <div class="icon-circle">
-                            <i class="fas fa-file-signature"></i>
+                @foreach ($features as $feature)
+                    <div class="col-lg-4 col-md-6 col-12 mb-4">
+                        <div class="feature-card mx-xl-3 mx-md-2 mx-1">
+                            <div class="icon-circle">
+                                <img src="{{ asset('storage/' . $feature['image']) }}" class="p-2"
+                                            alt="{{ $feature['name'] }}">
+                            </div>
+                            <h5>{{ $feature['name'] }}</h5>
+                            <p>{{ $feature['description'] }}</p>
                         </div>
-                        <h5>High Court Case Filing</h5>
-                        <p>Standard dummy Lorem Ipsum is simply dummy text of the printing and typesetting.</p>
                     </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="col-lg-4 col-md-6 col-12 mb-4">
-                    <div class="feature-card mx-xl-3 mx-md-2 mx-1">
-                        <div class="icon-circle">
-                            <i class="fas fa-desktop"></i>
-                        </div>
-                        <h5>Secure Online Hearing</h5>
-                        <p>Standard dummy Lorem Ipsum is simply dummy text of the printing and typesetting.</p>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="col-lg-4 col-md-6 col-12 mb-4">
-                    <div class="feature-card mx-xl-3 mx-md-2 mx-1">
-                        <div class="icon-circle">
-                            <i class="fas fa-stopwatch"></i>
-                        </div>
-                        <h5>Fast Case Processing</h5>
-                        <p>Standard dummy Lorem Ipsum is simply dummy text of the printing and typesetting.</p>
-                    </div>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="col-lg-4 col-md-6 col-12 mb-4">
-                    <div class="feature-card mx-xl-3 mx-md-2 mx-1">
-                        <div class="icon-circle">
-                            <i class="fas fa-lightbulb"></i>
-                        </div>
-                        <h5>Expert Legal Advice</h5>
-                        <p>Standard dummy Lorem Ipsum is simply dummy text of the printing and typesetting.</p>
-                    </div>
-                </div>
-
-                <!-- Card 5 -->
-                <div class="col-lg-4 col-md-6 col-12 mb-4">
-                    <div class="feature-card mx-xl-3 mx-md-2 mx-1">
-                        <div class="icon-circle">
-                            <i class="fas fa-headset"></i>
-                        </div>
-                        <h5>Client Support</h5>
-                        <p>Standard dummy Lorem Ipsum is simply dummy text of the printing and typesetting.</p>
-                    </div>
-                </div>
-
-                <!-- Card 6 -->
-                <div class="col-lg-4 col-md-6 col-12 mb-4">
-                    <div class="feature-card mx-xl-3 mx-md-2 mx-1">
-                        <div class="icon-circle">
-                            <i class="fas fa-search-location"></i>
-                        </div>
-                        <h5>Case Tracking</h5>
-                        <p>Standard dummy Lorem Ipsum is simply dummy text of the printing and typesetting.</p>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>
@@ -752,7 +690,7 @@
                 <div class="col-12">
                     <div class="Client-slider">
                         @foreach ($clients as $client)
-                            <div class="px-3 h-100">
+                            <div class="px-md-3 px-2 h-100">
                                 <div class="card border-0 justify-content-center text-center">
                                     <a class="text-decoration-none" href="">
                                         <img class="card-type-img" src="{{ asset('storage/' . $client['image']) }}"
@@ -770,6 +708,7 @@
 @endsection
 
 @section('js')
+    <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>   
     <script>
         $(document).ready(function() {
             // ########################Client-slider########################### 
@@ -811,18 +750,21 @@
             $(".process-slider").owlCarousel({
                 items: 4,
                 margin: 20,
-                loop: false,
+                loop: true,
                 dots: false,
                 nav: false,
-                autoplay: false,
+                autoplay: true,
                 responsive: {
                     0: {
-                        items: 1
-                    },
-                    600: {
                         items: 2
                     },
+                    600: {
+                        items: 3
+                    },
                     1000: {
+                        items: 4
+                    },
+                    1200: {
                         items: 4
                     }
                 }

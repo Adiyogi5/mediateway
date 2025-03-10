@@ -16,7 +16,7 @@ class EmailVerificationPromptController extends Controller
         if (config('constant.email_varified')) {
             $guard  = Helper::getGuardFromURL($request);
             $user   = $request->user($guard);
-            $guard  = $guard == 'web' ? 'admin' : $guard;
+            $guard  = $guard == 'admin' ? 'admin' : $guard;
             return $user->hasVerifiedEmail()  ? redirect()->intended(RouteServiceProvider::HOME) : view('auth.verify-email', compact('guard'));
         } else {
             return redirect()->intended(RouteServiceProvider::HOME);

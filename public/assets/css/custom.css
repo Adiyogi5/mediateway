@@ -570,12 +570,16 @@ span.error {
 }
 
 .auth-container {
-    background: rgb(63, 94, 251);
+    background-image: url('../img/background-log-reg.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    /* background: rgb(63, 94, 251);
     background: radial-gradient(
         circle,
         rgba(63, 94, 251, 1) 0%,
         rgba(252, 70, 107, 1) 100%
-    );
+    ); */
 }
 
 .theme-brand .nav-item.theme-text {
@@ -671,4 +675,56 @@ input[type="number"].rm-number {
     .modal-xl {
         --bs-modal-width: 750px;
     }
+}
+
+.login-card{
+    background-color: #FFFFFF80 !important;
+    border: 1px solid #00000021 !important;
+    box-shadow: -4px 4px 7.8px 0px #00000040 !important;
+    backdrop-filter: blur(80px) !important;
+    border-radius: 15px !important;
+}
+
+.login-title{
+    font-size: 28px;
+    font-weight: 600;
+    color: #000000;
+    text-align: center;
+}
+.login-card .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    color: #000000 !important;
+    background-color: #FFFFFF !important;
+    border: 1px solid #00000030 !important;
+    box-shadow: -4px 4px 17.4px 0px #00000040 !important;
+}
+.login-card .nav-pills .nav-link {
+    color: #000000 !important;
+    background-color: #FFFFFF26 !important;
+}
+.login-card .input-group .input-group-text {
+    border-right:  1px solid #ffffff !important;
+    background-color: #ffffff !important;
+    color: #515365 !important;
+}
+.login-card .btn-warning-custom {
+    background-color: #FFB53F !important;
+    border: 1px solid #00000030;
+    box-shadow: -4px 4px 17.4px 0px #00000040;
+    color: #000000 !important;
+}
+.login-card .btn-send {
+    padding: .4375rem 1rem;
+    text-shadow: none;
+    font-size: 14px;
+    color: #000000 !important;
+    font-weight: 400;
+    white-space: normal;
+    word-wrap: break-word;
+    border-radius: 0px !important;
+    border: 0px !important;
+    cursor: pointer;
+    background-color: transparent !important;
+}
+.login-card .text-warning {
+    color: #ffa520 !important;
 }

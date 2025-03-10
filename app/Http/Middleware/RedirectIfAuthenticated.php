@@ -13,7 +13,7 @@ class RedirectIfAuthenticated
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
         $redirectTo = null;
-        if (auth('web')->check()) {
+        if (auth('admin')->check()) {
             $redirectTo = '/dashboard';
         }
 

@@ -13,7 +13,7 @@
                 <input class="form-control" name="email" value="{{ old('email') }}" id="email" type="email"
                     placeholder="{{ ucwords(str_replace('_', ' ', $guard)) }} : Email address" required
                     autocomplete="email" autofocus>
-                <input type="hidden" name="login_as" value="{{ $guard == 'admin' ? 'web' :  $guard }}">
+                <input type="hidden" name="login_as" value="{{ $guard == 'admin' ? 'admin' :  $guard }}">
                 @error('email')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>

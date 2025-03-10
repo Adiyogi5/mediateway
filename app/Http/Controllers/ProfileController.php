@@ -25,7 +25,7 @@ class ProfileController extends Controller
         $gaurd      = $this->route = Helper::getGuardFromURL($request);
         $this->middleware(['auth:' .  $gaurd, function ($request, $next) use ($gaurd) {
             $this->role = ucfirst($gaurd);
-            if ($gaurd == "web") {
+            if ($gaurd == "admin") {
                 $this->role =   "Admin";
             }
 
@@ -84,7 +84,7 @@ class ProfileController extends Controller
         if (Hash::check($request->old_password, $user->password)) {
             $user->update(['password' => Hash::make($request['password'])]);
             $this->logout($request);
-            return to_route('loginPage', $this->route == 'web' ? 'admin' : $this->route)->withSuccess('Password updated successfully..!! Please login again.');
+            return to_route('loginPage', $this->route == 'admin' ? 'admin' : $this->route)->withSuccess('Password updated successfully..!! Please login again.');
         }
 
         return back()->withError('Credentials not Valid.');
@@ -125,7 +125,7 @@ class ProfileController extends Controller
         if (auth($this->route)->check()) {
             Session::put('locked', true);
             $user = auth($this->route)->user();
-            $path = $this->route == "web" ? '' : $this->route;
+            $path = $this->route == "admin" ? '' : $this->route;
             return view('profile.lockscreen', compact('user', 'path'));
         }
         return redirect('/login');
@@ -140,9 +140,9 @@ class ProfileController extends Controller
         $password = $request->password;
         if (Hash::check($password, auth($this->route)->user()->password)) {
             Session::forget('locked');
-            return redirect(($this->route == 'web' ? '' : $this->route) . '/dashboard')->withSuccess("Profile Unlocked Sussessfully.");
+            return redirect(($this->route == 'admin' ? '' : $this->route) . '/dashboard')->withSuccess("Profile Unlocked Sussessfully.");
         } else {
-            return redirect(($this->route == 'web' ? '' : $this->route) . '/lock')->withError("Invalid Password.");
+            return redirect(($this->route == 'admin' ? '' : $this->route) . '/lock')->withError("Invalid Password.");
         }
     }
 

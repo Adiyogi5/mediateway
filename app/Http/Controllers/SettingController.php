@@ -111,6 +111,13 @@ class SettingController extends Controller
                 ]);
             }
 
+            if ($id == 9) {
+                $request->validate([
+                    'years_experience'     => 'required|max:100',
+                    'cases_count'          => 'required|max:100',
+                ]);
+            }
+
             $data = $request->except(['site_settings', 'permission', '_token']);
             if ($request->file('favicon')) {
                 Helper::deleteFile($request->site_settings['favicon']);

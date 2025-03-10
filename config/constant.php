@@ -13,6 +13,30 @@ return [
         '2'             => 'Social Links Setting',
         '3'             => 'Mail Setting',
         '8'             => 'Google Recaptcha',
+        '9'             => 'Counters',
     ],
 
+    'claimant_address_type' => [
+        '1' => 'Home', 
+        '2' => 'Office' 
+    ],
+
+    'respondent_address_type' => [
+        '1' => 'Home', 
+        '2' => 'Office' 
+    ],
+
+    'case_type' => [
+        '1' => 'Civil', 
+        '2' => 'Arbitration' ,
+        '3' => 'Insolvency' ,
+        '4' => 'Suit' ,
+        '5' => 'Rent' 
+    ],
+
+    'language' => [
+        '1' => 'Hindi', 
+        '2' => 'English' 
+    ],
+    
 ];

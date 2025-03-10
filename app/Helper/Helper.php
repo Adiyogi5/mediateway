@@ -17,24 +17,48 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Helper
 {
-    public static function deleteFile($filename = '')
+    public static function deleteFile($filename = ''): bool
     {
-        $filename = str_replace(asset('storage'), '', $filename);
+        // Remove storage URL from the filename
+        $filename = str_replace(asset('storage') . '/', '', $filename);
 
-        if (in_array($filename, [
+        // Prevent deletion of essential system files
+        $protectedFiles = [
             'application/favicon.png',
             'application/logo.png',
             'admin/avatar.png',
-        ])) {
+        ];
+
+        if (in_array($filename, $protectedFiles)) {
             return true;
         }
 
-        if (Storage::exists($filename)) {
-            Storage::delete($filename);
+        // Check if file exists before deleting
+        if (Storage::disk('public')->exists($filename)) {
+            return Storage::disk('public')->delete($filename);
         }
 
-        return true;
+        return false;
     }
+
+    // public static function deleteFile($filename = '')
+    // {
+    //     $filename = str_replace(asset('storage'), '', $filename);
+
+    //     if (in_array($filename, [
+    //         'application/favicon.png',
+    //         'application/logo.png',
+    //         'admin/avatar.png',
+    //     ])) {
+    //         return true;
+    //     }
+
+    //     if (Storage::exists($filename)) {
+    //         Storage::delete($filename);
+    //     }
+
+    //     return true;
+    // }
 
     public static function showImage(string|null $filename, bool $showDefault = false): string|null
     {
@@ -52,22 +76,28 @@ class Helper
 
     public static function getGuardFromURL(Request $request, $type = true): string
     {
-        if ($request->is('employee/*') || $request->is('employee')) {
-            $route = 'employee';
-        } else {
-            $route = $type ? 'web' : '';
+        if ($request->is('individual/*') || $request->is('individual')) {
+            return 'individual';
+        } elseif ($request->is('organization/*') || $request->is('organization')) {
+            return 'organization';
+        } elseif ($request->is('drp/*') || $request->is('drp')) {
+            return 'drp';
         }
-        return $route;
+
+        return $type ? 'admin' : '';
     }
 
     public static function getTableFromURL(Request $request): string
     {
-        if ($request->is('employee/*') || $request->is('employee')) {
-            $route = 'employees';
-        } else {
-            $route = 'users';
+        if ($request->is('individual/*') || $request->is('individual')) {
+            return 'individuals';
+        } elseif ($request->is('organization/*') || $request->is('organization')) {
+            return 'organizations';
+        } elseif ($request->is('drp/*') || $request->is('drp')) {
+            return 'drps';
         }
-        return $route;
+
+        return 'users';
     }
 
     public static function checkRoute(string $route): bool
@@ -134,14 +164,26 @@ class Helper
         }
     }
 
-    public static function saveFile(UploadedFile|null $image, $folder = 'admin'): null|string
+    public static function saveFile(?UploadedFile $image, string $folder = 'admin'): ?string
     {
         if ($image) {
-            return $image->storeAs($folder, time() . '_' . rand(1000, 9999) . '.' . $image->getClientOriginalExtension());
-        } else {
-            return null;
+            $filename = time() . '_' . rand(1000, 9999) . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs($folder, $filename, 'public'); // Save file in 'public' disk
+
+            return $path; // Return only the relative path (without 'storage/' prefix)
         }
+
+        return null;
     }
+
+    // public static function saveFile(UploadedFile|null $image, $folder = 'admin'): null|string
+    // {
+    //     if ($image) {
+    //         return $image->storeAs($folder, time() . '_' . rand(1000, 9999) . '.' . $image->getClientOriginalExtension());
+    //     } else {
+    //         return null;
+    //     }
+    // }
 
     public static function checkValid(array $validation, Closure $closure): JsonResponse
     {

@@ -11,14 +11,21 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 
-Route::middleware(['guest'])
-    ->group(function () {
+$guards = ['admin', 'individual', 'organization', 'drp'];
+
+Route::middleware(['guest']) ->group(function () {
         Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
         Route::post('register', [RegisteredUserController::class, 'store']);
 
         Route::get('login', fn () => to_route('loginPage', ['guard' => 'admin']))->name('login');
-        Route::get('{guard}/login', [AuthenticatedSessionController::class, 'create'])->whereIn('guard', ['admin'])->name('loginPage');
-        Route::post('login', [AuthenticatedSessionController::class, 'store']);
+        
+        Route::get('{guard}/login', [AuthenticatedSessionController::class, 'create'])
+            ->whereIn('guard', ['admin', 'individual', 'organization', 'drp'])
+            ->name('loginPage');
+
+        Route::post('{guard}/login', [AuthenticatedSessionController::class, 'store'])
+            ->whereIn('guard', ['admin', 'individual', 'organization', 'drp'])
+            ->name('login.post');
 
         Route::get('{guard}/password/reset', [PasswordResetLinkController::class, 'create'])
             ->whereIn('guard', ['admin'])

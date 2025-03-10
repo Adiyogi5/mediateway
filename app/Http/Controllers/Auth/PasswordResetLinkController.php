@@ -19,7 +19,7 @@ class PasswordResetLinkController extends Controller
         $this->middleware('mail');
     }
 
-    public function create($guard = 'web'): View
+    public function create($guard = 'admin'): View
     {
         return view('auth.passwords.email', ['guard' => $guard]);
     }

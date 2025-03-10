@@ -27,18 +27,11 @@
     .icon-border {
         padding: 14px;
     }
-    .process-card img {
-        height: 50px;
-    }
     .process-card-1 img {
         height: 50px;
     }
     .process-card-2 img {
         height: 50px;
-    }
-    .process-card p {
-        font-size: 18px;
-        margin-top: 14px;
     }
     .process-card-1 p {
         font-size: 18px;
@@ -47,10 +40,6 @@
     .process-card-2 p {
         font-size: 18px;
         margin-top: 14px;
-    }
-    .process-card::after {
-        width: 70px;
-        height: 30px;
     }
     .process-card-1::after {
         width: 70px;
@@ -88,6 +77,24 @@
         height: 25px;
         width: 25px;
     }
+    .card-inner {
+        padding: 24px 24px;
+    }
+    .btn-dasboard {
+        font-size: 16px;
+        padding: 4px 18px;
+    }
+    .form-dashboard-select {
+        font-size: 16px;
+        padding: 4px 16px;
+    }
+    .card-dashboard .custom-tab {
+        font-size: 13px;
+        padding: 6px 12px;
+        margin: 6px 8px;
+    }
+
+
 
 }
 
@@ -157,18 +164,11 @@
     .icon-border {
         padding: 14px;
     }
-    .process-card img {
-        height: 50px;
-    }
     .process-card-1 img {
         height: 50px;
     }
     .process-card-2 img {
         height: 50px;
-    }
-    .process-card p {
-        font-size: 18px;
-        margin-top: 14px;
     }
     .process-card-1 p {
         font-size: 18px;
@@ -177,10 +177,6 @@
     .process-card-2 p {
         font-size: 18px;
         margin-top: 14px;
-    }
-    .process-card::after {
-        width: 70px;
-        height: 30px;
     }
     .process-card-1::after {
         width: 70px;
@@ -221,6 +217,39 @@
     }
     .form-control {
         font-size: 13px !important;
+    }
+    .card-inner h5 {
+        font-size: 20px;
+    }
+    .btn-dasboard {
+        font-size: 13px;
+        padding: 4px 12px;
+    }
+    .card-inner {
+        padding: 14px 14px;
+    }
+    .form-dashboard-select {
+        padding: 4px 16px;
+    }
+    .custom-dropdown::after {
+        font-size: 16px;
+        right: 5px;
+        font-weight: 600;
+    }
+    .card-dashboard .custom-tab {
+        font-size: 13px;
+        padding: 4px 10px;
+        margin: 2px 2px;
+    }
+    .img-dashboard{
+        width: 35px;
+        height: 35px;
+    }
+    .card-dashboard h3 {
+        font-size: 28px;
+    }
+    .card-dashboard p {
+        font-size: 13px;
     }
    
 }
@@ -291,18 +320,11 @@
     .icon-border {
         padding: 14px;
     }
-    .process-card img {
-        height: 50px;
-    }
     .process-card-1 img {
         height: 50px;
     }
     .process-card-2 img {
         height: 50px;
-    }
-    .process-card p {
-        font-size: 18px;
-        margin-top: 14px;
     }
     .process-card-1 p {
         font-size: 18px;
@@ -311,10 +333,6 @@
     .process-card-2 p {
         font-size: 18px;
         margin-top: 14px;
-    }
-    .process-card::after {
-        width: 70px;
-        height: 30px;
     }
     .process-card-1::after {
         width: 70px;
@@ -356,20 +374,649 @@
     .form-control {
         font-size: 13px !important;
     }
+    .card-inner h5 {
+        font-size: 20px;
+    }
+    .btn-dasboard {
+        font-size: 13px;
+        padding: 4px 12px;
+    }
+    .card-inner {
+        padding: 14px 14px;
+    }
+    .form-dashboard-select {
+        padding: 4px 16px;
+    }
+    .custom-dropdown::after {
+        font-size: 16px;
+        right: 5px;
+        font-weight: 600;
+    }
+    .card-dashboard .custom-tab {
+        font-size: 13px;
+        padding: 4px 10px;
+        margin: 2px 2px;
+    }
+    .img-dashboard{
+        width: 35px;
+        height: 35px;
+    }
+    .card-dashboard h3 {
+        font-size: 28px;
+    }
+    .card-dashboard p {
+        font-size: 13px;
+    }
 
 }
 
 @media (min-width: 320px) and (max-width: 429px) {
-    /* ################## Navbar ################## */
-    
+    .header-logo {
+        height: 50px;
+    }
+    .navbar-toggler{
+        padding: 5px;
+    }
+    .nav-title {
+        margin: 0px 3px;
+    }
+    .btn-warning{
+        padding: 2px 4px;
+    }
+    .carousel-caption h2 {
+        font-size: 26px;
+    }
+    .carousel-caption p {
+        font-size: 14px;
+    }
+    .carousel-caption a {
+        margin-top: 0px;
+        font-size: 13px;
+        padding: 3px 12px;
+    }
+    .slider-container {
+        padding: 8px 0;
+    }
+    .feature-card {
+        padding: 10px 18px;
+    }
+    .feature-card p {
+        margin-bottom: 14px;
+    }    
+    .contact{
+        margin-top: 0px;
+    }
+    .copyright{
+        margin-top: 0px;
+    }
+    .btn-learn-more
+    {
+        font-size: 14px;
+        padding: 4px 14px;
+    }
+    .section-title {
+        font-size: 20px !important;
+        margin-bottom: 10px;
+    }
+    .section-heading {
+        font-size: 22px !important;
+        margin: 12px 0px;
+        border-bottom: 2px solid #feb440;
+        padding-bottom: 8px;
+    }
+    .navbar{
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+    .carousel-caption {
+        padding: 0px;
+    }
+
+    .section-heading::before, .section-heading::after{
+        display: none;
+    }
+    .section-content {
+        font-size: 14px !important;
+        margin-bottom: 16px;
+    }
+    .how-it-works-carousel .owl-carousel .item {
+        padding: 24px 30px;
+    }
+    .how-it-works-carousel .tab-container {
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+    .how-it-works-carousel .tab {
+        font-size: 14px;
+        padding: 5px 12px;
+    }
+    .how-it-works-carousel h3 {
+        font-size: 18px;
+        margin-bottom: 14px;
+    }
+    .how-it-works-carousel p {
+        font-size: 13px;
+    }
+    .list-style{
+        padding-left: 4px !important;
+    }
+    .how-it-works-carousel .pagination {
+        margin-top: 20px;
+    }
+    .how-it-works-carousel .pagination span {
+        font-size: 16px;
+        padding: 5px 12px;
+    }
+    .btn-about-cms {
+        font-size: 15px;
+        padding: 4px 10px;
+    }
+    .icon-box{
+        padding: 24px;
+    }
+    .icon-border {
+        padding: 10px;
+    }
+    .process-card-1 img {
+        height: 50px;
+    }
+    .process-card-2 img {
+        height: 50px;
+    }
+    .process-card-1 p {
+        font-size: 18px;
+        margin-top: 14px;
+    }
+    .process-card-2 p {
+        font-size: 18px;
+        margin-top: 14px;
+    }
+    .process-card-1::after {
+        width: 70px;
+        height: 30px;
+    }
+    .process-card-2::after {
+        width: 70px;
+        height: 30px;
+    }
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 34px;
+        top: -30px;
+    }
+    .footer-title {
+        font-size: 15px !important;
+    }
+    .nav-item-footer .nav-link-footer {
+        font-size: 13px !important;
+    }
+    footer .contact p {
+        font-size: 13px !important;
+    }
+    .footer-search .search input {
+        height: 40px;
+        text-indent: 0px;
+    }
+    .footer-search .search button {
+        height: 31px;
+        width: 68px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    footer .social-icon .icon {
+        height: 25px;
+        width: 25px;
+    }
+    .form-control {
+        font-size: 13px !important;
+    }
+    .card-inner h5 {
+        font-size: 20px;
+    }
+    .btn-dasboard {
+        font-size: 13px;
+        padding: 4px 12px;
+    }
+    .card-inner {
+        padding: 14px 14px;
+    }
+    .form-dashboard-select {
+        padding: 4px 16px;
+    }
+    .custom-dropdown::after {
+        font-size: 16px;
+        right: 5px;
+        font-weight: 600;
+    }
+    .card-dashboard .custom-tab {
+        font-size: 12px;
+        padding: 4px 10px;
+        margin: 2px 2px;
+    }
+    .img-dashboard{
+        width: 35px;
+        height: 35px;
+    }
+    .card-dashboard h3 {
+        font-size: 28px;
+    }
+    .card-dashboard p {
+        font-size: 13px;
+    }
+    .bread-heading {
+        font-size: 26px;
+    }
 }
 
 @media (min-width: 320px) and (max-width: 375px) {
-    /* ################## Navbar ################## */
+    .header-logo {
+        height: 45px;
+    }
+    .navbar-toggler{
+        padding: 3px;
+    }
+    .nav-title {
+        margin: 0px 3px;
+    }
+    .btn-warning{
+        padding: 2px 3px;
+        font-size: 13px;
+    }
+    .carousel-caption h2 {
+        font-size: 26px;
+    }
+    .carousel-caption p {
+        font-size: 14px;
+    }
+    .carousel-caption a {
+        margin-top: 0px;
+        font-size: 13px;
+        padding: 3px 12px;
+    }
+    .slider-container {
+        padding: 8px 0;
+    }
+    .feature-card {
+        padding: 10px 18px;
+    }
+    .feature-card p {
+        margin-bottom: 14px;
+    }    
+    .contact{
+        margin-top: 0px;
+    }
+    .copyright{
+        margin-top: 0px;
+    }
+    .btn-learn-more
+    {
+        font-size: 14px;
+        padding: 4px 14px;
+    }
+    .section-title {
+        font-size: 20px !important;
+        margin-bottom: 10px;
+    }
+    .section-heading {
+        font-size: 22px !important;
+        margin: 12px 0px;
+        border-bottom: 2px solid #feb440;
+        padding-bottom: 8px;
+    }
+    .navbar{
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+    .carousel-caption {
+        padding: 0px;
+    }
+    .section-heading::before, .section-heading::after{
+        display: none;
+    }
+    .section-content {
+        font-size: 14px !important;
+        margin-bottom: 16px;
+    }
+    .how-it-works-carousel .owl-carousel .item {
+        padding: 24px 30px;
+    }
+    .how-it-works-carousel .tab-container {
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+    .how-it-works-carousel .tab {
+        font-size: 14px;
+        padding: 5px 12px;
+    }
+    .how-it-works-carousel h3 {
+        font-size: 18px;
+        margin-bottom: 14px;
+    }
+    .how-it-works-carousel p {
+        font-size: 13px;
+    }
+    .list-style{
+        padding-left: 4px !important;
+    }
+    .how-it-works-carousel .pagination {
+        margin-top: 20px;
+    }
+    .how-it-works-carousel .pagination span {
+        font-size: 16px;
+        padding: 5px 12px;
+    }
+    .btn-about-cms {
+        font-size: 15px;
+        padding: 4px 10px;
+    }
+
+    .icon-border {
+        padding: 8px;
+    }
+    .icon-box {
+        padding: 18px;
+    }
+    .process-card-1 img {
+        height: 48px;
+    }
+    .process-card-2 img {
+        height: 48px;
+    }
+    .process-card-1 p {
+        font-size: 15px;
+        margin-top: 12px;
+    }
+    .process-card-2 p {
+        font-size: 15px;
+        margin-top: 12px;
+    }
+    .process-card-1::after {
+        width: 53px;
+        height: 18px;
+    }
+    .process-card-2::after {
+        width: 53px;
+        height: 18px;
+    }
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 34px;
+        top: -30px;
+    }
+    .footer-title {
+        font-size: 15px !important;
+    }
+    .nav-item-footer .nav-link-footer {
+        font-size: 13px !important;
+    }
+    footer .contact p {
+        font-size: 13px !important;
+    }
+    .footer-search .search input {
+        height: 40px;
+        text-indent: 0px;
+    }
+    .footer-search .search button {
+        height: 31px;
+        width: 68px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    footer .social-icon .icon {
+        height: 25px;
+        width: 25px;
+    }
+    .form-control {
+        font-size: 13px !important;
+    }
+    .card-inner h5 {
+        font-size: 20px;
+    }
+    .btn-dasboard {
+        font-size: 13px;
+        padding: 4px 12px;
+    }
+    .card-inner {
+        padding: 14px 14px;
+    }
+    .form-dashboard-select {
+        padding: 4px 16px;
+    }
+    .custom-dropdown::after {
+        font-size: 16px;
+        right: 5px;
+        font-weight: 600;
+    }
+    .card-dashboard .custom-tab {
+        font-size: 12px;
+        padding: 4px 10px;
+        margin: 2px 2px;
+    }
+    .img-dashboard{
+        width: 35px;
+        height: 35px;
+    }
+    .card-dashboard h3 {
+        font-size: 28px;
+    }
+    .card-dashboard p {
+        font-size: 13px;
+    }
+    .bread-heading {
+        font-size: 26px;
+    }
     
 }
 
 @media (max-width: 320px) {
-    /* ################## Navbar ################## */
-   
+    .header-logo {
+        height: 34px;
+    }
+    .navbar-toggler{
+        padding: 2px;
+    }
+    .nav-title {
+        margin: 0px 3px;
+    }
+    .navbar-toggler-icon {
+        width: 1.1em;
+        height: 1.1em;
+    }
+    .top-li {
+        font-size: 12px !important;
+    }
+    .top-li-line{
+        display: none;
+    }
+    .btn-warning{
+        padding: 2px 3px;
+        font-size: 12px;
+    }
+    .carousel-caption h2 {
+        font-size: 22px;
+    }
+    .carousel-caption p {
+        font-size: 12px;
+    }
+    .carousel-caption a {
+        margin-top: 0px;
+        font-size: 12px;
+        padding: 3px 12px;
+    }
+    .slider-container {
+        padding: 8px 0;
+    }
+    .feature-card {
+        padding: 10px 18px;
+    }
+    .feature-card p {
+        margin-bottom: 14px;
+    }    
+    .contact{
+        margin-top: 0px;
+    }
+    .copyright{
+        margin-top: 0px;
+    }
+    .btn-learn-more
+    {
+        font-size: 14px;
+        padding: 4px 14px;
+    }
+    .section-title {
+        font-size: 20px !important;
+        margin-bottom: 10px;
+    }
+    .section-heading {
+        font-size: 22px !important;
+        margin: 12px 0px;
+        border-bottom: 2px solid #feb440;
+        padding-bottom: 8px;
+    }
+    .navbar{
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+    .carousel-caption {
+        padding: 0px;
+    }
+    .section-heading::before, .section-heading::after{
+        display: none;
+    }
+    .section-content {
+        font-size: 13px !important;
+        margin-bottom: 16px;
+    }
+    .how-it-works-carousel .owl-carousel .item {
+        padding: 24px 30px;
+    }
+    .how-it-works-carousel .tab-container {
+        gap: 4px;
+        margin-bottom: 10px;
+    }
+    .how-it-works-carousel .tab {
+        font-size: 13px;
+        padding: 3px 6px;
+        border-radius: 8px;
+    }
+    .how-it-works-carousel h3 {
+        font-size: 18px;
+        margin-bottom: 14px;
+    }
+    .how-it-works-carousel p {
+        font-size: 13px;
+    }
+    .list-style{
+        padding-left: 4px !important;
+    }
+    .how-it-works-carousel .pagination {
+        margin-top: 20px;
+    }
+    .how-it-works-carousel .pagination span {
+        font-size: 16px;
+        padding: 5px 12px;
+    }
+    .btn-about-cms {
+        font-size: 13px;
+        padding: 4px 8px;
+    }
+    .icon-border {
+        padding: 6px;
+    }
+    .icon-box {
+        padding: 18px;
+    }
+    .process-card-1 img {
+        height: 45px;
+    }
+    .process-card-2 img {
+        height: 45px;
+    }
+    .process-card-1 p {
+        font-size: 15px;
+        margin-top: 12px;
+    }
+    .process-card-2 p {
+        font-size: 15px;
+        margin-top: 12px;
+    }
+    .process-card-1::after {
+        width: 50px;
+        height: 18px;
+    }
+    .process-card-2::after {
+        width: 50px;
+        height: 18px;
+    }
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 34px;
+        top: -30px;
+    }
+    .footer-title {
+        font-size: 15px !important;
+    }
+    .nav-item-footer .nav-link-footer {
+        font-size: 13px !important;
+    }
+    footer .contact p {
+        font-size: 13px !important;
+    }
+    .footer-search .search input {
+        height: 40px;
+        text-indent: 0px;
+    }
+    .footer-search .search button {
+        height: 31px;
+        width: 68px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    footer .social-icon .icon {
+        height: 25px;
+        width: 25px;
+    }
+    .form-control {
+        font-size: 13px !important;
+    }
+    .card-inner h5 {
+        font-size: 20px;
+    }
+    .btn-dasboard {
+        font-size: 13px;
+        padding: 4px 12px;
+    }
+    .card-inner {
+        padding: 14px 14px;
+    }
+    .form-dashboard-select {
+        padding: 4px 16px;
+    }
+    .custom-dropdown::after {
+        font-size: 16px;
+        right: 5px;
+        font-weight: 600;
+    }
+    .card-dashboard .custom-tab {
+        font-size: 12px;
+        padding: 4px 10px;
+        margin: 2px 2px;
+    }
+    .img-dashboard{
+        width: 35px;
+        height: 35px;
+    }
+    .card-dashboard h3 {
+        font-size: 28px;
+    }
+    .card-dashboard p {
+        font-size: 13px;
+    }
+    .bread-heading {
+        font-size: 26px;
+    }
+    
 }

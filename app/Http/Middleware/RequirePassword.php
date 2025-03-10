@@ -78,7 +78,7 @@ class RequirePassword
             }
 
             $guard  = Helper::getGuardFromURL($request);
-            $guard  = $guard == 'web' ? 'admin' : $guard;
+            $guard  = $guard == 'admin' ? 'admin' : $guard;
 
             return $this->responseFactory->redirectGuest(
                 $this->urlGenerator->route($redirectToRoute ?: 'password.confirm',  $guard)

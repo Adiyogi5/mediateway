@@ -1,4 +1,4 @@
-@extends('layouts.'.($user['route'] != 'web' ? $user['route'].'_': '').'app')
+@extends('layouts.'.($user['route'] != 'admin' ? $user['route'].'_': '').'app')
 
 @section('content')
 
@@ -96,7 +96,7 @@
             </div>
             <div class="card-body">
                 <form method="POST" id="passUpdate"
-                    action="{{ route(($user['route'] != 'web' ? $user['route'].'.' : '' ).'update-password') }}">
+                    action="{{ route(($user['route'] != 'admin' ? $user['route'].'.' : '' ).'update-password') }}">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label" for="old_password">Old Password</label>
@@ -154,7 +154,7 @@
             var formData = new FormData();
             formData.append('image', this.files[0]);
             $.ajax({
-                url: "{{ route(($user['route'] != 'web' ? $user['route'].'.' : '' ).'update-image') }}",
+                url: "{{ route(($user['route'] != 'admin' ? $user['route'].'.' : '' ).'update-image') }}",
                 type: 'POST',
                 data: formData,
                 contentType: false,

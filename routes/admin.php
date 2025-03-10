@@ -7,6 +7,8 @@ use App\Http\Controllers\CmsController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\FeatureController;
+use App\Http\Controllers\HomeCmsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\StateController;
@@ -68,6 +70,17 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::delete('cities', 'delete')->middleware('isAllow:106,can_delete');
     });
 
+    // ----------------------- Home CMS Routes ----------------------------------------------------
+    Route::controller(HomeCmsController::class)->group(function () {
+        Route::get('homecms', 'index')->name('homecms')->middleware('isAllow:104,can_view');
+        Route::get('homecms/add', 'add')->name('homecms.add')->middleware('isAllow:104,can_add');
+        Route::post('homecms/add', 'save')->name('homecms.add')->middleware('isAllow:104,can_add');
+        Route::get('homecms/{id}', 'edit')->name('homecms.edit')->middleware('isAllow:104,can_edit');
+        Route::post('homecms', 'slug')->name('homecms.slug')->middleware('isAllow:104,can_edit');
+        Route::post('homecms/{id}', 'update')->name('homecms.edit')->middleware('isAllow:104,can_edit');
+        Route::delete('homecms', 'delete')->name('homecms')->middleware('isAllow:104,can_delete');
+    });
+
     // ----------------------- CMS Routes ----------------------------------------------------
     Route::controller(CmsController::class)->group(function () {
         Route::get('cms', 'index')->name('cms')->middleware('isAllow:104,can_view');
@@ -93,6 +106,16 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::post('faqs-list', 'save')->middleware('isAllow:110,can_add');
         Route::put('faqs-list', 'update')->middleware('isAllow:110,can_edit');
         Route::delete('faqs-list', 'delete')->middleware('isAllow:110,can_delete');
+    });
+
+    // ----------------------- Features Routes ----------------------------------------------------
+    Route::controller(FeatureController::class)->group(function () {
+        Route::get('features', 'index')->name('features')->middleware('isAllow:111,can_view');
+        Route::get('features/add', 'add')->name('features.add')->middleware('isAllow:111,can_add');
+        Route::post('features/add', 'save')->name('features.add')->middleware('isAllow:111,can_add');
+        Route::get('features/{id}', 'edit')->name('features.edit')->middleware('isAllow:111,can_edit');
+        Route::post('features/{id}', 'update')->name('features.edit')->middleware('isAllow:111,can_edit');
+        Route::delete('features', 'delete')->name('features.delete')->middleware('isAllow:111,can_delete');
     });
 
     // ----------------------- Testimonial Routes ----------------------------------------------------
