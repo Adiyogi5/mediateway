@@ -848,7 +848,7 @@ footer .social-icon .icon {
 .card-inner {
     box-shadow: -4px 4px 7.8px 0px #00000040;
     border: 1px solid #0000003d;
-    padding: 24px 22px;
+    padding: 18px 18px;
     border-radius: 8px;
     background-color: white;
 }
@@ -1080,6 +1080,21 @@ div.dataTables_wrapper div.dataTables_info {
     border: 2px solid #212529 !important;
     color: #212529;
 }
+.btn-secondary:focus, .btn-secondary:hover {
+    color: #fff !important;
+    background-color: #212529 !important;
+    box-shadow: none;
+    border-color: #212529 !important;
+}
+.dataTables_wrapper .dataTables_length select.form-control {
+    padding: 6px 16px 6px 12px;
+}
+.help {
+    display: block;
+    color: gray;
+    width: 100%;
+    font-size: 13px;
+}
 .custom-file-upload {
     display: inline-flex;
     align-items: center;
@@ -1199,7 +1214,48 @@ div.dataTables_wrapper div.dataTables_info {
 #multi-step-form {
     overflow-x: hidden;
 }
-
+table.dataTable thead>tr>td.sorting, table.dataTable thead>tr>td.sorting_asc, table.dataTable thead>tr>td.sorting_desc, table.dataTable thead>tr>th.sorting, table.dataTable thead>tr>th.sorting_asc, table.dataTable thead>tr>th.sorting_desc {
+    padding-right: 16px;
+}
+.table>thead>tr>th {
+    text-transform: initial;
+    font-weight: 600;
+    border-top: none;
+    background: rgba(234, 241, 255, .74);
+    border-right: none;
+    border-left: none;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding: 10px 18px 10px 16px;
+    color: #515365;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+.table>tbody>tr>td {
+    font-size: 13px;
+    padding: 10px 18px 10px 18px;
+}
+.dataTables_wrapper {
+    padding: 0 !important;
+}
+.dataTables_wrapper .form-control
+{
+    font-size: 13px !important;
+    background-color: #f3f3f3 !important;
+    border: 1px solid #00000036 !important;
+    height: auto !important;
+}
+div.dataTables_wrapper div.dataTables_info {
+    padding: 6px 16px !important;
+}
+.paging_simple_numbers .pagination .page-link {
+    height: 26px;
+    min-width: 26px;
+    line-height: 16px;
+}
 .btn-warning-custom {
     font-family: 'Inter';
     font-size: 16px;
@@ -1210,7 +1266,12 @@ div.dataTables_wrapper div.dataTables_info {
     color: #000000 !important;
     padding: 6px 22px;
 }
-
+.page-link{
+    border: none !important;
+}
+.error{
+    color: #D43131 !important;
+}
 .error-text{
     font-family: 'Inter';
     font-size: 12px;

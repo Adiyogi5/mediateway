@@ -57,11 +57,11 @@ foreach ($guards as $guard) {
                 </li>
 
                 @if (auth('individual')->check())
-                <li class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.file-case') ? 'text-white bg-lime' : '' }}">
-                    <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.file-case') ? 'text-white bg-lime' : '' }}"
+                <li class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.case.filecaseview') ? 'text-white bg-lime' : '' }}">
+                    <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.case.filecaseview') ? 'text-white bg-lime' : '' }}"
                         aria-current="page"
-                        style="{{ request()->routeIs($currentGuard . '.file-case') ? 'color:white !important;;' : '' }}"
-                        href="{{ route($currentGuard . '.' . 'file-case') }}"><i class="fa-solid fa-cash-register faa-profile"></i> File A Case</a>
+                        style="{{ request()->routeIs($currentGuard . '.case.filecaseview') ? 'color:white !important;;' : '' }}"
+                        href="{{ route($currentGuard . '.' . 'case.filecaseview') }}"><i class="fa-solid fa-cash-register faa-profile"></i> File A Case</a>
                 </li>
                 @endif
 
@@ -80,11 +80,11 @@ foreach ($guards as $guard) {
                         href="{{ route($currentGuard . '.' . 'staffs') }}"><i class="fa-solid fa-users faa-profile"></i> Staffs</a>
                 </li>
 
-                <li class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.filecase') ? 'text-white bg-lime' : '' }}">
-                    <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.filecase') ? 'text-white bg-lime' : '' }}"
+                <li class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.cases.filecaseview') ? 'text-white bg-lime' : '' }}">
+                    <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.cases.filecaseview') ? 'text-white bg-lime' : '' }}"
                         aria-current="page"
-                        style="{{ request()->routeIs($currentGuard . '.filecase') ? 'color:white !important;;' : '' }}"
-                        href="{{ route($currentGuard . '.' . 'filecase') }}"><i class="fa-solid fa-cash-register faa-profile"></i> File Cases</a>
+                        style="{{ request()->routeIs($currentGuard . '.cases.filecaseview') ? 'color:white !important;;' : '' }}"
+                        href="{{ route($currentGuard . '.' . 'cases.filecaseview') }}"><i class="fa-solid fa-cash-register faa-profile"></i> File Cases</a>
                 </li>
                 @endif
                 

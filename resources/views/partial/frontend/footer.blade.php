@@ -65,7 +65,7 @@
                         </li>
                         @if (auth('individual')->check())
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('individual.file-case') }}" class="nav-link-footer">
+                            <a href="{{ route('individual.case.filecase') }}" class="nav-link-footer">
                                 FILE A CASE/DISPUTE
                             </a>
                         </li>

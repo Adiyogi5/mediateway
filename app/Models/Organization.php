@@ -21,6 +21,7 @@ class Organization extends Authenticatable
     }
 
     protected $fillable = [
+        'parent_id',
         'slug',
         'organization_role_id',
         'name',

@@ -133,6 +133,7 @@
                             </div>
                             <div class="col-lg-12 mt-3 d-flex justify-content-start">
                                 <input type="hidden" name="table" value="organizations">
+                                <input type="hidden" name="organization_parent_id" value="{{$organization_authData->id}}">
                                 <button class="btn btn-secondary submitbtn" type="submit">Add</button>
                             </div>
                         </form>

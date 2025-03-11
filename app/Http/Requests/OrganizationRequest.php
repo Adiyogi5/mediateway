@@ -66,9 +66,11 @@ class OrganizationRequest extends FormRequest
 
     public function filter($organization = null): array
     {
+       
         $data = $this->only(['name', 'status', 'email', 'mobile']);
+        $data['parent_id'] = $this->organization_parent_id;
         $data['organization_role_id'] = $this->role_id;
-
+    
         if ($this->filled('password')) {
             $data['password']  = Hash::make($this->password);
         }

@@ -39,7 +39,7 @@
                                 <select name="role_id" class="form-select" id="role_id">
                                     <option value="">Please Select Role</option>
                                     @foreach ($roles as $role)
-                                        <option name="role_id" @selected(old('role_id', $organization['role_id']) == $role['id']) value="{{ $role['id'] }}">
+                                        <option name="role_id" @selected(old('role_id', $organization['organization_role_id']) == $role['id']) value="{{ $role['id'] }}">
                                             {{ $role['name'] }}
                                         </option>
                                     @endforeach
@@ -123,6 +123,7 @@
                             </div>
                             <div class="col-lg-12 mt-3 d-flex justify-content-start">
                                 <input type="hidden" name="table" value="organizations">
+                                <input type="hidden" name="organization_parent_id" value="{{$organization_authData->id}}">
                                 <button class="btn btn-secondary submitbtn" type="submit">Update</button>
                             </div>
                         </form>

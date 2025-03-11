@@ -12,6 +12,7 @@ class FileCase extends Model
     use HasFactory, SoftDeletes, CustomScopes;
 
     protected $fillable = [
+        'user_type',
         'individual_id',
         'claimant_first_name',
         'claimant_middle_name',
@@ -42,6 +43,7 @@ class FileCase extends Model
         'language',
         'agreement_exist',
         'upload_evidence',
+        'status',
     ];
 
 

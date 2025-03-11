@@ -32,8 +32,13 @@ Route::name('individual.')->middleware(['ensure.individual.session'])->prefix('i
     });
 
     Route::controller(FileCaseController::class)->group(function () {
-        Route::get('file-case', 'index')->name('file-case');
-        Route::post('register-case', 'registerCase')->name('register-case');
+        Route::get('filecaseview', 'index')->name('case.filecaseview');
+        Route::get('filecaseview/{id}', 'edit')->name('case.filecaseview.edit');
+        Route::post('filecaseview/{id}', 'update')->name('case.filecaseview.edit');
+        Route::delete('filecaseview', 'delete')->name('case.filecaseview.delete');
+
+        Route::get('filecase', 'filecase')->name('case.filecase');
+        Route::post('register-case', 'registerCase')->name('case.registercase');
     });
 
     Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');

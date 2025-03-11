@@ -28,7 +28,8 @@ class StaffsController extends Controller
     {
         if ($request->ajax()) {
             $data = Organization::select('organizations.id', 'organizations.name', 'organizations.email', 'organizations.slug', 'organizations.mobile', 'organizations.image', 'organizations.status', 'organizations.created_at', 'organization_roles.name as organization_role_name')
-                ->whereNot('organizations.id', 1)
+                ->where('organizations.organization_role_id', '!=', 1)
+                ->where('organizations.parent_id', auth()->id())
                 ->leftJoin('organization_roles', 'organization_roles.id', '=', 'organizations.organization_role_id');
             return Datatables::of($data)
                 ->editColumn('image', function ($row) {
@@ -77,13 +78,14 @@ class StaffsController extends Controller
     public function add(): View
     {
         $title = 'Add Staff';
+        $organization_authData = auth('organization')->user();
+
         $roles = OrganizationRole::active()->whereNot('id', 1)->get();
-        return view('organization.staffs.add', compact('roles','title'));
+        return view('organization.staffs.add', compact('roles','title','organization_authData'));
     }
 
     public function save(OrganizationRequest $request): RedirectResponse
     {
-        // dd($request->all());
         DB::transaction(function () use ($request) {
             $organization = Organization::create($request->filter());
             $data = OrganizationRolePermission::where('organization_role_id', $request->role_id)->get()->map(function ($value) use ($organization) {
@@ -107,12 +109,14 @@ class StaffsController extends Controller
     public function edit($slug): View|RedirectResponse
     {
         $title = 'Edit Staff';
+        $organization_authData = auth('organization')->user();
         $roles  = OrganizationRole::active()->whereNot('id', 1)->get();
         $organization   = Organization::slug($slug);
+        
         if (!$organization) {
             return to_route('organization.staffs')->withError('Organization Staff Not Found..!!');
         }
-        return view('organization.staffs.edit', compact('organization', 'roles','title'));
+        return view('organization.staffs.edit', compact('organization', 'roles','title','organization_authData'));
     }
     
     public function update(OrganizationRequest $request, $slug): RedirectResponse

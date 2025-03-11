@@ -67,6 +67,7 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
                 'mobile' => $request->mobile,
                 'otp' => $request->otp, // Store OTP for verification
+                'organization_role_id' => 1,
             ]);
         }
 

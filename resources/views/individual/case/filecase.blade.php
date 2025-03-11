@@ -60,7 +60,7 @@
                             </div>
                         </div>
 
-                        <form id="multiStepForm" method="POST" action="{{ route('individual.register-case') }}"
+                        <form id="multiStepForm" method="POST" action="{{ route('individual.case.registercase') }}"
                             enctype="multipart/form-data">
                             @csrf
                             <div class="step step-1">
@@ -587,7 +587,7 @@
                 let formData = new FormData(this);
 
                 $.ajax({
-                    url: "{{ route('individual.register-case') }}",
+                    url: "{{ route('individual.case.registercase') }}",
                     method: "POST",
                     data: formData,
                     processData: false,
@@ -602,6 +602,9 @@
                         $(".submit-btn").prop("disabled", false);
                     },
                     error: function(response) {
+                        $(".step-5").hide(); // Hide Step 4
+                        $(".step-4").show(); // Show Step 5
+
                         // Show error toast
                         toastr.error("Something went wrong. Please try again.");
 

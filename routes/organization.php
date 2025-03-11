@@ -55,9 +55,14 @@ Route::name('organization.')->middleware(['ensure.organization.session'])->prefi
     });
 
     Route::controller(FileCaseController::class)->group(function () {
-        Route::get('filecase', 'index')->name('filecase');
-        Route::post('/import-filecases', 'importExcel')->name('filecases.import');
-        Route::get('/download-sample', 'downloadSample')->name('filecase.sample');
+        Route::get('filecaseview', 'index')->name('cases.filecaseview');
+        Route::get('filecaseview/{id}', 'edit')->name('cases.filecaseview.edit');
+        Route::post('filecaseview/{id}', 'update')->name('cases.filecaseview.edit');
+        Route::delete('filecaseview', 'delete')->name('cases.filecaseview.delete');
+
+        Route::get('filecase', 'filecase')->name('cases.filecase');
+        Route::post('/import-filecases', 'importExcel')->name('cases.filecases.import');
+        Route::get('/download-sample', 'downloadSample')->name('cases.filecase.sample');
 
     });
 
