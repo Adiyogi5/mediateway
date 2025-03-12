@@ -997,7 +997,10 @@ select.form-control.form-custom {
 .btn-group .dropdown-menu a.dropdown-item:hover svg {
     color: #4361ee;
 }
-.dropdown:not(.custom-dropdown-icon):not(.custom-dropdown) .dropdown-menu {
+.navbar .navbar-item .nav-item.user-profile-dropdown .dropdown-menu.show{
+    transform: translate(0px, 2px) !important;
+}
+/* .dropdown:not(.custom-dropdown-icon):not(.custom-dropdown) .dropdown-menu {
     border: 1px solid #e0e6ed;
     z-index: 899;
     box-shadow: none;
@@ -1013,7 +1016,7 @@ select.form-control.form-custom {
     border-radius: 8px;
     background: #fff;
     box-shadow: none;
-}
+} */
 .dropdown:not(.custom-dropdown-icon):not(.custom-dropdown)
     .dropdown-menu.right {
     right: auto;

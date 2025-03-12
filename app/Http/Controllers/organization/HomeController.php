@@ -19,11 +19,12 @@ class HomeController extends Controller
     {
         $title = 'Dashboard';
         $organization = auth('organization')->user();
-
+        
         $organizationId = $organization ? $organization->organizationId : null;
         $organizationSlug = $organization ? $organization->slug : null;
-
+        
         $organizations = Organization::where('slug', $organizationSlug)->get();
+        
         if ($organizations->count()) {
             return view('organization.dashboard', compact('organizations','title'));
         } else {

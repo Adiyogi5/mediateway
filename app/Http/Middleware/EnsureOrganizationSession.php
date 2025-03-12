@@ -16,7 +16,7 @@ class EnsureOrganizationSession
                 $request->session()->put('slug', $firstOrganization->slug);
             }
         }
-
+       
         return $next($request);
     }
 }

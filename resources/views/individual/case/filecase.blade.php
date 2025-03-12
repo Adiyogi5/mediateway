@@ -17,6 +17,15 @@
 
                 <div class="col-md-9 col-12 mt-md-0 mt-3">
                     <div class="card-inner form-validate pt-5 pb-5">
+                        <div class="col-md-12 col-12 pb-4">
+                            <span class="d-flex justify-content-between align-item-center border-bottom border-2 pb-2">
+                                <b class="text-dark my-auto">Please fill out this form and make the payment for the case file.</b>
+                                <a href="{{ route('individual.case.filecaseview') }}" class="btn btn-outline-secondary py-1">
+                                    <i class="fa fa-list me-1"></i>
+                                    File Case List
+                                </a>
+                            </span>
+                        </div>
                         <div class="progress mt-5 px-1" style="height: 4px;">
                             <div class="progress-bar" role="progressbar" style="width: 20%;" aria-valuenow="0"
                                 aria-valuemin="0" aria-valuemax="100"></div>

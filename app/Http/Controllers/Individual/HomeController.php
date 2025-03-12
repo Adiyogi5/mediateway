@@ -18,7 +18,6 @@ class HomeController extends Controller
     public function index(Request $request): View | RedirectResponse
     {
         $title = 'Individual Dashboard';
-
         $individual = auth('individual')->user();
 
         $individualId = $individual ? $individual->individualId : null;

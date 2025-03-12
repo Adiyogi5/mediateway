@@ -148,8 +148,9 @@ body {
 }
 .dropdown-item {
     color: #565656 !important;
-    padding: 2px 8px !important;
+    padding: 3px 8px !important;
     text-align: start !important;
+    font-size: 13px !important;
 }
 /* Rotate the arrow when hovered */
 .nav-item.dropdown:hover .dropdown-arrow svg {
