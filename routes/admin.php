@@ -1,11 +1,15 @@
 <?php
 
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\BookAppointmentController;
+use App\Http\Controllers\CallBackController;
+use App\Http\Controllers\CaseAssignController;
 use App\Routes\Profile;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CmsController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\HomeCmsController;
@@ -52,6 +56,15 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::delete('users', 'delete')->name('users')->middleware('isAllow:103,can_delete');
         Route::get('users/permission/{id}', 'permission')->name('users.permission.view')->middleware('isAllow:103,can_edit');
         Route::put('users/permission', 'permission_update')->name('users.permission.update')->middleware('isAllow:103,can_edit');
+    });
+
+     // ----------------------- CaseAssign Routes ----------------------------------------------------
+     Route::controller(CaseAssignController::class)->group(function () {
+        Route::get('caseassign', 'index')->name('caseassign')->middleware('isAllow:111,can_view');
+        Route::get('caseassign/{id}', 'assign')->name('caseassign.assign')->middleware('isAllow:111,can_edit');
+        Route::put('caseassign/{id}', 'update')->name('caseassign.update')->middleware('isAllow:111,can_edit');
+        Route::delete('caseassign', 'delete')->name('caseassign.delete')->middleware('isAllow:111,can_delete');
+
     });
 
     // ----------------------- States Routes ----------------------------------------------------
@@ -136,6 +149,27 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::get('clients/{id}', 'edit')->name('clients.edit')->middleware('isAllow:111,can_edit');
         Route::post('clients/{id}', 'update')->name('clients.edit')->middleware('isAllow:111,can_edit');
         Route::delete('clients', 'delete')->name('clients.delete')->middleware('isAllow:111,can_delete');
+    });
+
+    // ----------------------- Contact Inquiries Routes ---------------------------------------------
+    Route::controller(ContactUsController::class)->group(function () {
+        Route::get('inquiries', 'index')->name('inquiries')->middleware('isAllow:111,can_view');
+        Route::get('inquiries/{id}', 'show')->name('inquiries.show')->middleware('isAllow:111,can_view');
+        Route::delete('inquiries/{id}', 'destroy')->name('inquiries.delete')->middleware('isAllow:111,can_delete');
+    });
+
+    // ----------------------- Book Appointment Routes ---------------------------------------------
+    Route::controller(BookAppointmentController::class)->group(function () {
+        Route::get('bookappointments', 'index')->name('bookappointments')->middleware('isAllow:111,can_view');
+        Route::get('bookappointments/{id}', 'show')->name('bookappointments.show')->middleware('isAllow:111,can_view');
+        Route::delete('bookappointments/{id}', 'destroy')->name('bookappointments.delete')->middleware('isAllow:111,can_delete');
+    });
+
+    // ----------------------- Call Back Routes ---------------------------------------------
+    Route::controller(CallBackController::class)->group(function () {
+        Route::get('callbacks', 'index')->name('callbacks')->middleware('isAllow:111,can_view');
+        Route::get('callbacks/{id}', 'show')->name('callbacks.show')->middleware('isAllow:111,can_view');
+        Route::delete('callbacks/{id}', 'destroy')->name('callbacks.delete')->middleware('isAllow:111,can_delete');
     });
 
     Route::any('setting/{id}', [SettingController::class, 'setting'])->name('setting')->middleware('isAllow:101,can_view');

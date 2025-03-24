@@ -26,6 +26,14 @@ return [
         '2' => 'Office' 
     ],
 
+    'drp_type' => [
+        '1' => 'Arbitrator', 
+        '2' => 'Advocate',
+        '3' => 'Case Manager',
+        '4' => 'Mediator',
+        '5' => 'Conciliator'
+    ],
+
     'case_type' => [
         '1' => 'Civil', 
         '2' => 'Arbitration' ,

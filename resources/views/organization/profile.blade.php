@@ -46,63 +46,11 @@
                                         <i class="fas fa-circle text-dark faa-form-heading my-auto"></i> Personal Details
                                     </h4>
 
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <label class="form-label" for="name">First Name</label>
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <label class="form-label" for="name">Organization Name</label>
                                         <input type="text" name="name" class="form-control"
                                             value="{{ old('name', $organization->name) }}">
                                         @error('name')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <label class="form-label" for="middle_name">Middle Name</label>
-                                        <input type="text" name="middle_name" class="form-control"
-                                            value="{{ old('middle_name', $organization->middle_name) }}">
-                                        @error('middle_name')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <label class="form-label" for="last_name">Last Name</label>
-                                        <input type="text" name="last_name" class="form-control"
-                                            value="{{ old('last_name', $organization->last_name) }}">
-                                        @error('last_name')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <label class="form-label" for="dob">Date Of Birth</label>
-                                        <input type="date" name="dob" class="form-control"
-                                            value="{{ old('dob', $organization->dob) }}" max="{{ date('Y-m-d') }}">
-
-                                        @error('dob')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <label class="form-label" for="nationality">Nationality</label>
-                                        <input type="text" name="nationality" class="form-control"
-                                            value="{{ old('nationality', $organization->nationality) }}">
-                                        @error('nationality')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <label class="form-label" for="gender">Gender</label>
-                                        <select name="gender" class="form-control form-select">
-                                            <option value="">Select Gender</option>
-                                            <option value="Male"
-                                                {{ old('gender', $organization->gender) == 'Male' ? 'selected' : '' }}>Male
-                                            </option>
-                                            <option value="Female"
-                                                {{ old('gender', $organization->gender) == 'Female' ? 'selected' : '' }}>
-                                                Female
-                                            </option>
-                                        </select>
-
-                                        @error('gender')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
@@ -180,14 +128,6 @@
 
 
                                     <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="father_name">Father Name</label>
-                                        <input type="text" name="father_name" class="form-control"
-                                            value="{{ old('father_name', $organization->father_name) }}">
-                                        @error('father_name')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 col-12 mb-3">
                                         <label class="form-label" for="address1">Address Line 1</label>
                                         <input type="text" name="address1" class="form-control"
                                             value="{{ old('address1', $organization->address1) }}">
@@ -220,30 +160,6 @@
                                     @endif
 
 
-                                    <h4 class="mb-3 d-flex item-align-self">
-                                        <i class="fas fa-circle text-dark faa-form-heading my-auto"></i> Public Details
-                                    </h4>
-
-
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="profession">Profession</label>
-                                        <input type="text" name="profession" class="form-control"
-                                            value="{{ old('profession', $organization->profession) }}">
-                                        @error('profession')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="specialization">Add Case Type /
-                                            Specialization</label>
-                                        <select name="specialization" class="form-control form-select">
-                                            <option value="">Select Specialization</option>
-                                        </select>
-                                        @error('specialization')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
                                     <div class="col-12">
                                         <span class="top-li">
                                             If you are facing any problem please contact us at :-
@@ -270,15 +186,6 @@
                                                 </li>
                                             @endif
                                         </ul>
-                                        <span class="top-li">
-                                            Important Notes
-                                        </span><br>
-                                        <span class="top-li">
-                                            Public profile is subject to edit to enhance presentation but finalization only
-                                            after
-                                            DRP approval
-                                        </span>
-
                                         <div class="col-12">
                                             <div class="mt-3 form-check">
                                                 <input type="checkbox" name="termsandconditions" class="form-check-input">
@@ -298,46 +205,20 @@
                                 <div class="row">
                                     {{-- ########## Tab Two Start ##########  --}}
                                     <h4 class="mb-3 d-flex item-align-self">
-                                        <i class="fas fa-circle text-dark faa-form-heading my-auto"></i> Personal Details
+                                        <i class="fas fa-circle text-dark faa-form-heading my-auto"></i> Organization Details
                                     </h4>
 
                                     <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="university">University / Collage</label>
-                                        <input type="text" name="university" class="form-control"
-                                            value="{{ old('university', optional($organizationDetail)->university) }}">
-                                        @error('university')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="field_of_study">Field of study</label>
-                                        <input type="text" name="field_of_study" class="form-control"
-                                            value="{{ old('field_of_study', optional($organizationDetail)->field_of_study) }}">
-                                        @error('field_of_study')
+                                        <label class="form-label" for="organization_type">Organization Type</label>
+                                        <select name="organization_type" class="form-control form-select">
+                                            <option value="">Select Organization Type</option>
+                                        </select>
+                                        @error('organization_type')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
 
-
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="degree">Degree</label>
-                                        <input type="text" name="degree" class="form-control"
-                                            value="{{ old('degree', optional($organizationDetail)->degree) }}">
-                                        @error('degree')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="year">Year</label>
-                                        <input type="text" name="year" class="form-control"
-                                            value="{{ old('year', optional($organizationDetail)->year) }}">
-                                        @error('year')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-
-                                    <div class="col-md-6 col-12 mb-3">
+                                    <div class="col-md-12 col-12 mb-3">
                                         <label class="form-label" for="description">Description</label>
                                         <textarea rows="4" id="description" name="description" class="form-control">
                                 {{ old('description', optional($organizationDetail)->description) }}</textarea>
@@ -345,48 +226,7 @@
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="achievement_od_socities">Achievement and
-                                            Societies</label>
-                                        <textarea rows="4" id="achievement_od_socities" name="achievement_od_socities" class="form-control">
-                                {{ old('achievement_od_socities', optional($organizationDetail)->achievement_od_socities) }}</textarea>
-                                        @error('year')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-
-                                    <h4 class="mb-3 d-flex item-align-self">
-                                        <i class="fas fa-circle text-dark faa-form-heading my-auto"></i> Profession Details
-                                    </h4>
-
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="designation">Designation</label>
-                                        <input type="text" name="designation" class="form-control"
-                                            value="{{ old('designation', optional($organizationDetail)->designation) }}">
-                                        @error('designation')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="organization">Organization</label>
-                                        <input type="text" name="organization" class="form-control"
-                                            value="{{ old('organization', optional($organizationDetail)->organization) }}">
-                                        @error('organization')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="professional_degree">Profession / Degree </label>
-                                        <select name="professional_degree" class="form-control form-select">
-                                            <option value="">Select Profession / Degree</option>
-                                        </select>
-                                        @error('professional_degree')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
+                                   
                                     <div class="col-md-6 col-12 mb-3">
                                         <label class="form-label" for="registration_no">Registration No</label>
                                         <input type="text" name="registration_no" class="form-control"
@@ -396,40 +236,9 @@
                                         @enderror
                                     </div>
 
-
                                     <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="job_description">Job Description </label>
-                                        <input type="text" name="job_description" class="form-control"
-                                            value="{{ old('job_description', optional($organizationDetail)->job_description) }}">
-                                        @error('job_description')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="currently_working_here">Currently working
-                                            here</label>
-                                        <input type="text" name="currently_working_here" class="form-control"
-                                            value="{{ old('currently_working_here', optional($organizationDetail)->currently_working_here) }}">
-                                        @error('currently_working_here')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="years_of_experience">Years of experience</label>
-                                        <select name="years_of_experience" class="form-control form-select">
-                                            <option value="">Select Years of experience</option>
-                                        </select>
-                                        @error('years_of_experience')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-
-                                    <div class="col-12 mb-3">
-                                        <label class="form-label" for="registration_certificate">Attach Registration
-                                            Certificate</label>
+                                        <label class="form-label" for="registration_certificate">Registration
+                                            Certificate Name</label>
                                         <input type="text" name="registration_certificate" class="form-control"
                                             value="{{ old('registration_certificate', optional($organizationDetail)->registration_certificate) }}">
                                         @error('registration_certificate')
@@ -437,16 +246,12 @@
                                         @enderror
                                     </div>
                                     <ul class="list-styled">
-                                        <span class="top-li">Professional Application and certificate</span>
-                                        <li class="top-li ms-3">Professional App. ( Eg Bar Association , ADR Organization )
-                                        </li>
-                                        <li class="top-li ms-3">Certifications ( Eg Mediation Certification, ARBITRATOR
-                                            Certification, Concilator Certification )</li>
+                                        <span class="top-li">Attach Registration Certificate</span>
                                     </ul>
 
                                     <div class="col-md-6 col-12 mb-3">
                                         <label for="attach_registration_certificate" class="custom-file-upload">
-                                            <span style="font-weight: 500;">
+                                            <span style="font-weight: 500;" id="file-label">
                                                 <span style="border:2px solid black; border-radius:50%;padding: 1px;">➕</span> Upload Document</span>
                                         </label>
                                         <input type="file" id="attach_registration_certificate" name="attach_registration_certificate" hidden />
@@ -455,83 +260,20 @@
                                         @enderror
                                     </div>
                                     @if (optional($organizationDetail)->attach_registration_certificate)
+                                        @php
+                                            $filePath = asset('storage/' . $organizationDetail->attach_registration_certificate);
+                                            $fileExtension = pathinfo($organizationDetail->attach_registration_certificate, PATHINFO_EXTENSION);
+                                        @endphp
+
                                         <div class="mb-5">
-                                            <img src="{{ asset('storage/' . $organizationDetail->attach_registration_certificate) }}"
-                                                class="img-thumbnail" width="100" />
+                                            @if (in_array(strtolower($fileExtension), ['jpg', 'jpeg', 'png']))
+                                                <img src="{{ $filePath }}" class="img-thumbnail" width="100" />
+                                            @elseif (strtolower($fileExtension) == 'pdf')
+                                                <a href="{{ $filePath }}" target="_blank" class="btn btn-sm py-0 btn-dark">View PDF</a>
+                                            @endif
                                         </div>
                                     @endif
 
-
-                                    <h4 class="mb-3 d-flex item-align-self">
-                                        <i class="fas fa-circle text-dark faa-form-heading my-auto"></i> Summary of the
-                                        Experience
-                                        as a DRP if Any ( Arbitrator/Mediator/Concilitor )
-                                    </h4>
-
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="experience_in_the_field_of_drp">Experience in the
-                                            field
-                                            of
-                                            DRP ( Arbitrator/Mediator/Concilitor )</label>
-                                        <input type="text" name="experience_in_the_field_of_drp" class="form-control"
-                                            value="{{ old('experience_in_the_field_of_drp', optional($organizationDetail)->experience_in_the_field_of_drp) }}">
-                                        @error('experience_in_the_field_of_drp')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="areas_of_expertise">Areas of Expertise</label>
-                                        <select name="areas_of_expertise" class="form-control form-select">
-                                            <option value="">Select Areas of Expertise</option>
-                                        </select>
-                                        @error('areas_of_expertise')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="membership_of_professional_organisation">Membership
-                                            of
-                                            Professional Organisation </label>
-                                        <input type="text" name="membership_of_professional_organisation"
-                                            class="form-control"
-                                            value="{{ old('membership_of_professional_organisation', optional($organizationDetail)->membership_of_professional_organisation) }}">
-                                        @error('membership_of_professional_organisation')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="no_of_awards_as_arbitrator">No. of Awards as
-                                            Arbitrator</label>
-                                        <input type="text" name="no_of_awards_as_arbitrator" class="form-control"
-                                            value="{{ old('no_of_awards_as_arbitrator', optional($organizationDetail)->no_of_awards_as_arbitrator) }}">
-                                        @error('no_of_awards_as_arbitrator')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="total_years_of_working_as_drp">Total years of
-                                            Working
-                                            as
-                                            DRP ( Arbitrator/Mediator/Concilitor ) </label>
-                                        <input type="text" name="total_years_of_working_as_drp" class="form-control"
-                                            value="{{ old('total_years_of_working_as_drp', optional($organizationDetail)->total_years_of_working_as_drp) }}">
-                                        @error('total_years_of_working_as_drp')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="functional_area_of_drp">Functional Area of DRP (
-                                            Arbitrator/Mediator/Concilitor )</label>
-                                        <input type="text" name="functional_area_of_drp" class="form-control"
-                                            value="{{ old('functional_area_of_drp', optional($organizationDetail)->functional_area_of_drp) }}">
-                                        @error('functional_area_of_drp')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
                                     {{-- ########## Tab Two End ##########  --}}
                                 </div>
                             </div>
@@ -552,6 +294,12 @@
 
 @section('js')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
+    <script>
+        document.getElementById('attach_registration_certificate').addEventListener('change', function(event) {
+            let fileName = event.target.files.length > 0 ? event.target.files[0].name : "Upload Document";
+            document.getElementById('file-label').textContent = fileName;
+        });
+    </script>
     <script>
         var city_id = "{{ old('city_id', $organization['city_id']) }}";
 
@@ -607,21 +355,6 @@
                     extension: "jpg|jpeg|png",
                     filesize: 2
                 },
-                middle_name: {
-                    required: false,
-                },
-                last_name: {
-                    required: false,
-                },
-                dob: {
-                    required: false,
-                },
-                nationality: {
-                    required: false,
-                },
-                gender: {
-                    required: false,
-                },
                 email_secondary: {
                     required: false,
                 },
@@ -631,19 +364,10 @@
                 pincode: {
                     required: false,
                 },
-                father_name: {
-                    required: false,
-                },
                 address1: {
                     required: false,
                 },
                 address2: {
-                    required: false,
-                },
-                profession: {
-                    required: false,
-                },
-                specialization: {
                     required: false,
                 },
                 termsandconditions: {

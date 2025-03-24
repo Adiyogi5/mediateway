@@ -104,15 +104,26 @@
 
                                         {{-- <img src="{{ basename(auth($currentGuard)->user()->image) == 'img-not-found.png' ? asset('assets/img/dummy-user.png') : asset('storage/' . auth($currentGuard)->user()->image) }}"
                                             class="rounded-circle me-2" alt="" width="40px" height="40px"> --}}
-                                            <img src="{{ auth($currentGuard)->user() && auth($currentGuard)->user()->image && basename(auth($currentGuard)->user()->image) != 'img-not-found.png' 
-                                            ? asset('storage/' . auth($currentGuard)->user()->image) 
-                                            : asset('assets/img/dummy-user.png') }}" 
-                                    class="rounded-circle me-2" 
-                                    alt="" 
-                                    width="40px" 
-                                    height="40px">
-                                
-                                        {{ auth($currentGuard)->user()->name }}
+                                        <img src="{{ auth($currentGuard)->user() &&
+                                        auth($currentGuard)->user()->image &&
+                                        basename(auth($currentGuard)->user()->image) != 'img-not-found.png'
+                                            ? asset('storage/' . auth($currentGuard)->user()->image)
+                                            : asset('assets/img/dummy-user.png') }}"
+                                            class="rounded-circle me-2" alt="" width="40px" height="40px">
+
+                                            <div class="flex-column text-start">
+                                                {{ auth($currentGuard)->user()->name }}
+                                                @php
+                                                    $drpType =
+                                                        config('constant.drp_type')[
+                                                            auth($currentGuard)->user()->drp_type
+                                                        ] ?? null;
+                                                @endphp
+
+                                                @if ($drpType)
+                                                    <div class="text-muted small-type">({{ $drpType }})</div>
+                                                @endif
+                                            </div>
                                     </a>
                                     <ul class="dropdown-menu py-1" aria-labelledby="navbarDropdown">
                                         <li class="border-bottom">
@@ -122,21 +133,23 @@
                                             </a>
                                         </li>
                                         <li class="border-bottom">
-                                            <a class="dropdown-item" href="{{ route($currentGuard . '.' . 'profile') }}">
+                                            <a class="dropdown-item"
+                                                href="{{ route($currentGuard . '.' . 'profile') }}">
                                                 <i class="fa-duotone fa-user me-1"></i>
                                                 <span>Profile</span>
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item" href="#" 
-                                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <a class="dropdown-item" href="#"
+                                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                                 <i class="fa-solid fa-right-from-bracket me-1"></i>
                                                 <span>Log Out</span>
                                             </a>
-                                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                            <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                                class="d-none">
                                                 @csrf
                                             </form>
-                                        </li>                                        
+                                        </li>
                                     </ul>
                                 </li>
                             @else
@@ -230,15 +243,26 @@
                                             data-bs-toggle="dropdown" aria-expanded="false">
 
                                             {{-- <img src="{{ basename(auth($currentGuard)->user()->image) == 'img-not-found.png' ? asset('assets/img/dummy-user.png') : asset('storage/' . auth($currentGuard)->user()->image) }}" class="rounded-circle me-2" alt="" width="40px" height="40px"> --}}
-                                            <img src="{{ auth($currentGuard)->user() && auth($currentGuard)->user()->image && basename(auth($currentGuard)->user()->image) != 'img-not-found.png' 
-                                            ? asset('storage/' . auth($currentGuard)->user()->image) 
-                                            : asset('assets/img/dummy-user.png') }}" 
-                                    class="rounded-circle me-2" 
-                                    alt="" 
-                                    width="40px" 
-                                    height="40px">
-                                
-                                            {{ auth($currentGuard)->user()->name }}
+                                            <img src="{{ auth($currentGuard)->user() &&
+                                            auth($currentGuard)->user()->image &&
+                                            basename(auth($currentGuard)->user()->image) != 'img-not-found.png'
+                                                ? asset('storage/' . auth($currentGuard)->user()->image)
+                                                : asset('assets/img/dummy-user.png') }}"
+                                                class="rounded-circle me-2" alt="" width="40px"
+                                                height="40px">
+                                            <div class="flex-column text-start">
+                                                {{ auth($currentGuard)->user()->name }}
+                                                @php
+                                                    $drpType =
+                                                        config('constant.drp_type')[
+                                                            auth($currentGuard)->user()->drp_type
+                                                        ] ?? null;
+                                                @endphp
+
+                                                @if ($drpType)
+                                                    <div class="text-muted small-type">({{ $drpType }})</div>
+                                                @endif
+                                            </div>
                                         </a>
                                         <ul class="dropdown-menu py-1" aria-labelledby="navbarDropdown">
                                             <li class="border-bottom">
@@ -260,16 +284,18 @@
                                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                                     <i class="fa-solid fa-right-from-bracket me-1"></i>
                                                     <span>Log Out</span>
-                                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                                    <form id="logout-form" action="{{ route('logout') }}"
+                                                        method="POST" class="d-none">
                                                         @csrf
                                                     </form>
                                                 </a>
-                                            </li>                                            
+                                            </li>
                                         </ul>
                                     </li>
                                 @else
                                     <li class="nav-item my-auto d-none d-md-none d-lg-block d-xl-block">
-                                        <a class="nav-title btn btn-sm btn-warning" href="{{ url('individual/login') }}">
+                                        <a class="nav-title btn btn-sm btn-warning"
+                                            href="{{ url('individual/login') }}">
                                             <i class="fa-solid fa-right-to-bracket"></i> &nbsp;&nbsp;Login
                                         </a>
                                     </li>

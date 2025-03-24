@@ -65,23 +65,23 @@
                         </li>
                         @if (auth('individual')->check())
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('individual.case.filecase') }}" class="nav-link-footer">
+                            <a href="{{ route('individual.case.filecase') }}" class="nav-link-footer {{ request()->routeIs('individual.case.filecase') ? 'active-footer' : '' }}">
                                 FILE A CASE/DISPUTE
                             </a>
                         </li>
                         @endif
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('front.home') }}" class="nav-link-footer">
-                                APPOINMENT
+                            <a href="{{ route('front.bookappointment') }}" class="nav-link-footer {{ request()->routeIs('front.bookappointment') ? 'active-footer' : '' }}">
+                                BOOK APPOINMENT
                             </a>
                         </li>
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('front.home') }}" class="nav-link-footer">
+                            <a href="{{ route('front.callback') }}" class="nav-link-footer {{ request()->routeIs('front.callback') ? 'active-footer' : '' }}">
                                 TALK TO AN EXPERT
                             </a>
                         </li>
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('front.home') }}" class="nav-link-footer">
+                            <a href="{{ route('front.contactus') }}" class="nav-link-footer {{ request()->routeIs('front.contactus') ? 'active-footer' : '' }}">
                                 CONTACT US
                             </a>
                         </li>

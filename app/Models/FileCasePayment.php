@@ -7,16 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use App\Traits\CustomScopes;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class IndividualDetail extends Model
+class FileCasePayment extends Model
 {
     use HasFactory, SoftDeletes, CustomScopes;
 
     protected $fillable = [
-        'individual_id', 'university', 'degree','year', 'adhar_card',
+        'file_case_id', 'file_case_no', 'name', 'mobile','email', 'message','transaction_id','payment_status','payment_date','payment_amount'
     ];
-
-    public function individual()
-    {
-        return $this->belongsTo(Individual::class, 'individual_id');
-    }
 }

@@ -1,24 +1,20 @@
 <?php
-
 namespace App\Rules;
 
-use GuzzleHttp\Client;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Http;
 
 
-class Recaptcha implements Rule
+class ReCaptcha implements Rule
 {
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    
-    protected $recaptcha_secret;
-
-    public function __construct($recaptcha_secret)
+    public function __construct()
     {
-        $this->recaptcha_secret = $recaptcha_secret; 
+        //
     }
 
     /**
@@ -30,31 +26,20 @@ class Recaptcha implements Rule
      */
     public function passes($attribute, $value)
     {
-        $client = new Client;
-        $response = $client->post(
-            'https://www.google.com/recaptcha/api/siteverify',
-            [
-                'form_params' =>
-                    [
-                        'secret' => $this->recaptcha_secret,
-                        'response' => $value
-                    ]
-            ]
-        );
-        
-        $body = json_decode((string)$response->getBody());
-        
-        return $body->success;
+        $response = Http::get("https://www.google.com/recaptcha/api/siteverify",[
+            'secret' => env('GOOGLE_RECAPTCHA_SECRET'),
+            'response' => $value
+        ]);
+        return $response->json()["success"];
     }
 
     /**
      * Get the validation error message.
      *
      * @return string
-    */
-
+     */
     public function message()
     {
-        return __('common.recaptcha_failed');
+        return 'The google recaptcha is required.';
     }
 }

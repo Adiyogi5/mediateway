@@ -368,6 +368,7 @@
                                    
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -378,6 +379,24 @@
 
 @section('js')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
+    @if(session('showProfilePopup') || isset($showProfilePopup))
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                title: "Profile Incomplete!",
+                text: "Please complete your profile before proceeding.",
+                icon: "warning",
+                showCancelButton: false,
+                confirmButtonText: "Update Now",
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('individual.profile') }}";
+                }
+            });
+        });
+    </script>
+@endif
     <script>
         $(document).ready(function() {
             $(".custom-tab").click(function() {

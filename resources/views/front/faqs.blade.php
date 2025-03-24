@@ -1,7 +1,10 @@
 @extends('layouts.front')
 
 @section('content')
-    @include('partial.frontend.breadcrumb')
+    {{-- ===============Breadcrumb Start============= --}}
+    @include('front.includes.profile_header')
+    {{-- ===============Breadcrumb End============= --}}
+    
     <div class="container about-us">
         <div class="row my-5">
             <div class="col-lg-12">

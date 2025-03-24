@@ -1,6 +1,9 @@
 @extends('layouts.front')
 
 @section('content')
+ {{-- ===============Breadcrumb Start============= --}}
+ @include('front.includes.profile_header')
+ {{-- ===============Breadcrumb End============= --}}
 
 <section>
     <div class="container my-xl-5 my-lg-4 my-3">

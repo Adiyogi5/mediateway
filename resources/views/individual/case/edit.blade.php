@@ -202,8 +202,7 @@
                                 @enderror
                             </div>
                             <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="respondent_email">Email <span class="error-text">
-                                        *</span></label>
+                                <label class="form-label" for="respondent_email">Email</label>
                                 <input type="email" id="respondent_email" name="respondent_email" class="form-control"
                                     value="{{ old('respondent_email', $caseviewData['respondent_email']) }}">
                                 @error('respondent_email')
@@ -285,24 +284,6 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6 col-12 my-3">
-                                <label for="add_respondent" class="custom-file-upload">
-                                    <span style="font-weight: 500;" id="file-label1">
-                                        <span style="border:2px solid black; border-radius:50%;padding: 1px;">➕</span>
-                                        Add Respondent</span>
-                                </label>
-                                <input type="file" id="add_respondent" name="add_respondent" hidden />
-                                @if (!empty($caseviewData->add_respondent))
-                                    <div class="my-2">
-                                        <img src="{{ asset('storage/' . $caseviewData->add_respondent) }}"
-                                            class="img-thumbnail" width="100" />
-                                    </div>
-                                @endif
-                                @error('add_respondent')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
 
                             {{-- step-3 fields  --}}
                             <div class="col-12 text-center justify-content-center">
@@ -367,7 +348,20 @@
                                     <span class="text-danger fs-custom">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-md-6 col-12 mt-4">
+
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="status">Status</label>
+                                <select name="status" class="form-select" id="status">
+                                    <option value="1" @selected(old('status', $caseviewData['status']) == 1)> Active </option>
+                                    <option value="0" @selected(old('status', $caseviewData['status']) == 0)> Inactive </option>
+                                </select>
+                                @error('status')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 col-12 mt-1" id="evidence-box" style="display: none;">
                                 <label for="upload_evidence" class="custom-file-upload mt-1 w-100">
                                     <span style="font-weight: 500;" id="file-label2">
                                         <span style="border:2px solid black; border-radius:50%;padding: 1px;">➕</span>
@@ -385,20 +379,6 @@
                                 @enderror
                             </div>
 
-
-                            <div class="col-lg-6 mt-2">
-                                <label class="form-label" for="status">Status</label>
-                                <select name="status" class="form-select" id="status">
-                                    <option value="1" @selected(old('status', $caseviewData['status']) == 1)> Active </option>
-                                    <option value="0" @selected(old('status', $caseviewData['status']) == 0)> Inactive </option>
-                                </select>
-                                @error('status')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-
                             <div class="col-lg-12 mt-3 d-flex justify-content-start">
                                 <button class="btn btn-secondary submitbtn py-1 px-4" type="submit">Update</button>
                             </div>
@@ -412,16 +392,32 @@
 
 @section('js')
     <script>
-        document.getElementById('add_respondent').addEventListener('change', function(event) {
-            let fileName = event.target.files.length > 0 ? event.target.files[0].name : "Add Respondent";
-            document.getElementById('file-label1').textContent = fileName;
-        });
         document.getElementById('upload_evidence').addEventListener('change', function(event) {
             let fileName = event.target.files.length > 0 ? event.target.files[0].name :
                 "Attach document / Upload Evidence";
             document.getElementById('file-label2').textContent = fileName;
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var agreementExist = document.getElementById("agreement_exist");
+            var evidenceBox = document.getElementById("evidence-box");
+        
+            function toggleEvidenceBox() {
+                if (agreementExist.value == "1") {
+                    evidenceBox.style.display = "block";
+                } else {
+                    evidenceBox.style.display = "none";
+                }
+            }
+        
+            // Run on page load (for old form data)
+            toggleEvidenceBox();
+        
+            // Run when the user changes the selection
+            agreementExist.addEventListener("change", toggleEvidenceBox);
+        });
+    </script>        
     <script>
         $(document).ready(function() {
             var claimantCityId = "{{ old('claimant_city_id', $caseviewData->claimant_city_id ?? '') }}";
@@ -516,7 +512,7 @@
                     required: true
                 },
                 respondent_email: {
-                    required: true
+                    required: false
                 },
                 respondent_address1: {
                     required: true
@@ -538,10 +534,6 @@
                 },
                 case_type: {
                     required: true
-                },
-                add_respondent: {
-                    extension: "jpg|jpeg|png|pdf",
-                    filesize: 4
                 },
                 upload_evidence: {
                     extension: "jpg|jpeg|png|pdf",
@@ -602,9 +594,6 @@
                 },
                 case_type: {
                     required: "Please select case type"
-                },
-                add_respondent: {
-                    extension: "Supported Format Only: jpg, jpeg, png, pdf"
                 },
                 upload_evidence: {
                     extension: "Supported Format Only: jpg, jpeg, png, pdf"

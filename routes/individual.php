@@ -39,6 +39,10 @@ Route::name('individual.')->middleware(['ensure.individual.session'])->prefix('i
 
         Route::get('filecase', 'filecase')->name('case.filecase');
         Route::post('register-case', 'registerCase')->name('case.registercase');
+
+        Route::get('/file-case-payment','filecasepayment')->name('case.filecasepayment');
+        Route::post('/verify-payment','verify_payment')->name('case.verify_payment');
+        Route::get('/file-case-payment-success/{id}','filecasepayment_success')->name('case.filecasepayment_success');
     });
 
     Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');

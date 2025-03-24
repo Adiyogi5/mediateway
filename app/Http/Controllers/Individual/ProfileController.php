@@ -21,7 +21,7 @@ class ProfileController extends Controller
 
     public function index(Request $request): View | RedirectResponse
     {
-        $title = 'Profile Detail';
+        $title = 'Individual Profile Detail';
 
         $individual = auth('individual')->user();
         $states = State::all();
@@ -58,30 +58,10 @@ class ProfileController extends Controller
             'father_name' => 'nullable',
             'address1' => 'nullable',
             'address2' => 'nullable',
-            'profession' => 'nullable',
-            'specialization' => 'nullable',
              // Fields for IndividualDetail
             'university' => 'nullable',
-            'field_of_study' => 'nullable',
             'degree' => 'nullable',
             'year' => 'nullable',
-            'description' => 'nullable',
-            'achievement_od_socities' => 'nullable',
-            'designation' => 'nullable',
-            'organization' => 'nullable',
-            'professional_degree' => 'nullable',
-            'registration_no' => 'nullable',
-            'job_description' => 'nullable',
-            'currently_working_here' => 'nullable',
-            'years_of_experience' => 'nullable',
-            'registration_certificate' => 'nullable',
-            'attach_registration_certificate' => 'nullable',
-            'experience_in_the_field_of_drp' => 'nullable',
-            'areas_of_expertise' => 'nullable',
-            'membership_of_professional_organisation' => 'nullable',
-            'no_of_awards_as_arbitrator' => 'nullable',
-            'total_years_of_working_as_drp' => 'nullable',
-            'functional_area_of_drp' => 'nullable',
         ]);
 
         if ($validator->fails()) {
@@ -105,8 +85,6 @@ class ProfileController extends Controller
         $user->father_name = $request->father_name;
         $user->address1 = $request->address1;
         $user->address2 = $request->address2;
-        $user->profession = $request->profession;
-        $user->specialization = $request->specialization;
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -121,26 +99,8 @@ class ProfileController extends Controller
             ['individual_id' => $user->id], // Find by this column
             [
                 'university' => $request->university,
-                'field_of_study' => $request->field_of_study,
                 'degree' => $request->degree,
                 'year' => $request->year,
-                'description' => $request->description,
-                'achievement_od_socities' => $request->achievement_od_socities,
-                'designation' => $request->designation,
-                'organization' => $request->organization,
-                'professional_degree' => $request->professional_degree,
-                'registration_no' => $request->registration_no,
-                'job_description' => $request->job_description,
-                'currently_working_here' => $request->currently_working_here,
-                'years_of_experience' => $request->years_of_experience,
-                'registration_certificate' => $request->registration_certificate,
-                'attach_registration_certificate' => $request->attach_registration_certificate,
-                'experience_in_the_field_of_drp' => $request->experience_in_the_field_of_drp,
-                'areas_of_expertise' => $request->areas_of_expertise,
-                'membership_of_professional_organisation' => $request->membership_of_professional_organisation,
-                'no_of_awards_as_arbitrator' => $request->no_of_awards_as_arbitrator,
-                'total_years_of_working_as_drp' => $request->total_years_of_working_as_drp,
-                'functional_area_of_drp' => $request->functional_area_of_drp,
             ]
         );
         $individualDetail = IndividualDetail::where('individual_id', $user->id)->first();
@@ -149,17 +109,17 @@ class ProfileController extends Controller
             $individualDetail = new IndividualDetail();
             $individualDetail->individual_id = $user->id; // Assign ID if creating a new record
         }
-        // Handle attach_registration_certificate file upload
-        if ($request->hasFile('attach_registration_certificate')) {
+        // Handle adhar_card file upload
+        if ($request->hasFile('adhar_card')) {
             // Delete old file if exists
-            Helper::deleteFile($individualDetail->attach_registration_certificate);
+            Helper::deleteFile($individualDetail->adhar_card);
             
             // Save new file
-            $individualDetail->attach_registration_certificate = Helper::saveFile($request->file('attach_registration_certificate'), 'individuals/certificates');
+            $individualDetail->adhar_card = Helper::saveFile($request->file('adhar_card'), 'individuals/adharcard');
             $individualDetail->save();
         }
 
-        return redirect()->back()->with('success', 'Profile updated successfully.');
+        return redirect()->back()->with('success', 'Individual Profile updated successfully.');
     }
 
 }

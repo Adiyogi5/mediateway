@@ -21,6 +21,7 @@ class Drp extends Authenticatable
     }
 
     protected $fillable = [
+        'drp_type',
         'slug',
         'name',
         'email',

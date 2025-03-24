@@ -93,9 +93,19 @@
         padding: 6px 12px;
         margin: 6px 8px;
     }
-
-
-
+    .contact-info {
+        position: absolute;
+        top: 10%;
+        left: -25%;
+        translate: 0%;
+        padding: 50px 35px;
+    }
+    .contactus-card {
+        padding: 75px 20px 75px 175px;
+    }
+    .callback-card {
+        padding: 40px 100px;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 992px) {
@@ -250,6 +260,27 @@
     }
     .card-dashboard p {
         font-size: 13px;
+    }
+    .contact-info {
+        position: relative;
+        top: 0%;
+        left: 0%;
+        translate: 0%;
+        border-radius: 20px;
+        padding: 20px 20px;
+        width: 100%;
+    }
+    .contactus-card {
+        width: 100%;
+        border-radius: 20px;
+        margin: 40px 40px;
+        padding: 20px 20px 00px 20px;
+    }
+    .contact-form {
+        padding: 20px;
+    }
+    .callback-card {
+        padding: 40px 100px;
     }
    
 }
@@ -406,6 +437,27 @@
     }
     .card-dashboard p {
         font-size: 13px;
+    }
+    .contact-info {
+        position: relative;
+        top: 0%;
+        left: 0%;
+        translate: 0%;
+        border-radius: 20px;
+        padding: 20px 20px;
+        width: 100%;
+    }
+    .contactus-card {
+        width: 100%;
+        border-radius: 20px;
+        margin: 40px 40px;
+        padding: 20px 20px 00px 20px;
+    }
+    .contact-form {
+        padding: 20px;
+    }
+    .callback-card {
+        padding: 40px 100px;
     }
 
 }
@@ -607,6 +659,27 @@
     .bread-heading {
         font-size: 26px;
     }
+    .contact-info {
+        position: relative;
+        top: 0%;
+        left: 0%;
+        translate: 0%;
+        border-radius: 20px;
+        padding: 20px 20px;
+        width: 100%;
+    }
+    .contactus-card {
+        width: 100%;
+        border-radius: 20px;
+        margin: 0px 0px;
+        padding: 18px 14px 00px 14px;
+    }
+    .contact-form {
+        padding: 20px;
+    }
+    .callback-card {
+        padding: 30px 30px;
+    }
 }
 
 @media (min-width: 320px) and (max-width: 375px) {
@@ -807,7 +880,27 @@
     .bread-heading {
         font-size: 26px;
     }
-    
+    .contact-info {
+        position: relative;
+        top: 0%;
+        left: 0%;
+        translate: 0%;
+        border-radius: 16px;
+        padding: 14px 14px;
+        width: 100%;
+    }
+    .contactus-card {
+        width: 100%;
+        border-radius: 16px;
+        margin: 0px 0px;
+        padding: 16px 10px 00px 10px;
+    }
+    .contact-form {
+        padding: 10px;
+    }
+    .callback-card {
+        padding: 22px 22px;
+    }
 }
 
 @media (max-width: 320px) {
@@ -1018,5 +1111,25 @@
     .bread-heading {
         font-size: 26px;
     }
-    
+    .contact-info {
+        position: relative;
+        top: 0%;
+        left: 0%;
+        translate: 0%;
+        border-radius: 16px;
+        padding: 14px 14px;
+        width: 100%;
+    }
+    .contactus-card {
+        width: 100%;
+        border-radius: 16px;
+        margin: 0px 0px;
+        padding: 16px 10px 00px 10px;
+    }
+    .contact-form {
+        padding: 10px;
+    }
+    .callback-card {
+        padding: 16px 16px;
+    }
 }

@@ -79,7 +79,7 @@
                                         <label class="form-label" for="claimant_first_name">First Name <span
                                                 class="error-text"> *</span></label>
                                         <input type="text" id="claimant_first_name" name="claimant_first_name"
-                                            class="form-control" value="{{ old('claimant_first_name') }}">
+                                            class="form-control" value="{{ old('claimant_first_name', $individualsData->name ?? '') }}">
                                         @error('claimant_first_name')
                                             <span class="text-danger fs-custom">{{ $message }}</span>
                                         @enderror
@@ -106,7 +106,7 @@
                                         <label class="form-label" for="claimant_mobile">Mobile Number <span
                                                 class="error-text"> *</span></label>
                                         <input type="text" id="claimant_mobile" name="claimant_mobile"
-                                            class="form-control" value="{{ old('claimant_mobile') }}">
+                                            class="form-control" value="{{ old('claimant_mobile', $individualsData->mobile ?? '') }}">
                                         @error('claimant_mobile')
                                             <span class="text-danger fs-custom">{{ $message }}</span>
                                         @enderror
@@ -114,7 +114,7 @@
                                     <div class="col-md-6 col-12 mb-3">
                                         <label class="form-label" for="claimant_email">Email</label>
                                         <input type="email" id="claimant_email" name="claimant_email"
-                                            class="form-control" value="{{ old('claimant_email') }}">
+                                            class="form-control" value="{{ old('claimant_email', $individualsData->email ?? '') }}">
                                         @error('claimant_email')
                                             <span class="text-danger fs-custom">{{ $message }}</span>
                                         @enderror
@@ -125,7 +125,7 @@
                                         <label class="form-label" for="claimant_address1">Address Line 1 <span
                                                 class="error-text"> *</span></label>
                                         <input type="text" id="claimant_address1" name="claimant_address1"
-                                            class="form-control" value="{{ old('claimant_address1') }}">
+                                            class="form-control" value="{{ old('claimant_address1', $individualsData->address1 ?? '') }}">
                                         @error('claimant_address1')
                                             <span class="text-danger fs-custom">{{ $message }}</span>
                                         @enderror
@@ -133,7 +133,7 @@
                                     <div class="col-md-6 col-12 mb-3">
                                         <label class="form-label" for="claimant_address2">Address Line 2</label>
                                         <input type="text" id="claimant_address2" name="claimant_address2"
-                                            class="form-control" value="{{ old('claimant_address2') }}">
+                                            class="form-control" value="{{ old('claimant_address2', $individualsData->address2 ?? '') }}">
                                         @error('claimant_address2')
                                             <span class="text-danger fs-custom">{{ $message }}</span>
                                         @enderror
@@ -162,7 +162,8 @@
                                             class="form-select" id="claimant_state_id">
                                             <option value="">Select State</option>
                                             @foreach ($states as $state)
-                                                <option value="{{ $state->id }}" @selected(old('claimant_state_id') == $state->id)>
+                                                <option value="{{ $state->id }}" 
+                                                    @selected(old('claimant_state_id', $individualsData->state_id ?? '') == $state->id)>
                                                     {{ $state->name }}
                                                 </option>
                                             @endforeach
@@ -185,7 +186,7 @@
                                         <label class="form-label" for="claimant_pincode">Pincode <span
                                                 class="error-text"> *</span></label>
                                         <input type="text" id="claimant_pincode" name="claimant_pincode"
-                                            class="form-control" value="{{ old('claimant_pincode') }}">
+                                            class="form-control" value="{{ old('claimant_pincode', $individualsData->pincode ?? '') }}">
                                         @error('claimant_pincode')
                                             <span class="text-danger fs-custom">{{ $message }}</span>
                                         @enderror
@@ -238,8 +239,7 @@
                                         @enderror
                                     </div>
                                     <div class="col-md-6 col-12 mb-3">
-                                        <label class="form-label" for="respondent_email">Email <span class="error-text">
-                                                *</span></label>
+                                        <label class="form-label" for="respondent_email">Email</label>
                                         <input type="email" id="respondent_email" name="respondent_email"
                                             class="form-control" value="{{ old('respondent_email') }}">
                                         @error('respondent_email')
@@ -318,19 +318,6 @@
                                         @enderror
                                     </div>
 
-                                    <div class="col-md-6 col-12 my-3">
-                                        <label for="add_respondent" class="custom-file-upload">
-                                            <span style="font-weight: 500;" id="file-label1">
-                                                <span
-                                                    style="border:2px solid black; border-radius:50%;padding: 1px;">➕</span>
-                                                Add Respondent</span>
-                                        </label>
-                                        <input type="file" id="add_respondent" name="add_respondent" hidden />
-                                        @error('add_respondent')
-                                            <span class="text-danger fs-custom">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
                                     <div class="text-center justify-content-center">
                                         <button type="button"
                                             class="btn btn-warning-custom prev-step w-auto mt-xl-5 mt-3">Previous</button>
@@ -403,7 +390,8 @@
                                             <span class="text-danger fs-custom">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                    <div class="col-md-6 col-12 mt-4">
+                                    <div class="col-md-6"></div>
+                                    <div class="col-md-6 col-12 mt-1" id="evidence-box" style="display: none;">
                                         <label for="upload_evidence" class="custom-file-upload mt-1 w-100">
                                             <span style="font-weight: 500;" id="file-label2">
                                                 <span
@@ -546,7 +534,7 @@
                                     <img class="img-fluid img-razorpay my-5" src="{{ asset('assets/img/razorpay.png') }}"
                                         alt="">
                                     </br>
-                                    <a href="#" class="btn btn-success btn-razor-pay px-5 my-3">Pay</a>
+                                    <a href="{{ route('individual.case.filecasepayment') }}" class="btn btn-success btn-razor-pay px-5 my-3">PAY</a>
                                 </div>
                             </div>
                         </div>
@@ -664,16 +652,32 @@
         });
     </script>
     <script>
-        document.getElementById('add_respondent').addEventListener('change', function(event) {
-            let fileName = event.target.files.length > 0 ? event.target.files[0].name : "Add Respondent";
-            document.getElementById('file-label1').textContent = fileName;
-        });
         document.getElementById('upload_evidence').addEventListener('change', function(event) {
             let fileName = event.target.files.length > 0 ? event.target.files[0].name :
                 "Attach document / Upload Evidence";
             document.getElementById('file-label2').textContent = fileName;
         });
     </script>
+     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var agreementExist = document.getElementById("agreement_exist");
+            var evidenceBox = document.getElementById("evidence-box");
+        
+            function toggleEvidenceBox() {
+                if (agreementExist.value == "1") {
+                    evidenceBox.style.display = "block";
+                } else {
+                    evidenceBox.style.display = "none";
+                }
+            }
+        
+            // Run on page load (for old form data)
+            toggleEvidenceBox();
+        
+            // Run when the user changes the selection
+            agreementExist.addEventListener("change", toggleEvidenceBox);
+        });
+    </script> 
     <script>
         $(document).ready(function() {
             var currentStep = 1;
@@ -717,9 +721,8 @@
         });
     </script>
     <script>
-        $(document).ready(function() {
-            var claimantCityId = "{{ old('claimant_city_id') }}";
-            var respondentCityId = "{{ old('respondent_city_id') }}";
+       $(document).ready(function() {
+            var claimantCityId = "{{ old('claimant_city_id', $individualsData->city_id ?? '') }}";
 
             function getCity(state_id, cityDropdownId, selectedCityId) {
                 $.ajax({
@@ -733,32 +736,24 @@
                         $('#' + cityDropdownId).html(data);
 
                         // Ensure city is selected after cities are loaded
-                        if (selectedCityId) {
-                            $('#' + cityDropdownId).val(selectedCityId);
-                        }
+                        setTimeout(function() {
+                            if (selectedCityId) {
+                                $('#' + cityDropdownId).val(selectedCityId).trigger('change');
+                            }
+                        }, 500); // Add delay to ensure options are loaded
                     },
                 });
             }
 
             // Prefill claimant city dropdown when state is preselected
-            var claimantStateId = "{{ old('claimant_state_id') }}";
+            var claimantStateId = "{{ old('claimant_state_id', $individualsData->state_id ?? '') }}";
             if (claimantStateId) {
                 getCity(claimantStateId, 'claimant_city_id', claimantCityId);
-            }
-
-            // Prefill respondent city dropdown when state is preselected
-            var respondentStateId = "{{ old('respondent_state_id') }}";
-            if (respondentStateId) {
-                getCity(respondentStateId, 'respondent_city_id', respondentCityId);
             }
 
             // Bind event listeners for state changes
             $('#claimant_state_id').on('change', function() {
                 getCity(this.value, 'claimant_city_id', null);
-            });
-
-            $('#respondent_state_id').on('change', function() {
-                getCity(this.value, 'respondent_city_id', null);
             });
         });
     </script>
@@ -815,7 +810,7 @@
                         required: true
                     },
                     respondent_email: {
-                        required: true
+                        required: false
                     },
                     respondent_address1: {
                         required: true
@@ -837,10 +832,6 @@
                     },
                     case_type: {
                         required: true
-                    },
-                    add_respondent: {
-                        extension: "jpg|jpeg|png|pdf",
-                        filesize: 4
                     },
                     upload_evidence: {
                         extension: "jpg|jpeg|png|pdf",
@@ -904,9 +895,6 @@
                     },
                     case_type: {
                         required: "Please select case type"
-                    },
-                    add_respondent: {
-                        extension: "Supported Format Only: jpg, jpeg, png, pdf"
                     },
                     upload_evidence: {
                         extension: "Supported Format Only: jpg, jpeg, png, pdf"

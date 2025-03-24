@@ -13,6 +13,15 @@ Route::controller(FrontController::class)->name('front.')->group(function () {
     Route::get('/home', 'index')->name('home');
     Route::get('{cms}', 'showCms')->name('show-cms')->whereIn('cms', ['about-us', 'terms-conditions', 'privacy-policy', 'rules']);
 
+    // ============= call-back Routes ======
+    Route::get('/call-back', 'callback')->name('callback');
+    Route::post('/request-call-back', 'requestcallback')->name('requestcallback');
+    // ============= book-appointment Routes ======
+    Route::get('/book-appointment', 'bookappointment')->name('bookappointment');
+    Route::post('/request-book-appointment', 'requestbookappointment')->name('requestbookappointment');
+    // ============= contact-us Routes ======
+    Route::get('/contact-us', 'contactus')->name('contactus');
+    Route::post('/submit-contact-us', 'submitcontactus')->name('submitcontactus');
 });
 
 // ================== Push Notification Routes ==================

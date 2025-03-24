@@ -45,6 +45,7 @@ class RegisteredUserController extends Controller
                 'email' => 'required|string|email|max:255|unique:' . $guard . 's',
                 'mobile' => 'required|string|max:15|unique:' . $guard . 's',
                 'otp' => 'required|numeric|digits:6', // Validate OTP
+                'drp_type' => $guard === 'drp' ? 'required|in:' . implode(',', array_keys(config('constant.drp_type'))) : 'nullable',
             ]);
 
             // $checkOtp = RegistrationOtp::firstWhere(['mobile' => $request->mobile, 'otp' => $request->otp]);
@@ -67,7 +68,8 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
                 'mobile' => $request->mobile,
                 'otp' => $request->otp, // Store OTP for verification
-                'organization_role_id' => 1,
+                'organization_role_id' => $guard === 'organization' ? 1 : null, // Store only if Organization
+                'drp_type' => $guard === 'drp' ? $request->drp_type : null, // Store only if DRP
             ]);
         }
 

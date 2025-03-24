@@ -36,7 +36,6 @@ class FileCase extends Model
         'respondent_state_id',
         'respondent_city_id',
         'respondent_pincode',
-        'add_respondent',
         'brief_of_case',
         'amount_in_dispute',
         'case_type',
@@ -46,6 +45,20 @@ class FileCase extends Model
         'status',
     ];
 
+    public function case()
+    {
+        return $this->belongsTo(FileCase::class, 'case_id');
+    }
+
+    public function individual()
+    {
+        return $this->belongsTo(Individual::class, 'individual_id');
+    }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'organization_id');
+    }
 
     public function city()
     {

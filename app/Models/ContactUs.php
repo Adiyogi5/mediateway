@@ -11,7 +11,9 @@ class ContactUs extends Model
     use HasFactory, CustomScopes;
 
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
+        'mobile',
         'email',
         'subject',
         'message',

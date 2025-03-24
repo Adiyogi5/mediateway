@@ -7,16 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 use App\Traits\CustomScopes;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class IndividualDetail extends Model
+class AssignCase extends Model
 {
     use HasFactory, SoftDeletes, CustomScopes;
 
     protected $fillable = [
-        'individual_id', 'university', 'degree','year', 'adhar_card',
+        'case_id',
+        'arbitrator_id',
+        'advocate_id',
+        'case_manager_id',
+        'mediator_id',
+        'conciliator_id',
     ];
 
-    public function individual()
-    {
-        return $this->belongsTo(Individual::class, 'individual_id');
-    }
+
 }

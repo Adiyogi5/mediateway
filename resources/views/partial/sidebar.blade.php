@@ -94,6 +94,15 @@
         </li>
         @endif
 
+        <li class="menu @routeis('caseassign') active @endrouteis">
+            <a href="{{route('caseassign')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-cash-register"></i>
+                    <span>Case Assign List</span>
+                </div>
+            </a>
+        </li>
+
         @if(Helper::userCan([105,106]))
         <li class="menu @routeis('states,cities') active @endrouteis">
             <a href="#location_content" data-bs-toggle="collapse" aria-expanded="{{ Helper::routeis('states,cities') }}"
@@ -120,6 +129,31 @@
             </ul>
         </li>
         @endif
+
+        <li class="menu @routeis('inquiries') active @endrouteis">
+            <a href="{{route('inquiries')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-envelope"></i>
+                    <span>Contact Inquiries</span>
+                </div>
+            </a>
+        </li>
+        <li class="menu @routeis('bookappointments') active @endrouteis">
+            <a href="{{route('bookappointments')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-calendar-check"></i>
+                    <span>Book Appointment Inquiries</span>
+                </div>
+            </a>
+        </li>
+        <li class="menu @routeis('callbacks') active @endrouteis">
+            <a href="{{route('callbacks')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-mobile"></i>
+                    <span>Call Back Inquiries</span>
+                </div>
+            </a>
+        </li>
 
         @if(Helper::userCan(101))
         <li class="menu @routeis('setting') active @endrouteis">

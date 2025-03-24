@@ -28,17 +28,39 @@
                             @foreach (['individual', 'organization', 'drp'] as $guard)
                                 <div class="tab-pane fade @if ($guard === 'individual') show active @endif"
                                     id="{{ $guard }}">
-                                    <form method="POST" action="{{ route('register') }}">
+                                    <form method="POST" action="{{ route('register') }}" id="{{ $guard . 'Form' }}">
                                         @csrf
                                         <input type="hidden" name="guard" value="{{ $guard }}">
 
+
+
                                         <div class="row">
+                                            <!-- DRP Type field, initially hidden -->
+                                            <div class="col-md-12 mb-3 drp-type-field" style="display: none;">
+                                                <label for="drp_type">Select DRP Type</label>
+                                                <select class="form-select @error('drp_type') is-invalid @enderror"
+                                                    name="drp_type">
+                                                    <option value="">Select DRP Type</option>
+                                                    @foreach (config('constant.drp_type') as $typeKey => $typeValue)
+                                                        <option value="{{ $typeKey }}"
+                                                            {{ old('drp_type') == $typeKey ? 'selected' : '' }}>
+                                                            {{ $typeValue }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('drp_type')
+                                                    <span class="invalid-feedback">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+
+                                            <!-- Other form fields like Name, Email, Mobile, OTP -->
                                             <div class="col-md-6 mb-3">
                                                 <label for="mobile">Name</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                                                    <input type="text" name="name" style="border-left: 1px solid #ffffff00;"
-                                                        class="form-control @error('name') is-invalid @enderror" required>
+                                                    <input type="text" name="name"
+                                                        style="border-left: 1px solid #ffffff00;"
+                                                        class="form-control @error('name') is-invalid @enderror">
                                                     @error('name')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -50,8 +72,9 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i
                                                             class="fa-solid fa-envelope"></i></span>
-                                                    <input type="email" name="email" style="border-left: 1px solid #ffffff00;"
-                                                        class="form-control @error('email') is-invalid @enderror" required>
+                                                    <input type="email" name="email"
+                                                        style="border-left: 1px solid #ffffff00;"
+                                                        class="form-control @error('email') is-invalid @enderror">
                                                     @error('email')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -62,8 +85,9 @@
                                                 <label for="mobile">Phone</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
-                                                    <input type="text" name="mobile" style="border-left: 1px solid #ffffff00;"
-                                                        class="form-control @error('mobile') is-invalid @enderror" required
+                                                    <input type="text" name="mobile"
+                                                        style="border-left: 1px solid #ffffff00;"
+                                                        class="form-control @error('mobile') is-invalid @enderror"
                                                         maxlength="10">
                                                     @error('mobile')
                                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -75,7 +99,8 @@
                                                 <label for="mobile">Enter Otp</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                                                    <input type="text" name="otp" id="otp-{{ $guard }}" style="border-left: 1px solid #ffffff00;"
+                                                    <input type="text" name="otp" id="otp-{{ $guard }}"
+                                                        style="border-left: 1px solid #ffffff00;"
                                                         class="form-control @error('otp') is-invalid @enderror">
                                                     @error('otp')
                                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -110,7 +135,7 @@
                                                         href="{{ url('individual/login') }}">Log In</a></p>
                                             </div>
                                             <div class="col-12 text-center">
-                                                <p class="mb-0">Go To 
+                                                <p class="mb-0">Go To
                                                     <a href="{{ url('/') }}" class="text-warning">Home</a>
                                                 </p>
                                             </div>
@@ -129,6 +154,27 @@
 @section('js')
     <script>
         $(function() {
+            // Set default active tab (Individual)
+            $('#individual').addClass('show active');
+
+            // Show/hide DRP type field based on active tab
+            $('#registerTabs a').on('shown.bs.tab', function(e) {
+                var targetTab = $(e.target).attr('href'); // Get the ID of the clicked tab
+
+                // Check if the clicked tab is DRP and show/hide the field accordingly
+                if (targetTab === '#drp') {
+                    $('.drp-type-field').show(); // Show DRP type field when DRP tab is active
+                } else {
+                    $('.drp-type-field').hide(); // Hide DRP type field otherwise
+                }
+
+                // Initialize validation on tab change
+                initializeValidation(targetTab);
+            });
+
+            // Trigger the event for the initial active tab
+            $('#registerTabs a.active').trigger('shown.bs.tab');
+
             // Change the button text based on active tab
             $('.nav-link').on('click', function() {
                 var guard = $(this).data('guard');
@@ -150,63 +196,79 @@
                 targetOtpInput.val(generatedOtp);
                 toastr.success("OTP sent successfully! (For testing: " + generatedOtp + ")");
             });
-        });
-    </script>
-    <script type="text/javascript">
-        $(function() {
-            var validator = $("form").validate({
-                rules: {
-                    name: {
-                        required: true,
-                        minlength: 2,
-                        maxlength: 100
-                    },
-                    email: {
-                        required: true,
-                        customEmail: true,
-                        email: true
-                    },
-                    mobile: {
-                        required: true,
-                        number: true,
-                        indiaMobile: true,
-                        exactlength: 10,
-                    },
-                    otp: {
-                        required: true,
-                        number: true,
-                        exactlength: 6,
-                    },
-                    terms: {
-                        required: true,
-                    },
-                },
-                messages: {
-                    name: {
-                        required: "Please enter name",
-                    },
-                    email: {
-                        required: "Please enter Email",
-                    },
-                    mobile: {
-                        required: "Please enter Mobile number",
-                    },
-                    otp: {
-                        required: "Please enter OTP Code.",
-                    },
-                    terms: {
-                        required: "Please select Terms and Conditions checkbox",
-                    },
-                },
-                errorPlacement: function(error, element) {
-                    if (element.attr("name") == "terms") {
-                        error.insertAfter(".form-check");
-                    } else {
-                        error.insertAfter(element);
-                    }
-                }
-            });
 
+            // Function to initialize validation based on the active tab
+            function initializeValidation(targetTab) {
+                var guard = $("input[name='guard']").val(); // Get the current guard value
+                var formId = '#' + guard + 'Form'; // Generate the form ID based on guard
+
+                // Initialize jQuery validation for the current form
+                $(formId).validate({
+                    rules: {
+                        name: {
+                            required: true,
+                            minlength: 2,
+                            maxlength: 100
+                        },
+                        email: {
+                            required: true,
+                            customEmail: true,
+                            email: true
+                        },
+                        mobile: {
+                            required: true,
+                            number: true,
+                            indiaMobile: true,
+                            exactlength: 10,
+                        },
+                        otp: {
+                            required: true,
+                            number: true,
+                            exactlength: 6,
+                        },
+                        drp_type: {
+                            required: function() {
+                                // Apply validation for 'drp_type' only when the DRP tab is active
+                                return targetTab === '#drp';
+                            }
+                        },
+                        terms: {
+                            required: true,
+                        },
+                    },
+                    messages: {
+                        name: {
+                            required: "Please enter name",
+                        },
+                        email: {
+                            required: "Please enter Email",
+                        },
+                        mobile: {
+                            required: "Please enter Mobile number",
+                        },
+                        otp: {
+                            required: "Please enter OTP Code.",
+                        },
+                        drp_type: {
+                            required: "Please select DRP type",
+                        },
+                        terms: {
+                            required: "Please select Terms and Conditions checkbox",
+                        },
+                    },
+                    errorPlacement: function(error, element) {
+                        if (element.attr("name") == "terms") {
+                            error.insertAfter(".form-check");
+                        } else {
+                            error.insertAfter(element);
+                        }
+                    }
+                });
+            }
+
+            // Initialize validation for the default active tab
+            var initialTab = $('#registerTabs a.active').attr('href');
+            initializeValidation(initialTab);
         });
     </script>
 @endsection
