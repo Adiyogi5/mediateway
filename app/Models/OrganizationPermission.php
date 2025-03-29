@@ -32,4 +32,9 @@ class OrganizationPermission extends Model
     {
         return $this->belongsTo(OrganizationPermissionModule::class, 'module_id');
     }
+
+    public function module()
+    {
+        return $this->belongsTo(OrganizationPermissionModule::class, 'module_id');
+    }
 }

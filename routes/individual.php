@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\Individual\CourtRoomController;
 use App\Http\Controllers\Individual\FileCaseController;
 use App\Http\Controllers\Individual\HomeController;
 use App\Http\Controllers\Individual\ProfileController;
@@ -43,6 +44,10 @@ Route::name('individual.')->middleware(['ensure.individual.session'])->prefix('i
         Route::get('/file-case-payment','filecasepayment')->name('case.filecasepayment');
         Route::post('/verify-payment','verify_payment')->name('case.verify_payment');
         Route::get('/file-case-payment-success/{id}','filecasepayment_success')->name('case.filecasepayment_success');
+    });
+
+    Route::controller(CourtRoomController::class)->group(function () {
+        Route::get('roomview', 'index')->name('courtroom.roomview');
     });
 
     Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');

@@ -109,28 +109,6 @@
                                     </span>
                                 @enderror
                             </div>
-                            <div class="col-lg-6 mt-2">
-                                <label class="form-label" for="password">New Password <span
-                                        class="required">*</span></label>
-                                <input class="form-control" placeholder="Enter Password" name="password" id="new-password"
-                                    type="password">
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                            <div class="col-lg-6 mt-2">
-                                <label class="form-label" for="password_confirmation">Confirm Password <span
-                                        class="required">*</span></label>
-                                <input class="form-control" placeholder="Enter Confirm Password"
-                                    name="password_confirmation" id="password_confirmation" type="password">
-                                @error('password_confirmation')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
                             <div class="col-lg-12 mt-3 d-flex justify-content-start">
                                 <input type="hidden" name="table" value="organizations">
                                 <input type="hidden" name="organization_parent_id" value="{{$organization_authData->id}}">
@@ -174,17 +152,6 @@
                     minlength: 10,
                     maxlength: 10
                 },
-                password: {
-                    required: true,
-                    minlength: 8,
-                    maxlength: 50
-                },
-                password_confirmation: {
-                    required: true,
-                    minlength: 8,
-                    maxlength: 50,
-                    equalTo: "#new-password"
-                },
                 image: {
                     extension: "jpg|jpeg|png",
                     filesize: 2
@@ -202,12 +169,6 @@
                 },
                 mobile: {
                     required: "Please enter Mobile number",
-                },
-                password: {
-                    required: "Please enter New Password",
-                },
-                password_confirmation: {
-                    required: "Please enter Confirm Password",
                 },
                 image: {
                     extension: "Supported Format Only : jpg, jpeg, png"

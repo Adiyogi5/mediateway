@@ -89,32 +89,6 @@
                             {{ $status }}
                         </span>
                     </li>
-
-                    @php
-                        $evidence = $caseData['upload_evidence'] ?? null;
-                        $extension = $evidence ? pathinfo($evidence, PATHINFO_EXTENSION) : null;
-                    @endphp
-
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <strong>Evidence :</strong>
-                        <span>
-                            @if ($evidence)
-                                @if (in_array($extension, ['jpg', 'jpeg', 'png']))
-                                    <img src="{{ asset('storage/' . $evidence) }}" alt="Evidence Image" width="100"
-                                        class="rounded">
-                                @elseif($extension === 'pdf')
-                                    <a href="{{ asset('storage/' . $evidence) }}" target="_blank"
-                                        class="btn btn-primary btn-sm">View PDF</a>
-                                @else
-                                    <a href="{{ asset('storage/' . $evidence) }}" target="_blank"
-                                        class="btn btn-secondary btn-sm">Download</a>
-                                @endif
-                            @else
-                                <span class="text-muted">No Attachment</span>
-                            @endif
-                        </span>
-                    </li>
-
                 </ul>
             </div>
             <div class="col-md-6 mb-3">
@@ -173,37 +147,46 @@
                             {{ $caseData['respondent_address2'] }}, {{ $caseData['respondent_pincode'] }}
                         </span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <strong>Respondent Attachment :</strong>
-                        <span>
-                            @php
-                                $respondentAttachment = $caseData['add_respondent'] ?? null;
-                                $fileExtension = $respondentAttachment
-                                    ? pathinfo($respondentAttachment, PATHINFO_EXTENSION)
-                                    : null;
-                            @endphp
-
-                            @if ($respondentAttachment)
-                                @if (in_array($fileExtension, ['jpg', 'jpeg', 'png']))
-                                    <img src="{{ asset('storage/' . $respondentAttachment) }}" alt="Attachment"
-                                        width="100">
-                                @elseif ($fileExtension === 'pdf')
-                                    <a href="{{ asset('storage/' . $respondentAttachment) }}" target="_blank"
-                                        class="btn btn-primary btn-sm">
-                                        View PDF
-                                    </a>
-                                @else
-                                    <a href="{{ asset('storage/' . $respondentAttachment) }}" download
-                                        class="btn btn-secondary btn-sm">
-                                        Download File
-                                    </a>
-                                @endif
-                            @else
-                                <span class="text-muted">No Attachment</span>
-                            @endif
-                        </span>
-                    </li>
                 </ul>
+            </div>
+            <div class="col-md-12 col-12 mb-3">
+                <ul class="list-group">
+                    @php
+                        $documents = [
+                            'application_form' => 'Application Form',
+                            'account_statement' => 'Account Statement',
+                            'foreclosure_statement' => 'Foreclosure Statement',
+                            'loan_agreement' => 'Loan Agreement',
+                            'other_document' => 'Other Document'
+                        ];
+                    @endphp
+                
+                    @foreach ($documents as $field => $label)
+                        @php
+                            $evidence = $caseData[$field] ?? null;
+                            $extension = $evidence ? pathinfo($evidence, PATHINFO_EXTENSION) : null;
+                        @endphp
+                
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{ $label }}:</strong>
+                            <span>
+                                @if ($evidence)
+                                    @if (in_array($extension, ['jpg', 'jpeg', 'png']))
+                                        <img src="{{ asset('storage/' . $evidence) }}" alt="{{ $label }}" width="100" class="rounded">
+                                    @elseif($extension === 'pdf')
+                                        <a href="{{ asset('storage/' . $evidence) }}" target="_blank" class="btn btn-primary py-1 px-3 btn-sm">View PDF</a>
+                                    @elseif(in_array($extension, ['doc','docx']))
+                                        <a href="{{ asset('storage/' . $evidence) }}" target="_blank" class="btn btn-secondary py-1 px-3 btn-sm">View Document</a>
+                                    @else
+                                        <a href="{{ asset('storage/' . $evidence) }}" target="_blank" class="btn btn-dark py-1 px-3 btn-sm">Download</a>
+                                    @endif
+                                @else
+                                    <span class="text-muted">No Attachment</span>
+                                @endif
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>                
             </div>
 
             <form class="row mx-auto px-auto border-top border-1 mt-4 py-4" id="assignCase" method="POST"

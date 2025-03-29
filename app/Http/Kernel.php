@@ -71,6 +71,10 @@ class Kernel extends HttpKernel
         'settings' => \App\Http\Middleware\SettingMiddleware::class,
         'permission' => \App\Http\Middleware\PermissionMiddleware::class,
         'isAllow' => \App\Http\Middleware\PermissionCheck::class,
+
+        'organization_permission' => \App\Http\Middleware\OrganizationPermissionMiddleware::class,
+        'isorganizationAllow' => \App\Http\Middleware\OrganizationPermissionCheck::class,
+
         'authCheck' => \App\Http\Middleware\AuthCheck::class,
         'checkVerifykey' => \App\Http\Middleware\CheckVerifyKey::class,
     ];

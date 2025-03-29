@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AwardController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BookAppointmentController;
 use App\Http\Controllers\CallBackController;
@@ -14,10 +15,12 @@ use App\Http\Controllers\FaqController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\HomeCmsController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderSheetController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\SettlementLetterController;
 use App\Http\Controllers\TestimonialController;
 
 /*
@@ -58,8 +61,41 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::put('users/permission', 'permission_update')->name('users.permission.update')->middleware('isAllow:103,can_edit');
     });
 
-     // ----------------------- CaseAssign Routes ----------------------------------------------------
-     Route::controller(CaseAssignController::class)->group(function () {
+    // ----------------------- Order Sheet Routes ---------------------------------------
+    Route::controller(AwardController::class)->group(function () {
+        Route::get('/award', 'index')->name('award');
+        Route::get('award/add', 'add')->name('award.add');
+        Route::post('award/add', 'save')->name('award.add');
+        Route::get('award/{id}', 'edit')->name('award.edit');
+        Route::post('award/{id}', 'update')->name('award.edit');
+        Route::delete('award', 'delete')->name('award.delete');
+        Route::get('getawardVariables', 'getawardVariables')->name('getawardVariables');
+    });
+
+    // ----------------------- Order Sheet Routes ---------------------------------------
+    Route::controller(OrderSheetController::class)->group(function () {
+        Route::get('/ordersheet', 'index')->name('ordersheet');
+        Route::get('ordersheet/add', 'add')->name('ordersheet.add');
+        Route::post('ordersheet/add', 'save')->name('ordersheet.add');
+        Route::get('ordersheet/{id}', 'edit')->name('ordersheet.edit');
+        Route::post('ordersheet/{id}', 'update')->name('ordersheet.edit');
+        Route::delete('ordersheet', 'delete')->name('ordersheet.delete');
+        Route::get('getordersheetVariables', 'getordersheetVariables')->name('getordersheetVariables');
+    });
+
+    // ----------------------- Settlement Order Routes ---------------------------------------
+    Route::controller(SettlementLetterController::class)->group(function () {
+        Route::get('/settlementletter', 'index')->name('settlementletter');
+        Route::get('settlementletter/add', 'add')->name('settlementletter.add');
+        Route::post('settlementletter/add', 'save')->name('settlementletter.add');
+        Route::get('settlementletter/{id}', 'edit')->name('settlementletter.edit');
+        Route::post('settlementletter/{id}', 'update')->name('settlementletter.edit');
+        Route::delete('settlementletter', 'delete')->name('settlementletter.delete');
+        Route::get('getsettlementletterVariables', 'getsettlementletterVariables')->name('getsettlementletterVariables');
+    });
+
+    // ----------------------- CaseAssign Routes ----------------------------------------------------
+    Route::controller(CaseAssignController::class)->group(function () {
         Route::get('caseassign', 'index')->name('caseassign')->middleware('isAllow:111,can_view');
         Route::get('caseassign/{id}', 'assign')->name('caseassign.assign')->middleware('isAllow:111,can_edit');
         Route::put('caseassign/{id}', 'update')->name('caseassign.update')->middleware('isAllow:111,can_edit');

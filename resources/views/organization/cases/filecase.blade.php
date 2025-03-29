@@ -60,10 +60,9 @@
                             <span style="border-radius: 50px; background-color:#ffb53f; padding:5px 10px;">2.</span>
                             If You Want to File Multiple Cases Using Excel SpreadSheet File (Allowed Type .xlxx Only)
                         </div>
-                        <form id="submitfileCases" action="{{ route('organization.cases.filecases.import') }}" method="POST"
-                            enctype="multipart/form-data">
+                        <form id="submitfileCases" action="{{ route('organization.cases.filecases.import') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <div class="d-flex justify-content-around item-align-self mt-3">
+                            <div class="d-flex justify-content-around align-items-center mt-3">
                                 <input type="file" name="file" id="fileInput">
                                 <button class="btn btn-dark py-1 px-4" type="submit" id="submitBtn">Submit Cases</button>
                             </div>
@@ -80,14 +79,28 @@
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script>
         document.getElementById('submitBtn').addEventListener('click', function(e) {
-            let fileInput = document.getElementById('fileInput');
+            e.preventDefault(); // Prevent immediate form submission
 
-            if (!fileInput.value) {
+            let fileInput = document.getElementById('fileInput');
+            let filePath = fileInput.value;
+            let allowedExtensions = /(\.xls|\.xlsx)$/i;
+
+            if (!filePath) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'No file selected!',
-                    text: 'Please select a file before submitting.',
+                    text: 'Please select an Excel file before submitting.',
                 });
+                return;
+            }
+
+            if (!allowedExtensions.exec(filePath)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid File Type!',
+                    text: 'Only .xls and .xlsx files are allowed.',
+                });
+                fileInput.value = ''; // Clear the input
                 return;
             }
 
@@ -101,23 +114,29 @@
                 confirmButtonText: 'Yes, Submit!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('filecasesForm').submit();
+                    document.getElementById('submitfileCases').submit();
                 }
             });
         });
-    </script>
-    <script>
+
+        // ✅ jQuery Validation for File Input
         $("#submitfileCases").validate({
             rules: {
                 file: {
-                    required: true
+                    required: true,
+                    extension: "xls|xlsx"
                 },
             },
             messages: {
                 file: {
-                    required: "Please Upload Excel File",
+                    required: "Please upload an Excel file.",
+                    extension: "Only .xls and .xlsx files are allowed."
                 },
             },
+            errorPlacement: function(error, element) {
+                error.insertAfter(element);
+                error.css("color", "red"); // Make error message red
+            }
         });
     </script>
 @endsection

@@ -18,8 +18,8 @@ class SampleFileCaseExport implements FromArray, WithHeadings
             'claimant_email',
             'claimant_address_type',
             'claimant_address1',
-            'claimant_state',
-            'claimant_city',
+            'claimant_state_id',
+            'claimant_city_id',
             'claimant_pincode',
             'respondent_first_name',
             'respondent_middle_name',
@@ -28,12 +28,11 @@ class SampleFileCaseExport implements FromArray, WithHeadings
             'respondent_email',
             'respondent_address_type',
             'respondent_address1',
-            'respondent_state',
-            'respondent_city',
+            'respondent_state_id',
+            'respondent_city_id',
             'respondent_pincode',
             'amount_in_dispute',
             'brief_of_case',
-            'upload_evidence',
         ];
     }
 

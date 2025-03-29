@@ -20,7 +20,7 @@
                         <div class="col-auto align-self-center">
                             <h5 class="mb-0">Dashboard</h5>
                         </div>
-                        <div class="col-auto ms-md-auto mx-auto d-flex mt-md-0 mt-2">
+                        <div class="col-auto ms-md-auto mx-md-0 mx-auto d-flex mt-md-0 mt-2">
                             <a href="#" class="btn btn-dasboard">Individual</a>
                             <div class="custom-dropdown">
                                 <select name="Organization" class="form-control form-select form-dashboard-select">
@@ -38,11 +38,11 @@
                         <!-- Tabs Section -->
                         <div class="d-flex flex-wrap justify-content-center">
                             <div class="custom-tab active" data-target="case-overview">CASE OVERVIEW</div>
-                            <div class="custom-tab" data-target="status-summary">CASE STATUS SUMMARY</div>
-                            <div class="custom-tab" data-target="upcoming-sessions">UPCOMING SESSIONS</div>
-                            <div class="custom-tab" data-target="case-details">CASE DETAILS</div>
-                            <div class="custom-tab" data-target="resolution-progress">RESOLUTION PROGRESS</div>
-                            <div class="custom-tab" data-target="communication-log">COMMUNICATION lOG</div>
+                            {{-- <div class="custom-tab" data-target="status-summary">CASE STATUS SUMMARY</div> --}}
+                            <div class="custom-tab" data-target="upcoming-sessions">UPCOMING HEARINGS</div>
+                            {{-- <div class="custom-tab" data-target="case-details">CASE DETAILS</div>
+                            <div class="custom-tab" data-target="resolution-progress">RESOLUTION PROGRESS</div> --}}
+                            <div class="custom-tab" data-target="communication-log">COMMUNICATION</div>
                         </div>
 
                         <!-- Content Boxes -->
@@ -55,10 +55,10 @@
                                                 alt="" class="img-fluid img-dashboard">
                                         </div>
                                     </div>
-                                    <div class="col-8" style="display: contents;">
+                                    <div class="col-8" style="display: flex;">
                                         <div class="my-auto">
                                             <h3>50</h3>
-                                            <p>Total Active Cases</p>
+                                            <p>Total Filed Cases</p>
                                         </div>
                                     </div>
                                 </div>
@@ -72,10 +72,10 @@
                                                 alt="" class="img-fluid img-dashboard">
                                         </div>
                                     </div>
-                                    <div class="col-8" style="display: contents;">
+                                    <div class="col-8" style="display: flex;">
                                         <div class="my-auto">
                                             <h3>50</h3>
-                                            <p>Cases Resolved</p>
+                                            <p>Total Pending Cases</p>
                                         </div>
                                     </div>
                                 </div>
@@ -88,10 +88,10 @@
                                             <img src="{{ asset('assets/img/dashboard/new-case.png') }}" alt="" class="img-fluid img-dashboard">
                                         </div>
                                     </div>
-                                    <div class="col-8" style="display: contents;">
+                                    <div class="col-8" style="display: flex;">
                                         <div class="my-auto">
                                             <h3>50</h3>
-                                            <p>New Cases</p>
+                                            <p>Total Resolved Cases</p>
                                         </div>
                                     </div>
                                 </div>
@@ -105,10 +105,44 @@
                                                 alt="" class="img-fluid img-dashboard">
                                         </div>
                                     </div>
-                                    <div class="col-8" style="display: contents;">
+                                    <div class="col-8" style="display: flex;">
                                         <div class="my-auto">
                                             <h3>50</h3>
-                                            <p>Pending Cases</p>
+                                            <p>Upcoming Hearing Dates</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
+                            </div>
+                            <div class="col-md-6 col-12 position-relative">
+                                <div class="custom-card row">
+                                    <div class="col-4">
+                                        <div class="icon-box-dash">
+                                            <img src="{{ asset('assets/img/dashboard/case-timing.png') }}"
+                                                alt="" class="img-fluid img-dashboard">
+                                        </div>
+                                    </div>
+                                    <div class="col-8" style="display: flex;">
+                                        <div class="my-auto">
+                                            <h3>50</h3>
+                                            <p>Interims Orders</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
+                            </div>
+                            <div class="col-md-6 col-12 position-relative">
+                                <div class="custom-card row">
+                                    <div class="col-4">
+                                        <div class="icon-box-dash">
+                                            <img src="{{ asset('assets/img/dashboard/case-timing.png') }}"
+                                                alt="" class="img-fluid img-dashboard">
+                                        </div>
+                                    </div>
+                                    <div class="col-8" style="display: flex;">
+                                        <div class="my-auto">
+                                            <h3>50</h3>
+                                            <p>Awards</p>
                                         </div>
                                     </div>
                                 </div>
@@ -116,7 +150,7 @@
                             </div>
                         </div>
 
-                        <div id="status-summary" class="content-section row d-none mt-xl-5 mt-3">
+                        {{-- <div id="status-summary" class="content-section row d-none mt-xl-5 mt-3">
                             <div class="col-12">
                                 <div class="custom-table-container">
                                     <table class="table custom-table">
@@ -152,7 +186,7 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div id="upcoming-sessions" class="content-section row mt-xl-5 mt-3 d-none">
                             <div class="col-12">
@@ -197,7 +231,7 @@
                             </div>
                         </div>
 
-                        <div id="case-details" class="content-section row mt-xl-5 mt-3 d-none">
+                        {{-- <div id="case-details" class="content-section row mt-xl-5 mt-3 d-none">
                             <div class="col-12">
                                 <div class="custom-table-container">
                                     <table class="table custom-table">
@@ -286,48 +320,11 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div id="communication-log" class="content-section row mt-xl-5 mt-3 d-none">
                             <div class="col-12">
-                                <div class="custom-table-container">
-                                    <table class="table custom-table">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-start ps-3">Date</th>
-                                                <th>Type</th>
-                                                <th>With</th>
-                                                <th>Summary</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td class="text-start ps-3">20-02-25</td>
-                                                <td>Email</td>
-                                                <td>Person/entity</td>
-                                                <td>Brief description</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-start ps-3">20-02-25</td>
-                                                <td>Phone call</td>
-                                                <td>Person/entity</td>
-                                                <td>Brief description</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-start ps-3">20-02-25</td>
-                                                <td>Meeting</td>
-                                                <td>Person/entity</td>
-                                                <td>Brief description</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-start ps-3">20-02-25</td>
-                                                <td>Email</td>
-                                                <td>Person/entity</td>
-                                                <td>Brief description</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <p>Arbitrator -> Cases -> Case Manager Information Show</p>
                             </div>
                         </div>
                     </div>

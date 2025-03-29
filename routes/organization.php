@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
  */
 
 
-Route::name('organization.')->middleware(['ensure.organization.session'])->prefix('organization')->group(function () {
+Route::name('organization.')->middleware(['ensure.organization.session', 'organization_permission'])->prefix('organization')->group(function () {
 
     Route::controller(HomeController::class)->group(function () {
         Profile::routes();
@@ -59,6 +59,8 @@ Route::name('organization.')->middleware(['ensure.organization.session'])->prefi
         Route::get('filecaseview/{id}', 'edit')->name('cases.filecaseview.edit');
         Route::post('filecaseview/{id}', 'update')->name('cases.filecaseview.edit');
         Route::delete('filecaseview', 'delete')->name('cases.filecaseview.delete');
+
+        Route::get('viewcasedetail/{id}', 'viewcasedetail')->name('cases.viewcasedetail');
 
         Route::get('filecase', 'filecase')->name('cases.filecase');
         Route::post('/import-filecases', 'importExcel')->name('cases.filecases.import');

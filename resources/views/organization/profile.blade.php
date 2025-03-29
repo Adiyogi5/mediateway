@@ -31,7 +31,7 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="education-tab" data-bs-toggle="tab" data-bs-target="#education"
                                     type="button" role="tab" aria-controls="education" aria-selected="false">
-                                    Educational & Professional Detail
+                                    Other Details
                                 </button>
                             </li>
                         </ul>

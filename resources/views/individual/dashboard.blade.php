@@ -21,7 +21,13 @@
                                 <h5 class="mb-0">Dashboard</h5>
                             </div>
                             <div class="col-auto ms-md-auto ms-none d-flex mt-md-0 mt-2">
-                                <span class="case-id">Case ID : IND000001</span>
+                                @if (!empty($caseData) && $caseData->isNotEmpty())
+                                    @foreach ($caseData as $case)
+                                        @foreach ($case->payments as $payment)
+                                            <span class="case-id">Case ID : {{ $payment->file_case_no }}</span>
+                                        @endforeach
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
                         <div class="row mt-xl-4 mt-3 justify-content-center">
@@ -30,49 +36,288 @@
                                 <div class="custom-tab active" data-target="case-overview">CASE OVERVIEW</div>
                                 <div class="custom-tab" data-target="important-date">IMPORTANT DATE</div>
                                 <div class="custom-tab" data-target="document-checklist">DOCUMENT CHECKLIST</div>
-                                <div class="custom-tab" data-target="communication-log">COMMUNICATION LOG</div>
+                                {{-- <div class="custom-tab" data-target="communication-log">COMMUNICATION LOG</div> --}}
                                 <div class="custom-tab" data-target="financial-summary">FINANCIAL SUMMARY</div>
                                 <div class="custom-tab" data-target="case-progress">CASE PROGRESS</div>
-                                <div class="custom-tab" data-target="my-position-summary">MY POSITION SUMMARY</div>
-                                <div class="custom-tab" data-target="opposing-party-position">OPPOSING PARTY'S POSITION</div>
+                                <div class="custom-tab" data-target="opposing-party-position">OPPOSING PARTY'S POSITION
+                                </div>
                                 <div class="custom-tab" data-target="to-do-list">TO-DO LIST</div>
                                 <div class="custom-tab" data-target="support-contacts">SUPPORT CONTACTS</div>
-                                <div class="custom-tab" data-target="notes-reminders">NOTES/ REMINDERS</div>
+                                {{-- <div class="custom-tab" data-target="notes-reminders">NOTES/ REMINDERS</div> --}}
                             </div>
 
                             <!-- Content Boxes -->
                             <div id="case-overview" class="content-section row gy-lg-4 gy-3">
-                                <div class="col-md-12 col-12 position-relative">
-                                    <div class="custom-case-card">
-                                       <h4 class="case-heading">Case Overview</h4>
-                                       <div class="row gx-5 gy-3">
-                                        <div class="col-md-4 col-6">
-                                            <p class="case-title">Dispute Type</p>
-                                            <p class="case-text">______________</p>
+                                @if (!empty($caseData) && $caseData->isNotEmpty())
+                                    <div class="col-md-12 col-12 position-relative">
+                                        <div class="custom-case-card">
+                                            @foreach ($caseData as $case)
+                                                <h4 class="case-heading">Case Overview :</h4>
+                                                <div class="row gx-5 gy-3">
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Dispute Type</p>
+                                                        <p class="case-text">
+                                                            {{ config('constant.case_type')[$case->case_type] ?? 'Unknown Case Type' }}
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Neutral Third Party</p>
+                                                        <p class="case-text">______________</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Case Administered</p>
+                                                        <p class="case-text">______________</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Opposing Party</p>
+                                                        <p class="case-text"> {{ $case->respondent_first_name }}
+                                                            {{ $case->respondent_last_name }}</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Case Status</p>
+                                                        <p
+                                                            class="case-text {{ $case->status == 1 ? 'text-success' : 'text-danger' }}">
+                                                            {{ $case->status == 1 ? 'Active' : 'Inactive' }}</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Days Since filing</p>
+                                                        <p class="case-text">
+                                                            {{ intval(\Carbon\Carbon::parse($case->created_at)->diffInDays(now())) }}
+                                                            days</p>
+                                                    </div>
+                                                </div>
+
+                                                <hr>
+
+                                                <h4 class="case-heading">My Position Summary :</h4>
+                                                <div class="row gx-5 gy-3">
+                                                    <div class="col-12">
+                                                    <table class="table custom-table bg-white">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-start ps-3 py-1">Initial Claim/ Defence</th>
+                                                                <th class="py-1">Current Position</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="text-start ps-3 py-1 border-bottom-0">---------</td>
+                                                                <td class="py-1 border-bottom-0">--------</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-start ps-3 py-1 border-bottom-0">---------</td>
+                                                                <td class="py-1 border-bottom-0">--------</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-start ps-3 py-1 border-bottom-0">---------</td>
+                                                                <td class="py-1 border-bottom-0">--------</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                </div>
+
+                                                <hr>
+
+                                                <h4 class="case-heading">Assigned Cases :</h4>
+                                                @if ($case->assignedCases->isNotEmpty())
+                                                    @foreach ($case->assignedCases as $assigned)
+                                                        <div class="row gx-5 gy-3">
+                                                            <div class="col-md-4 col-6">
+                                                                <p class="case-title">Assigned To arbitrator</p>
+                                                                <p class="case-text">
+                                                                    {{ $assigned->arbitrator?->name ?? 'N/A' }}</p>
+                                                            </div>
+                                                            <div class="col-md-4 col-6">
+                                                                <p class="case-title">Assigned To Advocate</p>
+                                                                <p class="case-text">
+                                                                    {{ $assigned->advocate?->name ?? 'N/A' }}</p>
+                                                            </div>
+                                                            <div class="col-md-4 col-6">
+                                                                <p class="case-title">Assigned To Case Manager</p>
+                                                                <p class="case-text">
+                                                                    {{ $assigned->caseManager?->name ?? 'N/A' }}</p>
+                                                            </div>
+                                                            <div class="col-md-4 col-6">
+                                                                <p class="case-title">Assigned To Mediator</p>
+                                                                <p class="case-text">
+                                                                    {{ $assigned->mediator?->name ?? 'N/A' }}</p>
+                                                            </div>
+                                                            <div class="col-md-4 col-6">
+                                                                <p class="case-title">Assigned To Conciliator</p>
+                                                                <p class="case-text">
+                                                                    {{ $assigned->conciliator?->name ?? 'N/A' }}</p>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    <small class="text-center justify-content-center">
+                                                        <p class="mb-0 text-danger">Wait for case assignment.</p>
+                                                    </small>
+                                                @endif
+
+                                                <hr>
+
+                                                <h4 class="case-heading">Payments :</h4>
+                                                @if ($case->payments->isNotEmpty())
+                                                    @foreach ($case->payments as $payment)
+                                                        <div class="row gx-5 gy-3">
+                                                            <div class="col-md-4 col-6">
+                                                                <p class="case-title">Case</p>
+                                                                <p class="case-text">{{ $payment->file_case_no }}</p>
+                                                            </div>
+                                                            <div class="col-md-4 col-6">
+                                                                <p class="case-title">Transaction ID</p>
+                                                                <p class="case-text">{{ $payment->transaction_id }}</p>
+                                                            </div>
+                                                            <div class="col-md-4 col-6">
+                                                                <p class="case-title">Amount</p>
+                                                                <p class="case-text">{{ $payment->payment_amount }}</p>
+                                                            </div>
+                                                            <div class="col-md-4 col-6">
+                                                                <p class="case-title">Payment Date</p>
+                                                                <p class="case-text">
+                                                                    {{ \Carbon\Carbon::parse($payment->payment_date)->format('d-m-Y') }}
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-md-4 col-6">
+                                                                <p class="case-title">Status</p>
+                                                                <p
+                                                                    class="case-text {{ $payment->payment_status == 1 ? 'text-success' : 'text-danger' }}">
+                                                                    {{ $payment->payment_status == 1 ? 'Paid' : 'UnPaid' }}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    <small class="text-center justify-content-center">
+                                                        <p class="mb-0 text-danger">Please Make Payment of Filed Case.</p>
+                                                    </small>
+                                                @endif
+
+                                                <hr>
+                                                <h4 class="case-heading">Case Documents :</h4>
+                                                <div class="row gx-5 gy-3">
+                                                    @php
+                                                        $documents = [
+                                                            'application_form' => $case->application_form,
+                                                            'account_statement' => $case->account_statement,
+                                                            'foreclosure_statement' => $case->foreclosure_statement,
+                                                            'loan_agreement' => $case->loan_agreement,
+                                                            'other_document' => $case->other_document,
+                                                        ];
+                                                    @endphp
+
+                                                    @foreach ($documents as $label => $filename)
+                                                        @php
+                                                            $filePath = $filename
+                                                                ? asset('storage/' . $filename)
+                                                                : null;
+                                                            $extension = $filename
+                                                                ? strtolower(pathinfo($filename, PATHINFO_EXTENSION))
+                                                                : null;
+                                                        @endphp
+
+                                                        <div class="col-md-4 col-6">
+                                                            <p class="case-title">
+                                                                {{ str_replace('_', ' ', ucfirst($label)) }}
+                                                            </p>
+                                                            <p class="case-text">
+                                                                @if ($filePath && $extension)
+                                                                    @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif']))
+                                                                        <img src="{{ $filePath }}"
+                                                                            class="img-thumbnail" width="100"
+                                                                            alt="Image Preview" />
+                                                                    @elseif($extension === 'pdf')
+                                                                        <a class="text-decoration-none case-text"
+                                                                            style="font-size: 13px"
+                                                                            href="{{ $filePath }}" target="_blank">
+                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                                height="30" alt="PDF File" />
+                                                                            View PDF
+                                                                        </a>
+                                                                    @elseif(in_array($extension, ['doc', 'docx']))
+                                                                        <a class="text-decoration-none case-text"
+                                                                            style="font-size: 13px"
+                                                                            href="{{ $filePath }}" target="_blank">
+                                                                            <img src="{{ asset('public/assets/img/doc.png') }}"
+                                                                                height="30" alt="DOC File" />
+                                                                            View Document
+                                                                        </a>
+                                                                    @else
+                                                                        <a class="text-decoration-none case-text"
+                                                                            style="font-size: 13px"
+                                                                            href="{{ $filePath }}"
+                                                                            target="_blank">Download
+                                                                            File</a>
+                                                                    @endif
+                                                                @else
+                                                                    <span class="text-muted">No file
+                                                                        uploaded</span>
+                                                                @endif
+                                                            </p>
+                                                        </div>
+                                                    @endforeach
+
+                                                    <hr>
+
+                                                    <div
+                                                        class="col-12 d-flex justify-content-between item-align-self my-0">
+                                                        <p class="case-title my-auto">Claimant Petition
+                                                            Filed Or Not</p>
+                                                        <a class="text-decoration-none case-text" style="font-size: 13px"
+                                                            href="#" target="_blank">
+                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                height="30" alt="PDF File" />
+                                                            View PDF
+                                                        </a>
+                                                    </div>
+
+                                                    <hr>
+
+                                                    <div
+                                                        class="col-12 d-flex justify-content-between item-align-self my-0">
+                                                        <p class="case-title my-auto">Evidence Filed Or
+                                                            Not</p>
+                                                        <a class="text-decoration-none case-text" style="font-size: 13px"
+                                                            href="#" target="_blank">
+                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                height="30" alt="PDF File" />
+                                                            View PDF
+                                                        </a>
+                                                    </div>
+
+                                                    <hr>
+
+                                                    <div
+                                                        class="col-12 d-flex justify-content-between item-align-self my-0">
+                                                        <p class="case-title my-auto">Award Recieved Or
+                                                            Not</p>
+                                                        <a class="text-decoration-none case-text" style="font-size: 13px"
+                                                            href="#" target="_blank">
+                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                height="30" alt="PDF File" />
+                                                            View PDF
+                                                        </a>
+                                                    </div>
+
+                                                    <hr>
+
+                                                    <div
+                                                        class="col-12 d-flex justify-content-between item-align-self my-0">
+                                                        <p class="case-title my-auto">Interim Order</p>
+                                                        <a class="text-decoration-none case-text" style="font-size: 13px"
+                                                            href="#" target="_blank">
+                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                height="30" alt="PDF File" />
+                                                            View PDF
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            @endforeach
                                         </div>
-                                        <div class="col-md-4 col-6">
-                                            <p class="case-title">Neutral Third Party</p>
-                                            <p class="case-text">______________</p>
-                                        </div>
-                                        <div class="col-md-4 col-6">
-                                            <p class="case-title">Case Administered</p>
-                                            <p class="case-text">______________</p>
-                                        </div>
-                                        <div class="col-md-4 col-6">
-                                            <p class="case-title">Opposing Party</p>
-                                            <p class="case-text">______________</p>
-                                        </div>
-                                        <div class="col-md-4 col-6">
-                                            <p class="case-title">Case Status</p>
-                                            <p class="case-text">______________</p>
-                                        </div>
-                                        <div class="col-md-4 col-6">
-                                            <p class="case-title">Days Since filing</p>
-                                            <p class="case-text">______________</p>
-                                        </div>
-                                       </div>
                                     </div>
-                                </div>
+                                @endif
                             </div>
 
                             <div id="important-date" class="content-section row d-none mt-xl-5 mt-3">
@@ -83,29 +328,24 @@
                                                 <tr>
                                                     <th class="text-start ps-3">Event</th>
                                                     <th>Date</th>
-                                                    <th>Status</th>
+                                                    <th>Notice</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td class="text-start ps-3">ID001</td>
+                                                    <td class="text-start ps-3">Respondent Notice</td>
                                                     <td>20-02-25</td>
-                                                    <td>Completed</td>
+                                                    <td>pdf download</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-start ps-3">ID001</td>
+                                                    <td class="text-start ps-3">Notice</td>
                                                     <td>20-02-25</td>
-                                                    <td>Upcoming</td>
+                                                    <td>pdf download</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-start ps-3">ID001</td>
+                                                    <td class="text-start ps-3">Hearing</td>
                                                     <td>20-02-25</td>
-                                                    <td>Completed</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-start ps-3">ID001</td>
-                                                    <td>20-02-25</td>
-                                                    <td>Upcoming</td>
+                                                    <td>pdf download</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -119,7 +359,8 @@
                                         <table class="table custom-table">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-start ps-3">Document</th>
+                                                    <th class="text-start ps-3">Claimant/ Respodent</th>
+                                                    <th>Doc</th>
                                                     <th>Status</th>
                                                     <th>Date</th>
                                                 </tr>
@@ -127,21 +368,25 @@
                                             <tbody>
                                                 <tr>
                                                     <td class="text-start ps-3">ID001</td>
+                                                    <td>pdf download</td>
                                                     <td>Completed</td>
                                                     <td>20-02-25</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-start ps-3">ID001</td>
+                                                    <td>pdf download</td>
                                                     <td>Upcoming</td>
                                                     <td>20-02-25</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-start ps-3">ID001</td>
+                                                    <td>pdf download</td>
                                                     <td>Completed</td>
                                                     <td>20-02-25</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-start ps-3">ID001</td>
+                                                    <td>pdf download</td>
                                                     <td>Upcoming</td>
                                                     <td>20-02-25</td>
                                                 </tr>
@@ -151,7 +396,7 @@
                                 </div>
                             </div>
 
-                            <div id="communication-log" class="content-section row mt-xl-5 mt-3 d-none">
+                            {{-- <div id="communication-log" class="content-section row mt-xl-5 mt-3 d-none">
                                 <div class="col-12">
                                     <div class="custom-table-container">
                                         <table class="table custom-table">
@@ -192,7 +437,7 @@
                                         </table>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div id="financial-summary" class="content-section row mt-xl-5 mt-3 d-none">
                                 <div class="col-12">
@@ -200,7 +445,7 @@
                                         <table class="table custom-table">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-start ps-3">item</th>
+                                                    <th class="text-start ps-3">Item</th>
                                                     <th>amount</th>
                                                     <th>status</th>
                                                 </tr>
@@ -270,20 +515,9 @@
                                 </div>
                             </div>
 
-                            <div id="my-position-summary" class="content-section row mt-xl-5 mt-3 d-none">
-                                <div class="col-12">
-                                    <h6 class="case-heading">Initial Claim/ Defence</h6>
-                                    <textarea name="initial-claim" id="initial-claim" class="w-100 rounded-1" rows="6" placeholder="brief descripition"></textarea>
-                                </div>
-                                <div class="col-12">
-                                    <h6 class="case-heading">Current Position</h6>
-                                    <textarea name="initial-claim" id="initial-claim" class="w-100 rounded-1" rows="6" placeholder="brief descripition"></textarea>
-                                </div>
-                            </div>
-
                             <div id="opposing-party-position" class="content-section row mt-xl-5 mt-3 d-none">
                                 <div class="col-12">
-                                    
+                                    <p>Appeared/Not Appeared</p>
                                 </div>
                             </div>
 
@@ -327,47 +561,15 @@
 
                             <div id="support-contacts" class="content-section row mt-xl-5 mt-3 d-none">
                                 <div class="col-12">
-                                    <div class="custom-table-container">
-                                        <table class="table custom-table">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-start ps-3">Date</th>
-                                                    <th>name</th>
-                                                    <th>contact information</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td class="text-start ps-3">20-02-25</td>
-                                                    <td>iD001</td>
-                                                    <td>email</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-start ps-3">20-02-25</td>
-                                                    <td>iD001</td>
-                                                    <td>call</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-start ps-3">20-02-25</td>
-                                                    <td>iD001</td>
-                                                    <td>meeting</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-start ps-3">20-02-25</td>
-                                                    <td>iD001</td>
-                                                    <td>notice</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <p>Case Manager Details here...</p>
                                 </div>
                             </div>
 
-                            <div id="notes-reminders" class="content-section row mt-xl-5 mt-3 d-none">
+                            {{-- <div id="notes-reminders" class="content-section row mt-xl-5 mt-3 d-none">
                                 <div class="col-12">
-                                   
+
                                 </div>
-                            </div>
+                            </div> --}}
 
                         </div>
                     </div>
@@ -379,24 +581,24 @@
 
 @section('js')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
-    @if(session('showProfilePopup') || isset($showProfilePopup))
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            Swal.fire({
-                title: "Profile Incomplete!",
-                text: "Please complete your profile before proceeding.",
-                icon: "warning",
-                showCancelButton: false,
-                confirmButtonText: "Update Now",
-                allowOutsideClick: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "{{ route('individual.profile') }}";
-                }
+    @if (session('showProfilePopup') || isset($showProfilePopup))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Profile Incomplete!",
+                    text: "Please complete your profile before proceeding.",
+                    icon: "warning",
+                    showCancelButton: false,
+                    confirmButtonText: "Update Now",
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('individual.profile') }}";
+                    }
+                });
             });
-        });
-    </script>
-@endif
+        </script>
+    @endif
     <script>
         $(document).ready(function() {
             $(".custom-tab").click(function() {

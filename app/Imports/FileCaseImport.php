@@ -24,17 +24,19 @@ class FileCaseImport implements ToModel, WithHeadingRow
     
         // Check if required fields have values
         foreach ($requiredFields as $field) {
-            if (empty($row[$field])) {
+            if (!isset($row[$field]) || trim($row[$field]) === '') {
                 Log::warning("Skipped record due to missing field: $field", $row);
                 return null; // Skip this row if any required field is missing
             }
         }
     
         // Convert state_id to name
-        $claimantStateName   = State::where('name', $row['claimant_state'] ?? null)->value('id');
-        $respondentStateName = State::where('name', $row['respondent_state'] ?? null)->value('id');
-        $claimantCityName    = City::where('name', $row['claimant_city'] ?? null)->value('id');
-        $respondentCityName  = City::where('name', $row['respondent_city'] ?? null)->value('id');
+        $claimantState = State::where('name', trim($row['claimant_state_id'] ?? ''))->value('id');
+        $respondentState = State::where('name', trim($row['respondent_state_id'] ?? ''))->value('id');
+
+        $claimantCity    = City::where('name', trim($row['claimant_city_id'] ?? ''))->value('id');
+        $respondentCity  = City::where('name', trim($row['respondent_city_id'] ?? ''))->value('id');
+
     
         return new FileCase([
             'user_type'               => 2,
@@ -45,9 +47,9 @@ class FileCaseImport implements ToModel, WithHeadingRow
             'claimant_mobile'         => $row['claimant_mobile'] ?? null,
             'claimant_email'          => $row['claimant_email'] ?? null,
             'claimant_address_type'   => $row['claimant_address_type'] ?? null,
-            'claimant_address1'       => $row['claimant_address'] ?? null,
-            'claimant_state_id'       => $claimantStateName ?? null,
-            'claimant_city_id'        => $claimantCityName ?? null,
+            'claimant_address1'       => $row['claimant_address1'] ?? null,
+            'claimant_state_id'       => $claimantState,
+            'claimant_city_id'        => $claimantCity,
             'claimant_pincode'        => $row['claimant_pincode'] ?? null,
             'respondent_first_name'   => $row['respondent_first_name'] ?? null,
             'respondent_middle_name'  => $row['respondent_middle_name'] ?? null,
@@ -55,14 +57,13 @@ class FileCaseImport implements ToModel, WithHeadingRow
             'respondent_mobile'       => $row['respondent_mobile'] ?? null,
             'respondent_email'        => $row['respondent_email'] ?? null,
             'respondent_address_type' => $row['respondent_address_type'] ?? null,
-            'respondent_address1'     => $row['respondent_address'] ?? null,
-            'respondent_state_id'     => $respondentStateName ?? null,
-            'respondent_city_id'      => $respondentCityName ?? null,
+            'respondent_address1'     => $row['respondent_address1'] ?? null,
+            'respondent_state_id'     => $respondentState,
+            'respondent_city_id'      => $respondentCity,
             'respondent_pincode'      => $row['respondent_pincode'] ?? null,
             'amount_in_dispute'       => $row['amount_in_dispute'] ?? null,
             'case_type'               => $row['case_type'] ?? null,
             'brief_of_case'           => $row['brief_of_case'] ?? null,
-            'upload_evidence'         => $row['upload_evidence'] ?? null,
         ]);
     }
     

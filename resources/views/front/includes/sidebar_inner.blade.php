@@ -63,29 +63,39 @@ foreach ($guards as $guard) {
                         style="{{ request()->routeIs($currentGuard . '.case.filecaseview') ? 'color:white !important;;' : '' }}"
                         href="{{ route($currentGuard . '.' . 'case.filecaseview') }}"><i class="fa-solid fa-cash-register faa-profile"></i> File A Case</a>
                 </li>
+                <li class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.courtroom.roomview') ? 'text-white bg-lime' : '' }}">
+                    <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.courtroom.roomview') ? 'text-white bg-lime' : '' }}"
+                        aria-current="page"
+                        style="{{ request()->routeIs($currentGuard . '.courtroom.roomview') ? 'color:white !important;;' : '' }}"
+                        href="{{ route($currentGuard . '.' . 'courtroom.roomview') }}"><i class="fa-solid fa-video faa-profile"></i> Court Room</a>
+                </li>
                 @endif
 
                 @if (auth('organization')->check())
+                @if(Helper::organizationCan(203))
                 <li class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.staffroles') ? 'text-white bg-lime' : '' }}">
                     <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.staffroles') ? 'text-white bg-lime' : '' }}"
                         aria-current="page"
                         style="{{ request()->routeIs($currentGuard . '.staffroles') ? 'color:white !important;;' : '' }}"
                         href="{{ route($currentGuard . '.' . 'staffroles') }}"><i class="fa-brands fa-square-web-awesome-stroke faa-profile"></i> Staff Roles</a>
                 </li>
-                
+                @endif
+                @if(Helper::organizationCan(204))
                 <li class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.staffs') ? 'text-white bg-lime' : '' }}">
                     <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.staffs') ? 'text-white bg-lime' : '' }}"
                         aria-current="page"
                         style="{{ request()->routeIs($currentGuard . '.staffs') ? 'color:white !important;;' : '' }}"
                         href="{{ route($currentGuard . '.' . 'staffs') }}"><i class="fa-solid fa-users faa-profile"></i> Staffs</a>
                 </li>
-
+                @endif
+                @if(Helper::organizationCan(205))
                 <li class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.cases.filecaseview') ? 'text-white bg-lime' : '' }}">
                     <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.cases.filecaseview') ? 'text-white bg-lime' : '' }}"
                         aria-current="page"
                         style="{{ request()->routeIs($currentGuard . '.cases.filecaseview') ? 'color:white !important;;' : '' }}"
                         href="{{ route($currentGuard . '.' . 'cases.filecaseview') }}"><i class="fa-solid fa-cash-register faa-profile"></i> File Cases</a>
                 </li>
+                @endif
                 @endif
                 
                 <li class="nav-item py-3 text-center justify-content-start d-flex border-bottom">

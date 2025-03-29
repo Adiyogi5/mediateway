@@ -903,11 +903,11 @@ footer .social-icon .icon {
 }
 
 .custom-dropdown::after {
-    content: "˅"; /* Unicode Down Arrow */
-    font-size: 20px;
+    content: "▼"; /* Unicode Down Arrow */
+    font-size: 16px;
     color: black;
     position: absolute;
-    right: 16px;
+    right: 12px;
     font-weight: 600;
     top: 50%;
     transform: translateY(-50%);
@@ -924,7 +924,7 @@ footer .social-icon .icon {
     box-shadow: 0px 0px 32.6px -5px #0000001c;
     cursor: pointer;
     transition: 0.3s;
-    background: #ffb000 !important;
+    background: #ffe4cb !important;
     color: rgb(0, 0, 0);
     margin-left: 12px;
     appearance: none;
@@ -1014,7 +1014,7 @@ footer .social-icon .icon {
 }
 .card-dashboard .custom-table-container {
     border-radius: 8px;
-    overflow: hidden;
+    overflow: auto;
     background-color: #ffb53f24;
     border: 1px solid #00000059;
 }
@@ -1136,6 +1136,31 @@ div.dataTables_wrapper div.dataTables_info {
     margin-right: 5px;
 } */
 
+/* Smooth transition for accordion */
+.accordion-collapse {
+    transition: all 0.4s ease-in-out;
+    font-size: 12px !important;
+}
+.accordion-button::after {
+    transition: transform 0.3s ease-in-out;
+    font-size: 12px !important;
+}
+.accordion-button:not(.collapsed) {
+    color: #000000;
+    background-color: #fff2dc;
+    box-shadow: inset 0 calc(-1* var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
+}
+.accordion-button {
+    width: 100%;
+    padding: 12px 12px !important;
+    font-size: 16px;
+    font-weight: 600;
+}
+.accordion-item:last-of-type>.accordion-header .accordion-button.collapsed{
+    background-color: #fff2dc;
+    box-shadow: inset 0 calc(-1* var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
+}
+
 .case-id {
     font-family: "Inter";
     font-size: 18px;
@@ -1149,11 +1174,12 @@ div.dataTables_wrapper div.dataTables_info {
     background-color: #ffffff;
     border-radius: 8px;
     padding: 20px 20px;
+    overflow: hidden;
 }
 .custom-case-card .case-heading {
     font-family: "Inter";
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
     color: #000000;
     margin-bottom: 20px;
 }
@@ -1162,7 +1188,7 @@ div.dataTables_wrapper div.dataTables_info {
     font-size: 14px;
     font-weight: 500;
     color: #000000;
-    margin-bottom: 0px;
+    margin-bottom: 6px;
 }
 .custom-case-card .case-text {
     font-family: "Inter";

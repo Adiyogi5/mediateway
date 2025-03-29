@@ -391,18 +391,32 @@
                                         @enderror
                                     </div>
                                     <div class="col-md-6"></div>
-                                    <div class="col-md-6 col-12 mt-1" id="evidence-box" style="display: none;">
-                                        <label for="upload_evidence" class="custom-file-upload mt-1 w-100">
-                                            <span style="font-weight: 500;" id="file-label2">
-                                                <span
-                                                    style="border:2px solid black; border-radius:50%;padding: 1px;">➕</span>
-                                                Attach document / Upload Evidence</span>
-                                        </label>
-                                        <input type="file" id="upload_evidence" name="upload_evidence" hidden />
-                                        @error('upload_evidence')
-                                            <span class="text-danger fs-custom">{{ $message }}</span>
-                                        @enderror
-                                    </div>
+
+                                    @php
+                                        $documents = [
+                                            'application_form' => 'Application Form',
+                                            'foreclosure_statement' => 'Foreclosure Statement',
+                                            'loan_agreement' => 'Loan Agreement',
+                                            'account_statement' => 'Account Statement',
+                                            'other_document' => 'Other Document',
+                                        ];
+                                    @endphp
+
+                                    @foreach ($documents as $key => $label)
+                                        <div class="col-md-6 col-12 mt-5 document-upload" id="upload-{{ $key }}">
+                                            <label for="{{ $key }}" class="custom-file-upload">
+                                                <span style="font-weight: 500;" id="file-label-{{ $key }}">
+                                                    <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
+                                                    Attach {{ $label }} Document
+                                                </span>
+                                            </label>
+                                            <input type="file" id="{{ $key }}" name="{{ $key }}" hidden />
+
+                                            @error($key)
+                                                <span class="text-danger fs-custom">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    @endforeach
 
 
                                     <div class="col-12">
@@ -652,32 +666,43 @@
         });
     </script>
     <script>
-        document.getElementById('upload_evidence').addEventListener('change', function(event) {
-            let fileName = event.target.files.length > 0 ? event.target.files[0].name :
-                "Attach document / Upload Evidence";
-            document.getElementById('file-label2').textContent = fileName;
-        });
-    </script>
-     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            var agreementExist = document.getElementById("agreement_exist");
-            var evidenceBox = document.getElementById("evidence-box");
-        
-            function toggleEvidenceBox() {
-                if (agreementExist.value == "1") {
-                    evidenceBox.style.display = "block";
+            const agreementSelect = document.getElementById("agreement_exist");
+            const documentFields = document.querySelectorAll(".document-upload");
+    
+            // Function to toggle file fields
+            function toggleDocumentFields() {
+                if (agreementSelect.value === "1") {
+                    documentFields.forEach(field => field.style.display = "block");
                 } else {
-                    evidenceBox.style.display = "none";
+                    documentFields.forEach(field => field.style.display = "none");
                 }
             }
-        
-            // Run on page load (for old form data)
-            toggleEvidenceBox();
-        
-            // Run when the user changes the selection
-            agreementExist.addEventListener("change", toggleEvidenceBox);
+    
+            toggleDocumentFields();
+    
+            agreementSelect.addEventListener("change", toggleDocumentFields);
         });
-    </script> 
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const documents = [
+                "application_form",
+                "foreclosure_statement",
+                "loan_agreement",
+                "account_statement",
+                "other_document",
+            ];
+    
+            documents.forEach(function (id) {
+                document.getElementById(id).addEventListener("change", function (event) {
+                    let fileName = event.target.files.length > 0 ? event.target.files[0].name :
+                        "Attach " + id.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase()) + " Document";
+                    document.getElementById("file-label-" + id).textContent = fileName;
+                });
+            });
+        });
+    </script>    
     <script>
         $(document).ready(function() {
             var currentStep = 1;
@@ -720,11 +745,14 @@
             updateStepUI(); // Initialize on load
         });
     </script>
-    <script>
-       $(document).ready(function() {
-            var claimantCityId = "{{ old('claimant_city_id', $individualsData->city_id ?? '') }}";
+   <script>
+        $(document).ready(function() {
+            var claimantCityId = "{{ old('claimant_city_id', $caseviewData->claimant_city_id ?? $individualsData->city_id ?? '') }}";
+            var respondentCityId = "{{ old('respondent_city_id', $caseviewData->respondent_city_id ?? '') }}";
 
             function getCity(state_id, cityDropdownId, selectedCityId) {
+                if (!state_id) return; // Prevent AJAX call if state is not selected
+
                 $.ajax({
                     type: "POST",
                     url: "{{ route('cities.list') }}",
@@ -735,25 +763,35 @@
                     success: function(data) {
                         $('#' + cityDropdownId).html(data);
 
-                        // Ensure city is selected after cities are loaded
+                        // Wait for the dropdown options to load before selecting the stored city
                         setTimeout(function() {
                             if (selectedCityId) {
                                 $('#' + cityDropdownId).val(selectedCityId).trigger('change');
                             }
-                        }, 500); // Add delay to ensure options are loaded
+                        }, 100);
                     },
                 });
             }
 
             // Prefill claimant city dropdown when state is preselected
-            var claimantStateId = "{{ old('claimant_state_id', $individualsData->state_id ?? '') }}";
+            var claimantStateId = "{{ old('claimant_state_id', $caseviewData->claimant_state_id ?? $individualsData->state_id ?? '') }}";
             if (claimantStateId) {
                 getCity(claimantStateId, 'claimant_city_id', claimantCityId);
+            }
+
+            // Prefill respondent city dropdown when state is preselected
+            var respondentStateId = "{{ old('respondent_state_id', $caseviewData->respondent_state_id ?? '') }}";
+            if (respondentStateId) {
+                getCity(respondentStateId, 'respondent_city_id', respondentCityId);
             }
 
             // Bind event listeners for state changes
             $('#claimant_state_id').on('change', function() {
                 getCity(this.value, 'claimant_city_id', null);
+            });
+
+            $('#respondent_state_id').on('change', function() {
+                getCity(this.value, 'respondent_city_id', null);
             });
         });
     </script>
@@ -833,8 +871,24 @@
                     case_type: {
                         required: true
                     },
-                    upload_evidence: {
-                        extension: "jpg|jpeg|png|pdf",
+                    application_form: {
+                        extension: "jpg|jpeg|png|pdf|doc",
+                        filesize: 4
+                    },
+                    foreclosure_statement: {
+                        extension: "jpg|jpeg|png|pdf|doc",
+                        filesize: 4
+                    },
+                    loan_agreement: {
+                        extension: "jpg|jpeg|png|pdf|doc",
+                        filesize: 4
+                    },
+                    account_statement: {
+                        extension: "jpg|jpeg|png|pdf|doc",
+                        filesize: 4
+                    },
+                    other_document: {
+                        extension: "jpg|jpeg|png|pdf|doc",
                         filesize: 4
                     },
                     termsandconditions: {
@@ -896,8 +950,20 @@
                     case_type: {
                         required: "Please select case type"
                     },
-                    upload_evidence: {
-                        extension: "Supported Format Only: jpg, jpeg, png, pdf"
+                    application_form: {
+                        extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"
+                    },
+                    foreclosure_statement: {
+                        extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"
+                    },
+                    loan_agreement: {
+                        extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"
+                    },
+                    account_statement: {
+                        extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"
+                    },
+                    other_document: {
+                        extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"
                     },
                     termsandconditions: {
                         required: "Please agree to terms and conditions"

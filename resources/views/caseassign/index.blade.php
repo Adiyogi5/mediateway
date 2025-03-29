@@ -65,7 +65,7 @@
 @section('js')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script type="text/javascript">
-        $(function() {
+       $(function() {
             var table = $('.table-datatable').DataTable({
                 processing: true,
                 serverSide: true,
@@ -77,88 +77,65 @@
                         d.created_at = $('#filter_created_at').val();
                     }
                 },
-                order: [
-                    [7, 'desc']
-                ], 
-                columns: [{
+                order: [[7, 'desc']],
+                columns: [
+                    {
                         data: null,
                         name: 'id',
                         orderable: false,
                         searchable: false
-                    }, 
-                    {
-                        data: 'user_type',
-                        name: 'user_type'
                     },
-                    {
-                        data: 'case_type',
-                        name: 'case_type'
-                    },
-                    {
-                        data: 'claimant_first_name',
-                        name: 'claimant_first_name'
-                    },
-                    {
-                        data: 'respondent_first_name',
-                        name: 'respondent_first_name'
-                    },
-                    {
-                        data: 'status',
-                        name: 'status'
-                    },
-                    {
-                        data: 'assigned_status', // New Column
-                        name: 'assigned_status'
-                    },
-                    {
-                        data: 'created_at',
-                        name: 'created_at'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
+                    { data: 'user_type', name: 'user_type' },
+                    { data: 'case_type', name: 'case_type' },
+                    { data: 'claimant_first_name', name: 'claimant_first_name' },
+                    { data: 'respondent_first_name', name: 'respondent_first_name' },
+                    { data: 'status', name: 'status' },
+                    { data: 'assigned_status', name: 'assigned_status' },
+                    { data: 'created_at', name: 'created_at' },
+                    { data: 'action', name: 'action', orderable: false, searchable: false }
                 ],
-                columnDefs: [{
-                    targets: 0, // First column (Serial Number)
-                    render: function(data, type, row, meta) {
-                        return meta.row + 1; // Generate serial numbers dynamically
+                columnDefs: [
+                    {
+                        targets: 0,
+                        render: function(data, type, row, meta) {
+                            return meta.row + 1;
+                        }
                     }
-                }]
+                ]
             });
 
             // Apply filters
-            $('#filter_button').click(function() {
-                table.draw();
+            $('#filterBtn').click(function() {
+                table.ajax.reload();
             });
 
             // Reset filters
-            $('#reset_button').click(function() {
+            $('#clearFilterBtn').click(function() {
                 $('#filter_user_type').val('');
                 $('#filter_case_type').val('');
                 $('#filter_created_at').val('');
-                table.draw();
+                table.ajax.reload();
             });
 
             // Delete Case
             $(document).on('click', ".delete", function() {
                 var id = $(this).data('id');
-                swal(deleteSweetAlertConfig).then((willDelete) => {
+                swal({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
                     if (willDelete) {
                         $.ajax({
                             url: "{{ route('caseassign.delete') }}",
-                            data: {
-                                'id': id
-                            },
+                            data: { 'id': id },
                             type: 'DELETE',
                             success: function(data) {
                                 if (data.status) {
-                                    swal(data?.message, {
-                                        icon: "success"
-                                    });
-                                    table.draw();
+                                    swal(data?.message, { icon: "success" });
+                                    table.ajax.reload();
                                 } else {
                                     toastr.error(data?.message);
                                 }

@@ -164,6 +164,85 @@ class Helper
         }
     }
 
+
+    // public static function organizationCan(array|int $module_id = [], string $type = "can_view"): bool
+    // {
+    //     try {
+    //         $organization_module     = gettype($module_id) == 'array' ? (array) $module_id :  [$module_id];
+    //         $organization_permission = request()->organization_permission;
+
+    //         if (!$organization_permission)              return false;
+    //         if (!$organization_permission->count())     return false;
+
+    //         $module_organization_permission = $organization_permission->whereIn('module_id', $organization_module)->filter(function ($row) use ($type) {
+    //             return $row['allow_all'] == 1 || $row[$type] == 1;
+    //         });
+
+    //         return $module_organization_permission->count() > 0 ? true : false;
+    //     } catch (\Throwable $th) {
+    //         return false;
+    //     }
+    // }
+
+    // public static function organizationAllowed(int $module_id = 0, array $type = ['can_edit', 'can_delete']): bool
+    // {
+    //     $organization_permission = request()->organization_permission;
+
+    //     if (!$organization_permission)             return false;
+    //     if (!$organization_permission->count())    return false;
+
+    //     $module_organization_permission = request()->organization_permission->firstWhere('module_id', $module_id);
+    //     if (!$module_organization_permission)                return false;
+    //     if ($module_organization_permission->allow_all == 1) return true;
+
+    //     if (collect($type)->filter(fn ($row) => $module_organization_permission[$row] == 1)->count() > 0) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
+
+    public static function organizationCan(array|int $module_id = [], string $type = "can_view"): bool
+    {
+        try {
+            $organization_permission = request()->organization_permission;
+
+            if (!$organization_permission || $organization_permission->isEmpty()) {
+                return false;
+            }
+
+            $module_ids = is_array($module_id) ? $module_id : [$module_id];
+
+            return $organization_permission
+                ->whereIn('module_id', $module_ids)
+                ->contains(fn($row) => $row['allow_all'] == 1 || ($type && ($row[$type] ?? 0) == 1));
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
+    public static function organizationAllowed(int $module_id = 0, array $type = ['can_edit', 'can_delete']): bool
+    {
+        $organization_permission = request()->organization_permission;
+
+        if (!$organization_permission || $organization_permission->isEmpty()) {
+            return false;
+        }
+
+        $module_permission = $organization_permission->firstWhere('module_id', $module_id);
+
+        if (!$module_permission) {
+            return false;
+        }
+
+        return $module_permission->allow_all == 1 || collect($type)->contains(fn($row) => ($module_permission[$row] ?? 0) == 1);
+    }
+
+
+
+
+
     public static function saveFile(?UploadedFile $image, string $folder = 'admin'): ?string
     {
         if ($image) {

@@ -20,5 +20,34 @@ class AssignCase extends Model
         'conciliator_id',
     ];
 
+    public function fileCase()
+    {
+        return $this->belongsTo(FileCase::class, 'case_id');
+    }
+
+    public function arbitrator()
+    {
+        return $this->belongsTo(Drp::class, 'arbitrator_id', 'id');
+    }
+
+    public function advocate()
+    {
+        return $this->belongsTo(Drp::class, 'advocate_id', 'id');
+    }
+
+    public function caseManager()
+    {
+        return $this->belongsTo(Drp::class, 'case_manager_id', 'id');
+    }
+
+    public function mediator()
+    {
+        return $this->belongsTo(Drp::class, 'mediator_id', 'id');
+    }
+
+    public function conciliator()
+    {
+        return $this->belongsTo(Drp::class, 'conciliator_id', 'id');
+    }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Individual;
 
 use App\Http\Controllers\Controller;
+use App\Models\FileCase;
 use App\Models\Individual;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,14 @@ class HomeController extends Controller
         $individualSlug = $individual?->slug;
     
         $indivuduals = Individual::with('individualDetail')->where('slug', $individualSlug)->first();
+        $caseData = FileCase::with(['payments', 'assignedCases.arbitrator', 'assignedCases.advocate', 'assignedCases.caseManager', 'assignedCases.mediator', 'assignedCases.conciliator'])
+            ->where('individual_id', $individual->id)
+            ->where('status', 1)
+            ->latest()
+            ->get();
+
     
+        // dd($caseData);
         if (!$indivuduals) {
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
@@ -46,7 +54,7 @@ class HomeController extends Controller
                 ->with('showProfilePopup', true);
         }
 
-        return view('individual.dashboard', compact('indivuduals', 'title'));
+        return view('individual.dashboard', compact('indivuduals', 'title', 'caseData'));
     }
 
 }

@@ -8,6 +8,7 @@ use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Organization extends Authenticatable
@@ -70,9 +71,9 @@ class Organization extends Authenticatable
         return $this->belongsTo(State::class);
     }
 
-    public function permission()
+    public function organization_permission(): HasMany
     {
-        return $this->hasMany(OrganizationRolePermission::class); //->with('permission_name:id,name')
+        return $this->hasMany(OrganizationPermission::class, 'organization_id');
     }
 
     // protected function image(): Attribute

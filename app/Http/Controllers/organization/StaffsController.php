@@ -51,19 +51,19 @@ class StaffsController extends Controller
                 ->addColumn('action', function ($row) {
 
                     $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
-                    // if (Helper::userCan(103, 'can_edit')) {
+                    if (Helper::organizationCan(203, 'can_edit')) {
                         $btn .= '<a class="dropdown-item" href="' . route('organization.staffs.edit', $row->slug) . '">Edit</a>';
                         $btn .= '<a class="dropdown-item" href="' . route('organization.staffs.permission.view', $row->slug) . '">Permission</a>';
-                    // }
-                    // if (Helper::userCan(103, 'can_delete')) {
+                    }
+                    if (Helper::organizationCan(203, 'can_delete')) {
                         $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
-                    // }
+                    }
 
-                    // if (Helper::userAllowed(103)) {
+                    if (Helper::organizationAllowed(203)) {
                         return $btn;
-                    // } else {
-                    //     return '';
-                    // }
+                    } else {
+                        return '';
+                    }
                 })
                 ->orderColumn('created_at', function ($query, $order) {
                     $query->orderBy('created_at', $order);
@@ -71,6 +71,7 @@ class StaffsController extends Controller
                 ->rawColumns(['action', 'email', 'name', 'image', 'status'])
                 ->make(true);
         }
+
         $title = 'Staff';
         return view('organization.staffs.index',compact('title'));
     }

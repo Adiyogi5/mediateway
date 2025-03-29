@@ -136,7 +136,11 @@ class FileCaseController extends Controller
             'case_type' => 'required',
             'language' => 'nullable',
             'agreement_exist' => 'nullable',
-            'upload_evidence' => 'nullable|max:4096',
+            'application_form' => 'nullable|max:4096',
+            'foreclosure_statement' => 'nullable|max:4096',
+            'loan_agreement' => 'nullable|max:4096',
+            'account_statement' => 'nullable|max:4096',
+            'other_document' => 'nullable|max:4096',
         ]);
 
         if ($validator->fails()) {
@@ -151,15 +155,31 @@ class FileCaseController extends Controller
         // }
 
         // Initialize variables
-        $uploadEvidencePath = null;
+        $uploadApplicationFormPath = null;
+        $uploadForeclosureStatementPath = null;
+        $uploadLoanAgreementPath = null;
+        $uploadAccountStatementPath = null;
+        $uploadOtherDocumentPath = null;
     
         // Handle file uploads
-        if ($request->hasFile('upload_evidence')) {
-            $uploadEvidencePath = Helper::saveFile($request->file('upload_evidence'), 'individuals/casefile');
+        if ($request->hasFile('application_form')) {
+            $uploadApplicationFormPath = Helper::saveFile($request->file('application_form'), 'individuals/casefile');
+        }
+        if ($request->hasFile('foreclosure_statement')) {
+            $uploadForeclosureStatementPath = Helper::saveFile($request->file('foreclosure_statement'), 'individuals/casefile');
+        }
+        if ($request->hasFile('loan_agreement')) {
+            $uploadLoanAgreementPath = Helper::saveFile($request->file('loan_agreement'), 'individuals/casefile');
+        }
+        if ($request->hasFile('account_statement')) {
+            $uploadAccountStatementPath = Helper::saveFile($request->file('account_statement'), 'individuals/casefile');
+        }
+        if ($request->hasFile('other_document')) {
+            $uploadOtherDocumentPath = Helper::saveFile($request->file('other_document'), 'individuals/casefile');
         }
        
         // Generate a new unique file case number
-        $lastCase = FileCase::latest()->first();
+        $lastCase = FileCasePayment::latest()->first();
         $lastCaseNo = $lastCase ? intval(substr($lastCase->file_case_no, 4)) : 0;
         $newCaseNumber = 'CASE' . str_pad($lastCaseNo + 1, 5, '0', STR_PAD_LEFT);
       
@@ -194,7 +214,11 @@ class FileCaseController extends Controller
             'case_type'                 => $request->case_type,
             'language'                  => $request->language,
             'agreement_exist'           => $request->agreement_exist,
-            'upload_evidence'           => $uploadEvidencePath,
+            'application_form'          => $uploadApplicationFormPath,
+            'foreclosure_statement'     => $uploadForeclosureStatementPath,
+            'loan_agreement'            => $uploadLoanAgreementPath,
+            'account_statement'         => $uploadAccountStatementPath,
+            'other_document'            => $uploadOtherDocumentPath,
         ]);
        
           // Save payment data
@@ -268,7 +292,11 @@ class FileCaseController extends Controller
             'case_type' => 'required',
             'language' => 'nullable',
             'agreement_exist' => 'nullable',
-            'upload_evidence' => 'nullable|max:4096',
+            'application_form' => 'nullable|max:4096',
+            'foreclosure_statement' => 'nullable|max:4096',
+            'loan_agreement' => 'nullable|max:4096',
+            'account_statement' => 'nullable|max:4096',
+            'other_document' => 'nullable|max:4096',
         ]);
 
         if ($validator->fails()) {
@@ -276,10 +304,34 @@ class FileCaseController extends Controller
         }
 
         // Handle file uploads only if new files are uploaded
-        if ($request->hasFile('upload_evidence')) {
-            $uploadEvidencePath = Helper::saveFile($request->file('upload_evidence'), 'individuals/casefile');
+        if ($request->hasFile('application_form')) {
+            $uploadApplicationFormPath = Helper::saveFile($request->file('application_form'), 'individuals/casefile');
         } else {
-            $uploadEvidencePath = $caseviewData->upload_evidence; // Keep old file if no new file is uploaded
+            $uploadApplicationFormPath = $caseviewData->application_form;
+        }
+
+        if ($request->hasFile('foreclosure_statement')) {
+            $uploadForeclosureStatementPath = Helper::saveFile($request->file('foreclosure_statement'), 'individuals/casefile');
+        } else {
+            $uploadForeclosureStatementPath = $caseviewData->application_form; 
+        }
+
+        if ($request->hasFile('loan_agreement')) {
+            $uploadLoanAgreementPath = Helper::saveFile($request->file('loan_agreement'), 'individuals/casefile');
+        } else {
+            $uploadLoanAgreementPath = $caseviewData->application_form;
+        }
+
+        if ($request->hasFile('account_statement')) {
+            $uploadAccountStatementPath = Helper::saveFile($request->file('account_statement'), 'individuals/casefile');
+        } else {
+            $uploadAccountStatementPath = $caseviewData->application_form; 
+        }
+
+        if ($request->hasFile('other_document')) {
+            $uploadOtherDocumentPath = Helper::saveFile($request->file('other_document'), 'individuals/casefile');
+        } else {
+            $uploadOtherDocumentPath = $caseviewData->application_form;
         }
 
         // Update case data
@@ -313,7 +365,11 @@ class FileCaseController extends Controller
             'case_type'                 => $request->case_type,
             'language'                  => $request->language,
             'agreement_exist'           => $request->agreement_exist,
-            'upload_evidence'           => $uploadEvidencePath,
+            'application_form'          => $uploadApplicationFormPath,
+            'foreclosure_statement'     => $uploadForeclosureStatementPath,
+            'loan_agreement'            => $uploadLoanAgreementPath,
+            'account_statement'         => $uploadAccountStatementPath,
+            'other_document'            => $uploadOtherDocumentPath,
         ]);
 
         return to_route('individual.case.filecaseview')->withSuccess('Filed Case Updated Successfully..!!');
@@ -490,4 +546,5 @@ class FileCaseController extends Controller
 
         return view('individual.case.filecasepayment_success', ['casefilepayment' => $casefilepayment], compact('title'));
     }
+    
 }

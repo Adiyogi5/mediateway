@@ -28,7 +28,7 @@
                             <div class="col-auto align-self-center">
                                 <h5 class="mb-0" data-anchor="data-anchor">Case File</h5>
                             </div>
-                            @if(empty($casefilepayment->transaction_id || $casefilepayment->payment_status == 1))
+                            @if(!isset($casefilepayment) || empty($casefilepayment->transaction_id) && $casefilepayment->payment_status != 1)
                             <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon">
                                     <a href="{{ route('individual.case.filecase') }}" class="btn btn-outline-secondary py-1">

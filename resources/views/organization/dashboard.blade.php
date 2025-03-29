@@ -13,21 +13,37 @@
 
             <div class="col-md-9 col-12">
                 <div class="card-inner card-dashboard">
-                    <div class="row justify-content-md-between justify-content-center">
+                    <div class="row justify-content-lg-between justify-content-md-between justify-content-center">
                         <div class="col-auto align-self-center">
                             <h5 class="mb-0">Dashboard</h5>
+                        </div>
+                        <div class="col-auto ms-md-auto mx-md-0 mx-auto d-flex mt-md-0 mt-2">
+                            <div class="custom-dropdown">
+                                <select name="Organization" class="form-control form-select form-dashboard-select">
+                                    <option value="">Products</option>
+                                    <option value="">Two Wheeler</option>
+                                    <option value="">Four Wheeler</option>
+                                </select>
+                            </div>
+                            <div class="custom-dropdown">
+                                <select name="Organization" class="form-control form-select form-dashboard-select">
+                                    <option value="">Case Type</option>
+                                    <option value="">Conciliation</option>
+                                    <option value="">Arbitration</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="row mt-xl-4 mt-3 justify-content-center">
                         <!-- Tabs Section -->
                         <div class="d-flex flex-wrap justify-content-center">
                             <div class="custom-tab active" data-target="case-type-overview">CASE TYPE OVERVIEW</div>
-                            <div class="custom-tab" data-target="live-case-details">LIVE CASE DETAILS</div>
+                            {{-- <div class="custom-tab" data-target="live-case-details">LIVE CASE DETAILS</div>
                             <div class="custom-tab" data-target="closed-case-details">CLOSED CASE DETAILS</div>
-                            <div class="custom-tab" data-target="case-type-distribution">CASE TYPE DISTRIBUTION</div>
+                            <div class="custom-tab" data-target="case-type-distribution">CASE TYPE DISTRIBUTION</div> --}}
                             <div class="custom-tab" data-target="product-wise-distribution">PRODUCT WISE DISTRIBUTION</div>
-                            <div class="custom-tab" data-target="loan-product-case-details">LOAN PRODUCT CASE DETAILS</div>
-                            <div class="custom-tab" data-target="communication-log">COMMUNICATION LOG</div>
+                            {{-- <div class="custom-tab" data-target="loan-product-case-details">LOAN PRODUCT CASE DETAILS</div>
+                            <div class="custom-tab" data-target="communication-log">COMMUNICATION LOG</div> --}}
                             <div class="custom-tab" data-target="support-contacts">SUPPORT CONTACTS</div>
                         </div>
 
@@ -41,16 +57,16 @@
                                                 alt="" class="img-fluid img-dashboard">
                                         </div>
                                     </div>
-                                    <div class="col-8" style="display: contents;">
+                                    <div class="col-8" style="display: flex;">
                                         <div class="my-auto">
                                             <h3>50</h3>
-                                            <p>Total Active Cases</p>
+                                            <p>No of Case Filled</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
                             </div>
-                            <div class="col-md-6 col-12 position-relative">
+                            {{-- <div class="col-md-6 col-12 position-relative">
                                 <div class="custom-card row">
                                     <div class="col-4">
                                         <div class="icon-box-dash">
@@ -58,15 +74,15 @@
                                                 alt="" class="img-fluid img-dashboard">
                                         </div>
                                     </div>
-                                    <div class="col-8" style="display: contents;">
+                                    <div class="col-8" style="display: flex;">
                                         <div class="my-auto">
                                             <h3>50</h3>
-                                            <p>Cases Resolved</p>
+                                            <p>Total Active Cases</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
-                            </div>
+                            </div> --}}
                             <div class="col-md-6 col-12 position-relative">
                                 <div class="custom-card row">
                                     <div class="col-4">
@@ -74,10 +90,10 @@
                                             <img src="{{ asset('assets/img/dashboard/new-case.png') }}" alt="" class="img-fluid img-dashboard">
                                         </div>
                                     </div>
-                                    <div class="col-8" style="display: contents;">
+                                    <div class="col-8" style="display: flex;">
                                         <div class="my-auto">
                                             <h3>50</h3>
-                                            <p>New Cases</p>
+                                            <p>Total Pending Cases</p>
                                         </div>
                                     </div>
                                 </div>
@@ -91,10 +107,11 @@
                                                 alt="" class="img-fluid img-dashboard">
                                         </div>
                                     </div>
-                                    <div class="col-8" style="display: contents;">
+                                    <div class="col-8" style="display: flex;">
                                         <div class="my-auto">
                                             <h3>50</h3>
-                                            <p>Pending Cases</p>
+                                            <p>New Cases Filled</p>
+                                            <small>(In Current month)</small>
                                         </div>
                                     </div>
                                 </div>
@@ -108,10 +125,44 @@
                                                 alt="" class="img-fluid img-dashboard">
                                         </div>
                                     </div>
-                                    <div class="col-8" style="display: contents;">
+                                    <div class="col-8" style="display: flex;">
                                         <div class="my-auto">
                                             <h3>20</h3>
-                                            <p>Upcoming Hearings</p>
+                                            <p>Award Passed</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
+                            </div>
+                            <div class="col-md-6 col-12 position-relative">
+                                <div class="custom-card row">
+                                    <div class="col-4">
+                                        <div class="icon-box-dash">
+                                            <img src="{{ asset('assets/img/dashboard/upcoming-hearing.png') }}"
+                                                alt="" class="img-fluid img-dashboard">
+                                        </div>
+                                    </div>
+                                    <div class="col-8" style="display: flex;">
+                                        <div class="my-auto">
+                                            <h3>20</h3>
+                                            <p>Interim Order Passed</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
+                            </div>
+                            <div class="col-md-6 col-12 position-relative">
+                                <div class="custom-card row">
+                                    <div class="col-4">
+                                        <div class="icon-box-dash">
+                                            <img src="{{ asset('assets/img/dashboard/upcoming-hearing.png') }}"
+                                                alt="" class="img-fluid img-dashboard">
+                                        </div>
+                                    </div>
+                                    <div class="col-8" style="display: flex;">
+                                        <div class="my-auto">
+                                            {{-- <h3>20</h3> --}}
+                                            <p>Upcoming Hearing Dates with Stages</p>
                                         </div>
                                     </div>
                                 </div>
@@ -119,7 +170,7 @@
                             </div>
                         </div>
 
-                        <div id="live-case-details" class="content-section row d-none mt-xl-5 mt-3">
+                        {{-- <div id="live-case-details" class="content-section row d-none mt-xl-5 mt-3">
                             <div class="col-12">
                                 <div class="custom-table-container">
                                     <table class="table custom-table">
@@ -296,7 +347,7 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div id="product-wise-distribution" class="content-section row mt-xl-5 mt-3 d-none">
                             <div class="col-12">
@@ -341,7 +392,7 @@
                             </div>
                         </div>
 
-                        <div id="loan-product-case-details" class="content-section row mt-xl-5 mt-3 d-none">
+                        {{-- <div id="loan-product-case-details" class="content-section row mt-xl-5 mt-3 d-none">
                             <div class="col-12">
                                 <div class="custom-table-container">
                                     <table class="table custom-table">
@@ -430,7 +481,7 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div id="support-contacts" class="content-section row mt-xl-5 mt-3 d-none">
                             <div class="col-12">

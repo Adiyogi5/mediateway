@@ -18,7 +18,7 @@
                     <div class="card-header">
                         <div class="row flex-between-end">
                             <div class="col-auto align-self-center">
-                                <h6 class="mb-0" data-anchor="data-anchor">Organization Case File :: Edit </h6>
+                                <h6 class="mb-0" data-anchor="data-anchor">Organization Case File :: Upload Documents </h6>
                             </div>
                             <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon flex-grow-1" role="tablist">
@@ -35,7 +35,7 @@
                             enctype='multipart/form-data'>
                             @csrf
                             {{-- claimant details  --}}
-                            <div class="col-12 text-center justify-content-center">
+                            {{-- <div class="col-12 text-center justify-content-center">
                                 <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Claimant Details</h6>
                             </div>
                             <div class="col-md-4 col-12 mb-3">
@@ -154,11 +154,11 @@
                                 @error('claimant_pincode')
                                     <span class="text-danger fs-custom">{{ $message }}</span>
                                 @enderror
-                            </div>
+                            </div> --}}
 
 
                             {{-- Respodent Data  --}}
-                            <div class="col-12 text-center justify-content-center">
+                            {{-- <div class="col-12 text-center justify-content-center">
                                 <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Respondent Details</h6>
                             </div>
                             <div class="col-md-4 col-12 mb-3">
@@ -283,29 +283,11 @@
                                 @error('respondent_pincode')
                                     <span class="text-danger fs-custom">{{ $message }}</span>
                                 @enderror
-                            </div>
-
-                            <div class="col-md-6 col-12 my-3">
-                                <label for="add_respondent" class="custom-file-upload">
-                                    <span style="font-weight: 500;" id="file-label1">
-                                        <span style="border:2px solid black; border-radius:50%;padding: 1px;">➕</span>
-                                        Add Respondent</span>
-                                </label>
-                                <input type="file" id="add_respondent" name="add_respondent" hidden />
-                                @if (!empty($caseviewData->add_respondent))
-                                    <div class="my-2">
-                                        <img src="{{ asset('storage/' . $caseviewData->add_respondent) }}"
-                                            class="img-thumbnail" width="100" />
-                                    </div>
-                                @endif
-                                @error('add_respondent')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
+                            </div> --}}
 
 
                             {{-- step-3 fields  --}}
-                            <div class="col-12 text-center justify-content-center">
+                            {{-- <div class="col-12 text-center justify-content-center">
                                 <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Other Details</h6>
                             </div>
                             <div class="col-md-6 col-12 mb-3">
@@ -366,27 +348,66 @@
                                 @error('agreement_exist')
                                     <span class="text-danger fs-custom">{{ $message }}</span>
                                 @enderror
-                            </div>
-                            <div class="col-md-6 col-12 mt-4">
-                                <label for="upload_evidence" class="custom-file-upload mt-1 w-100">
-                                    <span style="font-weight: 500;" id="file-label2">
-                                        <span style="border:2px solid black; border-radius:50%;padding: 1px;">➕</span>
-                                        Attach document / Upload Evidence</span>
-                                </label>
-                                <input type="file" id="upload_evidence" name="upload_evidence" hidden />
-                                @if (!empty($caseviewData->upload_evidence))
-                                    <div class="my-2">
-                                        <img src="{{ asset('storage/' . $caseviewData->upload_evidence) }}"
-                                            class="img-thumbnail" width="100" />
-                                    </div>
-                                @endif
-                                @error('upload_evidence')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
+                            </div> --}}
+
+                            @php
+                                $documents = [
+                                    'application_form' => 'Application Form',
+                                    'foreclosure_statement' => 'Foreclosure Statement',
+                                    'loan_agreement' => 'Loan Agreement',
+                                    'account_statement' => 'Account Statement',
+                                    'other_document' => 'Other Document',
+                                ];
+                            @endphp
+
+                            @foreach ($documents as $key => $label)
+                                <div class="col-md-6 col-12 mt-5 document-upload" id="upload-{{ $key }}">
+                                    <label for="{{ $key }}" class="custom-file-upload">
+                                        <span style="font-weight: 500;" id="file-label-{{ $key }}">
+                                            <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
+                                            Attach {{ $label }} Document
+                                        </span>
+                                    </label>
+                                    <input type="file" id="{{ $key }}" name="{{ $key }}" hidden />
+
+                                    @if (!empty($caseviewData->$key))
+                                        @php
+                                            $filePath = asset('storage/' . $caseviewData->$key);
+                                            $extension = pathinfo($caseviewData->$key, PATHINFO_EXTENSION);
+                                        @endphp
+
+                                        <div class="my-2">
+                                            @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
+                                                <img src="{{ $filePath }}" class="img-thumbnail" width="100" />
+                                            @elseif ($extension === 'pdf')
+                                                <a class="text-decoration-none case-text" style="font-size: 13px"
+                                                    href="{{ $filePath }}" target="_blank">
+                                                    <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                                        alt="PDF File" />
+                                                    View PDF
+                                                </a>
+                                            @elseif (in_array(strtolower($extension), ['doc', 'docx']))
+                                                <a class="text-decoration-none case-text" style="font-size: 13px"
+                                                    href="{{ $filePath }}" target="_blank">
+                                                    <img src="{{ asset('public/assets/img/doc.png') }}" height="30"
+                                                        alt="DOC File" />
+                                                    View Document
+                                                </a>
+                                            @else
+                                                <a class="text-decoration-none case-text" style="font-size: 13px" href="{{ $filePath }}" target="_blank">Download File</a>
+                                            @endif
+                                        </div>
+                                    @endif
+
+                                    @error($key)
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endforeach
 
 
-                            <div class="col-lg-6 mt-2">
+
+                            {{-- <div class="col-lg-6 mt-2">
                                 <label class="form-label" for="status">Status</label>
                                 <select name="status" class="form-select" id="status">
                                     <option value="1" @selected(old('status', $caseviewData['status']) == 1)> Active </option>
@@ -397,10 +418,10 @@
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
-                            </div>
+                            </div> --}}
 
-                            <div class="col-lg-12 mt-3 d-flex justify-content-start">
-                                <button class="btn btn-secondary submitbtn py-1 px-4" type="submit">Update</button>
+                            <div class="col-lg-12 mt-5 d-flex justify-content-start">
+                                <button class="btn btn-secondary submitbtn py-1 px-4" type="submit">Upload</button>
                             </div>
                         </form>
                     </div>
@@ -412,17 +433,44 @@
 
 @section('js')
     <script>
-        document.getElementById('add_respondent').addEventListener('change', function(event) {
-            let fileName = event.target.files.length > 0 ? event.target.files[0].name : "Add Respondent";
-            document.getElementById('file-label1').textContent = fileName;
-        });
-        document.getElementById('upload_evidence').addEventListener('change', function(event) {
-            let fileName = event.target.files.length > 0 ? event.target.files[0].name :
-                "Attach document / Upload Evidence";
-            document.getElementById('file-label2').textContent = fileName;
+        document.addEventListener("DOMContentLoaded", function () {
+            const agreementSelect = document.getElementById("agreement_exist");
+            const documentFields = document.querySelectorAll(".document-upload");
+
+            // Function to toggle file fields
+            function toggleDocumentFields() {
+                if (agreementSelect.value === "1") {
+                    documentFields.forEach(field => field.style.display = "block");
+                } else {
+                    documentFields.forEach(field => field.style.display = "none");
+                }
+            }
+
+            toggleDocumentFields();
+
+            agreementSelect.addEventListener("change", toggleDocumentFields);
         });
     </script>
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const documents = [
+                "application_form",
+                "foreclosure_statement",
+                "loan_agreement",
+                "account_statement",
+                "other_document",
+            ];
+
+            documents.forEach(function (id) {
+                document.getElementById(id).addEventListener("change", function (event) {
+                    let fileName = event.target.files.length > 0 ? event.target.files[0].name :
+                        "Attach " + id.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase()) + " Document";
+                    document.getElementById("file-label-" + id).textContent = fileName;
+                });
+            });
+        });
+    </script>
+    {{-- <script>
         $(document).ready(function() {
             var claimantCityId = "{{ old('claimant_city_id', $caseviewData->claimant_city_id ?? '') }}";
             var respondentCityId = "{{ old('respondent_city_id', $caseviewData->respondent_city_id ?? '') }}";
@@ -471,8 +519,8 @@
                 getCity(this.value, 'respondent_city_id', null);
             });
         });
-    </script>
-    <script type="text/javascript">
+    </script> --}}
+    {{-- <script type="text/javascript">
         $("#editcaseview").validate({
             errorClass: "text-danger fs-custom",
             errorElement: "span",
@@ -611,5 +659,5 @@
                 },
             },
         });
-    </script>
+    </script> --}}
 @endsection

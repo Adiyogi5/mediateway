@@ -22,8 +22,8 @@
                             </div>
                             <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon flex-grow-1" role="tablist">
-                                    <a href="{{ route('individual.case.filecaseview') }}"
-                                        class="btn btn-outline-secondary"> <i class="fa fa-arrow-left me-1"></i> Go
+                                    <a href="{{ route('individual.case.filecaseview') }}" class="btn btn-outline-secondary">
+                                        <i class="fa fa-arrow-left me-1"></i> Go
                                         Back</a>
                                 </div>
                             </div>
@@ -361,23 +361,62 @@
                                     </span>
                                 @enderror
                             </div>
-                            <div class="col-md-6 col-12 mt-1" id="evidence-box" style="display: none;">
-                                <label for="upload_evidence" class="custom-file-upload mt-1 w-100">
-                                    <span style="font-weight: 500;" id="file-label2">
-                                        <span style="border:2px solid black; border-radius:50%;padding: 1px;">➕</span>
-                                        Attach document / Upload Evidence</span>
-                                </label>
-                                <input type="file" id="upload_evidence" name="upload_evidence" hidden />
-                                @if (!empty($caseviewData->upload_evidence))
-                                    <div class="my-2">
-                                        <img src="{{ asset('storage/' . $caseviewData->upload_evidence) }}"
-                                            class="img-thumbnail" width="100" />
-                                    </div>
-                                @endif
-                                @error('upload_evidence')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
+
+                            @php
+                                $documents = [
+                                    'application_form' => 'Application Form',
+                                    'foreclosure_statement' => 'Foreclosure Statement',
+                                    'loan_agreement' => 'Loan Agreement',
+                                    'account_statement' => 'Account Statement',
+                                    'other_document' => 'Other Document',
+                                ];
+                            @endphp
+
+                            @foreach ($documents as $key => $label)
+                                <div class="col-md-6 col-12 mt-5 document-upload" id="upload-{{ $key }}">
+                                    <label for="{{ $key }}" class="custom-file-upload">
+                                        <span style="font-weight: 500;" id="file-label-{{ $key }}">
+                                            <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
+                                            Attach {{ $label }} Document
+                                        </span>
+                                    </label>
+                                    <input type="file" id="{{ $key }}" name="{{ $key }}" hidden />
+
+                                    @if (!empty($caseviewData->$key))
+                                        @php
+                                            $filePath = asset('storage/' . $caseviewData->$key);
+                                            $extension = pathinfo($caseviewData->$key, PATHINFO_EXTENSION);
+                                        @endphp
+
+                                        <div class="my-2">
+                                            @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
+                                                <img src="{{ $filePath }}" class="img-thumbnail" width="100" />
+                                            @elseif ($extension === 'pdf')
+                                                <a class="text-decoration-none case-text" style="font-size: 13px"
+                                                    href="{{ $filePath }}" target="_blank">
+                                                    <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                                        alt="PDF File" />
+                                                    View PDF
+                                                </a>
+                                            @elseif (in_array(strtolower($extension), ['doc', 'docx']))
+                                                <a class="text-decoration-none case-text" style="font-size: 13px"
+                                                    href="{{ $filePath }}" target="_blank">
+                                                    <img src="{{ asset('public/assets/img/doc.png') }}" height="30"
+                                                        alt="DOC File" />
+                                                    View Document
+                                                </a>
+                                            @else
+                                                <a class="text-decoration-none case-text" style="font-size: 13px"
+                                                    href="{{ $filePath }}" target="_blank">Download File</a>
+                                            @endif
+                                        </div>
+                                    @endif
+
+                                    @error($key)
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endforeach
 
                             <div class="col-lg-12 mt-3 d-flex justify-content-start">
                                 <button class="btn btn-secondary submitbtn py-1 px-4" type="submit">Update</button>
@@ -392,32 +431,44 @@
 
 @section('js')
     <script>
-        document.getElementById('upload_evidence').addEventListener('change', function(event) {
-            let fileName = event.target.files.length > 0 ? event.target.files[0].name :
-                "Attach document / Upload Evidence";
-            document.getElementById('file-label2').textContent = fileName;
+        document.addEventListener("DOMContentLoaded", function() {
+            const agreementSelect = document.getElementById("agreement_exist");
+            const documentFields = document.querySelectorAll(".document-upload");
+
+            // Function to toggle file fields
+            function toggleDocumentFields() {
+                if (agreementSelect.value === "1") {
+                    documentFields.forEach(field => field.style.display = "block");
+                } else {
+                    documentFields.forEach(field => field.style.display = "none");
+                }
+            }
+
+            toggleDocumentFields();
+
+            agreementSelect.addEventListener("change", toggleDocumentFields);
         });
     </script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var agreementExist = document.getElementById("agreement_exist");
-            var evidenceBox = document.getElementById("evidence-box");
-        
-            function toggleEvidenceBox() {
-                if (agreementExist.value == "1") {
-                    evidenceBox.style.display = "block";
-                } else {
-                    evidenceBox.style.display = "none";
-                }
-            }
-        
-            // Run on page load (for old form data)
-            toggleEvidenceBox();
-        
-            // Run when the user changes the selection
-            agreementExist.addEventListener("change", toggleEvidenceBox);
+        document.addEventListener("DOMContentLoaded", function() {
+            const documents = [
+                "application_form",
+                "foreclosure_statement",
+                "loan_agreement",
+                "account_statement",
+                "other_document",
+            ];
+
+            documents.forEach(function(id) {
+                document.getElementById(id).addEventListener("change", function(event) {
+                    let fileName = event.target.files.length > 0 ? event.target.files[0].name :
+                        "Attach " + id.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase()) +
+                        " Document";
+                    document.getElementById("file-label-" + id).textContent = fileName;
+                });
+            });
         });
-    </script>        
+    </script>
     <script>
         $(document).ready(function() {
             var claimantCityId = "{{ old('claimant_city_id', $caseviewData->claimant_city_id ?? '') }}";
@@ -535,8 +586,24 @@
                 case_type: {
                     required: true
                 },
-                upload_evidence: {
-                    extension: "jpg|jpeg|png|pdf",
+                application_form: {
+                    extension: "jpg|jpeg|png|pdf|doc",
+                    filesize: 4
+                },
+                foreclosure_statement: {
+                    extension: "jpg|jpeg|png|pdf|doc",
+                    filesize: 4
+                },
+                loan_agreement: {
+                    extension: "jpg|jpeg|png|pdf|doc",
+                    filesize: 4
+                },
+                account_statement: {
+                    extension: "jpg|jpeg|png|pdf|doc",
+                    filesize: 4
+                },
+                other_document: {
+                    extension: "jpg|jpeg|png|pdf|doc",
                     filesize: 4
                 },
             },
@@ -595,8 +662,20 @@
                 case_type: {
                     required: "Please select case type"
                 },
-                upload_evidence: {
-                    extension: "Supported Format Only: jpg, jpeg, png, pdf"
+                application_form: {
+                    extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"
+                },
+                foreclosure_statement: {
+                    extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"
+                },
+                loan_agreement: {
+                    extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"
+                },
+                account_statement: {
+                    extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"
+                },
+                other_document: {
+                    extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"
                 },
             },
         });

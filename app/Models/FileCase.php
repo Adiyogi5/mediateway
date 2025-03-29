@@ -14,6 +14,7 @@ class FileCase extends Model
     protected $fillable = [
         'user_type',
         'individual_id',
+        'organization_id',
         'claimant_first_name',
         'claimant_middle_name',
         'claimant_last_name',
@@ -41,18 +42,27 @@ class FileCase extends Model
         'case_type',
         'language',
         'agreement_exist',
-        'upload_evidence',
+        'application_form',
+        'foreclosure_statement',
+        'loan_agreement',
+        'account_statement',
+        'other_document',
         'status',
     ];
-
-    public function case()
-    {
-        return $this->belongsTo(FileCase::class, 'case_id');
-    }
 
     public function individual()
     {
         return $this->belongsTo(Individual::class, 'individual_id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(FileCasePayment::class, 'file_case_id');
+    }
+
+    public function assignedCases()
+    {
+        return $this->hasMany(AssignCase::class, 'case_id');
     }
 
     public function organization()

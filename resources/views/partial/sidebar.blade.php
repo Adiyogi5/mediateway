@@ -103,6 +103,33 @@
             </a>
         </li>
 
+        <li class="menu @routeis('ordersheet') active @endrouteis">
+            <a href="{{route('ordersheet')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-file-lines"></i>
+                    <span>Order Sheets</span>
+                </div>
+            </a>
+        </li>
+
+        <li class="menu @routeis('award') active @endrouteis">
+            <a href="{{route('award')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-file-lines"></i>
+                    <span>Awards</span>
+                </div>
+            </a>
+        </li>
+
+        <li class="menu @routeis('settlementletter') active @endrouteis">
+            <a href="{{route('settlementletter')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-file-lines"></i>
+                    <span>Settlement Letter</span>
+                </div>
+            </a>
+        </li>
+
         @if(Helper::userCan([105,106]))
         <li class="menu @routeis('states,cities') active @endrouteis">
             <a href="#location_content" data-bs-toggle="collapse" aria-expanded="{{ Helper::routeis('states,cities') }}"

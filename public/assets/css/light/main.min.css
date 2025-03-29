@@ -2672,12 +2672,12 @@ fieldset:disabled .btn {
     background-color: #3b3f5c;
 }
 .badge-light-primary {
-    color: #4361ee;
+    color: #4361ee !important;
     background-color: #eceffe;
     border: 1px solid #eceffe;
 }
 .badge-light-info {
-    color: #2196f3;
+    color: #2196f3 !important;
     background-color: #e6f4ff;
     border: 1px solid #e6f4ff;
 }
@@ -2687,22 +2687,22 @@ fieldset:disabled .btn {
     border: 1px solid #ddf5f0;
 }
 .badge-light-danger {
-    color: #e7515a;
+    color: #e7515a !important;
     background-color: #fbeced;
     border: 1px solid #fbeced;
 }
 .badge-light-warning {
-    color: #e2a03f;
+    color: #e2a03f !important;
     background-color: #fcf5e9;
     border: 1px solid #fcf5e9;
 }
 .badge-light-dark {
-    color: #3b3f5c;
+    color: #3b3f5c !important;
     background-color: #eaeaec;
     border: 1px solid #eaeaec;
 }
 .badge-light-secondary {
-    color: #805dca;
+    color: #805dca !important;
     background-color: #f2eafa;
     border: 1px solid #f2eafa;
 }

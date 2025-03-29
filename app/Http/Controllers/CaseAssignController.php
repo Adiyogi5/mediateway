@@ -151,9 +151,4 @@ class CaseAssignController extends Controller
         ]);
     }
     
-
-    // public function delete(Request $request): JsonResponse
-    // {
-    //     return Helper::deleteRecord(new FileCase, $request->id);
-    // }
 }
