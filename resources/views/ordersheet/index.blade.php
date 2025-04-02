@@ -24,6 +24,7 @@
             <table class="table custom-table table-striped fs--1 mb-0 table-datatable" style="width:100%">
                 <thead class="bg-200 text-900">
                     <tr>
+                        <th>#</th>
                         <th>DRP Type</th>
                         <th>Order Sheet Name</th>
                         <th>Status</th>
@@ -50,8 +51,9 @@
 
         var table = $('.table-datatable').DataTable({
             ajax: "{{ route('ordersheet') }}",
-            order: [[0, 'desc']],
+            order: [[0, 'asc']],
             columns: [
+                { data: 'id', name: 'id' },
                 { data: 'drp_type', name: 'drp_type' },
                 { data: 'name', name: 'name' },
                 { data: 'status', name: 'status' },

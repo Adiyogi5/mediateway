@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Drp;
+
+use App\Http\Controllers\Controller;
 
 use App\Helper\Helper;
-use App\Http\Controllers\Controller;
 use App\Models\SettlementLetter;
 use App\Models\SettlementLetterVariable;
 use Illuminate\View\View;
@@ -17,11 +18,16 @@ class SettlementLetterController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth:drp');
     }
 
-    public function index(Request $request): View|JsonResponse
+    public function index(Request $request): View|JsonResponse|RedirectResponse
 {
+    // Ensure the user is authenticated and has drp_type == 1
+    if (!auth('drp')->check() || auth('drp')->user()->drp_type != 5) {
+        return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+    }
+    
     if ($request->ajax()) {
         $data = SettlementLetter::select('id', 'drp_type', 'name', 'status', 'created_at');
 
@@ -41,14 +47,14 @@ class SettlementLetterController extends Controller
             ->addColumn('action', function ($row) {
                 $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
                 
-                if (Helper::userCan(111, 'can_edit')) {
-                    $btn .= '<a class="dropdown-item" href="' . route('settlementletter.edit', $row['id']) . '">Edit</a>';
-                }
-                if (Helper::userCan(111, 'can_delete')) {
+                // if (Helper::userCan(111, 'can_edit')) {
+                    $btn .= '<a class="dropdown-item" href="' . route('drp.settlementletter.edit', $row['id']) . '">Edit</a>';
+                // }
+                // if (Helper::userCan(111, 'can_delete')) {
                     $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
-                }
-
-                return Helper::userAllowed(111) ? $btn : '';
+                // }
+                return $btn;
+                // return Helper::userAllowed(111) ? $btn : '';
             })
             ->orderColumn('created_at', function ($query, $order) {
                 $query->orderBy('created_at', $order);
@@ -58,13 +64,19 @@ class SettlementLetterController extends Controller
     }
 
     $title = "Settlement Agreements";
-    return view('settlementletter.index', compact('title'));
+    return view('drp.settlementletter.index', compact('title'));
 }
 
 
-public function add(): View
+public function add(): View|RedirectResponse
 {
-    return view('settlementletter.add');
+     // Ensure the user is authenticated and has drp_type == 1
+     if (!auth('drp')->check() || auth('drp')->user()->drp_type != 5) {
+        return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+    }
+    
+    $title = "Add Settlement Agreement";
+    return view('drp.settlementletter.add', compact('title'));
 }
 
 public function save(Request $request): RedirectResponse
@@ -79,21 +91,27 @@ public function save(Request $request): RedirectResponse
 
     SettlementLetter::create($validated + ['status' => 1]);
     
-    return to_route('settlementletter')->withSuccess('Settlement Agreement Added Successfully..!!');
+    return to_route('drp.settlementletter')->withSuccess('Settlement Agreement Added Successfully..!!');
 }
 
 public function edit($id): View|RedirectResponse
 {
+     // Ensure the user is authenticated and has drp_type == 1
+     if (!auth('drp')->check() || auth('drp')->user()->drp_type != 5) {
+        return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+    }
+    
     $settlementletter = SettlementLetter::find($id);
-    if (!$settlementletter) return to_route('settlementletter')->withError('Settlement Agreement Not Found..!!');
+    if (!$settlementletter) return to_route('drp.settlementletter')->withError('Settlement Agreement Not Found..!!');
 
-    return view('settlementletter.edit', compact('settlementletter'));
+    $title = "Edit Settlement Agreement";
+    return view('drp.settlementletter.edit', compact('settlementletter','title'));
 }
 
 public function update(Request $request, $id): RedirectResponse
 {
     $settlementletter = SettlementLetter::find($id);
-    if (!$settlementletter) return to_route('settlementletter')->withError('Settlement Agreement Not Found..!!');
+    if (!$settlementletter) return to_route('drp.settlementletter')->withError('Settlement Agreement Not Found..!!');
 
     $validated = $request->validate([
         'drp_type'       => ['required', 'integer'],
@@ -105,7 +123,7 @@ public function update(Request $request, $id): RedirectResponse
 
     $settlementletter->update($validated);
     
-    return to_route('settlementletter')->withSuccess('Settlement Agreement Updated Successfully..!!');
+    return to_route('drp.settlementletter')->withSuccess('Settlement Agreement Updated Successfully..!!');
 }
 
 public function delete(Request $request): JsonResponse

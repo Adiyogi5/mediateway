@@ -24,6 +24,7 @@
             <table class="table custom-table table-striped fs--1 mb-0 table-datatable" style="width:100%">
                 <thead class="bg-200 text-900">
                     <tr>
+                        <th>#</th>
                         <th>Award Name</th>
                         <th>Status</th>
                         <th width="100px">Action</th>
@@ -49,8 +50,9 @@
 
         var table = $('.table-datatable').DataTable({
             ajax: "{{ route('award') }}",
-            order: [[0, 'desc']],
+            order: [[0, 'asc']],
             columns: [
+                { data: 'id', name: 'id' },
                 { data: 'name', name: 'name' },
                 { data: 'status', name: 'status' },
                 { data: 'action', name: 'action', orderable: false, searchable: false }

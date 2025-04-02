@@ -98,9 +98,10 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
     Route::controller(CaseAssignController::class)->group(function () {
         Route::get('caseassign', 'index')->name('caseassign')->middleware('isAllow:111,can_view');
         Route::get('caseassign/{id}', 'assign')->name('caseassign.assign')->middleware('isAllow:111,can_edit');
-        Route::put('caseassign/{id}', 'update')->name('caseassign.update')->middleware('isAllow:111,can_edit');
+        Route::put('caseassign/assigndetail/{id}', 'updateassigndetail')->name('caseassign.updateassigndetail')->middleware('isAllow:111,can_edit');
         Route::delete('caseassign', 'delete')->name('caseassign.delete')->middleware('isAllow:111,can_delete');
-
+        Route::get('caseassign/{id}/edit', 'edit')->name('caseassign.edit')->middleware('isAllow:111,can_edit');
+        Route::put('caseassign/casedetail/{id}', 'updateCaseDetail')->name('caseassign.updatecasedetail')->middleware('isAllow:111,can_edit');
     });
 
     // ----------------------- States Routes ----------------------------------------------------

@@ -1,7 +1,20 @@
+
 @media (min-width: 1200px) and (max-width: 1400px) {
+    .container, .container-lg, .container-md, .container-sm, .container-xl {
+        max-width: 1260px;
+    }
 }
 
 @media (min-width: 992px) and (max-width: 1200px) {
+    .sidebar-link {
+        font-size: 12px;
+    }
+    .faa-profile {
+        font-size: 18px;
+    }
+    .livemeetingcard-title {
+        font-size: 13px !important;
+    }
     .nav-title {
         margin: 0px 3px;
     }
@@ -78,7 +91,7 @@
         width: 25px;
     }
     .card-inner {
-        padding: 24px 24px;
+        padding: 12px 12px;
     }
     .btn-dasboard {
         font-size: 16px;
@@ -109,6 +122,18 @@
 }
 
 @media (min-width: 768px) and (max-width: 992px) {
+    .sidebar-link {
+        font-size: 12px;
+    }
+    .faa-profile {
+        font-size: 18px;
+    }
+    .livemeetingcard-title {
+        font-size: 13px !important;
+    }
+    .offcanvas-header {
+        display: block !important;
+    }
     .nav-title {
         margin: 0px 3px;
     }
@@ -236,7 +261,7 @@
         padding: 4px 12px;
     }
     .card-inner {
-        padding: 14px 14px;
+        padding: 12px 12px;
     }
     .form-dashboard-select {
         padding: 4px 16px;
@@ -413,7 +438,7 @@
         padding: 4px 12px;
     }
     .card-inner {
-        padding: 14px 14px;
+        padding: 12px 12px;
     }
     .form-dashboard-select {
         padding: 4px 16px;
@@ -624,14 +649,27 @@
         font-size: 13px !important;
     }
     .card-inner h5 {
-        font-size: 20px;
+        font-size: 16px;
+    }
+    .btn-outline-secondary {
+        font-size: 13px;
+        padding: 1px 7px !important;
+    }
+    .livemeetingcard-title {
+        font-size: 13px !important;
+    }
+    .sidebar-link {
+        font-size: 13px;
+    }    
+    .card .card-header:not(.custom-accordion) {
+        padding: 10px;
     }
     .btn-dasboard {
         font-size: 13px;
         padding: 4px 12px;
     }
     .card-inner {
-        padding: 14px 14px;
+        padding: 10px 10px;
     }
     .form-dashboard-select {
         padding: 4px 16px;
@@ -845,14 +883,27 @@
         font-size: 13px !important;
     }
     .card-inner h5 {
-        font-size: 20px;
+        font-size: 15px;
     }
+    .btn-outline-secondary {
+        font-size: 12px;
+        padding: 1px 7px !important;
+    }
+    .livemeetingcard-title {
+        font-size: 12px !important;
+    }
+    .livemeetingcard-text {
+        font-size: 12px !important;
+    }
+    .sidebar-link {
+        font-size: 13px;
+    } 
     .btn-dasboard {
         font-size: 13px;
         padding: 4px 12px;
     }
     .card-inner {
-        padding: 14px 14px;
+        padding: 10px 10px;
     }
     .form-dashboard-select {
         padding: 4px 16px;
@@ -1076,14 +1127,27 @@
         font-size: 13px !important;
     }
     .card-inner h5 {
-        font-size: 20px;
+        font-size: 15px;
     }
+    .btn-outline-secondary {
+        font-size: 12px;
+        padding: 1px 7px !important;
+    }
+    .livemeetingcard-title {
+        font-size: 12px !important;
+    }
+    .livemeetingcard-text {
+        font-size: 12px !important;
+    }
+    .sidebar-link {
+        font-size: 13px;
+    } 
     .btn-dasboard {
         font-size: 13px;
         padding: 4px 12px;
     }
     .card-inner {
-        padding: 14px 14px;
+        padding: 10px 10px;
     }
     .form-dashboard-select {
         padding: 4px 16px;

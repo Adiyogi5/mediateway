@@ -39,7 +39,9 @@
                         <div class="d-flex flex-wrap justify-content-center">
                             <div class="custom-tab active" data-target="case-overview">CASE OVERVIEW</div>
                             {{-- <div class="custom-tab" data-target="status-summary">CASE STATUS SUMMARY</div> --}}
-                            <div class="custom-tab" data-target="upcoming-sessions">UPCOMING HEARINGS</div>
+                            @if (auth('drp')->check() && auth('drp')->user()->drp_type == 5)
+                            <div class="custom-tab" data-target="upcoming-sessions">UPCOMING CONCILIATION MEETINGS</div>
+                            @endif
                             {{-- <div class="custom-tab" data-target="case-details">CASE DETAILS</div>
                             <div class="custom-tab" data-target="resolution-progress">RESOLUTION PROGRESS</div> --}}
                             <div class="custom-tab" data-target="communication-log">COMMUNICATION</div>
@@ -47,6 +49,9 @@
 
                         <!-- Content Boxes -->
                         <div id="case-overview" class="content-section row gy-lg-4 gy-3">
+                            {{-- ################ DRP TYPE 1 Arbitrator ################# --}}
+                            {{-- ####################################################### --}}
+                            @if (auth('drp')->check() && auth('drp')->user()->drp_type == 1)
                             <div class="col-md-6 col-12 position-relative">
                                 <div class="custom-card row">
                                     <div class="col-4">
@@ -148,6 +153,96 @@
                                 </div>
                                 <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
                             </div>
+                            @endif
+
+                            {{-- ################ DRP TYPE 5 Conciliator ################# --}}
+                            {{-- ####################################################### --}}
+                            @if (auth('drp')->check() && auth('drp')->user()->drp_type == 5)
+                            <div class="col-md-6 col-12 position-relative">
+                                <div class="custom-card row">
+                                    <div class="col-4">
+                                        <div class="icon-box-dash">
+                                            <img src="{{ asset('assets/img/dashboard/active-case.png') }}"
+                                                alt="" class="img-fluid img-dashboard">
+                                        </div>
+                                    </div>
+                                    <div class="col-8" style="display: flex;">
+                                        <div class="my-auto">
+                                            <h3>50</h3>
+                                            <p>Total Filed Cases</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
+                            </div>
+                            <div class="col-md-6 col-12 position-relative">
+                                <div class="custom-card row">
+                                    <div class="col-4">
+                                        <div class="icon-box-dash">
+                                            <img src="{{ asset('assets/img/dashboard/Resolved-case.png') }}"
+                                                alt="" class="img-fluid img-dashboard">
+                                        </div>
+                                    </div>
+                                    <div class="col-8" style="display: flex;">
+                                        <div class="my-auto">
+                                            <h3>50</h3>
+                                            <p>Total Pending Cases</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
+                            </div>
+                            <div class="col-md-6 col-12 position-relative">
+                                <div class="custom-card row">
+                                    <div class="col-4">
+                                        <div class="icon-box-dash">
+                                            <img src="{{ asset('assets/img/dashboard/new-case.png') }}" alt="" class="img-fluid img-dashboard">
+                                        </div>
+                                    </div>
+                                    <div class="col-8" style="display: flex;">
+                                        <div class="my-auto">
+                                            <h3>50</h3>
+                                            <p>Total Resolved Cases</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
+                            </div>
+                            <div class="col-md-6 col-12 position-relative">
+                                <div class="custom-card row">
+                                    <div class="col-4">
+                                        <div class="icon-box-dash">
+                                            <img src="{{ asset('assets/img/dashboard/case-timing.png') }}"
+                                                alt="" class="img-fluid img-dashboard">
+                                        </div>
+                                    </div>
+                                    <div class="col-8" style="display: flex;">
+                                        <div class="my-auto">
+                                            <h3>50</h3>
+                                            <p>Upcoming Hearing Dates</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
+                            </div>
+                            <div class="col-md-6 col-12 position-relative">
+                                <div class="custom-card row">
+                                    <div class="col-4">
+                                        <div class="icon-box-dash">
+                                            <img src="{{ asset('assets/img/dashboard/case-timing.png') }}"
+                                                alt="" class="img-fluid img-dashboard">
+                                        </div>
+                                    </div>
+                                    <div class="col-8" style="display: flex;">
+                                        <div class="my-auto">
+                                            <h3>50</h3>
+                                            <p>Settlement Agreements</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
+                            </div>
+                            @endif
                         </div>
 
                         {{-- <div id="status-summary" class="content-section row d-none mt-xl-5 mt-3">
@@ -188,6 +283,7 @@
                             </div>
                         </div> --}}
 
+                        @if (auth('drp')->check() && auth('drp')->user()->drp_type == 5)
                         <div id="upcoming-sessions" class="content-section row mt-xl-5 mt-3 d-none">
                             <div class="col-12">
                                 <div class="custom-table-container">
@@ -230,6 +326,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
                         {{-- <div id="case-details" class="content-section row mt-xl-5 mt-3 d-none">
                             <div class="col-12">

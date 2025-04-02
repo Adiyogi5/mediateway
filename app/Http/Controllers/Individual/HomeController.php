@@ -24,14 +24,30 @@ class HomeController extends Controller
         $individualSlug = $individual?->slug;
     
         $indivuduals = Individual::with('individualDetail')->where('slug', $individualSlug)->first();
-        $caseData = FileCase::with(['payments', 'assignedCases.arbitrator', 'assignedCases.advocate', 'assignedCases.caseManager', 'assignedCases.mediator', 'assignedCases.conciliator'])
-            ->where('individual_id', $individual->id)
-            ->where('status', 1)
+        $caseData = FileCase::with([
+                'payments',
+                'assignedCases.arbitrator',
+                'assignedCases.advocate',
+                'assignedCases.caseManager',
+                'assignedCases.mediator',
+                'assignedCases.conciliator'
+            ])
+            ->leftJoin('states as claimant_states', 'claimant_states.id', '=', 'file_cases.claimant_state_id')
+            ->leftJoin('cities as claimant_cities', 'claimant_cities.id', '=', 'file_cases.claimant_city_id')
+            ->leftJoin('states as respondent_states', 'respondent_states.id', '=', 'file_cases.respondent_state_id')
+            ->leftJoin('cities as respondent_cities', 'respondent_cities.id', '=', 'file_cases.respondent_city_id')
+            ->where('file_cases.individual_id', $indivuduals->id)
+            ->where('file_cases.status', 1)
+            ->select([
+                'file_cases.*',
+                'claimant_states.name as claimant_state_name',
+                'claimant_cities.name as claimant_city_name',
+                'respondent_states.name as respondent_state_name',
+                'respondent_cities.name as respondent_city_name',
+            ])
             ->latest()
-            ->get();
+            ->get();    
 
-    
-        // dd($caseData);
         if (!$indivuduals) {
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }

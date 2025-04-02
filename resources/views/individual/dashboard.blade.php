@@ -52,6 +52,7 @@
                                     <div class="col-md-12 col-12 position-relative">
                                         <div class="custom-case-card">
                                             @foreach ($caseData as $case)
+                                                <hr style="border: 3px solid #ffb000; margin-bottom:0px; margin-top:0px;">
                                                 <h4 class="case-heading">Case Overview :</h4>
                                                 <div class="row gx-5 gy-3">
                                                     <div class="col-md-4 col-6">
@@ -59,19 +60,6 @@
                                                         <p class="case-text">
                                                             {{ config('constant.case_type')[$case->case_type] ?? 'Unknown Case Type' }}
                                                         </p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Neutral Third Party</p>
-                                                        <p class="case-text">______________</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Case Administered</p>
-                                                        <p class="case-text">______________</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Opposing Party</p>
-                                                        <p class="case-text"> {{ $case->respondent_first_name }}
-                                                            {{ $case->respondent_last_name }}</p>
                                                     </div>
                                                     <div class="col-md-4 col-6">
                                                         <p class="case-title">Case Status</p>
@@ -85,9 +73,67 @@
                                                             {{ intval(\Carbon\Carbon::parse($case->created_at)->diffInDays(now())) }}
                                                             days</p>
                                                     </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Brief of Case</p>
+                                                        <p class="case-text"> {{ $case->brief_of_case }}</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Disputed Amount</p>
+                                                        <p class="case-text"> {{ $case->amount_in_dispute }}</p>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">First Party</p>
+                                                        <p class="case-text"> {{ $case->claimant_first_name }}
+                                                            {{ $case->claimant_last_name }}</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">First Party Mobile</p>
+                                                        <p class="case-text"> {{ $case->claimant_mobile }}</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">First Party Email</p>
+                                                        <p class="case-text"> {{ $case->claimant_email }}</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">First Party Address</p>
+                                                        <p class="case-text">
+                                                            {{ $case->claimant_address_type == 1 ? 'Home' : ($case->claimant_address_type == 2 ? 'Office' : 'Other') }} - 
+                                                            {{ $case->claimant_address1 }}, 
+                                                            {{ $case->claimant_address2 }}, 
+                                                            {{ $case->claimant_state_name }}, 
+                                                            {{ $case->claimant_city_name }}, 
+                                                            {{ $case->claimant_pincode }}
+                                                        </p>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Opposing Party</p>
+                                                        <p class="case-text"> {{ $case->respondent_first_name }}
+                                                            {{ $case->respondent_last_name }}</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Opposing Party Mobile</p>
+                                                        <p class="case-text"> {{ $case->respondent_mobile }}</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Opposing Party Email</p>
+                                                        <p class="case-text"> {{ $case->respondent_email }}</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-6">
+                                                        <p class="case-title">Opposing Party Address</p>
+                                                        <p class="case-text">
+                                                            {{ $case->respondent_address_type == 1 ? 'Home' : ($case->respondent_address_type == 2 ? 'Office' : 'Other') }} - 
+                                                            {{ $case->respondent_address1 }}, 
+                                                            {{ $case->respondent_address2 }}, 
+                                                            {{ $case->respondent_state_name }}, 
+                                                            {{ $case->respondent_city_name }}, 
+                                                            {{ $case->respondent_pincode }}
+                                                        </p>
+                                                    </div>
                                                 </div>
 
-                                                <hr>
+                                                <hr style="border: 3px solid #ffb000; margin-bottom:0px;">
 
                                                 <h4 class="case-heading">My Position Summary :</h4>
                                                 <div class="row gx-5 gy-3">
@@ -117,7 +163,7 @@
                                                 </div>
                                                 </div>
 
-                                                <hr>
+                                                <hr style="border: 3px solid #ffb000; margin-bottom:0px;">
 
                                                 <h4 class="case-heading">Assigned Cases :</h4>
                                                 @if ($case->assignedCases->isNotEmpty())
@@ -156,7 +202,7 @@
                                                     </small>
                                                 @endif
 
-                                                <hr>
+                                                <hr style="border: 3px solid #ffb000; margin-bottom:0px;">
 
                                                 <h4 class="case-heading">Payments :</h4>
                                                 @if ($case->payments->isNotEmpty())
@@ -195,7 +241,8 @@
                                                     </small>
                                                 @endif
 
-                                                <hr>
+                                                <hr style="border: 3px solid #ffb000; margin-bottom:0px;">
+
                                                 <h4 class="case-heading">Case Documents :</h4>
                                                 <div class="row gx-5 gy-3">
                                                     @php

@@ -190,7 +190,7 @@
             </div>
 
             <form class="row mx-auto px-auto border-top border-1 mt-4 py-4" id="assignCase" method="POST"
-                action="{{ route('caseassign.update', $caseData->id) }}" enctype='multipart/form-data' style="background-color: #e1aeff21; border-color: #7d30cb !important;">
+                action="{{ route('caseassign.updateassigndetail', $caseData->id) }}" enctype='multipart/form-data' style="background-color: #e1aeff21; border-color: #7d30cb !important;">
                 @csrf
                 @method('PUT')
                 <div class="col-12 text-center justify-content-center bg-secondary pt-2">

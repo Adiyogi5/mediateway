@@ -122,9 +122,8 @@
                 <div class="col-lg-12 mt-3 d-flex justify-content-start">
                     <button class="btn btn-secondary submitbtn" type="submit">Update</button>
                 </div>
+            </form>
         </div>
-        </form>
-    </div>
     </div>
 @endsection
 

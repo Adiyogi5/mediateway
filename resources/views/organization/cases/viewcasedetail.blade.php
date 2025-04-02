@@ -34,7 +34,8 @@
                             <div class="col-md-12 col-12 position-relative">
                                 <div class="custom-case-card">
                                     @foreach ($caseData as $case)
-                                        <h4 class="case-heading">Case Overview :</h4>
+                                        <hr style="border: 3px solid #ffb000; margin-bottom:0px; margin-top:0px;">
+                                        <h4 class="case-heading mt-0">Case Overview :</h4>
                                         <div class="row gx-5 gy-3">
                                             <div class="col-md-4 col-6">
                                                 <p class="case-title">Dispute Type</p>
@@ -69,9 +70,9 @@
                                             </div>
                                         </div>                                       
                                         
-                                        <hr>
+                                        <hr style="border: 3px solid #ffb000; margin-bottom:0px;">
 
-                                        <h4 class="case-heading">Assigned Cases :</h4>
+                                        <h4 class="case-heading mt-0">Assigned Cases :</h4>
                                         @if ($case->assignedCases->isNotEmpty())
                                             @foreach ($case->assignedCases as $assigned)
                                                 <div class="row gx-5 gy-3">

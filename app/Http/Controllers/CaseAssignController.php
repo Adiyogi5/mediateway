@@ -73,6 +73,7 @@ class CaseAssignController extends Controller
 
                     if (Helper::userCan(111, 'can_edit')) {
                         $btn .= '<a class="dropdown-item" href="' . route('caseassign.assign', $row['id']) . '">Assign</a>';
+                        $btn .= '<a class="dropdown-item" href="' . route('caseassign.edit', $row['id']) . '">Edit</a>'; // Added Edit Button
                     }
                     if (Helper::userCan(111, 'can_delete')) {
                         $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
@@ -88,6 +89,60 @@ class CaseAssignController extends Controller
         }
         return view('caseassign.index');
     }
+
+    public function edit($id)
+    {
+        $case = FileCase::findOrFail($id);
+        return view('caseassign.edit', compact('case'));
+    }
+
+    public function updateCaseDetail(Request $request, $id): RedirectResponse
+    {
+        $request->validate([
+            'claimant_name' => 'required|string|max:255',
+            'respondent_name' => 'required|string|max:255',
+            'case_type' => 'required',
+            'status' => 'required',
+        ]);
+
+        $case = FileCase::findOrFail($id);
+
+        // Handle file uploads only if new files are uploaded
+        $uploadApplicationFormPath = $request->hasFile('application_form') 
+            ? Helper::saveFile($request->file('application_form'), 'casefile') 
+            : $case->application_form;
+
+        $uploadForeclosureStatementPath = $request->hasFile('foreclosure_statement') 
+            ? Helper::saveFile($request->file('foreclosure_statement'), 'casefile') 
+            : $case->foreclosure_statement; // Fixed: Should be $case->foreclosure_statement
+
+        $uploadLoanAgreementPath = $request->hasFile('loan_agreement') 
+            ? Helper::saveFile($request->file('loan_agreement'), 'casefile') 
+            : $case->loan_agreement; // Fixed: Should be $case->loan_agreement
+
+        $uploadAccountStatementPath = $request->hasFile('account_statement') 
+            ? Helper::saveFile($request->file('account_statement'), 'casefile') 
+            : $case->account_statement; // Fixed: Should be $case->account_statement
+
+        $uploadOtherDocumentPath = $request->hasFile('other_document') 
+            ? Helper::saveFile($request->file('other_document'), 'casefile') 
+            : $case->other_document; // Fixed: Should be $case->other_document
+
+        $case->update([
+            'claimant_first_name' => $request->claimant_name,
+            'respondent_first_name' => $request->respondent_name,
+            'case_type' => $request->case_type,
+            'status' => $request->status,
+            'application_form'          => $uploadApplicationFormPath,
+            'foreclosure_statement'     => $uploadForeclosureStatementPath,
+            'loan_agreement'            => $uploadLoanAgreementPath,
+            'account_statement'         => $uploadAccountStatementPath,
+            'other_document'            => $uploadOtherDocumentPath,
+        ]);
+
+        return redirect()->route('caseassign')->with('success', 'Case details updated successfully.');
+    }
+
 
     public function assign($id): View|RedirectResponse
     {
@@ -106,7 +161,7 @@ class CaseAssignController extends Controller
         return view('caseassign.assign', compact('caseData','assignCase','arbitrators','advocates','casemanagers','mediators','conciliators'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function updateassigndetail(Request $request, $id): RedirectResponse
     {
         $caseData = FileCase::find($id);
         if (!$caseData) return to_route('caseassign')->withError('Case Not Found..!!');

@@ -5,14 +5,14 @@
     <div class="card-header">
         <div class="row flex-between-end">
             <div class="col-auto align-self-center">
-                <h5 class="mb-0" data-anchor="data-anchor">Settlement Letter :: Settlement Letter List </h5>
+                <h5 class="mb-0" data-anchor="data-anchor">Settlement Agreements :: Settlement Agreement List </h5>
             </div>
             <div class="col-auto ms-auto">
                 <div class="nav nav-pills nav-pills-falcon">
                     @if(Helper::userCan(111, 'can_add'))
                     <a href="{{ route('settlementletter.add') }}" class="btn btn-outline-secondary">
                         <i class="fa fa-plus me-1"></i>
-                        Add Settlement Letter
+                        Add Settlement Agreement
                     </a>
                     @endif
                 </div>
@@ -24,8 +24,9 @@
             <table class="table custom-table table-striped fs--1 mb-0 table-datatable" style="width:100%">
                 <thead class="bg-200 text-900">
                     <tr>
+                        <th>#</th>
                         <th>DRP Type</th>
-                        <th>Settlement Letter Name</th>
+                        <th>Settlement Agreement Name</th>
                         <th>Status</th>
                         <th width="100px">Action</th>
                     </tr>
@@ -50,8 +51,9 @@
 
         var table = $('.table-datatable').DataTable({
             ajax: "{{ route('settlementletter') }}",
-            order: [[0, 'desc']],
+            order: [[0, 'asc']],
             columns: [
+                { data: 'id', name: 'id' },
                 { data: 'drp_type', name: 'drp_type' },
                 { data: 'name', name: 'name' },
                 { data: 'status', name: 'status' },

@@ -8,6 +8,9 @@
     <div class="card mb-3">
         <div class="card-header">
             <div class="row flex-between-end">
+                <div class="col-auto align-self-center">
+                    <h5 class="mb-0" data-anchor="data-anchor">Awards :: Award Edit </h5>
+                </div>
                 <div class="col-auto d-flex item-align-self ms-auto">
                     <div class="form-group my-3">
                         <a type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#myModal">
@@ -103,9 +106,8 @@
                 <div class="col-lg-12 mt-3 d-flex justify-content-start">
                     <button class="btn btn-secondary submitbtn" type="submit">Update</button>
                 </div>
+            </form>
         </div>
-        </form>
-    </div>
     </div>
 @endsection
 

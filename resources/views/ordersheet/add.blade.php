@@ -60,11 +60,11 @@
                                 <option value="4">Mediator</option>
                                 <option value="5">Conciliator</option>
                             </select>
-                                @error('drp_type')
+                            @error('drp_type')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
-                                @enderror
+                            @enderror
                         </div>
                     </div>
                     <div class="col-md-6 mt-2">
@@ -72,11 +72,11 @@
                             <label class="form-label" for="name">Name <span class="required">*</span></label>
                             <input type="text" name="name" class="form-control" value="{{ old('name') }}"
                                 id="name" placeholder="Enter Name">
-                                @error('name')
+                            @error('name')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
-                                @enderror
+                            @enderror
                         </div>
                     </div>
                     <div class="col-md-6 mt-2">
@@ -84,23 +84,24 @@
                             <label class="form-label" for="subject">Subject <span class="required">*</span></label>
                             <input type="text" name="subject" class="form-control" value="{{ old('subject') }}"
                                 id="subject" placeholder="Enter Subject">
-                                @error('subject')
+                            @error('subject')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
-                                @enderror
+                            @enderror
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 mt-2">
                         <div class="form-group">
-                            <label class="form-label" for="email_content">Email Content <span class="required">*</span></label>
+                            <label class="form-label" for="email_content">Email Content <span
+                                    class="required">*</span></label>
                             <textarea id="email_content" name="email_content" class="form-control" id="email_content">{{ old('email_content') }}</textarea>
                             @error('email_content')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
                             @enderror
                         </div>
                     </div>
@@ -109,12 +110,13 @@
                 <div class="row">
                     <div class="col-md-12 mt-2">
                         <div class="form-group">
-                            <label class="form-label" for="notice_format">Order Sheet Format <span class="required">*</span></label>
+                            <label class="form-label" for="notice_format">Order Sheet Format <span
+                                    class="required">*</span></label>
                             <textarea class="form-control" id="notice_format" name="notice_format">{{ old('notice_format') }}</textarea>
                             @error('notice_format')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
                             @enderror
                         </div>
                     </div>
@@ -122,59 +124,59 @@
                 <div class="col-lg-12 mt-3 d-flex justify-content-start">
                     <button class="btn btn-secondary submitbtn" type="submit">Add</button>
                 </div>
+            </form>
         </div>
-        </form>
-    </div>
     </div>
 @endsection
 
 @section('js')
-<script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>
-<script>
-   $(document).on("click", "[data-bs-target='#myModal']", function () {
-        $.ajax({
-            url: "{{ route('getordersheetVariables') }}", // Correct for OrderSheet
-            type: "GET",
-            success: function (data) {
-                let variableList = $("#variableList");
-                variableList.empty(); // Clear previous data
+    <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>
+    <script>
+        $(document).on("click", "[data-bs-target='#myModal']", function() {
+            $.ajax({
+                url: "{{ route('getordersheetVariables') }}", // Correct for OrderSheet
+                type: "GET",
+                success: function(data) {
+                    let variableList = $("#variableList");
+                    variableList.empty(); // Clear previous data
 
-                if (data.length > 0) {
-                    data.forEach(function (item) {
-                        variableList.append(`<div class="col-md-4"><li>${item.name}</li></div>`);
-                    });
-                } else {
-                    variableList.append('<p class="text-muted">No Variables Found</p>');
+                    if (data.length > 0) {
+                        data.forEach(function(item) {
+                            variableList.append(
+                                `<div class="col-md-4"><li>${item.name}</li></div>`);
+                        });
+                    } else {
+                        variableList.append('<p class="text-muted">No Variables Found</p>');
+                    }
+                },
+                error: function(xhr) {
+                    console.error("Error:", xhr.status, xhr.responseText);
+                    toastr.error("Failed to fetch variables!");
                 }
-            },
-            error: function (xhr) {
-                console.error("Error:", xhr.status, xhr.responseText);
-                toastr.error("Failed to fetch variables!");
-            }
+            });
         });
-    });
-</script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#notice_format').summernote({
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['fontname', ['fontname']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture']],
-                ['view', ['codeview', 'help']],
-            ]
-        });
-        let buttons = $('.note-editor button[data-toggle="dropdown"]');
-        buttons.each((key, value) => {
-            $(value).on('click', function (e) {
-                $(this).attr('data-bs-toggle', 'dropdown')
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#notice_format').summernote({
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['fontname', ['fontname']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture']],
+                    ['view', ['codeview', 'help']],
+                ]
+            });
+            let buttons = $('.note-editor button[data-toggle="dropdown"]');
+            buttons.each((key, value) => {
+                $(value).on('click', function(e) {
+                    $(this).attr('data-bs-toggle', 'dropdown')
+                })
             })
         })
-    })
         $("#add").validate({
             rules: {
                 name: {
@@ -197,7 +199,7 @@
                     minlength: 2,
                     maxlength: 1000
                 },
-               
+
             },
             messages: {
                 name: {
