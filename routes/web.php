@@ -11,17 +11,28 @@ use Illuminate\Support\Facades\Route;
 Route::controller(FrontController::class)->name('front.')->group(function () {
     Route::get('/', 'index')->name('home');
     Route::get('/home', 'index')->name('home');
-    Route::get('{cms}', 'showCms')->name('show-cms')->whereIn('cms', ['about-us', 'terms-conditions', 'privacy-policy', 'rules']);
+    Route::get('{cms}', 'showCms')->name('show-cms')->whereIn('cms', ['about-us', 'terms-conditions', 'privacy-policy', 'rules','why-choose']);
 
     // ============= call-back Routes ======
     Route::get('/call-back', 'callback')->name('callback');
     Route::post('/request-call-back', 'requestcallback')->name('requestcallback');
+
     // ============= book-appointment Routes ======
     Route::get('/book-appointment', 'bookappointment')->name('bookappointment');
     Route::post('/request-book-appointment', 'requestbookappointment')->name('requestbookappointment');
+
     // ============= contact-us Routes ======
     Route::get('/contact-us', 'contactus')->name('contactus');
     Route::post('/submit-contact-us', 'submitcontactus')->name('submitcontactus');
+
+    // ============= Blogs Routes ======
+    Route::get('/blogs', 'blogs')->name('blogs');
+
+    // ============= News Routes ======
+    Route::get('/news', 'news')->name('news');
+
+    // ============= Faqs Routes ======
+    Route::get('/faqs', 'faqs')->name('faqs');
 });
 
 // ================== Push Notification Routes ==================

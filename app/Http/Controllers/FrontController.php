@@ -2,13 +2,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Banner;
+use App\Models\Blog;
 use App\Models\BookAppointment;
 use App\Models\CallBack;
 use App\Models\Client;
 use App\Models\Cms;
 use App\Models\ContactUs;
+use App\Models\Faq;
 use App\Models\Feature;
 use App\Models\HomeCms;
+use App\Models\News;
 use App\Rules\ReCaptcha;
 use App\Models\Testimonial;
 use Illuminate\Http\Request;
@@ -20,7 +23,7 @@ class FrontController extends Controller
         $banners             = Banner::where('status', 1)->get()->toArray();
         $frontHomecmsWelcome = HomeCms::where('id', 1)->first();
         $frontHomecmsAbout   = HomeCms::where('id', 2)->first();
-        $features            = Feature::where('status', 1)->get()->toArray();
+        $features            = Feature::where('status', 1)->orderby('id', 'ASC')->get()->toArray();
         $testimonials        = Testimonial::where('status', 1)->get()->toArray();
         $clients             = Client::where('status', 1)->get()->toArray();
 
@@ -29,33 +32,25 @@ class FrontController extends Controller
 
     // ############ Show CMS ###########
     public function showCms(Request $request, $slug)
-    {
-        switch ($slug) {
-            case 'about-us':
-                $content  = Cms::find(1);
-                $title = 'About Us';
-                return view('front.about-us', compact('content', 'title'));
+{
+    $cmsPages = [
+        'about-us' => ['id' => 1, 'title' => 'About Us', 'view' => 'front.about-us'],
+        'privacy-policy' => ['id' => 2, 'title' => 'Privacy Policy', 'view' => 'front.privacy-policy'],
+        'terms-conditions' => ['id' => 3, 'title' => 'Terms & Conditions', 'view' => 'front.terms-conditions'],
+        'rules' => ['id' => 4, 'title' => 'Rules', 'view' => 'front.rules'],
+        'why-choose' => ['id' => 5, 'title' => 'Why Choose Us', 'view' => 'front.why-choose'],
+    ];
 
-            case 'privacy-policy':
-                $content  = Cms::find(2);
-                $title = 'Privacy Policy';
-                return view('front.privacy-policy', compact('content', 'title'));
-
-            case 'terms-conditions':
-                $content  = Cms::find(3);
-                $title = 'Terms Condition';
-                return view('front.terms-conditions', compact('content', 'title'));
-
-            case 'rules':
-                $content  = Cms::find(4);
-                $title = 'Rules';
-                return view('front.rules', compact('content', 'title'));
-
-            default:
-                abort(404);
-                break;
-        }
+    if (!array_key_exists($slug, $cmsPages)) {
+        abort(404);
     }
+
+    $page = $cmsPages[$slug];
+    $content = Cms::find($page['id']);
+
+    return view($page['view'], compact('content'))->with('title', $page['title']);
+}
+
 
     // ############ Call BAck Request Form ###########
     public function callback(Request $request)
@@ -101,6 +96,7 @@ class FrontController extends Controller
         return to_route('front.bookappointment')->withSuccess('Your Appointment Booked successfully..!!');
     }
 
+
     // ############ Contact Us Form ###########
     public function contactus(Request $request)
     {
@@ -123,5 +119,49 @@ class FrontController extends Controller
 
         ContactUs::create($validated);
         return to_route('front.contactus')->withSuccess('Message saved successfully..!!');
+    }
+
+
+    // ############ Book Appointment Form ###########
+    public function faqs(Request $request)
+    {
+        $title = 'Faqs';
+
+        $frontHomecmsFaqs   = HomeCms::where('id', 3)->first();
+        $faqs = Faq::where('status', 1)->get();
+
+        return view('front.faqs',compact('title', 'frontHomecmsFaqs', 'faqs'));
+    }
+
+
+    // ############ Blogs Appointment Form ###########
+    public function blogs(Request $request)
+    {
+        $title = 'Blogs';
+    
+        $blogs = Blog::where('status', 1)->orderBy('id', 'desc')->paginate(6);
+        $blogssidebar = Blog::where('status', 1)->limit(6)->orderby('id','DESC')->get();
+    
+        if ($request->ajax()) {
+            return view('front.blogs_data', compact('blogs'))->render();
+        }
+    
+        return view('front.blogs', compact('title', 'blogs', 'blogssidebar'));
+    }
+
+
+    // ############ News Appointment Form ###########
+    public function news(Request $request)
+    {
+        $title = 'News Room';
+
+        $news = News::where('status', 1)->orderBy('id', 'desc')->paginate(6);
+        $newssidebar = News::where('status', 1)->limit(6)->orderby('id','DESC')->get();
+    
+        if ($request->ajax()) {
+            return view('front.news_data', compact('news'))->render();
+        }
+
+        return view('front.news',compact('title', 'news','newssidebar'));
     }
 }

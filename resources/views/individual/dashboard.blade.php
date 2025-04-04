@@ -364,6 +364,10 @@
                                             @endforeach
                                         </div>
                                     </div>
+                                    @else
+                                    <div class="col-md-12 col-12 position-relative text-center justify-content-center">
+                                        <h4 class="case-heading my-3">Please File Case For Details</h4>
+                                    </div>
                                 @endif
                             </div>
 

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FileCase;
 use App\Models\FileCasePayment;
 use App\Models\Individual;
+use App\Models\ServiceFee;
 use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -399,7 +400,17 @@ class FileCaseController extends Controller
         if (!$casefilepayment) {
             return redirect()->route('front.home')->with('error',"File Case not found, Please try again");
         }
-        $case_file_amount = (float) $settings['case_file_amount'];
+
+        $serviceFee = ServiceFee::where('status', 1)->get();
+        $amount_in_dispute = (float) $casefilepayment->amount_in_dispute;
+
+        // Find the appropriate service fee
+        $selectedFee = $serviceFee->firstWhere(function ($fee) use ($amount_in_dispute) {
+            return $amount_in_dispute >= $fee->ticket_size_min && $amount_in_dispute <= $fee->ticket_size_max;
+        });
+        
+        // Assign the corresponding cost
+        $case_file_amount = $selectedFee ? (float) $selectedFee->cost : 0;
     
         $razorpayOrderId = '';
         $payment_data = '';
@@ -455,7 +466,7 @@ class FileCaseController extends Controller
             
         }
 
-        return view('individual.case.filecasepayment', ['casefilepayment' => $casefilepayment, 'payment_json' => json_encode($payment_data)], compact('title','razorpayOrderId'));
+        return view('individual.case.filecasepayment', ['casefilepayment' => $casefilepayment, 'case_file_amount' => $case_file_amount, 'payment_json' => json_encode($payment_data)], compact('title','razorpayOrderId'));
     }
 
 

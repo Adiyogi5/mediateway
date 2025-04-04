@@ -46,7 +46,7 @@
                 </div>
                 <div> <i class="fa-solid fa-chevron-right"></i> </div>
             </a>
-            <ul class="collapse submenu list-unstyled @routeis('sliders,testimonials,homecms,cms,faq,features,enquiries,banners,clients') show @endrouteis"
+            <ul class="collapse submenu list-unstyled @routeis('sliders,testimonials,homecms,cms,blogs,news,faqs,features,enquiries,banners,clients') show @endrouteis"
                 id="static_content" data-bs-parent="#accordionExample">
 
                 @if(Helper::userCan(112))
@@ -64,6 +64,18 @@
                 @if(Helper::userCan(104))
                 <li class="@routeis('cms') active @endrouteis">
                     <a href="{{ route('cms') }}">CMS</a>
+                </li>
+                @endif
+
+                @if(Helper::userCan(104))
+                <li class="@routeis('blogs') active @endrouteis">
+                    <a href="{{ route('blogs') }}">Blogs</a>
+                </li>
+                @endif
+
+                @if(Helper::userCan(104))
+                <li class="@routeis('news') active @endrouteis">
+                    <a href="{{ route('news') }}">News</a>
                 </li>
                 @endif
                 
@@ -93,6 +105,15 @@
             </ul>
         </li>
         @endif
+
+        <li class="menu @routeis('organizationlist') active @endrouteis">
+            <a href="{{route('organizationlist')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-sitemap"></i>
+                    <span>Organization List</span>
+                </div>
+            </a>
+        </li>
 
         <li class="menu @routeis('caseassign') active @endrouteis">
             <a href="{{route('caseassign')}}" class="dropdown-toggle">
@@ -178,6 +199,15 @@
                 <div class="">
                     <i class="fa-duotone fa-mobile"></i>
                     <span>Call Back Inquiries</span>
+                </div>
+            </a>
+        </li>
+
+        <li class="menu @routeis('servicefee') active @endrouteis">
+            <a href="{{route('servicefee')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-file-lines"></i>
+                    <span>Service Fee</span>
                 </div>
             </a>
         </li>

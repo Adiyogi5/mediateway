@@ -52,13 +52,15 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-7 col-12 order-md-1 order-2">
+                <div class="col-md-7 col-12 order-md-1 order-2 d-flex align-items-center text-start justify-content-center">
+                    <div class="">
                     <h3 class="section-title">{{ $frontHomecmsWelcome->title }}</h3>
                     <p class="section-content">
                         {{ $frontHomecmsWelcome->description }}
                     </p>
-                    <a href="#" class="btn btn-learn-more">Learn More &nbsp;&nbsp;&nbsp;<i
+                    <a href="{{ route('front.show-cms', 'why-choose') }}" class="btn btn-learn-more">Learn More &nbsp;&nbsp;&nbsp;<i
                             class="fa-solid fa-arrow-right"></i></a>
+                        </div>
                 </div>
                 <div class="col-md-5 col-12 order-md-2 order-1 position-relative">
                     <img class="img-fluid" src="{{ asset('storage/' . $frontHomecmsWelcome->image) }}" alt="{{ $frontHomecmsWelcome->title }}">
@@ -157,8 +159,11 @@
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}" alt="">
                                 </div>
                                 <div class="col-md col-12">
-                                    <h3>Case Initiation (Pre-Existing)</h3>
-                                    <ul class="list-style">
+                                    <h3>Mediation</h3>
+                                    <p>
+                                        In India, the mediation landscape has been significantly shaped by the enactment of the Mediation Act, 2023. This legislation aims to promote and facilitate mediation, particularly institutional mediation, for the resolution of various disputes, including commercial matters. The Act emphasizes voluntary and mutual consented pre-litigation mediation, encouraging parties to seek amicable settlements before initiating formal legal proceedings. E-Gazette
+                                    </p>
+                                    {{-- <ul class="list-style">
                                         <li>
                                             <p>Drafting of Notice and list of Claims by the Claimant.</p>
                                         </li>
@@ -177,26 +182,43 @@
                                         <li>
                                             <p>Multi-level actions for various documents received and sent.</p>
                                         </li>
-                                    </ul>
+                                    </ul> --}}
                                 </div>
                                 <div class="col-md col-12">
-                                    <h3>Case Initiation (in case of non-existing agreement)</h3>
+                                    <h3>The process is structured by MWADR into the following stages</h3>
                                     <ul class="list-style">
                                         <li>
-                                            <p>Drafting of Request for Arbitration by the Claimant.</p>
+                                            <p>Online request for Mediation along with Prescribed claim form.</p>
                                         </li>
                                         <li>
-                                            <p>Online discussions between the parties.</p>
+                                            <p>Appointment of Case Manager.</p>
                                         </li>
                                         <li>
-                                            <p>Building and execution of Arbitration Submission Agreement.</p>
+                                            <p>Issuance of Case Number.</p>
+                                        </li>
+                                        <li>
+                                            <p>Intimation to Opposite party.</p>
+                                        </li>
+                                        <li>
+                                            <p>Payment of Service Fee.</p>
+                                        </li>
+                                        <li>
+                                            <p>Appointment of Mediator under MWADR’s Rules.</p>
+                                        </li>
+                                        <li>
+                                            <p>Online Opening Session between Disputant parties and Mediator at MWADR’s Online Platform.</p>
+                                        </li>
+                                        <li>
+                                            <p>Reach on Resolution & execute the settlement Agreement.</p>
+                                        </li>
+                                        <li>
+                                            <p>Dashboard for Disputants to overview his case activities.</p>
                                         </li>
                                     </ul>
                                 </div>
-
                             </div>
                         </div>
-                        <div class="item">
+                        {{-- <div class="item">
                             <div class="row gx-3">
                                 <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}" alt="">
@@ -286,7 +308,7 @@
                                 </div>
 
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="pagination" id="mediation-pagination"></div>
                 </div>
@@ -300,8 +322,10 @@
                                         alt="">
                                 </div>
                                 <div class="col-md col-12">
-                                    <h3>Case Initiation (Pre-Existing)</h3>
-                                    <ul class="list-style">
+                                    <h3>Conciliation</h3>
+                                    <p>To settle disputes between parties, conciliation is a non-adjudicatory alternative dispute resolution (ADR) procedure. In order to promote communication, comprehension, and consensus among the parties, it is a voluntary and private dispute resolution process. A neutral third party, known as the conciliator, helps disputing parties come to a mutually agreeable settlement through the use of conciliation, an alternative dispute resolution (ADR) technique. A&C Act 1996</p>
+                                    <p>These legislative measures underscore India's commitment to strengthening its alternative dispute resolution mechanisms, making conciliation a viable and effective option for resolving disputes outside the traditional court system.</p>
+                                    {{-- <ul class="list-style">
                                         <li>
                                             <p>Drafting of Notice and list of Claims by the Claimant.</p>
                                         </li>
@@ -320,26 +344,44 @@
                                         <li>
                                             <p>Multi-level actions for various documents received and sent.</p>
                                         </li>
-                                    </ul>
+                                    </ul> --}}
                                 </div>
                                 <div class="col-md col-12">
-                                    <h3>Case Initiation (in case of non-existing agreement)</h3>
+                                    <h3>The process is structured by MWADR into the following stages</h3>
                                     <ul class="list-style">
                                         <li>
-                                            <p>Drafting of Request for Arbitration by the Claimant.</p>
+                                            <p>Online request for Conciliation along with Prescribed claim form.</p>
                                         </li>
                                         <li>
-                                            <p>Online discussions between the parties.</p>
+                                            <p>Appointment of Case Manager.</p>
                                         </li>
                                         <li>
-                                            <p>Building and execution of Arbitration Submission Agreement.</p>
+                                            <p>Issuance of Case Number.</p>
+                                        </li>
+                                        <li>
+                                            <p>Invitation u/s 62 of the A & C Act 1996 to Opposite party.</p>
+                                        </li>
+                                        <li>
+                                            <p>Payment of Service Fee.</p>
+                                        </li>
+                                        <li>
+                                            <p>Appointment of Conciliator u/s 63 -65 of the A & C Act 1996 & under MWADR’s Rules.</p>
+                                        </li>
+                                        <li>
+                                            <p>Online Opening Session between Disputant parties and Conciliator at MWADR’s Online Platform.</p>
+                                        </li>
+                                        <li>
+                                            <p>    8. Reach on Resolution & execute the settlement Agreement 
+                                                (Pertains to the settlement agreement, stating that if the parties reach an agreement, they may draw up and sign a written settlement agreement, which has the same status and effect as an arbitral award u/s 73 of the A & C Act 1996.).</p>
+                                        </li>
+                                        <li>
+                                            <p>Dashboard for Disputants to overview his case activities.</p>
                                         </li>
                                     </ul>
                                 </div>
-
                             </div>
                         </div>
-                        <div class="item">
+                        {{-- <div class="item">
                             <div class="row gx-3">
                                 <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}"
@@ -430,7 +472,7 @@
                                 </div>
 
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="pagination" id="conciliation-pagination"></div>
                 </div>
@@ -444,8 +486,14 @@
                                         alt="">
                                 </div>
                                 <div class="col-md col-12">
-                                    <h3>Case Initiation (Pre-Existing)</h3>
-                                    <ul class="list-style">
+                                    <h3>Arbitration</h3>
+                                    <p>
+                                        The Arbitration and Conciliation Act of 1996, which offers a thorough legal framework for the settlement of disputes through arbitration, regulates arbitration in India. The Act defines the legislation pertaining to arbitration and attempts to revise and combine laws pertaining to domestic arbitration, international & commercial arbitration, and the enforcement of foreign arbitral rulings.
+                                    </p>
+                                    <p>
+                                            The Act grants parties autonomy in determining the procedure for arbitration, subject to the provisions of the Act therefor MWADR is empowered to conduct proceedings in a manner it considers appropriate, ensuring equal treatment of parties and adherence to principles of natural justice.
+                                    </p>
+                                    {{-- <ul class="list-style">
                                         <li>
                                             <p>Drafting of Notice and list of Claims by the Claimant.</p>
                                         </li>
@@ -464,26 +512,43 @@
                                         <li>
                                             <p>Multi-level actions for various documents received and sent.</p>
                                         </li>
-                                    </ul>
+                                    </ul> --}}
                                 </div>
                                 <div class="col-md col-12">
-                                    <h3>Case Initiation (in case of non-existing agreement)</h3>
+                                    <h3>The process is structured by MWADR into the following stages:</h3>
                                     <ul class="list-style">
                                         <li>
-                                            <p>Drafting of Request for Arbitration by the Claimant.</p>
+                                            <p>Online request for Arbitration along with Prescribed claim form.</p>
                                         </li>
                                         <li>
-                                            <p>Online discussions between the parties.</p>
+                                            <p>Appointment of Case Manager.</p>
                                         </li>
                                         <li>
-                                            <p>Building and execution of Arbitration Submission Agreement.</p>
+                                            <p>Issuance of Case Number.</p>
+                                        </li>
+                                        <li>
+                                            <p>Intimation to Opposite party.</p>
+                                        </li>
+                                        <li>
+                                            <p>Payment of Service Fee.</p>
+                                        </li>
+                                        <li>
+                                            <p>Process of appointment of Arbitrator under MWADR’s Rules.</p>
+                                        </li>
+                                        <li>
+                                            <p>Online hearing process followed by multi level step’s trail at MWADR’s Online Platform.</p>
+                                        </li>
+                                        <li>
+                                            <p>Execution of the Arbitral Award.</p>
+                                        </li>
+                                        <li>
+                                            <p>Dashboard for Disputants to overview his case activities.</p>
                                         </li>
                                     </ul>
                                 </div>
-
                             </div>
                         </div>
-                        <div class="item">
+                        {{-- <div class="item">
                             <div class="row gx-3">
                                 <div class="col-md col-10 mx-md-none mx-auto">
                                     <img class="img-fluid" src="{{ asset('assets/img/how-it-works.png') }}"
@@ -574,7 +639,7 @@
                                 </div>
 
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="pagination" id="arbitration-pagination"></div>
                 </div>

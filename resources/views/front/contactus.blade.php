@@ -13,10 +13,12 @@
             <div class="contact-info text-white">
                 <h5 class="contact-contact">Contact</h5>
                 <h2 class="contact-getin">Get in Touch</h2>
-                <p class="contact-p"><strong>Phone</strong><br>0326598741</p>
-                <p class="contact-p"><strong>E-mail</strong><br>Mediateway123@gmail.com</p>
-                <p class="contact-p"><strong>Address</strong><br>36, near Paota C road, Jodhpur<br>Paota, Jodhpur, Rajasthan
-                    342006</p>
+                <p class="contact-p"><strong>Phone</strong><br>{{$site_settings['phone']}}</p>
+                <p class="contact-p"><strong>E-mail</strong><br>{{$site_settings['email']}}</p>
+                <p class="contact-p">
+                    <strong>Address</strong><br>
+                    {!! nl2br(wordwrap($site_settings['address'], 30, "\n", true)) !!}
+                </p>                
             </div>
 
             <!-- Contact Form -->
@@ -75,6 +77,9 @@
                 </form>
             </div>
         </div>
+    </div>
+    <div class="container-fluid px-0 my-5">
+        {!! $site_settings['google_iframe'] !!}
     </div>
 @endsection
 

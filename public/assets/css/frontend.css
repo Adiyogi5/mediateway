@@ -1440,7 +1440,7 @@ div.dataTables_wrapper div.dataTables_info {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 75px 50px;
+    padding: 60px 50px;
 }
 
 .contact-form {
@@ -1574,3 +1574,105 @@ div.dataTables_wrapper div.dataTables_info {
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+/* ################ FAQs ################## */
+.faq-accordion .accordion-flush>.accordion-item{
+    background-color: white;
+    box-shadow: 0px 4px 13.1px 0px #00000040;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.faq-accordion .accordion-header .accordion-button{
+    font-family: 'Inter';
+    font-size: 18px;
+    font-weight: 500;
+    color: #000000;
+    width: 100%;
+    padding: 12px 20px !important;
+}
+
+.faq-accordion .accordion-body {
+    padding: 6px 20px;
+}
+
+.faq-accordion .accordion-body p{
+    font-family: 'Inter';
+    font-size: 14px;
+    font-weight: 400;
+    color: #000000;
+}
+
+/* ################# Blogs #################### */
+.blog-section .custom-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 21.4px 6px #00000040;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.blog-section .custom-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px 10px 0 0;
+}
+
+.blog-section .card-body {
+    padding: 15px;
+}
+
+.blog-section .text-small{
+    font-size: 11px;
+    font-weight: 400;
+    color: #1E1E1E;
+}
+.blog-section .card-title {
+    font-family: 'Inter';
+    font-size: 20px;
+    font-weight: 700;
+    margin: 16px 0px;
+    color: #1E1E1E;
+}
+.blog-section .card-text {
+    font-family: 'Inter';
+    font-size: 14px;
+    font-weight: 400;
+    margin: 20px 0px;
+    color: #1E1E1E;
+}
+
+.blog-section .read-more {
+    font-family: 'Inter';
+    font-size: 14px;
+    color: #1E1E1E;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.blog-section .popular-heading {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.blog-section .popular-list {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.blog-section .popular-item:last-child {
+    border-bottom: none;
+}
+
+.blog-section .popular-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.blog-section .popular-item button {
+    flex-grow: 1;
+    text-align: center;
+}

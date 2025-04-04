@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BookAppointmentController;
 use App\Http\Controllers\CallBackController;
 use App\Http\Controllers\CaseAssignController;
@@ -15,8 +16,11 @@ use App\Http\Controllers\FaqController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\HomeCmsController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\OrderSheetController;
+use App\Http\Controllers\OrganizationListController;
 use App\Http\Controllers\RolesController;
+use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\SettingController;
@@ -150,6 +154,36 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::delete('banners', 'delete')->name('banners')->middleware('isAllow:112,can_delete');
     });
 
+    // ----------------------- Organization Routes ----------------------------------------------------
+    Route::controller(OrganizationListController::class)->group(function () {
+        Route::get('organizationlist', 'index')->name('organizationlist')->middleware('isAllow:112,can_view');
+        Route::post('organizationlist', 'save')->name('organizationlist')->middleware('isAllow:112,can_add');
+        Route::put('organizationlist', 'update')->name('organizationlist')->middleware('isAllow:112,can_edit');
+        Route::delete('organizationlist', 'delete')->name('organizationlist')->middleware('isAllow:112,can_delete');
+    });
+
+    // ----------------------- BLOG Routes ----------------------------------------------------
+    Route::controller(BlogController::class)->group(function () {
+        Route::get('blogs', 'index')->name('blogs')->middleware('isAllow:104,can_view');
+        Route::get('blogs/add', 'add')->name('blogs.add')->middleware('isAllow:104,can_add');
+        Route::post('blogs/add', 'save')->name('blogs.add')->middleware('isAllow:104,can_add');
+        Route::get('blogs/{id}', 'edit')->name('blogs.edit')->middleware('isAllow:104,can_edit');
+        Route::post('blogs', 'slug')->name('blogs.slug')->middleware('isAllow:104,can_edit');
+        Route::post('blogs/{id}', 'update')->name('blogs.edit')->middleware('isAllow:104,can_edit');
+        Route::delete('blogs', 'delete')->name('blogs')->middleware('isAllow:104,can_delete');
+    });
+
+    // ----------------------- NEWS Routes ----------------------------------------------------
+    Route::controller(NewsController::class)->group(function () {
+        Route::get('news', 'index')->name('news')->middleware('isAllow:104,can_view');
+        Route::get('news/add', 'add')->name('news.add')->middleware('isAllow:104,can_add');
+        Route::post('news/add', 'save')->name('news.add')->middleware('isAllow:104,can_add');
+        Route::get('news/{id}', 'edit')->name('news.edit')->middleware('isAllow:104,can_edit');
+        Route::post('news', 'slug')->name('news.slug')->middleware('isAllow:104,can_edit');
+        Route::post('news/{id}', 'update')->name('news.edit')->middleware('isAllow:104,can_edit');
+        Route::delete('news', 'delete')->name('news')->middleware('isAllow:104,can_delete');
+    });
+
     // ----------------------- FAQs Routes ----------------------------------------------------
     Route::controller(FaqController::class)->name('faqs')->group(function () {
         Route::get('faqs-list', 'index')->middleware('isAllow:110,can_view');
@@ -166,6 +200,16 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::get('features/{id}', 'edit')->name('features.edit')->middleware('isAllow:111,can_edit');
         Route::post('features/{id}', 'update')->name('features.edit')->middleware('isAllow:111,can_edit');
         Route::delete('features', 'delete')->name('features.delete')->middleware('isAllow:111,can_delete');
+    });
+
+    // ----------------------- Service Fee Routes ----------------------------------------------------
+    Route::controller(ServiceFeeController::class)->group(function () {
+        Route::get('servicefee', 'index')->name('servicefee')->middleware('isAllow:111,can_view');
+        Route::get('servicefee/add', 'add')->name('servicefee.add')->middleware('isAllow:111,can_add');
+        Route::post('servicefee/add', 'save')->name('servicefee.add')->middleware('isAllow:111,can_add');
+        Route::get('servicefee/{id}', 'edit')->name('servicefee.edit')->middleware('isAllow:111,can_edit');
+        Route::post('servicefee/{id}', 'update')->name('servicefee.edit')->middleware('isAllow:111,can_edit');
+        Route::delete('servicefee', 'delete')->name('servicefee.delete')->middleware('isAllow:111,can_delete');
     });
 
     // ----------------------- Testimonial Routes ----------------------------------------------------

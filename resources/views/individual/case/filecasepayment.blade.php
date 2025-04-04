@@ -80,7 +80,7 @@
                                                     <td class="ps-lg-5 ps-md-3 ps-2">
                                                         <h6>Case File Payment Amount</h6>
                                                     </td>
-                                                    <td class="ps-lg-5 ps-md-3 ps-2">₹{{ $site_settings['case_file_amount'] }}/-</td>
+                                                    <td class="ps-lg-5 ps-md-3 ps-2">₹{{ $case_file_amount }}/-</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="ps-lg-5 ps-md-3 ps-2">
@@ -98,7 +98,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td colspan="6" class="text-center">
-                                                        <button class="btn btn-success btn-razor-pay px-5 my-3 razorpay-btn" id="rzp-button1">PAY ₹{{ $site_settings['case_file_amount'] }}/-</button>
+                                                        <button class="btn btn-success btn-razor-pay px-5 my-3 razorpay-btn" id="rzp-button1">PAY ₹{{ $case_file_amount }}/-</button>
                                                     </td>
                                                 </tr>
                                             </tbody>

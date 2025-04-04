@@ -8,17 +8,17 @@
                             <ul class="nav flex-column footer-list">
                                 <h3 class="footer-title">MEDIA CENTER</h3>
                                 <li class="nav-item-footer mb-2">
-                                    <a href="{{ route('front.home') }}" class="nav-link-footer ">
+                                    <a href="{{ route('front.news') }}" class="nav-link-footer ">
                                         NEWSROOM
                                     </a>
                                 </li>
                                 <li class="nav-item-footer mb-2">
-                                    <a href="{{ route('front.show-cms', 'about-us') }}" class="nav-link-footer">
+                                    <a href="{{ route('front.blogs') }}" class="nav-link-footer">
                                         Blog
                                     </a>
                                 </li>
                                 <li class="nav-item-footer mb-2">
-                                    <a href="{{ route('front.home') }}" class="nav-link-footer">
+                                    <a href="{{ route('front.news') }}" class="nav-link-footer">
                                         FAQ's
                                     </a>
                                 </li>
