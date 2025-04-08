@@ -30,9 +30,8 @@
                                     id="{{ $guard }}">
                                     <form method="POST" action="{{ route('register') }}" id="{{ $guard . 'Form' }}">
                                         @csrf
+                                        
                                         <input type="hidden" name="guard" value="{{ $guard }}">
-
-
 
                                         <div class="row">
                                             <!-- DRP Type field, initially hidden -->
@@ -54,18 +53,29 @@
                                             </div>
 
                                             <!-- Other form fields like Name, Email, Mobile, OTP -->
-                                            <div class="col-md-6 mb-3">
-                                                <label for="mobile">Name</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                                                    <input type="text" name="name"
-                                                        style="border-left: 1px solid #ffffff00;"
-                                                        class="form-control @error('name') is-invalid @enderror">
-                                                    @error('name')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div>
-                                            </div>
+                                            <div class="col-md-6 mb-3 name-field">
+                                                <label for="name">Name</label>
+                                                @if (old('guard') === $guard && $guard === 'organization')
+                                                    <select name="name" class="form-select @error('name') is-invalid @enderror">
+                                                        <option value="">-- Select Organization --</option>
+                                                        @foreach (\App\Models\OrganizationList::where('status', 1)->get() as $org)
+                                                            <option value="{{ $org->name }}" {{ old('name') == $org->name ? 'selected' : '' }}>
+                                                                {{ $org->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                @else
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                                                        <input type="text" name="name" style="border-left: 1px solid #ffffff00;"
+                                                            class="form-control @error('name') is-invalid @enderror">
+                                                    </div>
+                                                @endif
+                                                @error('name')
+                                                    <span class="invalid-feedback">{{ $message }}</span>
+                                                @enderror
+                                            </div>                                            
+
 
                                             <div class="col-md-6 mb-3">
                                                 <label for="mobile">Email</label>
@@ -152,6 +162,7 @@
 @endsection
 
 @section('js')
+
     <script>
         $(function() {
             // Set default active tab (Individual)
@@ -159,18 +170,40 @@
 
             // Show/hide DRP type field based on active tab
             $('#registerTabs a').on('shown.bs.tab', function(e) {
-                var targetTab = $(e.target).attr('href'); // Get the ID of the clicked tab
+                var targetTab = $(e.target).attr('href'); // e.g., '#organization'
+                var $form = $(targetTab).find('form');
 
-                // Check if the clicked tab is DRP and show/hide the field accordingly
+                // Show/hide DRP field
                 if (targetTab === '#drp') {
-                    $('.drp-type-field').show(); // Show DRP type field when DRP tab is active
+                    $('.drp-type-field').show();
                 } else {
-                    $('.drp-type-field').hide(); // Hide DRP type field otherwise
+                    $('.drp-type-field').hide();
                 }
 
-                // Initialize validation on tab change
-                initializeValidation(targetTab);
+                if (targetTab === '#organization') {
+                    $.ajax({
+                        url: "{{ url('/get-organizations') }}",
+                        method: 'GET',
+                        success: function (response) {
+                            let options = '<option value="">-- Select Organization --</option>';
+                            response.forEach(function (org) {
+                                options += `<option value="${org.name}">${org.name}</option>`;
+                            });
+
+                            $form.find('.name-field').html(`
+                                <label for="name">Name</label>
+                                <select name="name" class="form-select">
+                                    ${options}
+                                </select>
+                            `);
+                            initializeValidation(targetTab);
+                        }
+                    });
+                } else {
+                    initializeValidation(targetTab);
+                }
             });
+
 
             // Trigger the event for the initial active tab
             $('#registerTabs a.active').trigger('shown.bs.tab');

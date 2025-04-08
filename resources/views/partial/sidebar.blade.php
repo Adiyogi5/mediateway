@@ -115,6 +115,15 @@
             </a>
         </li>
 
+        <li class="menu @routeis('cases.casebulkupdate') active @endrouteis">
+            <a href="{{route('cases.casebulkupdate')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-upload"></i>
+                    <span>Case Bulk Update</span>
+                </div>
+            </a>
+        </li>
+
         <li class="menu @routeis('caseassign') active @endrouteis">
             <a href="{{route('caseassign')}}" class="dropdown-toggle">
                 <div class="">

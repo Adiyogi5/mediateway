@@ -8,7 +8,6 @@ use Illuminate\Database\Seeder;
 
 class OrganizationRolePermissionSeeder extends Seeder
 {
-
     public function run()
     {
         $organization_role_id = 1;

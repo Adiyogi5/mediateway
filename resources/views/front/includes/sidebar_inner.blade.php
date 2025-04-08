@@ -128,6 +128,19 @@
                     </li>
                 @endif
 
+                 {{-- ################ DRP TYPE = 3 Case Manager ################# --}}
+                {{-- ############################# BULK UPDATE CASES ############################### --}}
+                @if (auth('drp')->check() && auth('drp')->user()->drp_type == 3)
+                    <li
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.cases.casebulkupdate') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.cases.casebulkupdate') ? 'text-white bg-lime' : '' }}"
+                            aria-current="page"
+                            style="{{ request()->routeIs($currentGuard . '.cases.casebulkupdate') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'cases.casebulkupdate') }}"><i
+                                class="fa-solid fa-upload faa-profile"></i> Case Order Sheets</a>
+                    </li>
+                @endif
+
                 {{-- ################## DRP TYPE = 1 Arbitrator ################## --}}
                 {{-- ########################## AWARD ########################### --}}
                 @if (auth('drp')->check() && auth('drp')->user()->drp_type == 1)

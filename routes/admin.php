@@ -6,6 +6,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BookAppointmentController;
 use App\Http\Controllers\CallBackController;
 use App\Http\Controllers\CaseAssignController;
+use App\Http\Controllers\CaseBulkUpdateController;
 use App\Routes\Profile;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CmsController;
@@ -96,6 +97,14 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::post('settlementletter/{id}', 'update')->name('settlementletter.edit');
         Route::delete('settlementletter', 'delete')->name('settlementletter.delete');
         Route::get('getsettlementletterVariables', 'getsettlementletterVariables')->name('getsettlementletterVariables');
+    });
+
+    // ----------------------- Case Bulk Update Routes -----------------------------------------------
+    Route::controller(CaseBulkUpdateController::class)->group(function () {
+        Route::get('casebulkupdate', 'casebulkupdate')->name('cases.casebulkupdate');
+        Route::post('/import-casebulkupdate', 'importBulkUpdateExcel')->name('cases.casebulkupdate.import');
+        Route::get('/download-sample', 'downloadBulkUpdateSample')->name('cases.casebulkupdate.sample');
+
     });
 
     // ----------------------- CaseAssign Routes ----------------------------------------------------

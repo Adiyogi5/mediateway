@@ -63,18 +63,18 @@ class FileCaseController extends Controller
                 ->addColumn('action', function ($row) {
 
                     $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
-                    // if (Helper::userCan(103, 'can_edit')) {
+                    if (Helper::organizationCan(205, 'can_edit')) {
                         $btn .= '<a class="dropdown-item" href="' . route('organization.cases.filecaseview.edit', $row->id) . '">Upload Documents</a>';
-                    // }
-                    // if (Helper::userCan(103, 'can_delete')) {
+                    }
+                    // if (Helper::organizationCan(205, 'can_delete')) {
                         // $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
                     // }
                     $btn .= '<a class="dropdown-item" href="' . route('organization.cases.viewcasedetail', $row->id) . '">View Case Details</a>';
-                    // if (Helper::userAllowed(103)) {
+                    if (Helper::organizationAllowed(205)) {
                         return $btn;
-                    // } else {
-                    //     return '';
-                    // }
+                    } else {
+                        return '';
+                    }
                 })
                 ->orderColumn('created_at', function ($query, $order) {
                     $query->orderBy('created_at', $order);
@@ -250,14 +250,14 @@ class FileCaseController extends Controller
         }
 
         try {
-            // Log::info('Import function triggered, file received.');
+            Log::info('Import function triggered, file received.');
             Excel::import(new FileCaseImport($organizationId), $request->file('file'));
-            // Log::info('Import process completed.');
+            Log::info('Import process completed.');
             
             return redirect()->route('organization.cases.filecaseview')->with('success', 'File imported successfully.');
 
         } catch (\Exception $e) {
-            // Log::error('File import failed: ' . $e->getMessage());
+            Log::error('File import failed: ' . $e->getMessage());
             return back()->with('error', 'File import failed. Please check the format.');
         }
     }

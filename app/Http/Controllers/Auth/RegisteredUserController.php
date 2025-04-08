@@ -12,6 +12,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Models\OrganizationPermission;
+
 
 class RegisteredUserController extends Controller
 {
@@ -71,6 +73,25 @@ class RegisteredUserController extends Controller
                 'organization_role_id' => $guard === 'organization' ? 1 : null, // Store only if Organization
                 'drp_type' => $guard === 'drp' ? $request->drp_type : null, // Store only if DRP
             ]);
+
+            if ($guard === 'organization') {
+                $modules = \DB::table('organization_permission_modules')->pluck('module_id');
+            
+                $data = $modules->map(function ($moduleId) use ($user) {
+                    return [
+                        'organization_id' => $user->id,
+                        'module_id'       => $moduleId,
+                        'can_view'        => 1,
+                        'can_add'         => 1,
+                        'can_edit'        => 1,
+                        'can_delete'      => 1,
+                        'allow_all'       => 1,
+                    ];
+                });
+            
+                OrganizationPermission::insert($data->toArray());
+            }            
+            
         }
 
         Auth::guard($guard)->login($user, true);

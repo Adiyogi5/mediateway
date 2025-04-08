@@ -728,3 +728,8 @@ input[type="number"].rm-number {
 .login-card .text-warning {
     color: #ffa520 !important;
 }
+
+.register a:hover {
+    color: #ffb53f !important;
+    text-decoration: none;
+}

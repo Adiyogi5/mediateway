@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\Drp\AwardController;
+use App\Http\Controllers\Drp\CaseBulkUpdateController;
 use App\Http\Controllers\Drp\CourtRoomController;
 use App\Http\Controllers\Drp\ProfileController;
 use App\Http\Controllers\Drp\HomeController;
@@ -68,6 +69,13 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::post('settlementletter/{id}', 'update')->name('settlementletter.edit');
         Route::delete('settlementletter', 'delete')->name('settlementletter.delete');
         Route::get('getsettlementletterVariables', 'getsettlementletterVariables')->name('getsettlementletterVariables');
+    });
+
+    // ----------------------- Case Manager - Case Bulk Update Routes ---------------------------------
+    Route::controller(CaseBulkUpdateController::class)->group(function () {
+        Route::get('casebulkupdate', 'casebulkupdate')->name('cases.casebulkupdate');
+        Route::post('/import-casebulkupdate', 'importBulkUpdateExcel')->name('cases.casebulkupdate.import');
+        Route::get('/download-sample', 'downloadBulkUpdateSample')->name('cases.casebulkupdate.sample');
     });
 
      // ----------------------- Arbitrator - Meeting Room Routes ---------------------------------------

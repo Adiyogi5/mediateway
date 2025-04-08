@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
+use App\Models\Organization;
+use App\Models\OrganizationList;
 
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -17,6 +19,17 @@ Route::middleware(['guest']) ->group(function () {
         Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
         Route::post('register', [RegisteredUserController::class, 'store']);
 
+        Route::get('get-organizations', function () {
+            $registeredOrgNames = Organization::whereNull('deleted_at')->pluck('name');
+      
+            return OrganizationList::where('status', 1)
+                ->whereNull('deleted_at')
+                ->whereNotIn('name', $registeredOrgNames)
+                ->select('id', 'name', 'code')
+                ->orderBy('name')
+                ->get();
+        });
+        
         Route::get('login', fn () => to_route('loginPage', ['guard' => 'admin']))->name('login');
         
         Route::get('{guard}/login', [AuthenticatedSessionController::class, 'create'])

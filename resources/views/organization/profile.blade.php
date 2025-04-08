@@ -45,11 +45,16 @@
                                     <h4 class="mb-3 d-flex item-align-self">
                                         <i class="fas fa-circle text-dark faa-form-heading my-auto"></i> Personal Details
                                     </h4>
-
+                                   
                                     <div class="col-md-6 col-12 mb-3">
                                         <label class="form-label" for="name">Organization Name</label>
+                                        @if($organization->parent_id == 0)
                                         <input type="text" name="name" class="form-control"
+                                            value="{{ old('name', $organization->name) }}" disabled>
+                                            @else
+                                            <input type="text" name="name" class="form-control"
                                             value="{{ old('name', $organization->name) }}">
+                                            @endif
                                         @error('name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror

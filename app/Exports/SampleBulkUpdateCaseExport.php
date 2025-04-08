@@ -5,12 +5,13 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class SampleFileCaseExport implements FromArray, WithHeadings
+class SampleBulkUpdateCaseExport implements FromArray, WithHeadings
 {
     public function headings(): array
     {
         $fields = [
             // Required Field
+            'case_number',
             'loan_number',
 
             // FileCase fields
@@ -18,16 +19,16 @@ class SampleFileCaseExport implements FromArray, WithHeadings
             'agreement_date',
             'loan_application_date',
             'arbitration_date',
-            // 'claimant_first_name',
-            // 'claimant_middle_name',
-            // 'claimant_last_name',
-            // 'claimant_mobile',
-            // 'claimant_email',
-            // 'claimant_address_type',
-            // 'claimant_address1',
-            // 'claimant_state',
-            // 'claimant_city',
-            // 'claimant_pincode',
+            'claimant_first_name',
+            'claimant_middle_name',
+            'claimant_last_name',
+            'claimant_mobile',
+            'claimant_email',
+            'claimant_address_type',
+            'claimant_address1',
+            'claimant_state',
+            'claimant_city',
+            'claimant_pincode',
             'respondent_first_name',
             'respondent_middle_name',
             'respondent_last_name',
@@ -109,12 +110,13 @@ class SampleFileCaseExport implements FromArray, WithHeadings
     {
         return [
             [
+                'SBI-000001-08-04-2025', // case_number (required)
                 'LN123456', // loan_number (required)
 
                 // FileCase sample values
                 '2', '2025-03-15', '2025-03-15', '2025-03-15',
-                // 'John', null, 'Doe', '9876543210', 'john@example.com', '1',
-                // '123 Main St', 'Rajasthan', 'Jodhpur', '90001',
+                'John', null, 'Doe', '9876543210', 'john@example.com', '1',
+                '123 Main St', 'Rajasthan', 'Jodhpur', '90001',
                 'Jane', null, 'Smith', '9876543211', 'jane@example.com', '2',
                 '456 Park Ave', 'Rajasthan', 'Ajmer', '77001',
                 '5000', 'Case regarding loan default',
