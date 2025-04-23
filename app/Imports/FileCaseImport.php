@@ -88,7 +88,7 @@ class FileCaseImport implements ToModel, WithHeadingRow
                 $orgCode = OrganizationList::where('name', $organizationData->name)->value('code');
 
                 // Step 2: Get today's date
-                $datePart = now()->format('d-m-Y');
+                $datePart = Carbon::now()->format('d-m-Y');
 
                 // Step 3: Count existing cases today for that org
                 $prefix = $orgCode . '-' . $datePart;

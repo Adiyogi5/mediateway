@@ -30,338 +30,422 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        @if (!empty($casefilepayment->transaction_id) && $casefilepayment->payment_status == 1)
+                            <form class="row" id="uploadnoticeView" method="POST"
+                                action="{{ route('individual.case.filecaseview.store', $caseviewData['id']) }}"
+                                enctype="multipart/form-data">
+                                @csrf
+                                <div class="col-12 text-center justify-content-center">
+                                    <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Upload Notices</h6>
+                                </div>
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label">First Notice PDF</label><br>
+                                    @if (isset($noticeType1))
+                                        <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                            href="{{ asset('storage/' . $noticeType1->notice) }}" target="_blank">
+                                            <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                                alt="PDF File" />
+                                            View Second Notice PDF
+                                        </a>
+                                    @else
+                                        <label for="notice_first" class="custom-file-upload">
+                                            <span style="font-weight: 500;" id="file-label-notice_first">
+                                                <span
+                                                    style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
+                                                Attach PDF
+                                            </span>
+                                        </label>
+                                        <input type="file" id="notice_first" name="notice_first" accept="application/pdf"
+                                            hidden />
+                                        @error('notice_first')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    @endif
+                                </div>
+
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label">Second Notice PDF</label><br>
+                                    @if (isset($noticeType2))
+                                        <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                            href="{{ asset('storage/' . $noticeType2->notice) }}" target="_blank">
+                                            <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                                alt="PDF File" />
+                                            View Second Notice PDF
+                                        </a>
+                                    @else
+                                        <label for="notice_second" class="custom-file-upload">
+                                            <span style="font-weight: 500;" id="file-label-notice_second">
+                                                <span
+                                                    style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
+                                                Attach PDF
+                                            </span>
+                                        </label>
+                                        <input type="file" id="notice_second" name="notice_second"
+                                            accept="application/pdf" hidden />
+                                        @error('notice_second')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    @endif
+                                </div>
+
+                                @if (!isset($noticeType1) || !isset($noticeType2))
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <button type="submit" class="btn btn-md btn-primary py-1 px-3">Save
+                                            Notices</button>
+                                    </div>
+                                @endif
+                            </form>
+                        @endif
+
                         <form class="row" id="editcaseview" method="POST"
                             action="{{ route('individual.case.filecaseview.edit', $caseviewData['id']) }}"
                             enctype='multipart/form-data'>
                             @csrf
-                            {{-- claimant details  --}}
+
+                            @if (empty($casefilepayment->transaction_id) &&
+                                    (empty($casefilepayment->payment_status) || $casefilepayment->payment_status == 0))
+                                {{-- claimant details  --}}
+                                <div class="col-12 text-center justify-content-center">
+                                    <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Claimant Details</h6>
+                                </div>
+                                <div class="col-md-4 col-12 mb-3">
+                                    <label class="form-label" for="claimant_first_name">First Name <span class="error-text">
+                                            *</span></label>
+                                    <input type="text" id="claimant_first_name" name="claimant_first_name"
+                                        class="form-control"
+                                        value="{{ old('claimant_first_name', $caseviewData['claimant_first_name']) }}">
+                                    @error('claimant_first_name')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-4 col-12 mb-3">
+                                    <label class="form-label" for="claimant_middle_name">Middle Name</label>
+                                    <input type="text" id="claimant_middle_name" name="claimant_middle_name"
+                                        class="form-control"
+                                        value="{{ old('claimant_middle_name', $caseviewData['claimant_middle_name']) }}">
+                                    @error('claimant_middle_name')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-4 col-12 mb-3">
+                                    <label class="form-label" for="claimant_last_name">Last Name</label>
+                                    <input type="text" id="claimant_last_name" name="claimant_last_name"
+                                        class="form-control"
+                                        value="{{ old('claimant_last_name', $caseviewData['claimant_last_name']) }}">
+                                    @error('claimant_last_name')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="claimant_mobile">Mobile Number <span
+                                            class="error-text">
+                                            *</span></label>
+                                    <input type="text" id="claimant_mobile" name="claimant_mobile"
+                                        class="form-control"
+                                        value="{{ old('claimant_mobile', $caseviewData['claimant_mobile']) }}">
+                                    @error('claimant_mobile')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="claimant_email">Email</label>
+                                    <input type="email" id="claimant_email" name="claimant_email" class="form-control"
+                                        value="{{ old('claimant_email', $caseviewData['claimant_email']) }}">
+                                    @error('claimant_email')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="claimant_address1">Address Line 1 <span
+                                            class="error-text">
+                                            *</span></label>
+                                    <input type="text" id="claimant_address1" name="claimant_address1"
+                                        class="form-control"
+                                        value="{{ old('claimant_address1', $caseviewData['claimant_address1']) }}">
+                                    @error('claimant_address1')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="claimant_address2">Address Line 2</label>
+                                    <input type="text" id="claimant_address2" name="claimant_address2"
+                                        class="form-control"
+                                        value="{{ old('claimant_address2', $caseviewData['claimant_address2']) }}">
+                                    @error('claimant_address2')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label class="form-label" for="claimant_address_type">Address Type <span
+                                            class="error-text">
+                                            *</span></label>
+                                    <select name="claimant_address_type" id="claimant_address_type"
+                                        class="form-control form-select">
+                                        <option value="">Select Address Type</option>
+                                        @foreach (config('constant.claimant_address_type', []) as $key => $value)
+                                            <option value="{{ $key }}" @selected(old('claimant_address_type', $caseviewData['claimant_address_type']) == $key)>
+                                                {{ $value }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('claimant_address_type')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label class="form-label" for="claimant_state_id">State <span class="error-text">
+                                            *</span></label>
+                                    <select name="claimant_state_id" onchange="getCity(this.value)" class="form-select"
+                                        id="claimant_state_id">
+                                        <option value="">Select State</option>
+                                        @foreach ($states as $state)
+                                            <option value="{{ $state->id }}" @selected(old('claimant_state_id', $caseviewData['claimant_state_id']) == $state->id)>
+                                                {{ $state->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('claimant_state_id')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label class="form-label" for="claimant_city_id">City <span class="error-text">
+                                            *</span></label>
+                                    <select name="claimant_city_id" class="form-select" id="claimant_city_id">
+                                        <option value="">Select City</option>
+                                    </select>
+                                    @error('claimant_city_id')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label class="form-label" for="claimant_pincode">Pincode <span class="error-text">
+                                            *</span></label>
+                                    <input type="text" id="claimant_pincode" name="claimant_pincode"
+                                        class="form-control"
+                                        value="{{ old('claimant_pincode', $caseviewData['claimant_pincode']) }}">
+                                    @error('claimant_pincode')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                                {{-- Respodent Data  --}}
+                                <div class="col-12 text-center justify-content-center">
+                                    <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Respondent Details</h6>
+                                </div>
+                                <div class="col-md-4 col-12 mb-3">
+                                    <label class="form-label" for="respondent_first_name">First Name <span
+                                            class="error-text"> *</span></label>
+                                    <input type="text" id="respondent_first_name" name="respondent_first_name"
+                                        class="form-control"
+                                        value="{{ old('respondent_first_name', $caseviewData['respondent_first_name']) }}">
+                                    @error('respondent_first_name')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-4 col-12 mb-3">
+                                    <label class="form-label" for="respondent_middle_name">Middle Name</label>
+                                    <input type="text" id="respondent_middle_name" name="respondent_middle_name"
+                                        class="form-control"
+                                        value="{{ old('respondent_middle_name', $caseviewData['respondent_middle_name']) }}">
+                                    @error('respondent_middle_name')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-4 col-12 mb-3">
+                                    <label class="form-label" for="respondent_last_name">Last Name</label>
+                                    <input type="text" id="respondent_last_name" name="respondent_last_name"
+                                        class="form-control"
+                                        value="{{ old('respondent_last_name', $caseviewData['respondent_last_name']) }}">
+                                    @error('respondent_last_name')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="respondent_mobile">Mobile Number <span
+                                            class="error-text">
+                                            *</span></label>
+                                    <input type="text" id="respondent_mobile" name="respondent_mobile"
+                                        class="form-control"
+                                        value="{{ old('respondent_mobile', $caseviewData['respondent_mobile']) }}">
+                                    @error('respondent_mobile')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="respondent_email">Email</label>
+                                    <input type="email" id="respondent_email" name="respondent_email"
+                                        class="form-control"
+                                        value="{{ old('respondent_email', $caseviewData['respondent_email']) }}">
+                                    @error('respondent_email')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="respondent_address1">Address Line 1 <span
+                                            class="error-text"> *</span></label>
+                                    <input type="text" id="respondent_address1" name="respondent_address1"
+                                        class="form-control"
+                                        value="{{ old('respondent_address1', $caseviewData['respondent_address1']) }}">
+                                    @error('respondent_address1')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="respondent_address2">Address Line 2</label>
+                                    <input type="text" id="respondent_address2" name="respondent_address2"
+                                        class="form-control"
+                                        value="{{ old('respondent_address2', $caseviewData['respondent_address2']) }}">
+                                    @error('respondent_address2')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label class="form-label" for="respondent_address_type">Address Type <span
+                                            class="error-text"> *</span></label>
+                                    <select name="respondent_address_type" id="respondent_address_type"
+                                        class="form-control form-select">
+                                        <option value="">Select Address Type</option>
+                                        @foreach (config('constant.respondent_address_type', []) as $key => $value)
+                                            <option value="{{ $key }}" @selected(old('respondent_address_type', $caseviewData['respondent_address_type']) == $key)>
+                                                {{ $value }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('respondent_address_type')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label class="form-label" for="respondent_state_id">State <span class="error-text">
+                                            *</span></label>
+                                    <select name="respondent_state_id" onchange="getCity(this.value)" class="form-select"
+                                        id="respondent_state_id">
+                                        <option value="">Select State</option>
+                                        @foreach ($states as $state)
+                                            <option value="{{ $state->id }}" @selected(old('respondent_state_id', $caseviewData['respondent_state_id']) == $state->id)>
+                                                {{ $state->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('respondent_state_id')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label class="form-label" for="respondent_city_id">City <span class="error-text">
+                                            *</span></label>
+                                    <select name="respondent_city_id" class="form-select" id="respondent_city_id">
+                                        <option value="">Select City</option>
+                                    </select>
+                                    @error('respondent_city_id')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label class="form-label" for="respondent_pincode">Pincode <span class="error-text">
+                                            *</span></label>
+                                    <input type="text" id="respondent_pincode" name="respondent_pincode"
+                                        class="form-control"
+                                        value="{{ old('respondent_pincode', $caseviewData['respondent_pincode']) }}">
+                                    @error('respondent_pincode')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                                {{-- step-3 fields  --}}
+                                <div class="col-12 text-center justify-content-center">
+                                    <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Other Details</h6>
+                                </div>
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="brief_of_case">Brief of Case <span class="error-text">
+                                            *</span></label>
+                                    <input type="text" name="brief_of_case" class="form-control"
+                                        value="{{ old('brief_of_case', $caseviewData['brief_of_case']) }}">
+                                    @error('brief_of_case')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="amount_in_dispute">Amount in Dispute</label>
+                                    <input type="text" name="amount_in_dispute" class="form-control"
+                                        value="{{ old('amount_in_dispute', $caseviewData['amount_in_dispute']) }}">
+                                    @error('amount_in_dispute')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="case_type">Case Type <span class="error-text">
+                                            *</span></label>
+                                    <select name="case_type" class="form-select" id="case_type">
+                                        <option value="">Select Case Type</option>
+                                        @foreach (config('constant.case_type', []) as $key => $value)
+                                            <option value="{{ $key }}" @selected(old('case_type', $caseviewData['case_type']) == $key)>
+                                                {{ $value }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('case_type')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="language">Language</label>
+                                    <select name="language" class="form-select" id="language">
+                                        <option value="">Select Language</option>
+                                        @foreach (config('constant.language', []) as $key => $value)
+                                            <option value="{{ $key }}" @selected(old('language', $caseviewData['language']) == $key)>
+                                                {{ $value }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('language')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                                <div class="col-md-6 col-12 mb-3">
+                                    <label class="form-label" for="agreement_exist">Agreement exist</label>
+                                    <select name="agreement_exist" class="form-select" id="agreement_exist">
+                                        <option value="">Select Agreement exist</option>
+                                        <option value="1" @selected(old('agreement_exist', $caseviewData['agreement_exist']) == 1)>Yes</option>
+                                        <option value="2" @selected(old('agreement_exist', $caseviewData['agreement_exist']) == 2)>No</option>
+                                    </select>
+                                    @error('agreement_exist')
+                                        <span class="text-danger fs-custom">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="status">Status</label>
+                                    <select name="status" class="form-select" id="status">
+                                        <option value="1" @selected(old('status', $caseviewData['status']) == 1)> Active </option>
+                                        <option value="0" @selected(old('status', $caseviewData['status']) == 0)> Inactive </option>
+                                    </select>
+                                    @error('status')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            @endif
+
                             <div class="col-12 text-center justify-content-center">
-                                <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Claimant Details</h6>
+                                <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Upload Documents</h6>
                             </div>
-                            <div class="col-md-4 col-12 mb-3">
-                                <label class="form-label" for="claimant_first_name">First Name <span class="error-text">
-                                        *</span></label>
-                                <input type="text" id="claimant_first_name" name="claimant_first_name"
-                                    class="form-control"
-                                    value="{{ old('claimant_first_name', $caseviewData['claimant_first_name']) }}">
-                                @error('claimant_first_name')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 col-12 mb-3">
-                                <label class="form-label" for="claimant_middle_name">Middle Name</label>
-                                <input type="text" id="claimant_middle_name" name="claimant_middle_name"
-                                    class="form-control"
-                                    value="{{ old('claimant_middle_name', $caseviewData['claimant_middle_name']) }}">
-                                @error('claimant_middle_name')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 col-12 mb-3">
-                                <label class="form-label" for="claimant_last_name">Last Name</label>
-                                <input type="text" id="claimant_last_name" name="claimant_last_name" class="form-control"
-                                    value="{{ old('claimant_last_name', $caseviewData['claimant_last_name']) }}">
-                                @error('claimant_last_name')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="claimant_mobile">Mobile Number <span class="error-text">
-                                        *</span></label>
-                                <input type="text" id="claimant_mobile" name="claimant_mobile" class="form-control"
-                                    value="{{ old('claimant_mobile', $caseviewData['claimant_mobile']) }}">
-                                @error('claimant_mobile')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="claimant_email">Email</label>
-                                <input type="email" id="claimant_email" name="claimant_email" class="form-control"
-                                    value="{{ old('claimant_email', $caseviewData['claimant_email']) }}">
-                                @error('claimant_email')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="claimant_address1">Address Line 1 <span class="error-text">
-                                        *</span></label>
-                                <input type="text" id="claimant_address1" name="claimant_address1" class="form-control"
-                                    value="{{ old('claimant_address1', $caseviewData['claimant_address1']) }}">
-                                @error('claimant_address1')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="claimant_address2">Address Line 2</label>
-                                <input type="text" id="claimant_address2" name="claimant_address2" class="form-control"
-                                    value="{{ old('claimant_address2', $caseviewData['claimant_address2']) }}">
-                                @error('claimant_address2')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-
-                            <div class="col-md-3 col-12 mb-3">
-                                <label class="form-label" for="claimant_address_type">Address Type <span class="error-text">
-                                        *</span></label>
-                                <select name="claimant_address_type" id="claimant_address_type"
-                                    class="form-control form-select">
-                                    <option value="">Select Address Type</option>
-                                    @foreach (config('constant.claimant_address_type', []) as $key => $value)
-                                        <option value="{{ $key }}" @selected(old('claimant_address_type', $caseviewData['claimant_address_type']) == $key)>
-                                            {{ $value }}</option>
-                                    @endforeach
-                                </select>
-                                @error('claimant_address_type')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-3 col-12 mb-3">
-                                <label class="form-label" for="claimant_state_id">State <span class="error-text">
-                                        *</span></label>
-                                <select name="claimant_state_id" onchange="getCity(this.value)" class="form-select"
-                                    id="claimant_state_id">
-                                    <option value="">Select State</option>
-                                    @foreach ($states as $state)
-                                        <option value="{{ $state->id }}" @selected(old('claimant_state_id', $caseviewData['claimant_state_id']) == $state->id)>
-                                            {{ $state->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('claimant_state_id')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-3 col-12 mb-3">
-                                <label class="form-label" for="claimant_city_id">City <span class="error-text">
-                                        *</span></label>
-                                <select name="claimant_city_id" class="form-select" id="claimant_city_id">
-                                    <option value="">Select City</option>
-                                </select>
-                                @error('claimant_city_id')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-3 col-12 mb-3">
-                                <label class="form-label" for="claimant_pincode">Pincode <span class="error-text">
-                                        *</span></label>
-                                <input type="text" id="claimant_pincode" name="claimant_pincode" class="form-control"
-                                    value="{{ old('claimant_pincode', $caseviewData['claimant_pincode']) }}">
-                                @error('claimant_pincode')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-
-                            {{-- Respodent Data  --}}
-                            <div class="col-12 text-center justify-content-center">
-                                <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Respondent Details</h6>
-                            </div>
-                            <div class="col-md-4 col-12 mb-3">
-                                <label class="form-label" for="respondent_first_name">First Name <span
-                                        class="error-text"> *</span></label>
-                                <input type="text" id="respondent_first_name" name="respondent_first_name"
-                                    class="form-control"
-                                    value="{{ old('respondent_first_name', $caseviewData['respondent_first_name']) }}">
-                                @error('respondent_first_name')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 col-12 mb-3">
-                                <label class="form-label" for="respondent_middle_name">Middle Name</label>
-                                <input type="text" id="respondent_middle_name" name="respondent_middle_name"
-                                    class="form-control"
-                                    value="{{ old('respondent_middle_name', $caseviewData['respondent_middle_name']) }}">
-                                @error('respondent_middle_name')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 col-12 mb-3">
-                                <label class="form-label" for="respondent_last_name">Last Name</label>
-                                <input type="text" id="respondent_last_name" name="respondent_last_name"
-                                    class="form-control"
-                                    value="{{ old('respondent_last_name', $caseviewData['respondent_last_name']) }}">
-                                @error('respondent_last_name')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="respondent_mobile">Mobile Number <span class="error-text">
-                                        *</span></label>
-                                <input type="text" id="respondent_mobile" name="respondent_mobile"
-                                    class="form-control"
-                                    value="{{ old('respondent_mobile', $caseviewData['respondent_mobile']) }}">
-                                @error('respondent_mobile')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="respondent_email">Email</label>
-                                <input type="email" id="respondent_email" name="respondent_email" class="form-control"
-                                    value="{{ old('respondent_email', $caseviewData['respondent_email']) }}">
-                                @error('respondent_email')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="respondent_address1">Address Line 1 <span
-                                        class="error-text"> *</span></label>
-                                <input type="text" id="respondent_address1" name="respondent_address1"
-                                    class="form-control"
-                                    value="{{ old('respondent_address1', $caseviewData['respondent_address1']) }}">
-                                @error('respondent_address1')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="respondent_address2">Address Line 2</label>
-                                <input type="text" id="respondent_address2" name="respondent_address2"
-                                    class="form-control"
-                                    value="{{ old('respondent_address2', $caseviewData['respondent_address2']) }}">
-                                @error('respondent_address2')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-
-                            <div class="col-md-3 col-12 mb-3">
-                                <label class="form-label" for="respondent_address_type">Address Type <span
-                                        class="error-text"> *</span></label>
-                                <select name="respondent_address_type" id="respondent_address_type"
-                                    class="form-control form-select">
-                                    <option value="">Select Address Type</option>
-                                    @foreach (config('constant.respondent_address_type', []) as $key => $value)
-                                        <option value="{{ $key }}" @selected(old('respondent_address_type', $caseviewData['respondent_address_type']) == $key)>
-                                            {{ $value }}</option>
-                                    @endforeach
-                                </select>
-                                @error('respondent_address_type')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-3 col-12 mb-3">
-                                <label class="form-label" for="respondent_state_id">State <span class="error-text">
-                                        *</span></label>
-                                <select name="respondent_state_id" onchange="getCity(this.value)" class="form-select"
-                                    id="respondent_state_id">
-                                    <option value="">Select State</option>
-                                    @foreach ($states as $state)
-                                        <option value="{{ $state->id }}" @selected(old('respondent_state_id', $caseviewData['respondent_state_id']) == $state->id)>
-                                            {{ $state->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('respondent_state_id')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-3 col-12 mb-3">
-                                <label class="form-label" for="respondent_city_id">City <span class="error-text">
-                                        *</span></label>
-                                <select name="respondent_city_id" class="form-select" id="respondent_city_id">
-                                    <option value="">Select City</option>
-                                </select>
-                                @error('respondent_city_id')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-3 col-12 mb-3">
-                                <label class="form-label" for="respondent_pincode">Pincode <span class="error-text">
-                                        *</span></label>
-                                <input type="text" id="respondent_pincode" name="respondent_pincode"
-                                    class="form-control"
-                                    value="{{ old('respondent_pincode', $caseviewData['respondent_pincode']) }}">
-                                @error('respondent_pincode')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-
-                            {{-- step-3 fields  --}}
-                            <div class="col-12 text-center justify-content-center">
-                                <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Other Details</h6>
-                            </div>
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="brief_of_case">Brief of Case <span class="error-text">
-                                        *</span></label>
-                                <input type="text" name="brief_of_case" class="form-control"
-                                    value="{{ old('brief_of_case', $caseviewData['brief_of_case']) }}">
-                                @error('brief_of_case')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="amount_in_dispute">Amount in Dispute</label>
-                                <input type="text" name="amount_in_dispute" class="form-control"
-                                    value="{{ old('amount_in_dispute', $caseviewData['amount_in_dispute']) }}">
-                                @error('amount_in_dispute')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="case_type">Case Type <span class="error-text">
-                                        *</span></label>
-                                <select name="case_type" class="form-select" id="case_type">
-                                    <option value="">Select Case Type</option>
-                                    @foreach (config('constant.case_type', []) as $key => $value)
-                                        <option value="{{ $key }}" @selected(old('case_type', $caseviewData['case_type']) == $key)>
-                                            {{ $value }}</option>
-                                    @endforeach
-                                </select>
-                                @error('case_type')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="language">Language</label>
-                                <select name="language" class="form-select" id="language">
-                                    <option value="">Select Language</option>
-                                    @foreach (config('constant.language', []) as $key => $value)
-                                        <option value="{{ $key }}" @selected(old('language', $caseviewData['language']) == $key)>
-                                            {{ $value }}</option>
-                                    @endforeach
-                                </select>
-                                @error('language')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-
-                            <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label" for="agreement_exist">Agreement exist</label>
-                                <select name="agreement_exist" class="form-select" id="agreement_exist">
-                                    <option value="">Select Agreement exist</option>
-                                    <option value="1" @selected(old('agreement_exist', $caseviewData['agreement_exist']) == 1)>Yes</option>
-                                    <option value="2" @selected(old('agreement_exist', $caseviewData['agreement_exist']) == 2)>No</option>
-                                </select>
-                                @error('agreement_exist')
-                                    <span class="text-danger fs-custom">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label" for="status">Status</label>
-                                <select name="status" class="form-select" id="status">
-                                    <option value="1" @selected(old('status', $caseviewData['status']) == 1)> Active </option>
-                                    <option value="0" @selected(old('status', $caseviewData['status']) == 0)> Inactive </option>
-                                </select>
-                                @error('status')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-
                             @php
                                 $documents = [
                                     'application_form' => 'Application Form',
@@ -373,7 +457,7 @@
                             @endphp
 
                             @foreach ($documents as $key => $label)
-                                <div class="col-md-6 col-12 mt-5 document-upload" id="upload-{{ $key }}">
+                                <div class="col-md-6 col-12 mt-3 document-upload" id="upload-{{ $key }}">
                                     <label for="{{ $key }}" class="custom-file-upload">
                                         <span style="font-weight: 500;" id="file-label-{{ $key }}">
                                             <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
@@ -452,6 +536,8 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const documents = [
+                "notice_first",
+                "notice_second",
                 "application_form",
                 "foreclosure_statement",
                 "loan_agreement",
@@ -519,6 +605,37 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        $("#uploadnoticeView").validate({
+             errorClass: "text-danger fs-custom",
+             errorElement: "span",
+             ignore: [], // ensure hidden fields aren't skipped
+             rules: {
+                 @if(!isset($noticeType1))
+                 notice_first: {
+                     required: true
+                 },
+                 @endif
+                 @if(!isset($noticeType2))
+                 notice_second: {
+                     required: true
+                 },
+                 @endif
+             },
+             messages: {
+                 @if(!isset($noticeType1))
+                 notice_first: {
+                     required: "Please upload First Notice PDF"
+                 },
+                 @endif
+                 @if(!isset($noticeType2))
+                 notice_second: {
+                     required: "Please upload Second Notice PDF"
+                 },
+                 @endif
+             },
+         });
+     </script>
     <script type="text/javascript">
         $("#editcaseview").validate({
             errorClass: "text-danger fs-custom",

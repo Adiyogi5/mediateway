@@ -1,11 +1,4 @@
 @extends('layouts.front')
-<link href="{{ asset('assets/css/light/main.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/css/light/waves.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/plugins/fontawesome-pro/css/all.min.css') }}" rel="stylesheet" />
-<link href="{{ asset('assets/plugins/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/plugins/datatables/dt-global_style.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet" id="user-style-default" />
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/summernote/summernote.min.css') }}">
 
 @section('content')
@@ -48,7 +41,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-7 col-12 order-lg-1 order-2">
+                            <div class="col-lg-12 col-12 order-lg-1 order-2">
                                 <div class="livemeeting-card h-100">
                                     <h4 class="livemeetingcard-heading">UPDATES</h4>
                                     <div class="card mt-3 border-1 active overflow-hidden">
@@ -89,42 +82,47 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="col-lg-5 col-12 order-lg-2 order-1">
-                                <div class="livemeeting-card h-100">
-                                    <div class="form-group">
-                                        <textarea class="form-control" id="livemeetingdata" name="livemeetingdata">{{ old('livemeetingdata') }}</textarea>
-                                        @error('livemeetingdata')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                    <!-- Document Type and File Upload -->
-                                    <div class="mt-3">
-                                        <label class="form-label fw-bold">Select Document Type and Attach</label>
-                                        <div class="row g-2">
-                                            <div class="col-xl-6 col-12">
-                                                <select class="form-select" id="docType">
-                                                    <option selected disabled>Document Type</option>
-                                                    <option value="ordersheet">Case OrderSheet</option>
-                                                    <option value="settlementletter">Settlement Agreement</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-xl-6 col-12">
-                                                <select class="form-select" id="tempType">
-                                                    <option selected disabled>Template Type</option>
-                                                </select>
-                                            </div>
-                                        </div>                                        
-                                    </div>
 
-                                    <!-- Upload Button -->
-                                    <div class="text-center mt-3">
-                                        <button class="btn btn-secondary w-100" id="uploadBtn">UPLOAD /
-                                            SAVE</button>
+                            <div class="col-lg-12 col-12 order-lg-2 order-1">
+                                <form id="sendnoticeForm" action="{{ route('drp.courtroom.savenotice') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="file_case_id" value="{{ $caseData->id }}">
+                                    <div class="livemeeting-card h-100">
+                                        <div class="form-group">
+                                            <textarea class="form-control" rows="5" id="livemeetingdata" name="livemeetingdata">{{ old('livemeetingdata') }}</textarea>
+
+                                            @error('livemeetingdata')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                        <!-- Document Type and File Upload -->
+                                        <div class="mt-3">
+                                            <label class="form-label fw-bold">Select Document Type and Attach</label>
+                                            <div class="row g-2">
+                                                <div class="col-xl-6 col-12">
+                                                    <select class="form-select" id="docType" name="docType">
+                                                        <option selected disabled>Document Type</option>
+                                                        <option value="ordersheet">Case OrderSheet</option>
+                                                        <option value="settlementletter">Settlement Agreement</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-xl-6 col-12">
+                                                    <select class="form-select" id="tempType" name="tempType">
+                                                        <option selected disabled>Template Type</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Upload Button -->
+                                        <div class="text-center mt-3">
+                                            <button class="btn btn-secondary w-100" id="uploadBtn" type="submit">UPLOAD /
+                                                SAVE</button>
+                                        </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -135,60 +133,158 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/js/jquery.validate.js') }}"></script>
-    <script src="{{ asset('assets/js/custom-methods.js') }}"></script>
-    <script src="{{ asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
-    <script src="{{ asset('assets/js/waves.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/datatables.min.js') }}"></script>
-    <script src="{{ asset('assets/js/app.js') }}"></script>
-    <script src="{{ asset('assets/js/custom.js') }}"></script>
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>  
+
     <script type="text/javascript">
+        const allTemplates = {
+            ordersheet: @json($orderSheetTemplates),
+            settlementletter: @json($settlementLetterTemplates),
+        };
+        const flattenedCaseData = @json($flattenedCaseData); // Make sure this is correct
+
         $(document).ready(function() {
             $('#livemeetingdata').summernote({
+                height: 200,
                 toolbar: [
                     ['font', ['bold', 'italic', 'underline', 'clear']],
                     ['para', ['paragraph']],
                 ]
             });
-            let buttons = $('.note-editor button[data-toggle="dropdown"]');
-            buttons.each((key, value) => {
-                $(value).on('click', function(e) {
-                    $(this).attr('data-bs-toggle', 'dropdown')
-                })
-            })
-        })
-    </script>
-    <script>
-        var orderSheetTemplates = @json($orderSheetTemplates);
-        var settlementLetterTemplates = @json($settlementLetterTemplates);
-    
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("docType").addEventListener("change", function () {
-                var selectedDoc = this.value;
-                var tempTypeDropdown = document.getElementById("tempType");
-    
-                // Clear existing options
-                tempTypeDropdown.innerHTML = '<option selected disabled>Template Type</option>';
-    
-                let templates = [];
-    
-                if (selectedDoc === "ordersheet") {
-                    templates = orderSheetTemplates;
-                } else if (selectedDoc === "settlementletter") {
-                    templates = settlementLetterTemplates;
-                }
-    
-                // Append new options
-                templates.forEach(function (template) {
-                    let option = document.createElement("option");
-                    option.value = template.id; // Use ID or any unique identifier
-                    option.textContent = template.name; // Use the name column from the database
-                    tempTypeDropdown.appendChild(option);
+
+            $('#docType').on('change', function() {
+                const docType = $(this).val();
+                const templates = allTemplates[docType] || [];
+
+                let options = '<option selected disabled>Template Type</option>';
+                templates.forEach(template => {
+                    const format = encodeURIComponent(template.notice_format || '');
+                    options +=
+                        `<option value="${template.id}" data-format="${format}">${template.name}</option>`;
                 });
+
+                $('#tempType').html(options);
+            });
+
+            $('#tempType').on('change', function() {
+                const selectedOption = $(this).find('option:selected');
+                const rawFormat = decodeURIComponent(selectedOption.data('format') || '');
+
+                try {
+                    if (!flattenedCaseData) {
+                        console.error("flattenedCaseData is not available");
+                        return;
+                    }
+
+                    // Replace placeholders in the template
+                    const content = rawFormat.replace(/\{\{([\s\S]+?)\}\}/g, function(match, key) {
+                        // Create a temporary element to strip all HTML formatting
+                        const temp = document.createElement('div');
+                        temp.innerHTML = key;
+
+                        // Get plain text content (removes bold, font, size, etc.)
+                        let plainKey = temp.textContent || temp.innerText || '';
+
+                        // Normalize: convert to lowercase, trim, replace spaces/special characters
+                        const normalizedKey = plainKey
+                            .replace(/&nbsp;/gi, ' ') // decode HTML spaces
+                            .replace(/\s+/g, ' ') // collapse multiple spaces
+                            .trim() // trim edges
+                            .toLowerCase() // lowercase for matching
+                            .replace(/[^a-z0-9]/g, '_'); // remove non-alphanumeric, use _
+
+                        const value = flattenedCaseData[normalizedKey];
+
+                        if (value !== undefined && value !== null) {
+                            return value;
+                        } else {
+                            console.warn(`Placeholder {${plainKey}} is missing a value.`);
+                            return match; // leave original placeholder
+                        }
+                    });
+
+                    $('#livemeetingdata').summernote('code', content);
+
+                } catch (err) {
+                    console.error("Template parse error:", err);
+                }
             });
         });
-    </script>    
+    </script>
+
+    <script type="text/javascript">
+        $("#sendnoticeForm").validate({
+            rules: {
+                docType: {
+                    required: true,
+                },
+                tempType: {
+                    required: true,
+                },
+            },
+            messages: {
+                docType: {
+                    required: "Please select Document Type",
+                },
+                tempType: {
+                    required: "Please select Template Type",
+                },
+            },
+            errorElement: 'span',
+            errorClass: 'invalid-feedback',
+            highlight: function (element) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element) {
+                $(element).removeClass('is-invalid');
+            },
+            errorPlacement: function (error, element) {
+                if (element.parent('.input-group').length) {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });
+    </script>
+    {{-- <script>
+        // $('#tempType').on('change', function() {
+                //     const selectedOption = $(this).find('option:selected');
+                //     const rawFormat = decodeURIComponent(selectedOption.data('format') || '');
+                //     const cleanedFormat = rawFormat.replace(/<(\/?)(b|font|span)[^>]*>/gi, '');
+
+                //     try {
+                //         if (!flattenedCaseData) {
+                //             console.error("flattenedCaseData is not available");
+                //             return;
+                //         }
+
+                //         // Replace placeholders in the template
+                //         const content = cleanedFormat.replace(/\{\{([^}]+)\}\}/g, function(match, key) {
+                //             // Normalize key
+                //             let normalizedKey = key
+                //                 .replace(/&nbsp;/gi, ' ')
+                //                 .replace(/\s+/g, ' ')
+                //                 .trim()
+                //                 .toLowerCase()
+                //                 .replace(/[^a-z0-9]/g, '_');
+
+                //             const value = flattenedCaseData[normalizedKey];
+
+                //             if (value !== undefined && value !== null) {
+                //                 return value;
+                //             } else {
+                //                 console.warn(`Placeholder {${key}} is missing a value.`);
+                //                 return `[Missing: ${key}]`;
+                //             }
+                //         }); 
+
+                //         // Set the content in the Summernote editor
+                //         $('#livemeetingdata').summernote('code', content);
+
+                //     } catch (err) {
+                //         console.error("Template parse error:", err);
+                //     }
+                // });
+    </script> --}}
 @endsection

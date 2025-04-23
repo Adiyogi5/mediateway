@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @section('content')
     <div class="card mb-3">
         <div class="card-header">
@@ -196,24 +196,29 @@
                 <div class="col-12 text-center justify-content-center bg-secondary pt-2">
                     <h5 class=" text-white">Assign Case</h5>
                 </div>
+
+                @php
+                    $selectedArbitrators = explode(',', old('arbitrator_id', $assignCase?->arbitrator_id ?? ''));
+                @endphp
+                
                 <div class="col-lg-6 mt-2">
                     <label class="form-label" for="arbitrator_id">Arbitrator</label>
-                    <select name="arbitrator_id" class="form-select" id="arbitrator_id">
-                        <option value="">Select Arbitrator</option>
+                    <select name="arbitrator_id[]" class="form-select select2 w-100" id="arbitrator_id" multiple>
                         @foreach ($arbitrators as $arbitrator)
-                            <option value="{{ $arbitrator->id }}" 
-                                @selected(old('arbitrator_id', $assignCase?->arbitrator_id) == $arbitrator->id)>
+                            <option value="{{ $arbitrator->id }}"
+                                @if (in_array($arbitrator->id, $selectedArbitrators)) selected @endif>
                                 {{ $arbitrator->name }}
-                            </option>                        
+                            </option>
                         @endforeach
-                    </select>                    
+                    </select>
                     @error('arbitrator_id')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>
                     @enderror
-                </div>
-                <div class="col-lg-6 mt-2">
+                </div>            
+
+                {{-- <div class="col-lg-6 mt-2">
                     <label class="form-label" for="advocate_id">Advocate</label>
                     <select name="advocate_id" class="form-select" id="advocate_id">
                         <option value="">Select Advocate</option>
@@ -229,7 +234,7 @@
                             <strong>{{ $message }}</strong>
                         </span>
                     @enderror
-                </div>
+                </div> --}}
 
                 <div class="col-lg-6 mt-2">
                     <label class="form-label" for="case_manager_id">Case Manager</label>
@@ -248,7 +253,8 @@
                         </span>
                     @enderror
                 </div>
-                <div class="col-lg-6 mt-2">
+
+                {{-- <div class="col-lg-6 mt-2">
                     <label class="form-label" for="mediator_id">Mediator</label>
                     <select name="mediator_id" class="form-select" id="mediator_id">
                         <option value="">Select Mediator</option>
@@ -264,7 +270,8 @@
                             <strong>{{ $message }}</strong>
                         </span>
                     @enderror
-                </div>
+                </div> --}}
+
                 <div class="col-lg-6 mt-2">
                     <label class="form-label" for="conciliator_id">Conciliator</label>
                     <select name="conciliator_id" class="form-select" id="conciliator_id">
@@ -306,21 +313,29 @@
 
 @section('js')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: "Select Arbitrator(s)"
+            });
+        });
+    </script>
     <script type="text/javascript">
         $("#assignCase").validate({
             rules: {
                 arbitrator_id: {
                     required: true,
                 },
-                advocate_id: {
-                    required: true, 
-                },
+                // advocate_id: {
+                //     required: true, 
+                // },
                 case_manager_id: {
                     required: true,
                 },
-                mediator_id: {
-                    required: true,
-                },
+                // mediator_id: {
+                //     required: true,
+                // },
                 conciliator_id: {
                     required: true,
                 },
@@ -329,15 +344,15 @@
                 arbitrator_id: {
                     required: "Please Select Arbitrator",
                 },
-                advocate_id: {
-                    required: "Please Select Advocate",
-                },
+                // advocate_id: {
+                //     required: "Please Select Advocate",
+                // },
                 case_manager_id: {
                     required: "Please Select Case Manager",
                 },
-                mediator_id: {
-                    required: "Please Select Mediator",
-                },
+                // mediator_id: {
+                //     required: "Please Select Mediator",
+                // },
                 conciliator_id: {
                     required: "Please Select Conciliator",
                 },

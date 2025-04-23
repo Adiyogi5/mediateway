@@ -46,7 +46,7 @@
                 </span>
                 @enderror
             </div>
-            <div class="col-lg-6 mt-2">
+            {{-- <div class="col-lg-6 mt-2">
                 <label class="form-label" for="image">Image</label>
                 <input class="form-control" id="image" name="image" type="file" value="" />
                 @error('image')
@@ -54,7 +54,7 @@
                     <strong>{{ $message }}</strong>
                 </span>
                 @enderror
-            </div>
+            </div> --}}
             <div class="col-lg-12 mt-2">
                 <label class="form-label" for="description">Description</label>
                 <textarea class="form-control" id="description" name="description"></textarea>

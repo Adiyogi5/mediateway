@@ -58,6 +58,7 @@ Route::name('organization.')->middleware(['ensure.organization.session', 'organi
         Route::get('filecaseview', 'index')->name('cases.filecaseview');
         Route::get('filecaseview/{id}', 'edit')->name('cases.filecaseview.edit');
         Route::post('filecaseview/{id}', 'update')->name('cases.filecaseview.edit');
+        Route::post('filecaseview/{id}', 'store')->name('cases.filecaseview.store');
         Route::delete('filecaseview', 'delete')->name('cases.filecaseview.delete');
 
         Route::get('viewcasedetail/{id}', 'viewcasedetail')->name('cases.viewcasedetail');

@@ -18,6 +18,7 @@ use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\HomeCmsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\NoticeTemplateController;
 use App\Http\Controllers\OrderSheetController;
 use App\Http\Controllers\OrganizationListController;
 use App\Http\Controllers\RolesController;
@@ -66,7 +67,18 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::put('users/permission', 'permission_update')->name('users.permission.update')->middleware('isAllow:103,can_edit');
     });
 
-    // ----------------------- Order Sheet Routes ---------------------------------------
+    // ----------------------- Notices Routes ---------------------------------------
+    Route::controller(NoticeTemplateController::class)->group(function () {
+        Route::get('/noticetemplate', 'index')->name('noticetemplate');
+        Route::get('noticetemplate/add', 'add')->name('noticetemplate.add');
+        Route::post('noticetemplate/add', 'save')->name('noticetemplate.add');
+        Route::get('noticetemplate/{id}', 'edit')->name('noticetemplate.edit');
+        Route::post('noticetemplate/{id}', 'update')->name('noticetemplate.edit');
+        Route::delete('noticetemplate', 'delete')->name('noticetemplate.delete');
+        Route::get('getnoticetemplateVariables', 'getnoticetemplateVariables')->name('getnoticetemplateVariables');
+    });
+
+    // ----------------------- Award Routes ---------------------------------------
     Route::controller(AwardController::class)->group(function () {
         Route::get('/award', 'index')->name('award');
         Route::get('award/add', 'add')->name('award.add');

@@ -31,6 +31,16 @@
                 </span>
                 @enderror
             </div>
+            <div class="col-lg-6 mt-2">
+                <label class="form-label" for="designation">Designation <span class="required">*</span></label>
+                <input class="form-control" id="designation" placeholder="Designation" name="designation" type="text"
+                    value="{{ old('designation') }}" />
+                @error('designation')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+                @enderror
+            </div>
 
             <div class="col-lg-6 mt-2">
                 <label class="form-label" for="rating">Rating</label>
@@ -100,6 +110,11 @@
                 minlength: 2,
                 maxlength: 100
             },
+            designation: {
+                required: true,
+                minlength: 2,
+                maxlength: 200
+            },
             rating: {
                 required: true,  // Ensure rating is selected
                 digits: true,    // Ensure it's a number
@@ -119,6 +134,9 @@
         messages: {
             name: {
                 required: "Please enter name",
+            },
+            designation: {
+                required: "Please enter designation",
             },
             rating: {
                 required: "Please Select Rating",

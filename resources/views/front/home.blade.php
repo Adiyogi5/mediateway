@@ -721,16 +721,19 @@
                         <div class="testimonial-item position-relative">
                             <div class="card testimonial-card mx-1">
                                 <div class="card-body text-start">
-                                    <img src="{{ asset('storage/' . $testimonial['image']) }}" class="rounded-circle"
-                                        alt="{{ $testimonial['name'] }}">
-                                    <p>{{ $testimonial['description'] }}</p>
-                                    <h5>{{ $testimonial['name'] }}</h5>
-                                    <div class="stars d-flex align-item-self">
-                                        @for ($i = 1; $i <= $testimonial['rating']; $i++)
-                                            <img src="{{ asset('assets/img/star.png') }}" class="img-fluid"
-                                                style="height:20px; width:20px; margin-left:0px;margin-bottom:0px" />
-                                        @endfor
+                                    <div class="d-flex text-start justify-content-start">
+                                        <img src="{{ asset('storage/' . $testimonial['image']) }}" class="rounded-circle mx-auto"
+                                            alt="{{ $testimonial['name'] }}">
+                                        <p class="ms-2">{{ $testimonial['description'] }}</p>
                                     </div>
+                                        <h5>{{ $testimonial['name'] }}</h5>
+                                        <p><b>{{ $testimonial['designation'] }}</b></p>
+                                        <div class="stars d-flex align-item-self">
+                                            @for ($i = 1; $i <= $testimonial['rating']; $i++)
+                                                <img src="{{ asset('assets/img/star.png') }}" class="img-fluid"
+                                                    style="height:20px; width:20px; margin-left:0px;margin-bottom:0px" />
+                                            @endfor
+                                        </div>
                                     <i class="quote-icon"> <i class="fas fa-quote-left"></i></i>
                                 </div>
                             </div>

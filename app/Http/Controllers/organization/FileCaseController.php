@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\FileCaseImport;
 use App\Exports\SampleFileCaseExport;
 use App\Models\FileCase;
+use App\Models\Notice;
 use App\Models\Organization;
 use App\Models\State;
 use Illuminate\Http\RedirectResponse;
@@ -91,15 +92,20 @@ class FileCaseController extends Controller
         $title = 'Edit Filed Case';
         $organization_authData = auth('organization')->user();
         
+        // Fetch both notices by type
+        $noticeType1 = Notice::where('file_case_id', $id)->where('notice_type', 1)->first();
+        $noticeType2 = Notice::where('file_case_id', $id)->where('notice_type', 2)->first();
+
         $caseviewData   = FileCase::Find($id);
         $states = State::all();
         
         if (!$caseviewData) {
             return to_route('organization.cases.filecaseview')->withError('Filed Case Not Found..!!');
         }
-        return view('organization.cases.edit', compact('caseviewData','title','organization_authData','states'));
+        return view('organization.cases.edit', compact('caseviewData', 'noticeType1', 'noticeType2','title','organization_authData','states'));
     }
 
+    //For Upload Documents By Organization
     public function update(Request $request, $id): RedirectResponse
     {
         // dd($request->all());
@@ -217,6 +223,60 @@ class FileCaseController extends Controller
 
         return to_route('organization.cases.filecaseview')->withSuccess('Filed Case Documents Upload Successfully..!!');
     }
+
+    //For Upload Notice By Organization
+    public function store(Request $request, $id)
+    {
+        $existing1 = Notice::where('file_case_id', $id)->where('notice_type', 1)->exists();
+        $existing2 = Notice::where('file_case_id', $id)->where('notice_type', 2)->exists();
+
+        if ($existing1 || $existing2) {
+            return redirect()->back()->with('error', 'Notices already uploaded.');
+        }
+
+        $request->validate([
+            'notice_first' => 'required|mimes:pdf|max:5120',
+            'notice_second' => 'required|mimes:pdf|max:5120',
+        ]);
+
+        // First notice (type 1)
+        if ($request->hasFile('notice_first')) {
+            $noticefirstPath = Helper::saveFile($request->file('notice_first'),'notices');
+
+            Notice::create([
+                'file_case_id' => $id,
+                'notice_type' => 1,
+                'notice' => $noticefirstPath,
+                'notice_date' => now(),
+                'notice_send_date' => null,
+                'email_status' => 0,
+                'whatsapp_status' => 0,
+                'whatsapp_notice_status' => 0,
+                'whatsapp_dispatch_datetime' => null,
+            ]);
+        }
+
+        // Second notice (type 2)
+        if ($request->hasFile('notice_second')) {
+            $noticesecondPath = Helper::saveFile($request->file('notice_second'),'notices');
+
+            Notice::create([
+                'file_case_id' => $id,
+                'notice_type' => 2,
+                'notice' => $noticesecondPath,
+                'notice_date' => now(),
+                'notice_send_date' => null,
+                'email_status' => 0,
+                'whatsapp_status' => 0,
+                'whatsapp_notice_status' => 0,
+                'whatsapp_dispatch_datetime' => null,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Both notices uploaded successfully.');
+    }
+
+
 
     public function delete(Request $request): JsonResponse
     {

@@ -127,42 +127,100 @@
         <li class="menu @routeis('caseassign') active @endrouteis">
             <a href="{{route('caseassign')}}" class="dropdown-toggle">
                 <div class="">
-                    <i class="fa-duotone fa-cash-register"></i>
-                    <span>Case Assign List</span>
+                    <i class="fa-duotone fa-bookmark"></i>
+                    <span>Cases Assign</span>
                 </div>
             </a>
         </li>
 
-        <li class="menu @routeis('ordersheet') active @endrouteis">
-            <a href="{{route('ordersheet')}}" class="dropdown-toggle">
+        {{-- @if(Helper::userCan([105,106])) --}}
+        <li class="menu @routeis('ordersheet,award,settlementletter') active @endrouteis">
+            <a href="#location_content1" data-bs-toggle="collapse" aria-expanded="{{ Helper::routeis('ordersheet,award,settlementletter') }}"
+                class="dropdown-toggle">
                 <div class="">
                     <i class="fa-duotone fa-file-lines"></i>
-                    <span>Order Sheets</span>
+                    <span>Templates</span>
                 </div>
+                <div> <i class="fa-solid fa-chevron-right"></i> </div>
             </a>
-        </li>
+            <ul class="collapse submenu list-unstyled @routeis('noticetemplate,ordersheet,award,settlementletter') show @endrouteis" id="location_content1"
+                data-bs-parent="#accordionExample">
+                {{-- @if(Helper::userCan(105)) --}}
+                <li class="@routeis('noticetemplate') active @endrouteis">
+                    <a class="nav-link" href="{{ route('noticetemplate') }}">Notices</a>
+                </li>
+                {{-- @endif --}}
 
-        <li class="menu @routeis('award') active @endrouteis">
-            <a href="{{route('award')}}" class="dropdown-toggle">
+                {{-- @if(Helper::userCan(105)) --}}
+                <li class="@routeis('ordersheet') active @endrouteis">
+                    <a class="nav-link" href="{{ route('ordersheet') }}">Order Sheets</a>
+                </li>
+                {{-- @endif --}}
+
+                {{-- @if(Helper::userCan(106)) --}}
+                <li class="@routeis('award') active @endrouteis">
+                    <a class="nav-link" href="{{ route('award') }}">Awards</a>
+                </li>
+                {{-- @endif --}}
+
+                
+                {{-- @if(Helper::userCan(106)) --}}
+                <li class="@routeis('settlementletter') active @endrouteis">
+                    <a class="nav-link" href="{{ route('settlementletter') }}">Settlement Letter</a>
+                </li>
+                {{-- @endif --}}
+            </ul>
+        </li>
+        {{-- @endif --}}
+
+
+        {{-- @if(Helper::userCan([105,106])) --}}
+        <li class="menu @routeis('inquiries,bookappointments,callbacks') active @endrouteis">
+            <a href="#location_content3" data-bs-toggle="collapse" aria-expanded="{{ Helper::routeis('inquiries,bookappointments,callbacks') }}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-envelope"></i>
+                    <span>Inquiries</span>
+                </div>
+                <div> <i class="fa-solid fa-chevron-right"></i> </div>
+            </a>
+            <ul class="collapse submenu list-unstyled @routeis('inquiries,bookappointments,callbacks') show @endrouteis" id="location_content3"
+                data-bs-parent="#accordionExample">
+                {{-- @if(Helper::userCan(105)) --}}
+                <li class="@routeis('inquiries') active @endrouteis">
+                    <a class="nav-link" href="{{ route('inquiries') }}">Contact Inquiries</a>
+                </li>
+                {{-- @endif --}}
+
+                {{-- @if(Helper::userCan(106)) --}}
+                <li class="@routeis('bookappointments') active @endrouteis">
+                    <a class="nav-link" href="{{ route('bookappointments') }}">Book Appointment Inquiries</a>
+                </li>
+                {{-- @endif --}}
+
+                
+                {{-- @if(Helper::userCan(106)) --}}
+                <li class="@routeis('callbacks') active @endrouteis">
+                    <a class="nav-link" href="{{ route('callbacks') }}">Call Back Inquiries</a>
+                </li>
+                {{-- @endif --}}
+            </ul>
+        </li>
+        {{-- @endif --}}
+
+
+        <li class="menu @routeis('servicefee') active @endrouteis">
+            <a href="{{route('servicefee')}}" class="dropdown-toggle">
                 <div class="">
                     <i class="fa-duotone fa-file-lines"></i>
-                    <span>Awards</span>
+                    <span>Service Fee</span>
                 </div>
             </a>
         </li>
 
-        <li class="menu @routeis('settlementletter') active @endrouteis">
-            <a href="{{route('settlementletter')}}" class="dropdown-toggle">
-                <div class="">
-                    <i class="fa-duotone fa-file-lines"></i>
-                    <span>Settlement Letter</span>
-                </div>
-            </a>
-        </li>
-
+        
         @if(Helper::userCan([105,106]))
         <li class="menu @routeis('states,cities') active @endrouteis">
-            <a href="#location_content" data-bs-toggle="collapse" aria-expanded="{{ Helper::routeis('states,cities') }}"
+            <a href="#location_content2" data-bs-toggle="collapse" aria-expanded="{{ Helper::routeis('states,cities') }}"
                 class="dropdown-toggle">
                 <div class="">
                     <i class="fa-duotone fa-location-dot"></i>
@@ -170,7 +228,7 @@
                 </div>
                 <div> <i class="fa-solid fa-chevron-right"></i> </div>
             </a>
-            <ul class="collapse submenu list-unstyled @routeis('states,cities') show @endrouteis" id="location_content"
+            <ul class="collapse submenu list-unstyled @routeis('states,cities') show @endrouteis" id="location_content2"
                 data-bs-parent="#accordionExample">
                 @if(Helper::userCan(105))
                 <li class="@routeis('states') active @endrouteis">
@@ -187,39 +245,6 @@
         </li>
         @endif
 
-        <li class="menu @routeis('inquiries') active @endrouteis">
-            <a href="{{route('inquiries')}}" class="dropdown-toggle">
-                <div class="">
-                    <i class="fa-duotone fa-envelope"></i>
-                    <span>Contact Inquiries</span>
-                </div>
-            </a>
-        </li>
-        <li class="menu @routeis('bookappointments') active @endrouteis">
-            <a href="{{route('bookappointments')}}" class="dropdown-toggle">
-                <div class="">
-                    <i class="fa-duotone fa-calendar-check"></i>
-                    <span>Book Appointment Inquiries</span>
-                </div>
-            </a>
-        </li>
-        <li class="menu @routeis('callbacks') active @endrouteis">
-            <a href="{{route('callbacks')}}" class="dropdown-toggle">
-                <div class="">
-                    <i class="fa-duotone fa-mobile"></i>
-                    <span>Call Back Inquiries</span>
-                </div>
-            </a>
-        </li>
-
-        <li class="menu @routeis('servicefee') active @endrouteis">
-            <a href="{{route('servicefee')}}" class="dropdown-toggle">
-                <div class="">
-                    <i class="fa-duotone fa-file-lines"></i>
-                    <span>Service Fee</span>
-                </div>
-            </a>
-        </li>
 
         @if(Helper::userCan(101))
         <li class="menu @routeis('setting') active @endrouteis">

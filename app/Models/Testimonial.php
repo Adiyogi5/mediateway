@@ -15,6 +15,7 @@ class Testimonial extends Model
         'name',
         'rating',
         'description',
+        'designation',
         'image',
         'status',
     ];

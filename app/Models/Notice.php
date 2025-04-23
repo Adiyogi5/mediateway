@@ -16,6 +16,11 @@ class Notice extends Model
         'notice_type',
         'notice',
         'notice_date',
+        'notice_send_date',
+        'email_status',
+        'whatsapp_status',
+        'whatsapp_notice_status',
+        'whatsapp_dispatch_datetime',
     ];
 
 

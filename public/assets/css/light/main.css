@@ -2316,6 +2316,7 @@ fieldset:disabled .btn {
   color: #fff !important;
 }
 
+
 /* Primary */
 .btn-check:active + .btn-light-primary:focus, .btn-check:checked + .btn-light-primary:focus {
   box-shadow: none;

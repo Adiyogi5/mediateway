@@ -20,12 +20,8 @@ class CmsController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         if ($request->ajax()) {
-            $data = Cms::select('id', 'title', 'image', 'status', 'created_at');
+            $data = Cms::select('id', 'title', 'status', 'created_at');
             return Datatables::of($data)
-                ->editColumn('image', function ($row) {
-                    $btn = '<div class="img-group"><img class="" src="' . asset('storage/' . $row['image']) . '" alt=""></div>';
-                    return $btn;
-                })
                 ->editColumn('created_at', function ($row) {
                     return $row['created_at']->format('d M, Y');
                 })
@@ -47,7 +43,7 @@ class CmsController extends Controller
                 ->orderColumn('created_at', function ($query, $order) {
                     $query->orderBy('created_at', $order);
                 })
-                ->rawColumns(['action', 'image', 'status'])
+                ->rawColumns(['action', 'status'])
                 ->make(true);
         }
         return view('cms.index');

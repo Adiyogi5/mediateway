@@ -7,7 +7,7 @@
             <div class="col-auto align-self-center">
                 <h5 class="mb-0" data-anchor="data-anchor">Cms :: Cms List </h5>
             </div>
-            <div class="col-auto ms-auto">
+            {{-- <div class="col-auto ms-auto">
                 <div class="nav nav-pills nav-pills-falcon">
                     @if(Helper::userCan(104, 'can_add'))
                     <a href="{{ route('cms.add') }}" class="btn btn-outline-secondary">
@@ -16,7 +16,7 @@
                     </a>
                     @endif
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
     <div class="card-body table-padding">
@@ -25,7 +25,6 @@
                 style="width:100%">
                 <thead class="bg-200 text-900">
                     <tr>
-                        <th>Image</th>
                         <th>Name</th>
                         <th>Status</th>
                         <th>Created Date</th>
@@ -47,14 +46,9 @@
         var table = $('.table-datatable').DataTable({
             ajax: "{{ route('cms') }}",
             order: [
-                [4, 'desc']
+                [3, 'desc']
             ],
-            columns: [{
-                data: 'image',
-                name: 'image',
-                orderable: false,
-                searchable: false
-            },
+            columns: [
             {
                 data: 'title',
                 name: 'title'

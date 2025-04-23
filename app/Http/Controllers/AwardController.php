@@ -66,7 +66,7 @@ public function add(): View
 public function save(Request $request): RedirectResponse
 {
     $validated = $request->validate([
-        'name'           => ['required', 'string', 'unique:awards,name', 'max:50'],
+        'name'           => ['required', 'string', 'unique:awards,name', 'max:100'],
         'subject'        => ['required', 'string'],
         'email_content'  => ['required', 'string'],
         'notice_format'  => ['required', 'string']
@@ -91,7 +91,7 @@ public function update(Request $request, $id): RedirectResponse
     if (!$award) return to_route('award')->withError('Award Not Found..!!');
 
     $validated = $request->validate([
-        'name'           => ['required', 'string', 'unique:awards,name,' . $id, 'max:50'],
+        'name'           => ['required', 'string', 'unique:awards,name,' . $id, 'max:100'],
         'subject'        => ['required', 'string'],
         'email_content'  => ['required', 'string'],
         'notice_format'  => ['required', 'string']

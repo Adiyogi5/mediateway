@@ -36,6 +36,7 @@ Route::name('individual.')->middleware(['ensure.individual.session'])->prefix('i
         Route::get('filecaseview', 'index')->name('case.filecaseview');
         Route::get('filecaseview/{id}', 'edit')->name('case.filecaseview.edit');
         Route::post('filecaseview/{id}', 'update')->name('case.filecaseview.edit');
+        Route::post('filecaseview/{id}', 'store')->name('case.filecaseview.store');
         Route::delete('filecaseview', 'delete')->name('case.filecaseview.delete');
 
         Route::get('filecase', 'filecase')->name('case.filecase');

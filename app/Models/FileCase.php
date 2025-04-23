@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\CustomScopes;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FileCase extends Model
 {
@@ -54,6 +56,16 @@ class FileCase extends Model
         'other_document',
         'status',
     ];
+
+    public function file_case_details(): HasOne
+    {
+        return $this->hasOne(FileCaseDetail::class);
+    }
+
+    public function guarantors(): HasOne
+    {
+        return $this->hasOne(Guarantor::class);
+    }
 
     public function individual()
     {

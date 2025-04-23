@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FileCase;
 use App\Models\FileCasePayment;
 use App\Models\Individual;
+use App\Models\Notice;
 use App\Models\ServiceFee;
 use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use Razorpay\Api\Api;
+use Carbon\Carbon;
 use Razorpay\Api\Errors\SignatureVerificationError;
 use App\Models\State;
 
@@ -67,17 +69,22 @@ class FileCaseController extends Controller
                     return $row['status'] == 1 ? '<small class="badge fw-semi-bold rounded-pill status badge-light-success"> Active</small>' : '<small class="badge fw-semi-bold rounded-pill status badge-light-danger"> Inactive</small>';
                 })
                 ->addColumn('action', function ($row) {
+                    $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="fas fa-ellipsis-h fs--1"></span>
+                            </button>';
+                    $btn .= '<div class="dropdown-menu" aria-labelledby="drop">';
+                
                     if (empty($row->transaction_id) || $row->transaction_id == null || $row->payment_status == 1) {
-                        $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button>';
-                        $btn .= '<div class="dropdown-menu" aria-labelledby="drop">';
                         $btn .= '<a class="dropdown-item" href="' . route('individual.case.filecasepayment', $row->id) . '">Pay</a>';
                         $btn .= '<a class="dropdown-item" href="' . route('individual.case.filecaseview.edit', $row->id) . '">Edit</a>';
                         $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row->id . '">Delete</button>';
-                        $btn .= '</div>';
-                        return $btn;
+                    } else {
+                        $btn .= '<a class="dropdown-item" href="' . route('individual.case.filecaseview.edit', $row->id) . '">Upload Documents</a>';
                     }
-                    return ''; // Hide the button if transaction_id is not empty
-                })                
+                
+                    $btn .= '</div>';
+                    return $btn;
+                })                               
                 ->orderColumn('created_at', function ($query, $order) {
                     $query->orderBy('created_at', $order);
                 })
@@ -179,15 +186,34 @@ class FileCaseController extends Controller
             $uploadOtherDocumentPath = Helper::saveFile($request->file('other_document'), 'individuals/casefile');
         }
        
-        // Generate a new unique file case number
-        $lastCase = FileCasePayment::latest()->first();
-        $lastCaseNo = $lastCase ? intval(substr($lastCase->file_case_no, 4)) : 0;
-        $newCaseNumber = 'CASE' . str_pad($lastCaseNo + 1, 5, '0', STR_PAD_LEFT);
+         // Step 1: Get Individual code
+         $indCode = 'IND';
+
+         // Step 2: Get today's date
+         $datePart = Carbon::now()->format('d-m-Y');
+
+         // Step 3: Count existing cases today for that ind
+         $prefix = $indCode . '-' . $datePart;
+
+         $lastCase = FileCase::where('case_number', 'like', "$indCode-%-$datePart")
+             ->orderBy('case_number', 'desc')
+             ->first();
+
+         // Step 4: Extract last increment and increase
+         if ($lastCase && preg_match('/' . $indCode . '-(\d+)-' . $datePart . '/', $lastCase->case_number, $matches)) {
+             $increment = (int) $matches[1] + 1;
+         } else {
+             $increment = 1;
+         }
+
+         // Step 5: Build full case number
+         $newCaseNumber = sprintf('%s-%06d-%s', $indCode, $increment, $datePart);
       
         // Save case data with proper file paths
         $case = FileCase::create([
             'user_type'                 => 1,
             'individual_id'             => $user->id,
+            'case_number'               => $newCaseNumber ?? null,
             'claimant_first_name'       => $request->claimant_first_name,
             'claimant_middle_name'      => $request->claimant_middle_name,
             'claimant_last_name'        => $request->claimant_last_name,
@@ -225,7 +251,7 @@ class FileCaseController extends Controller
           // Save payment data
         FileCasePayment::create([
             'file_case_id'    => $case->id,
-            'file_case_no'    => $newCaseNumber,
+            'file_case_no'    => $newCaseNumber ?? null,
             'name'            => $user->name,
             'mobile'          => $user->mobile,
             'email'           => $user->email,
@@ -245,15 +271,26 @@ class FileCaseController extends Controller
         $title = 'Edit Filed Case';
         $individual_authData = auth('individual')->user();
         
+        // Fetch both notices by type
+        $noticeType1 = Notice::where('file_case_id', $id)->where('notice_type', 1)->first();
+        $noticeType2 = Notice::where('file_case_id', $id)->where('notice_type', 2)->first();
+        
         $caseviewData   = FileCase::Find($id);
+        $casefilepayment = FileCasePayment::select('file_case_payments.*','file_cases.amount_in_dispute','file_cases.case_type')
+        ->where('file_cases.individual_id',$individual_authData->id)
+        ->leftJoin('file_cases','file_cases.id','=','file_case_payments.file_case_id')
+        ->first();
+
         $states = State::all();
         
         if (!$caseviewData) {
             return to_route('individual.case.filecaseview')->withError('Filed Case Not Found..!!');
         }
-        return view('individual.case.edit', compact('caseviewData','title','individual_authData','states'));
+        return view('individual.case.edit', compact('caseviewData','title','individual_authData', 'casefilepayment', 'noticeType1', 'noticeType2', 'states'));
     }
 
+
+    //For Upload Documents By Organization
     public function update(Request $request, $id): RedirectResponse
     {
         // dd($request->all());
@@ -376,6 +413,60 @@ class FileCaseController extends Controller
         return to_route('individual.case.filecaseview')->withSuccess('Filed Case Updated Successfully..!!');
     }
 
+    
+     //For Upload Notice By Organization
+     public function store(Request $request, $id)
+     {
+         $existing1 = Notice::where('file_case_id', $id)->where('notice_type', 1)->exists();
+         $existing2 = Notice::where('file_case_id', $id)->where('notice_type', 2)->exists();
+ 
+         if ($existing1 || $existing2) {
+             return redirect()->back()->with('error', 'Notices already uploaded.');
+         }
+ 
+         $request->validate([
+             'notice_first' => 'required|mimes:pdf|max:5120',
+             'notice_second' => 'required|mimes:pdf|max:5120',
+         ]);
+ 
+         // First notice (type 1)
+         if ($request->hasFile('notice_first')) {
+             $noticefirstPath = Helper::saveFile($request->file('notice_first'),'notices');
+ 
+             Notice::create([
+                 'file_case_id' => $id,
+                 'notice_type' => 1,
+                 'notice' => $noticefirstPath,
+                 'notice_date' => now(),
+                 'notice_send_date' => null,
+                 'email_status' => 0,
+                 'whatsapp_status' => 0,
+                 'whatsapp_notice_status' => 0,
+                 'whatsapp_dispatch_datetime' => null,
+             ]);
+         }
+ 
+         // Second notice (type 2)
+         if ($request->hasFile('notice_second')) {
+             $noticesecondPath = Helper::saveFile($request->file('notice_second'),'notices');
+ 
+             Notice::create([
+                 'file_case_id' => $id,
+                 'notice_type' => 2,
+                 'notice' => $noticesecondPath,
+                 'notice_date' => now(),
+                 'notice_send_date' => null,
+                 'email_status' => 0,
+                 'whatsapp_status' => 0,
+                 'whatsapp_notice_status' => 0,
+                 'whatsapp_dispatch_datetime' => null,
+             ]);
+         }
+ 
+         return redirect()->back()->with('success', 'Both notices uploaded successfully.');
+     }
+
+     
     public function delete(Request $request): JsonResponse
     {
         return Helper::deleteRecord(new FileCase, $request->id);

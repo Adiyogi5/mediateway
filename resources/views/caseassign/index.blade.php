@@ -47,10 +47,12 @@
                             <th>#</th>
                             <th>User Type</th>
                             <th>Case Type</th>
-                            <th>Claimant Name</th>
-                            <th>Respondent Name</th>
+                            <th>Case No.</th>
+                            <th>Loan No.</th>
                             <th>Status</th>
-                            <th>Assigned Status</th>
+                            <th>Send To </br>CaseManager</th>
+                            <th>Receive To </br>CaseManager</th>
+                            <th>Assigned </br>Status</th>
                             <th>Created Date</th>
                             <th width="100px">Action</th>
                         </tr>
@@ -87,9 +89,11 @@
                     },
                     { data: 'user_type', name: 'user_type' },
                     { data: 'case_type', name: 'case_type' },
-                    { data: 'claimant_first_name', name: 'claimant_first_name' },
-                    { data: 'respondent_first_name', name: 'respondent_first_name' },
+                    { data: 'case_number', name: 'case_number' },
+                    { data: 'loan_number', name: 'loan_number' },
                     { data: 'status', name: 'status' },
+                    { data: 'send_status', name: 'send_status', orderable: false, searchable: false },
+                    { data: 'receive_status', name: 'receive_status', orderable: false, searchable: false },
                     { data: 'assigned_status', name: 'assigned_status' },
                     { data: 'created_at', name: 'created_at' },
                     { data: 'action', name: 'action', orderable: false, searchable: false }

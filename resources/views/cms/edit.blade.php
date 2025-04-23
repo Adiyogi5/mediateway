@@ -48,7 +48,7 @@
                 @enderror
             </div>
 
-            <div class="col-lg-6 mt-2">
+            {{-- <div class="col-lg-6 mt-2">
                 <label class="form-label" for="image">Image</label>
                 <div class="img-group mb-2">
                     <img class="" src="{{ asset('storage/' . $cms['image']) }}" alt="">
@@ -59,7 +59,7 @@
                     <strong>{{ $message }}</strong>
                 </span>
                 @enderror
-            </div>
+            </div> --}}
             <div class="col-lg-12 mt-2">
                 <label class="form-label" for="description">Description </label>
                 <textarea class="form-control" id="description" name="description">{{ $cms['description'] }}</textarea>

@@ -32,24 +32,26 @@ class FrontController extends Controller
 
     // ############ Show CMS ###########
     public function showCms(Request $request, $slug)
-{
-    $cmsPages = [
-        'about-us' => ['id' => 1, 'title' => 'About Us', 'view' => 'front.about-us'],
-        'privacy-policy' => ['id' => 2, 'title' => 'Privacy Policy', 'view' => 'front.privacy-policy'],
-        'terms-conditions' => ['id' => 3, 'title' => 'Terms & Conditions', 'view' => 'front.terms-conditions'],
-        'rules' => ['id' => 4, 'title' => 'Rules', 'view' => 'front.rules'],
-        'why-choose' => ['id' => 5, 'title' => 'Why Choose Us', 'view' => 'front.why-choose'],
-    ];
+    {
+        $cmsPages = [
+            'about-us' => ['id' => 1, 'title' => 'About Us', 'view' => 'front.about-us'],
+            'privacy-policy' => ['id' => 2, 'title' => 'Privacy Policy', 'view' => 'front.privacy-policy'],
+            'terms-conditions' => ['id' => 3, 'title' => 'Terms & Conditions', 'view' => 'front.terms-conditions'],
+            'rules' => ['id' => 4, 'title' => 'Rules', 'view' => 'front.rules'],
+            'why-choose' => ['id' => 5, 'title' => 'Why Choose Us', 'view' => 'front.why-choose'],
+            'return-cancel' => ['id' => 6, 'title' => 'Retun and Cancel', 'view' => 'front.return-cancel'],
+            'shipping-delivery' => ['id' => 7, 'title' => 'Shipping and Delivery', 'view' => 'front.shipping-delivery'],
+        ];
 
-    if (!array_key_exists($slug, $cmsPages)) {
-        abort(404);
+        if (!array_key_exists($slug, $cmsPages)) {
+            abort(404);
+        }
+
+        $page = $cmsPages[$slug];
+        $content = Cms::find($page['id']);
+
+        return view($page['view'], compact('content'))->with('title', $page['title']);
     }
-
-    $page = $cmsPages[$slug];
-    $content = Cms::find($page['id']);
-
-    return view($page['view'], compact('content'))->with('title', $page['title']);
-}
 
 
     // ############ Call BAck Request Form ###########

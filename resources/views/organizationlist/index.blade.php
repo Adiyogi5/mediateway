@@ -70,6 +70,70 @@
                                     <option value="0">In-Active</option>
                                 </select>
                             </div>
+                            
+                            <div class="col-12 text-center justify-content-center">
+                                <h5 class="border-top mt-2 pt-2">Notice Send Timeline</h5>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_1">Notice 1</label>
+                                <input class="form-control" id="notice_1" placeholder="notice_1" name="notice_1" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_1a">Notice 1A</label>
+                                <input class="form-control" id="notice_1a" placeholder="notice_1a" name="notice_1a" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_1b">Notice 1B</label>
+                                <input class="form-control" id="notice_1b" placeholder="notice_1b" name="notice_1b" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_2b">Notice 2B</label>
+                                <input class="form-control" id="notice_2b" placeholder="notice_2b" name="notice_2b" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_3a">Notice 3A</label>
+                                <input class="form-control" id="notice_3a" placeholder="notice_3a" name="notice_3a" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_3b">Notice 3B</label>
+                                <input class="form-control" id="notice_3b" placeholder="notice_3b" name="notice_3b" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_3c">Notice 3C</label>
+                                <input class="form-control" id="notice_3c" placeholder="notice_3c" name="notice_3c" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_3d">Notice 3D</label>
+                                <input class="form-control" id="notice_3d" placeholder="notice_3d" name="notice_3d" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_4a">Notice 4A</label>
+                                <input class="form-control" id="notice_4a" placeholder="notice_4a" name="notice_4a" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_5a">Notice 5A</label>
+                                <input class="form-control" id="notice_5a" placeholder="notice_5a" name="notice_5a" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_second_hearing">Notice Second Hearing</label>
+                                <input class="form-control" id="notice_second_hearing" placeholder="notice_second_hearing" name="notice_second_hearing" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_final_hearing">Notice Final Hearing</label>
+                                <input class="form-control" id="notice_final_hearing" placeholder="notice_final_hearing" name="notice_final_hearing" type="text"
+                                    value="" />
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -112,6 +176,70 @@
                                     <option value="0">In-Active</option>
                                 </select>
                             </div>
+                            
+                            <div class="col-12 text-center justify-content-center">
+                                <h5 class="border-top mt-2 pt-2">Notice Send Timeline</h5>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_1">Notice 1</label>
+                                <input class="form-control" id="notice_1" placeholder="notice_1" name="notice_1" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_1a">Notice 1A</label>
+                                <input class="form-control" id="notice_1a" placeholder="notice_1a" name="notice_1a" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_1b">Notice 1B</label>
+                                <input class="form-control" id="notice_1b" placeholder="notice_1b" name="notice_1b" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_2b">Notice 2B</label>
+                                <input class="form-control" id="notice_2b" placeholder="notice_2b" name="notice_2b" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_3a">Notice 3A</label>
+                                <input class="form-control" id="notice_3a" placeholder="notice_3a" name="notice_3a" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_3b">Notice 3B</label>
+                                <input class="form-control" id="notice_3b" placeholder="notice_3b" name="notice_3b" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_3c">Notice 3C</label>
+                                <input class="form-control" id="notice_3c" placeholder="notice_3c" name="notice_3c" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_3d">Notice 3D</label>
+                                <input class="form-control" id="notice_3d" placeholder="notice_3d" name="notice_3d" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_4a">Notice 4A</label>
+                                <input class="form-control" id="notice_4a" placeholder="notice_4a" name="notice_4a" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_5a">Notice 5A</label>
+                                <input class="form-control" id="notice_5a" placeholder="notice_5a" name="notice_5a" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_second_hearing">Notice Second Hearing</label>
+                                <input class="form-control" id="notice_second_hearing" placeholder="notice_second_hearing" name="notice_second_hearing" type="text"
+                                    value="" />
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label" for="notice_final_hearing">Notice Final Hearing</label>
+                                <input class="form-control" id="notice_final_hearing" placeholder="notice_final_hearing" name="notice_final_hearing" type="text"
+                                    value="" />
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -128,7 +256,6 @@
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script type="text/javascript">
         $(function() {
-
             var base_url = "{{ asset('storage') }}/";
             var table = $('.table-datatable').DataTable({
                 ajax: "{{ request()->url() }}",
@@ -137,7 +264,7 @@
                 ],
                 columns: [
                     { data: 'name', name: 'name' },
-                    { data: 'code', name: 'code' }, // <-- missing in your code
+                    { data: 'code', name: 'code' }, 
                     { data: 'created_at', name: 'created_at' },
                     { data: 'status', name: 'status' },
                     { data: 'action', name: 'action', orderable: false, searchable: false }
@@ -159,14 +286,34 @@
                     code: {
                         required: true,
                     },
+                    notice_1: { required: true },
+                    notice_1a: { required: true },
+                    notice_1b: { required: true },
+                    notice_2b: { required: true },
+                    notice_3a: { required: true },
+                    notice_3b: { required: true },
+                    notice_3c: { required: true },
+                    notice_3d: { required: true },
+                    notice_4a: { required: true },
+                    notice_5a: { required: true },
+                    notice_second_hearing: { required: true },
+                    notice_final_hearing: { required: true },
                 },
                 messages: {
-                    name: {
-                        required: "Please enter name",
-                    },
-                    code: {
-                        required: "Please enter code",
-                    },
+                    name: { required: "Please enter organization name" },
+                    code: { required: "Please enter organization code" },
+                    notice_1: { required: "Please enter notice 1 timeline" },
+                    notice_1a: { required: "Please enter notice 1A timeline" },
+                    notice_1b: { required: "Please enter notice 1B timeline" },
+                    notice_2b: { required: "Please enter notice 2B timeline" },
+                    notice_3a: { required: "Please enter notice 3A timeline" },
+                    notice_3b: { required: "Please enter notice 3B timeline" },
+                    notice_3c: { required: "Please enter notice 3C timeline" },
+                    notice_3d: { required: "Please enter notice 3D timeline" },
+                    notice_4a: { required: "Please enter notice 4A timeline" },
+                    notice_5a: { required: "Please enter notice 5A timeline" },
+                    notice_second_hearing: { required: "Please enter notice Second hearing timeline" },
+                    notice_final_hearing: { required: "Please enter notice final hearing timeline" },
                 },
                 submitHandler: function(form) {
                     var formData = new FormData(form);
@@ -193,13 +340,24 @@
 
             $(document).on('click', ".edit", function () {
                 var data = $(this).data('all');
-
                 // Set values in the edit form
                 $('#editForm [name="id"]').val(data.id);
                 $('#editForm [name="name"]').val(data.name);
                 $('#editForm [name="code"]').val(data.code);
                 $('#editForm [name="status"]').val(data.status);
-
+                 // Notice timeline fields
+                $('#editForm [name="notice_1"]').val(data.notice_1);
+                $('#editForm [name="notice_1a"]').val(data.notice_1a);
+                $('#editForm [name="notice_1b"]').val(data.notice_1b);
+                $('#editForm [name="notice_2b"]').val(data.notice_2b);
+                $('#editForm [name="notice_3a"]').val(data.notice_3a);
+                $('#editForm [name="notice_3b"]').val(data.notice_3b);
+                $('#editForm [name="notice_3c"]').val(data.notice_3c);
+                $('#editForm [name="notice_3d"]').val(data.notice_3d);
+                $('#editForm [name="notice_4a"]').val(data.notice_4a);
+                $('#editForm [name="notice_5a"]').val(data.notice_5a);
+                $('#editForm [name="notice_second_hearing"]').val(data.notice_second_hearing);
+                $('#editForm [name="notice_final_hearing"]').val(data.notice_final_hearing);
                 // Show the modal
                 $('#editModal').modal('show');
             });
@@ -218,14 +376,34 @@
                     status: {
                         required: true,
                     },
+                    notice_1: { required: true },
+                    notice_1a: { required: true },
+                    notice_1b: { required: true },
+                    notice_2b: { required: true },
+                    notice_3a: { required: true },
+                    notice_3b: { required: true },
+                    notice_3c: { required: true },
+                    notice_3d: { required: true },
+                    notice_4a: { required: true },
+                    notice_5a: { required: true },
+                    notice_second_hearing: { required: true },
+                    notice_final_hearing: { required: true },
                 },
                 messages: {
-                    name: {
-                        required: "Please enter name",
-                    },
-                    code: {
-                        required: "Please enter code",
-                    },
+                    name: { required: "Please enter organization name" },
+                    code: { required: "Please enter organization code" },
+                    notice_1: { required: "Please enter notice 1 timeline" },
+                    notice_1a: { required: "Please enter notice 1A timeline" },
+                    notice_1b: { required: "Please enter notice 1B timeline" },
+                    notice_2b: { required: "Please enter notice 2B timeline" },
+                    notice_3a: { required: "Please enter notice 3A timeline" },
+                    notice_3b: { required: "Please enter notice 3B timeline" },
+                    notice_3c: { required: "Please enter notice 3C timeline" },
+                    notice_3d: { required: "Please enter notice 3D timeline" },
+                    notice_4a: { required: "Please enter notice 4A timeline" },
+                    notice_5a: { required: "Please enter notice 5A timeline" },
+                    notice_second_hearing: { required: "Please enter notice Second hearing timeline" },
+                    notice_final_hearing: { required: "Please enter notice final hearing timeline" },
                 },
                 submitHandler: function(form) {
                     var formData = new FormData(form);

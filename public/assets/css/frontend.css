@@ -702,6 +702,7 @@ body {
     line-height: 26px;
     font-weight: 500;
     text-transform: capitalize;
+    text-align: justify;
     margin-bottom: 6px;
 }
 .testimonial-slider .stars {
@@ -1337,6 +1338,17 @@ div.dataTables_wrapper div.dataTables_info {
     font-family: "Inter";
     font-size: 13px !important;
     font-weight: 400;
+}
+
+.select2-container--default .select2-selection--multiple {
+    background-color: white;
+    border: 1px solid #dfdfdf !important;
+    border-radius: 4px;
+    cursor: text;
+    padding-bottom: 5px;
+    padding-right: 5px;
+    position: relative;
+    min-height: 36px !important;
 }
 
 /* ############ Call Back ############## */

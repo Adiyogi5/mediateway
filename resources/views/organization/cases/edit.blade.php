@@ -30,6 +30,64 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <form class="row" id="uploadnoticeView" method="POST" action="{{ route('organization.cases.filecaseview.store', $caseviewData['id']) }}" enctype="multipart/form-data">
+                            @csrf
+                        
+                            <div class="col-md-6 col-12 mb-3">
+                                <label class="form-label">First Notice PDF</label><br>
+                                @if(isset($noticeType1))
+                                <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                    href="{{ asset('storage/' . $noticeType1->notice) }}" target="_blank">
+                                    <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                        alt="PDF File" />
+                                    View Second Notice PDF
+                                </a>
+                                @else
+                                <label for="notice_first" class="custom-file-upload">
+                                    <span style="font-weight: 500;" id="file-label-notice_first">
+                                        <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
+                                        Attach PDF
+                                    </span>
+                                </label>
+                                <input type="file" id="notice_first" name="notice_first" accept="application/pdf" hidden/>
+                                    @error('notice_first')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                @endif
+                            </div>
+                        
+                            <div class="col-md-6 col-12 mb-3">
+                                <label class="form-label">Second Notice PDF</label><br>
+                                @if(isset($noticeType2))
+                                    <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                                    href="{{ asset('storage/' . $noticeType2->notice) }}" target="_blank">
+                                                    <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                                        alt="PDF File" />
+                                                    View Second Notice PDF
+                                                </a>
+                                @else
+                                <label for="notice_second" class="custom-file-upload">
+                                    <span style="font-weight: 500;" id="file-label-notice_second">
+                                        <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
+                                        Attach PDF
+                                    </span>
+                                </label>
+                                <input type="file" id="notice_second" name="notice_second" accept="application/pdf" hidden/>
+                                    @error('notice_second')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                @endif
+                            </div>
+                        
+                            @if(!isset($noticeType1) || !isset($noticeType2))
+                                <div class="col-md-6 col-12 mb-3">
+                                <button type="submit" class="btn btn-md btn-primary py-1 px-3">Save Notices</button>
+                                </div>
+                            @endif
+                        </form>         
+
+                        <hr>
+                        
                         <form class="row" id="editcaseview" method="POST"
                             action="{{ route('organization.cases.filecaseview.edit', $caseviewData['id']) }}"
                             enctype='multipart/form-data'>
@@ -405,8 +463,6 @@
                                 </div>
                             @endforeach
 
-
-
                             {{-- <div class="col-lg-6 mt-2">
                                 <label class="form-label" for="status">Status</label>
                                 <select name="status" class="form-select" id="status">
@@ -454,6 +510,8 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const documents = [
+                "notice_first",
+                "notice_second",
                 "application_form",
                 "foreclosure_statement",
                 "loan_agreement",
@@ -468,6 +526,37 @@
                     document.getElementById("file-label-" + id).textContent = fileName;
                 });
             });
+        });
+    </script>
+    <script type="text/javascript">
+       $("#uploadnoticeView").validate({
+            errorClass: "text-danger fs-custom",
+            errorElement: "span",
+            ignore: [], // ensure hidden fields aren't skipped
+            rules: {
+                @if(!isset($noticeType1))
+                notice_first: {
+                    required: true
+                },
+                @endif
+                @if(!isset($noticeType2))
+                notice_second: {
+                    required: true
+                },
+                @endif
+            },
+            messages: {
+                @if(!isset($noticeType1))
+                notice_first: {
+                    required: "Please upload First Notice PDF"
+                },
+                @endif
+                @if(!isset($noticeType2))
+                notice_second: {
+                    required: "Please upload Second Notice PDF"
+                },
+                @endif
+            },
         });
     </script>
     {{-- <script>

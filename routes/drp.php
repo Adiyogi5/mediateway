@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\Drp\AwardController;
+use App\Http\Controllers\Drp\CaseAssignController;
 use App\Http\Controllers\Drp\CaseBulkUpdateController;
 use App\Http\Controllers\Drp\CourtRoomController;
 use App\Http\Controllers\Drp\ProfileController;
 use App\Http\Controllers\Drp\HomeController;
 use App\Http\Controllers\Drp\MeetingRoomController;
 use App\Http\Controllers\Drp\OrderSheetController;
+use App\Http\Controllers\Drp\SendNoticeController;
 use App\Http\Controllers\Drp\SettlementLetterController;
 use App\Routes\Profile;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +73,21 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::get('getsettlementletterVariables', 'getsettlementletterVariables')->name('getsettlementletterVariables');
     });
 
+    // ----------------------- Case Manager - Send Notices Routes ---------------------------------
+    Route::controller(SendNoticeController::class)->group(function () {
+        Route::get('noticelist', 'noticelist')->name('notices.noticelist');
+    });
+
+     // ----------------------- CaseAssign Routes ----------------------------------------------------
+     Route::controller(CaseAssignController::class)->group(function () {
+        Route::get('caseassign', 'index')->name('caseassign');
+        Route::get('caseassign/{id}', 'assign')->name('caseassign.assign');
+        Route::put('caseassign/assigndetail/{id}', 'updateassigndetail')->name('caseassign.updateassigndetail');
+        Route::delete('caseassign', 'delete')->name('caseassign.delete');
+        Route::get('caseassign/{id}/edit', 'edit')->name('caseassign.edit');
+        Route::put('caseassign/casedetail/{id}', 'updateCaseDetail')->name('caseassign.updatecasedetail');
+    });
+
     // ----------------------- Case Manager - Case Bulk Update Routes ---------------------------------
     Route::controller(CaseBulkUpdateController::class)->group(function () {
         Route::get('casebulkupdate', 'casebulkupdate')->name('cases.casebulkupdate');
@@ -82,6 +99,7 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
      Route::controller(CourtRoomController::class)->group(function () {
         Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
         Route::get('livecourtroom', 'livecourtroom')->name('courtroom.livecourtroom');
+        Route::post('/courtroom/save-notice', 'saveNotice')->name('courtroom.savenotice');
 
     });
 

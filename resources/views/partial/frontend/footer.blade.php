@@ -39,6 +39,16 @@
                                     </a>
                                 </li>
                                 <li class="nav-item-footer mb-2">
+                                    <a href="{{ route('front.show-cms', 'return-cancel') }}" class="nav-link-footer">
+                                        Retun  and Cancel
+                                    </a>
+                                </li>
+                                <li class="nav-item-footer mb-2">
+                                    <a href="{{ route('front.show-cms', 'shipping-delivery') }}" class="nav-link-footer">
+                                        Shipping and Delivery
+                                    </a>
+                                </li>
+                                <li class="nav-item-footer mb-2">
                                     <a href="{{ route('front.show-cms', 'rules') }}" class="nav-link-footer">
                                         Rules
                                     </a>
@@ -189,12 +199,6 @@
 <script src="{{ asset('assets/js/slick.min.js') }}"></script>
 <script src="{{ asset('assets/js/custom-methods.js') }}"></script>
 <script src="{{ asset('assets/js/custom.js') }}"></script>
-
-<script src="{{ asset('assets/js/countfect.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/select2/select2.min.js') }}"></script>
-<script src="{{ asset('assets/js/chili-1.7.pack.js') }}"></script>
-<script src="{{ asset('assets/js/jquery.cycle.all.js') }}"></script>
-<script src="{{ asset('assets/js/jquery.easing.1.3.js') }}"></script>
 
 @yield('js')
 @include('partial.toastr')

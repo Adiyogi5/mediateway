@@ -17,4 +17,9 @@ class OrganizationList extends Model
         'status',
     ];
 
+    public function noticeTimeline()
+    {
+        return $this->hasOne(OrganizationNoticeTimeline::class, 'organization_list_id');
+    }
+
 }

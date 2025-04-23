@@ -69,7 +69,8 @@ class TestimonialController extends Controller
             'name'          => ['required', 'string', 'max:50'],
             'rating'        => ['required'],
             'status'        => ['required', 'integer'],
-            'description'   => ['required', 'string', 'max:500'],
+            'description'   => ['required', 'string', 'max:1000'],
+            'designation'   => ['required', 'string', 'max:200'],
             'image'         => ['image', 'mimes:jpg,png,jpeg', 'max:2048']
         ]);
 
@@ -99,7 +100,8 @@ class TestimonialController extends Controller
             'name'          => ['required', 'string', 'max:50'],
             'rating'        => ['required'],
             'status'        => ['required', 'integer'],
-            'description'   => ['required', 'string', 'max:500'],
+            'description'   => ['required', 'string', 'max:1000'],
+            'designation'   => ['required', 'string', 'max:200'],
             'image'         => ['image', 'mimes:jpg,png,jpeg', 'max:2048']
         ]);
 

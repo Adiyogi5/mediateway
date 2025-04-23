@@ -23,7 +23,8 @@
     }
 @endphp
 
-<div class="offcanvas-header bg-dark px-xl-3 px-lg-2 px-1 text-lg-start text-md-center text-start justify-content-lg-start justify-content-md-center justify-content-start py-2 rounded">
+<div
+    class="offcanvas-header bg-dark px-xl-3 px-lg-2 px-1 text-lg-start text-md-center text-start justify-content-lg-start justify-content-md-center justify-content-start py-2 rounded">
     {{-- <img src="{{ basename(auth($currentGuard)->user()->image) == 'img-not-found.png' ? asset('assets/img/dummy-user.png') : asset('storage/' . auth($currentGuard)->user()->image) }}" class="d-block profile-img" alt="..."> --}}
     <img src="{{ $profileImage }}" class="d-block profile-img mx-auto" alt="User Profile">
     <div class="w-100">
@@ -128,16 +129,36 @@
                     </li>
                 @endif
 
-                 {{-- ################ DRP TYPE = 3 Case Manager ################# --}}
-                {{-- ############################# BULK UPDATE CASES ############################### --}}
+                {{-- #################### DRP TYPE = 3 Case Manager ################# --}}
                 @if (auth('drp')->check() && auth('drp')->user()->drp_type == 3)
+                    {{-- ############################# ASSIGN CASE ############################### --}}
+                    <li
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.caseassign') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.caseassign') ? 'text-white bg-lime' : '' }}"
+                            aria-current="page"
+                            style="{{ request()->routeIs($currentGuard . '.caseassign') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'caseassign') }}"><i
+                                class="fa-solid fa-bookmark faa-profile"></i> Cases Assign</a>
+                    </li>
+
+                    {{-- ############################# SEND NOTICES ############################### --}}
+                    <li
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.notices.noticelist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.notices.noticelist') ? 'text-white bg-lime' : '' }}"
+                            aria-current="page"
+                            style="{{ request()->routeIs($currentGuard . '.notices.noticelist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'notices.noticelist') }}"><i
+                                class="fa-solid fa-paper-plane faa-profile"></i> Send Notices</a>
+                    </li>
+
+                    {{-- ########################### BULK UPDATE CASES ############################ --}}
                     <li
                         class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.cases.casebulkupdate') ? 'text-white bg-lime' : '' }}">
                         <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.cases.casebulkupdate') ? 'text-white bg-lime' : '' }}"
                             aria-current="page"
                             style="{{ request()->routeIs($currentGuard . '.cases.casebulkupdate') ? 'color:white !important;;' : '' }}"
                             href="{{ route($currentGuard . '.' . 'cases.casebulkupdate') }}"><i
-                                class="fa-solid fa-upload faa-profile"></i> Case Order Sheets</a>
+                                class="fa-solid fa-upload faa-profile"></i> Case Bulk Update</a>
                     </li>
                 @endif
 
