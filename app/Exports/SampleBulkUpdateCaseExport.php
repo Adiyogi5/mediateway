@@ -45,12 +45,15 @@ class SampleBulkUpdateCaseExport implements FromArray, WithHeadings
             // FileCaseDetail 
             'product',
             'asset_description',
+            'sanction_letter_date',
+            'rate_of_intrest',
             'registration_no',
             'chassis_no',
             'engin_no',
             'finance_amount',
             'finance_amount_in_words',
             'emi_amt',
+            'emi_due_date',
             'tenure',
             'foreclosure_amount_date',
             'foreclosure_amount',
@@ -62,6 +65,9 @@ class SampleBulkUpdateCaseExport implements FromArray, WithHeadings
             'claim_signatory_authorised_officer_mail_id',
             'receiver_name',
             'receiver_designation',
+            'auction_date',
+            'auction_amount',
+            'auction_amount_in_words',
 
             // Guarantor fields 
             'guarantor_1_name',
@@ -122,11 +128,11 @@ class SampleBulkUpdateCaseExport implements FromArray, WithHeadings
                 '5000', 'Case regarding loan default',
 
                 // FileCaseDetail sample values
-                'Car Loan', 'Hyundai i20', 'RJ19AB1234', 'CH123456', 'EN654321',
-                '500000', 'Five Lakh Rupees Only', '12000', '48',
+                'Car Loan', 'Hyundai i20', '2025-03-15', '10', 'RJ19AB1234', 'CH123456', 'EN654321',
+                '500000', 'Five Lakh Rupees Only', '12000', '2025-03-15', '48',
                 '2025-03-15', '300000', 'Three Lakh Rupees Only',
                 'Anil Mehta', 'Raj Mehta', 'Manager', '9988776655', 'anil@example.com',
-                'Rakesh Sharma', 'Legal Head',
+                'Rakesh Sharma', 'Legal Head', '2025-03-15', '300000', 'Three Lakh Rupees Only',
 
                 // Guarantors 1 to 7 (only sample for first 2)
                 'Rahul Sharma', '9998887771', 'rahul@example.com', 'Vijay Sharma', 'Bangalore, India',

@@ -15,12 +15,15 @@ class FileCaseDetail extends Model
         'file_case_id',
         'product',
         'asset_description',
+        'sanction_letter_date',
+        'rate_of_intrest',
         'registration_no',
         'chassis_no',
         'engin_no',
         'finance_amount',
         'finance_amount_in_words',
         'emi_amt',
+        'emi_due_date',
         'tenure',
         'foreclosure_amount_date',
         'foreclosure_amount',
@@ -32,6 +35,9 @@ class FileCaseDetail extends Model
         'claim_signatory_authorised_officer_mail_id',
         'receiver_name',
         'receiver_designation',
+        'auction_date',
+        'auction_amount',
+        'auction_amount_in_words',
     ];
 
 

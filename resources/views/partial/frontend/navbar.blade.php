@@ -180,7 +180,15 @@
                                     <a class="nav-link nav-title {{ request()->route()->getName() === 'front.show-cms' && request()->route('cms') === 'about-us' ? 'active-nav' : '' }}"
                                         href="{{ route('front.show-cms', 'about-us') }}">About us</a>
                                 </li>
-                                <li class="nav-item dropdown my-auto">
+                                <li class="nav-item my-auto">
+                                    <a class="nav-link nav-title {{ request()->routeIs('front.news') ? 'active-nav' : '' }}"
+                                        href="{{ route('front.news') }}">News Room</a>
+                                </li>
+                                <li class="nav-item my-auto">
+                                    <a class="nav-link nav-title {{ request()->routeIs('front.blogs') ? 'active-nav' : '' }}"
+                                        href="{{ route('front.blogs') }}">Blogs</a>
+                                </li>
+                                {{-- <li class="nav-item dropdown my-auto">
                                     <a class="nav-link nav-title dropdown-toggle {{ request()->routeIs('front.home') ? 'active-nav' : '' }}"
                                         href="#" id="serviceDropdown" role="button">
                                         Service
@@ -195,9 +203,6 @@
                                     <ul class="dropdown-menu py-1" aria-labelledby="serviceDropdown">
                                         <li class="border-bottom"><a class="dropdown-item" href="">Web
                                                 Development</a></li>
-                                        <li class="border-bottom"><a class="dropdown-item" href="">App
-                                                Development</a></li>
-                                        <li><a class="dropdown-item" href="">Digital Marketing</a></li>
                                     </ul>
                                 </li>
                                 <li class="nav-item dropdown me-xl-5 me-xl-4 me-md-3 me-auto my-auto">
@@ -215,11 +220,8 @@
                                     <ul class="dropdown-menu py-1" aria-labelledby="serviceDropdown">
                                         <li class="border-bottom"><a class="dropdown-item" href="">Web
                                                 Development</a></li>
-                                        <li class="border-bottom"><a class="dropdown-item" href="">App
-                                                Development</a></li>
-                                        <li><a class="dropdown-item" href="">Digital Marketing</a></li>
                                     </ul>
-                                </li>
+                                </li> --}}
                                 {{-- <li class="nav-item">
                                     <a class="nav-link nav-title {{ request()->route('slug') === 'about-us' ? 'active-nav' : '' }}" href="{{ route('front.cms', ['slug' => 'about-us']) }}">Product</a>
                                 </li> --}}

@@ -8,6 +8,11 @@
                             <ul class="nav flex-column footer-list">
                                 <h3 class="footer-title">MEDIA CENTER</h3>
                                 <li class="nav-item-footer mb-2">
+                                    <a href="{{ route('front.show-cms', 'about-us') }}" class="nav-link-footer ">
+                                        ABOUT US
+                                    </a>
+                                </li>
+                                <li class="nav-item-footer mb-2">
                                     <a href="{{ route('front.news') }}" class="nav-link-footer ">
                                         NEWSROOM
                                     </a>
@@ -102,32 +107,32 @@
                     <ul class="nav flex-column footer-list">
                         <h3 class="footer-title">JOIN US</h3>
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('front.show-cms', 'terms-condition') }}" class="nav-link-footer">
+                            <a href="{{ route('register') }}" class="nav-link-footer">
                                 ADR PRECTITIONERS
                             </a>
                         </li>
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('front.show-cms', 'privacy-policy') }}" class="nav-link-footer">
+                            <a href="{{ route('register') }}" class="nav-link-footer">
                                 ADVOCATES
                             </a>
                         </li>
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('front.home') }}" class="nav-link-footer">
+                            <a href="{{ route('register') }}" class="nav-link-footer">
                                 MEDIATORES
                             </a>
                         </li>
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('front.home') }}" class="nav-link-footer">
+                            <a href="{{ route('register') }}" class="nav-link-footer">
                                 CONCILIATORES
                             </a>
                         </li>
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('front.home') }}" class="nav-link-footer">
+                            <a href="{{ route('register') }}" class="nav-link-footer">
                                 ARBITRATORS
                             </a>
                         </li>
                         <li class="nav-item-footer mb-2">
-                            <a href="{{ route('front.home') }}" class="nav-link-footer">
+                            <a href="{{ route('register') }}" class="nav-link-footer">
                                 CASE MANAGERS
                             </a>
                         </li>
