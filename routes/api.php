@@ -21,6 +21,22 @@ Route::get('/', function () {
     ]);
 });
 
+
+// Send All Types of Notices 
+Route::get('/bulk_send_2b_notice', function () {
+    Artisan::call('bulk:send-2b-notice');   
+    return '<h1>update bulk send 2b notice</h1>';
+});
+Route::get('/bulk_send_3a_notice', function () {
+    Artisan::call('bulk:send-3a-notice');   
+    return '<h1>update bulk send 3a notice</h1>';
+});
+Route::get('/bulk_send_3b_notice', function () {
+    Artisan::call('bulk:send-3b-notice');   
+    return '<h1>update bulk send 3b notice</h1>';
+});
+
+
 Route::get('clear-all', function () {
     Artisan::call('cache:clear');
     Artisan::call('config:clear');

@@ -56,6 +56,16 @@ class Organization extends Authenticatable
         ];
     }
 
+    public function parent()
+    {
+        return $this->belongsTo(Organization::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Organization::class, 'parent_id');
+    }
+
     public function organizationDetail()
     {
         return $this->hasOne(organizationDetail::class, 'organization_id');

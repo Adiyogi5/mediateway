@@ -34,13 +34,13 @@
                             @csrf
                         
                             <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label">First Notice PDF</label><br>
+                                <label class="form-label">1. Notice - 1</label><br>
                                 @if(isset($noticeType1))
                                 <a class="text-decoration-none text-secondary" style="font-size: 13px"
                                     href="{{ asset('storage/' . $noticeType1->notice) }}" target="_blank">
                                     <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
                                         alt="PDF File" />
-                                    View Second Notice PDF
+                                    View Notice PDF
                                 </a>
                                 @else
                                 <label for="notice_first" class="custom-file-upload">
@@ -57,13 +57,13 @@
                             </div>
                         
                             <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label">Second Notice PDF</label><br>
+                                <label class="form-label">2. Notice - 1A</label><br>
                                 @if(isset($noticeType2))
                                     <a class="text-decoration-none text-secondary" style="font-size: 13px"
                                                     href="{{ asset('storage/' . $noticeType2->notice) }}" target="_blank">
                                                     <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
                                                         alt="PDF File" />
-                                                    View Second Notice PDF
+                                                    View Notice PDF
                                                 </a>
                                 @else
                                 <label for="notice_second" class="custom-file-upload">
@@ -78,9 +78,32 @@
                                     @enderror
                                 @endif
                             </div>
+
+                            <div class="col-md-6 col-12 mb-3">
+                                <label class="form-label">3. Notice - 1B</label><br>
+                                @if(isset($noticeType3))
+                                    <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                                    href="{{ asset('storage/' . $noticeType3->notice) }}" target="_blank">
+                                                    <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                                        alt="PDF File" />
+                                                    View Notice PDF
+                                                </a>
+                                @else
+                                <label for="notice_third" class="custom-file-upload">
+                                    <span style="font-weight: 500;" id="file-label-notice_third">
+                                        <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
+                                        Attach PDF
+                                    </span>
+                                </label>
+                                <input type="file" id="notice_third" name="notice_third" accept="application/pdf" hidden/>
+                                    @error('notice_third')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                @endif
+                            </div>
                         
-                            @if(!isset($noticeType1) || !isset($noticeType2))
-                                <div class="col-md-6 col-12 mb-3">
+                            @if(!isset($noticeType1) || !isset($noticeType2) || !isset($noticeType3))
+                                <div class="col-12 mb-3">
                                 <button type="submit" class="btn btn-md btn-primary py-1 px-3">Save Notices</button>
                                 </div>
                             @endif
@@ -512,6 +535,7 @@
             const documents = [
                 "notice_first",
                 "notice_second",
+                "notice_third",
                 "application_form",
                 "foreclosure_statement",
                 "loan_agreement",
@@ -544,6 +568,11 @@
                     required: true
                 },
                 @endif
+                @if(!isset($noticeType3))
+                notice_third: {
+                    required: true
+                },
+                @endif
             },
             messages: {
                 @if(!isset($noticeType1))
@@ -553,6 +582,11 @@
                 @endif
                 @if(!isset($noticeType2))
                 notice_second: {
+                    required: "Please upload Second Notice PDF"
+                },
+                @endif
+                @if(!isset($noticeType3))
+                notice_third: {
                     required: "Please upload Second Notice PDF"
                 },
                 @endif

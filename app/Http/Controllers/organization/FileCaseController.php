@@ -95,6 +95,7 @@ class FileCaseController extends Controller
         // Fetch both notices by type
         $noticeType1 = Notice::where('file_case_id', $id)->where('notice_type', 1)->first();
         $noticeType2 = Notice::where('file_case_id', $id)->where('notice_type', 2)->first();
+        $noticeType3 = Notice::where('file_case_id', $id)->where('notice_type', 3)->first();
 
         $caseviewData   = FileCase::Find($id);
         $states = State::all();
@@ -102,7 +103,7 @@ class FileCaseController extends Controller
         if (!$caseviewData) {
             return to_route('organization.cases.filecaseview')->withError('Filed Case Not Found..!!');
         }
-        return view('organization.cases.edit', compact('caseviewData', 'noticeType1', 'noticeType2','title','organization_authData','states'));
+        return view('organization.cases.edit', compact('caseviewData', 'noticeType1', 'noticeType2', 'noticeType3', 'title','organization_authData','states'));
     }
 
     //For Upload Documents By Organization
@@ -229,14 +230,16 @@ class FileCaseController extends Controller
     {
         $existing1 = Notice::where('file_case_id', $id)->where('notice_type', 1)->exists();
         $existing2 = Notice::where('file_case_id', $id)->where('notice_type', 2)->exists();
+        $existing3 = Notice::where('file_case_id', $id)->where('notice_type', 3)->exists();
 
-        if ($existing1 || $existing2) {
+        if ($existing1 || $existing2 || $existing3) {
             return redirect()->back()->with('error', 'Notices already uploaded.');
         }
 
         $request->validate([
             'notice_first' => 'required|mimes:pdf|max:5120',
             'notice_second' => 'required|mimes:pdf|max:5120',
+            'notice_third' => 'required|mimes:pdf|max:5120',
         ]);
 
         // First notice (type 1)
@@ -273,10 +276,25 @@ class FileCaseController extends Controller
             ]);
         }
 
+         // Third notice (type 3)
+         if ($request->hasFile('notice_third')) {
+            $noticesecondPath = Helper::saveFile($request->file('notice_third'),'notices');
+
+            Notice::create([
+                'file_case_id' => $id,
+                'notice_type' => 3,
+                'notice' => $noticesecondPath,
+                'notice_date' => now(),
+                'notice_send_date' => null,
+                'email_status' => 0,
+                'whatsapp_status' => 0,
+                'whatsapp_notice_status' => 0,
+                'whatsapp_dispatch_datetime' => null,
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Both notices uploaded successfully.');
     }
-
-
 
     public function delete(Request $request): JsonResponse
     {

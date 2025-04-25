@@ -14,6 +14,10 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('db:backup')->twiceDaily(6, 18, 3);
+        
+        $schedule->command('bulk:send-2b-notice')->everyOneMinutes();
+        $schedule->command('bulk:send-3a-notice')->everyOneMinutes();
+        $schedule->command('bulk:send-3b-notice')->everyOneMinutes();
     }
 
     /**

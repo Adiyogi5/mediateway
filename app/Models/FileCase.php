@@ -62,6 +62,11 @@ class FileCase extends Model
         return $this->hasOne(FileCaseDetail::class);
     }
 
+    public function notices()
+    {
+        return $this->hasMany(Notice::class, 'file_case_id');
+    }
+
     public function guarantors(): HasOne
     {
         return $this->hasOne(Guarantor::class);
