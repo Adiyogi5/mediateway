@@ -7,6 +7,7 @@ use App\Http\Controllers\BookAppointmentController;
 use App\Http\Controllers\CallBackController;
 use App\Http\Controllers\CaseAssignController;
 use App\Http\Controllers\CaseBulkUpdateController;
+use App\Http\Controllers\CasesAllNoticeListController;
 use App\Routes\Profile;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CmsController;
@@ -127,6 +128,11 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::delete('caseassign', 'delete')->name('caseassign.delete')->middleware('isAllow:111,can_delete');
         Route::get('caseassign/{id}/edit', 'edit')->name('caseassign.edit')->middleware('isAllow:111,can_edit');
         Route::put('caseassign/casedetail/{id}', 'updateCaseDetail')->name('caseassign.updatecasedetail')->middleware('isAllow:111,can_edit');
+    });
+
+    // ----------------------- All Case Notices Routes ----------------------------------------------------
+    Route::controller(CasesAllNoticeListController::class)->group(function () {
+        Route::get('casenoticelist', 'index')->name('allcasenotices.casenoticelist');
     });
 
     // ----------------------- States Routes ----------------------------------------------------

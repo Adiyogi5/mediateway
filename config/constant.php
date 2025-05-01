@@ -14,6 +14,7 @@ return [
         '3'             => 'Mail Setting',
         '8'             => 'Google Recaptcha',
         '9'             => 'Counters',
+        '10'            => 'Razor Pay',
     ],
 
     'claimant_address_type' => [

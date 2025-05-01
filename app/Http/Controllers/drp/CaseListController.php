@@ -1,0 +1,108 @@
+<?php
+
+namespace App\Http\Controllers\Drp;
+
+use App\Helper\Helper;
+use App\Http\Controllers\Controller;
+use App\Models\AssignCase;
+use App\Models\FileCase;
+use App\Models\Notice;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\Config;
+use \Yajra\Datatables\Datatables;
+use Illuminate\Http\JsonResponse;
+
+class CaseListController extends Controller
+{
+
+    public function __construct()
+    {
+        $this->middleware('auth:drp');
+    }
+
+    public function index(Request $request): View | JsonResponse | RedirectResponse
+    {
+        $title = 'All Cases List';
+        $drp = auth('drp')->user();
+
+        if (!$drp) {
+            return to_route('front.home')->withInfo('Please enter your valid details.');
+        }
+        if ($drp->drp_type !== 1) {
+            return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
+        }
+
+        if ($request->ajax()) {
+            $data = FileCase::select('file_cases.id', 'file_cases.case_type', 'file_cases.case_number', 'file_cases.loan_number', 'file_cases.status', 'file_cases.created_at','assign_cases.arbitrator_id','assign_cases.confirm_to_arbitrator')
+                ->join('assign_cases','assign_cases.case_id','=','file_cases.id')
+                ->where('assign_cases.arbitrator_id',$drp->id)
+                ->where('file_cases.status', 1);
+            return Datatables::of($data)
+                ->editColumn('case_type', function ($row) {
+                    return config('constant.case_type')[$row->case_type] ?? 'Unknown';
+                })
+                ->editColumn('created_at', function ($row) {
+                    return $row['created_at']->format('d M, Y');
+                })  
+                ->addColumn('arbitrator_status', function ($row) {
+                    return $row['confirm_to_arbitrator'] == 0
+                        ? '<small class="badge fw-semi-bold rounded-pill badge-danger">Pending</small>'
+                        : '<small class="badge fw-semi-bold rounded-pill badge-success">Approved</small>';
+                })  
+                ->editColumn('status', function ($row) {
+                    return $row['status'] == 1 ? '<small class="badge fw-semi-bold rounded-pill status badge-light-success"> Active</small>' : '<small class="badge fw-semi-bold rounded-pill status badge-light-danger"> Inactive</small>';
+                })
+                ->addColumn('action', function ($row) {
+                    $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
+
+                   // Check if a valid notice exists
+                    $hasNotice = Notice::where('file_case_id', $row->id)
+                        ->where('notice_type', 7)
+                        ->where('email_status', 1)
+                        ->exists();
+                    // Check if case is already approved
+                    $isApproved = AssignCase::where('case_id', $row->id)
+                        ->where('arbitrator_id', auth('drp')->id())
+                        ->where('confirm_to_arbitrator', 1)
+                        ->exists();
+                    if ($hasNotice && !$isApproved) {
+                        $btn .= '<a class="dropdown-item btn-approve-case" href="javascript:void(0)" data-id="' . $row->id . '">Approve Case</a>';
+                    }
+
+                    // $btn .= '<a class="dropdown-item" href="' . route('drp.allcases.viewcasedetail', $row->id) . '">View Case Details</a>';
+                    $btn .= '</div>'; 
+                    return $btn;
+                })
+                ->orderColumn('created_at', function ($query, $order) {
+                    $query->orderBy('created_at', $order);
+                })
+                ->rawColumns(['action', 'status','case_type','arbitrator_status'])
+                ->make(true);
+        }
+        return view('drp.allcases.caselist', compact('drp','title'));
+    }
+
+
+    public function approveCase(Request $request): JsonResponse
+    {
+        $request->validate([
+            'case_id' => 'required|exists:assign_cases,case_id'
+        ]);
+
+        $assign = AssignCase::where('case_id', $request->case_id)
+            ->where('arbitrator_id', auth('drp')->id())
+            ->first();
+
+        if (!$assign) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized or case not found.']);
+        }
+
+        $assign->confirm_to_arbitrator = 1;
+        $assign->save();
+
+        return response()->json(['success' => true, 'message' => 'Case approved successfully.']);
+    }
+
+}

@@ -1,6 +1,24 @@
 @extends('layouts.front')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/summernote/summernote.min.css') }}">
+<style type="text/css">
+    #local-video, #remote-video {
+        width: 100%;
+        height: 400px;
+        border: 1px solid #dfdfdf;
+    }
 
+    #local-video {
+        position: relative;
+        margin: 0 auto;
+        display: block;
+    }
+
+    #remote-video {
+        display: flex;
+        margin: auto;
+        position: relative !important;
+    }
+</style>
 @section('content')
     {{-- ===============Breadcrumb Start============= --}}
     @include('front.includes.profile_header')
@@ -37,7 +55,7 @@
                         <div class="row gy-3">
                             <div class="col-12">
                                 <div class="livemeeting-card">
-                                    <div class="w-100" style="height: 500px"></div>
+                                    <div class="w-100" id="remote-video"></div>
                                 </div>
                             </div>
 
@@ -90,7 +108,6 @@
                                     <div class="livemeeting-card h-100">
                                         <div class="form-group">
                                             <textarea class="form-control" rows="5" id="livemeetingdata" name="livemeetingdata">{{ old('livemeetingdata') }}</textarea>
-
                                             @error('livemeetingdata')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -135,7 +152,9 @@
 @section('js')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>  
-
+<script>
+    var ZegoExpressEngine = require('zego-express-engine-webrtc').ZegoExpressEngine
+</script>
     <script type="text/javascript">
         const allTemplates = {
             ordersheet: @json($orderSheetTemplates),

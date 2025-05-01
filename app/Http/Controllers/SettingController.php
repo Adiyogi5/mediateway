@@ -119,6 +119,13 @@ class SettingController extends Controller
                 ]);
             }
 
+            if ($id == 10) {
+                $request->validate([
+                    'razorpay_key_id'     => 'required|max:100',
+                    'razorpay_secret_key'          => 'required|max:100',
+                ]);
+            }
+
             $data = $request->except(['site_settings', 'permission', '_token']);
             if ($request->file('favicon')) {
                 Helper::deleteFile($request->site_settings['favicon']);

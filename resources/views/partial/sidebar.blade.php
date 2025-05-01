@@ -133,6 +133,15 @@
             </a>
         </li>
 
+        <li class="menu @routeis('allcasenotices.casenoticelist') active @endrouteis">
+            <a href="{{route('allcasenotices.casenoticelist')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-flag"></i>
+                    <span>All Notices</span>
+                </div>
+            </a>
+        </li>
+
         {{-- @if(Helper::userCan([105,106])) --}}
         <li class="menu @routeis('ordersheet,award,settlementletter') active @endrouteis">
             <a href="#location_content1" data-bs-toggle="collapse" aria-expanded="{{ Helper::routeis('ordersheet,award,settlementletter') }}"

@@ -35,6 +35,10 @@ Route::get('/bulk_send_3b_notice', function () {
     Artisan::call('bulk:send-3b-notice');   
     return '<h1>update bulk send 3b notice</h1>';
 });
+Route::get('/bulk_send_3c_notice', function () {
+    Artisan::call('bulk:send-3c-notice');   
+    return '<h1>update bulk send 3c notice</h1>';
+});
 
 
 Route::get('clear-all', function () {

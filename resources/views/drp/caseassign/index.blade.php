@@ -71,6 +71,7 @@
                                         <th>Status</th>
                                         <th>Receive To </br>SuperAdmin</th>
                                         <th>Send To </br>SuperAdmin</th>
+                                        <th>Confirm To </br>Arbitrator</th>
                                         <th>Assigned Status</th>
                                         <th>Created Date</th>
                                         <th width="100px">Action</th>
@@ -149,6 +150,11 @@
                         name: 'receive_status',
                         orderable: false,
                         searchable: false
+                    },
+                    {   data: 'arbitrator_status', 
+                        name: 'arbitrator_status', 
+                        orderable: false, 
+                        searchable: false 
                     },
                     {
                         data: 'assigned_status',

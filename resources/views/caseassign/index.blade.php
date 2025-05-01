@@ -52,6 +52,7 @@
                             <th>Status</th>
                             <th>Send To </br>CaseManager</th>
                             <th>Receive To </br>CaseManager</th>
+                            <th>Confirm To </br>Arbitrator</th>
                             <th>Assigned </br>Status</th>
                             <th>Created Date</th>
                             <th width="100px">Action</th>
@@ -94,6 +95,7 @@
                     { data: 'status', name: 'status' },
                     { data: 'send_status', name: 'send_status', orderable: false, searchable: false },
                     { data: 'receive_status', name: 'receive_status', orderable: false, searchable: false },
+                    { data: 'arbitrator_status', name: 'arbitrator_status', orderable: false, searchable: false },
                     { data: 'assigned_status', name: 'assigned_status' },
                     { data: 'created_at', name: 'created_at' },
                     { data: 'action', name: 'action', orderable: false, searchable: false }

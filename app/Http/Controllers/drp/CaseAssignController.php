@@ -40,6 +40,7 @@ class CaseAssignController extends Controller
                     'file_cases.created_at',
                     'assign_cases.sendto_casemanager',
                     'assign_cases.receiveto_casemanager',
+                    'assign_cases.confirm_to_arbitrator',
                     DB::raw("IF(assign_cases.id IS NULL, 0, 1) as is_assigned"),
                     DB::raw("IF(
                             assign_cases.arbitrator_id IS NULL OR 
@@ -87,6 +88,11 @@ class CaseAssignController extends Controller
                     return $row['receiveto_casemanager'] == 0
                     ? '<small class="badge fw-semi-bold rounded-pill badge-danger">Not Sent</small>'
                     : '<small class="badge fw-semi-bold rounded-pill badge-success">Sent</small>';
+                })    
+                ->addColumn('arbitrator_status', function ($row) {
+                    return $row['confirm_to_arbitrator'] == 0
+                        ? '<small class="badge fw-semi-bold rounded-pill badge-danger">Pending</small>'
+                        : '<small class="badge fw-semi-bold rounded-pill badge-success">Confirmed</small>';
                 }) 
                 ->addColumn('assigned_status', function ($row) {
                     return $row['is_fully_assigned'] ? 
@@ -110,7 +116,7 @@ class CaseAssignController extends Controller
                 ->orderColumn('created_at', function ($query, $order) {
                     $query->orderBy('created_at', $order);
                 })
-                ->rawColumns(['action', 'status', 'assigned_status', 'send_status', 'receive_status'])
+                ->rawColumns(['action', 'status', 'assigned_status', 'send_status', 'receive_status', 'arbitrator_status'])
                 ->make(true);
         }
         $title = 'Cases Assign';

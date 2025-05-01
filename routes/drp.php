@@ -4,6 +4,9 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\Drp\AwardController;
 use App\Http\Controllers\Drp\CaseAssignController;
 use App\Http\Controllers\Drp\CaseBulkUpdateController;
+use App\Http\Controllers\Drp\CaseListController;
+use App\Http\Controllers\Drp\CaseNoticeListController;
+use App\Http\Controllers\Drp\CasesAllNoticeListController;
 use App\Http\Controllers\Drp\CourtRoomController;
 use App\Http\Controllers\Drp\ProfileController;
 use App\Http\Controllers\Drp\HomeController;
@@ -95,12 +98,27 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::get('/download-sample', 'downloadBulkUpdateSample')->name('cases.casebulkupdate.sample');
     });
 
-     // ----------------------- Arbitrator - Meeting Room Routes ---------------------------------------
-     Route::controller(CourtRoomController::class)->group(function () {
+    // ----------------------- Case Manager - All Case Notices Routes ----------------------------------
+    Route::controller(CasesAllNoticeListController::class)->group(function () {
+        Route::get('cashmanagercasenoticelist', 'index')->name('allnotices.cashmanagercasenoticelist');
+    });
+
+    // ----------------------- Arbitrator - Meeting Room Routes ---------------------------------------
+    Route::controller(CourtRoomController::class)->group(function () {
         Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
         Route::get('livecourtroom', 'livecourtroom')->name('courtroom.livecourtroom');
         Route::post('/courtroom/save-notice', 'saveNotice')->name('courtroom.savenotice');
+    });
 
+    // ----------------------- Arbitrator - Case List Routes ---------------------------------------
+    Route::controller(CaseListController::class)->group(function () {
+        Route::get('caselist', 'index')->name('allcases.caselist');
+        Route::post('approve', 'approveCase')->name('allcases.approve');
+    });
+
+    // ----------------------- Arbitrator - Case Notice List Routes ---------------------------------------
+    Route::controller(CaseNoticeListController::class)->group(function () {
+        Route::get('arbitratorcasenoticelist', 'index')->name('allnotices.arbitratorcasenoticelist');
     });
 
     // ----------------------- Conciliator - Meeting Room Routes ---------------------------------------

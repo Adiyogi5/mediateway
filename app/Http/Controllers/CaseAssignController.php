@@ -44,6 +44,7 @@ class CaseAssignController extends Controller
                     'file_cases.created_at',
                     'assign_cases.sendto_casemanager',
                     'assign_cases.receiveto_casemanager',
+                    'assign_cases.confirm_to_arbitrator',
                     DB::raw("IF(assign_cases.id IS NULL, 0, 1) as is_assigned") 
                 )
                 ->leftJoin('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id');
@@ -84,6 +85,11 @@ class CaseAssignController extends Controller
                     return $row['receiveto_casemanager'] == 0
                         ? '<small class="badge fw-semi-bold rounded-pill badge-danger">Not Received</small>'
                         : '<small class="badge fw-semi-bold rounded-pill badge-success">Received</small>';
+                })   
+                ->addColumn('arbitrator_status', function ($row) {
+                    return $row['confirm_to_arbitrator'] == 0
+                        ? '<small class="badge fw-semi-bold rounded-pill badge-danger">Pending</small>'
+                        : '<small class="badge fw-semi-bold rounded-pill badge-success">Confirmed</small>';
                 })                
                 ->addColumn('assigned_status', function ($row) {
                     return $row['is_assigned'] ? 
@@ -106,7 +112,7 @@ class CaseAssignController extends Controller
                 ->orderColumn('created_at', function ($query, $order) {
                     $query->orderBy('created_at', $order);
                 })
-                ->rawColumns(['action', 'status', 'assigned_status', 'send_status', 'receive_status'])
+                ->rawColumns(['action', 'status', 'assigned_status', 'send_status', 'receive_status', 'arbitrator_status'])
                 ->make(true);
         }
         return view('caseassign.index');
@@ -210,6 +216,153 @@ class CaseAssignController extends Controller
                 'sendto_casemanager' => 1,
             ])               
         );
+
+        $assigncaseData = AssignCase::where('case_id', $caseData->id)->first();
+        $noticedataFetchArbitrator = Notice::where('file_case_id', $caseData->id)->where('notice_type', 5)->first();
+        
+                if (($assigncaseData->receiveto_casemanager == 0) && empty($noticedataFetchArbitrator)) {
+                    $arbitratorIds   = explode(',', $assigncaseData->arbitrator_id);
+                    $arbitratorsName = Drp::whereIn('id', $arbitratorIds)->pluck('name')->implode(', ');
+                    $arbitratorsData = Drp::whereIn('id', $arbitratorIds)->get();
+                    $firstArb  = $arbitratorsData[0] ?? null;
+                    $secondArb = $arbitratorsData[1] ?? null;
+                    $thirdArb  = $arbitratorsData[2] ?? null;
+
+                    $casemanagerData = Drp::where('id', $assigncaseData->case_manager_id)->first();
+
+                    $noticetemplateData = NoticeTemplate::where('id', 5)->first();
+                    $noticeTemplate     = $noticetemplateData->notice_format;
+
+                    // Define your replacement values
+                    $data = [
+                        "ARBITRATOR'S NAME"                                               => $arbitratorsName ?? '',
+                        "CASE MANAGER'S NAME"                                             => $casemanagerData->name ?? '',
+                        'PHONE NUMBER'                                                    => $casemanagerData->mobile ?? '',
+                        'EMAIL ADDRESS'                                                   => ($casemanagerData->address1 ?? '') . '&nbsp;' . ($casemanagerData->address2 ?? ''),
+
+                        'CASE REGISTRATION NUMBER'                                        => $value->case_number ?? '',
+                        'BANK/ORGANISATION/CLAIMANT NAME'                                 => ($value->claimant_first_name ?? '') . '&nbsp;' . ($value->claimant_last_name ?? ''),
+                        'BANK/ORGANISATION/CLAIMANT REGISTERED ADDRESS'                   => ($value->claimant_address1 ?? '') . '&nbsp;' . ($value->claimant_address2 ?? ''),
+
+                        'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'                    => $value->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
+                        "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $casvalueeData->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
+
+                        'LOAN NO'                                                         => $value->loan_number ?? '',
+                        'AGREEMENT DATE'                                                  => $value->agreement_date ?? '',
+                        'FINANCE AMOUNT'                                                  => $value->file_case_details->finance_amount ?? '',
+                        'TENURE'                                                          => $value->file_case_details->tenure ?? '',
+                        'STAGE 1 NOTICE: LOAN RECALL CUM PREARBITRATION NOTICE'           => now()->format('d-m-Y'),
+                        'FORECLOSURE AMOUNT'                                              => $value->file_case_details->foreclosure_amount ?? '',
+
+                        "FIRST ARBITRATOR'S NAME"                                         => $firstArb->name ?? '',
+                        "FIRST ARBITRATOR'S SPECIALIZATION"                               => $firstArb->specialization ?? '',
+                        "FIRST ARBITRATOR'S ADDRESS"                                      => ($firstArb->address1 ?? '') . '&nbsp;' . ($firstArb->address2 ?? ''),
+
+                        "SECOND ARBITRATOR'S NAME"                                        => $secondArb->name ?? '',
+                        "SECOND ARBITRATOR'S SPECIALIZATION"                              => $secondArb->specialization ?? '',
+                        "SECOND ARBITRATOR'S ADDRESS"                                     => ($secondArb->address1 ?? '') . '&nbsp;' . ($secondArb->address2 ?? ''),
+
+                        "THIRD ARBITRATOR'S NAME"                                         => $thirdArb->name ?? '',
+                        "THIRD ARBITRATOR'S SPECIALIZATION"                               => $thirdArb->specialization ?? '',
+                        "THIRD ARBITRATOR'S ADDRESS"                                      => ($thirdArb->address1 ?? '') . '&nbsp;' . ($thirdArb->address2 ?? ''),
+
+                        'STAGE 3-A NOTICE: PROPOSAL LETTER FOR APPOINTMENT OF ARBITRATOR' => now()->format('d-m-Y'),
+
+                        'CUSTOMER NAME'                                                   => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
+                        'CUSTOMER ADDRESS'                                                => ($value->respondent_address1 ?? '') . '&nbsp;' . ($value->respondent_address2 ?? ''),
+                        'CUSTOMER MOBILE NO'                                              => $value->respondent_mobile ?? '',
+                        'CUSTOMER MAIL ID'                                                => $value->respondent_email ?? '',
+
+                        'ARBITRATION CLAUSE NO'                                           => 123456,
+
+                        'DATE'                                                            => now()->format('d-m-Y'),
+                        'STAGE 2B NOTICE'                                                 => now()->format('d-m-Y'),
+                    ];
+
+                    $replaceSummernotePlaceholders = function ($html, $replacements) {
+                        foreach ($replacements as $key => $value) {
+                            // Escape key for regex
+                            $escapedKey = preg_quote($key, '/');
+
+                            // Split into words
+                            $words = preg_split('/\s+/', $escapedKey);
+
+                            // Allow tags or spacing between words
+                            $pattern = '/\{\{(?:\s|&nbsp;|<[^>]+>)*' . implode('(?:\s|&nbsp;|<[^>]+>)*', $words) . '(?:\s|&nbsp;|<[^>]+>)*\}\}/iu';
+
+                            // Replace using callback
+                            $html = preg_replace_callback($pattern, function () use ($value) {
+                                return $value;
+                            }, $html);
+                        }
+
+                        return $html;
+                    };
+
+                    $finalNotice = $replaceSummernotePlaceholders($noticeTemplate, $data);
+
+                    $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
+                    // Append the signature image at the end of the content, aligned right
+                    $finalNotice .= '
+                        <div style="text-align: right; margin-top: 0px;">
+                            <img src="' . asset('storage/' . $signature['mediateway_signature']) . '" style="height: 80px;" alt="Signature">
+                        </div>
+                    ';
+
+                    // 1. Prepare your HTML with custom styles
+                    $html = '
+                    <style>
+                        @page {
+                            size: A4;
+                            margin: 12mm;
+                        }
+                        body {
+                            font-family: DejaVu Sans, sans-serif;
+                            font-size: 12px;
+                            line-height: 1.4;
+                        }
+                        p {
+                            margin: 0px 0;
+                            padding: 0;
+                        }
+                        img {
+                            max-width: 100%;
+                            height: auto;
+                        }
+                    </style>
+                    ' . $finalNotice;
+
+                    // 2. Generate PDF with A4 paper size
+                    $pdf = PDF::loadHTML($html)->setPaper('A4', 'portrait')->setOptions(['isRemoteEnabled' => true]);
+
+                    // Create temporary PDF file
+                    $tempPdfPath = tempnam(sys_get_temp_dir(), 'pdf');
+                    $pdf->save($tempPdfPath);
+
+                    // Wrap temp file in UploadedFile so it can go through Helper::saveFile
+                    $uploadedFile = new \Illuminate\Http\UploadedFile(
+                        $tempPdfPath,
+                        'notice_' . time() . '.pdf',
+                        'application/pdf',
+                        null,
+                        true
+                    );
+
+                    // Save the PDF using your helper
+                    $savedPath = Helper::saveFile($uploadedFile, 'notices');
+
+                    $notice = Notice::create([
+                        'file_case_id'               => $caseData->id,
+                        'notice_type'                => 5,
+                        'notice'                     => $savedPath,
+                        'notice_date'                => now(),
+                        'notice_send_date'           => null,
+                        'email_status'               => 0,
+                        'whatsapp_status'            => 0,
+                        'whatsapp_notice_status'     => 0,
+                        'whatsapp_dispatch_datetime' => null,
+                    ]);
+                }
 
         return to_route('caseassign')->withSuccess('Case Assign Successfully..!!');
     }

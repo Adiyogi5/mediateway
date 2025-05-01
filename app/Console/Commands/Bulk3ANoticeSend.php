@@ -68,14 +68,10 @@ class Bulk3ANoticeSend extends Command
                 $query->where('notice_type', 1)
                     ->whereRaw('DATEDIFF(CURDATE(), notices.notice_date) >= organization_notice_timelines.notice_3a');
             })
-            ->where(function ($query) {
-                $query->whereDoesntHave('notices', function ($q) {
-                    $q->where('notice_type', 5);
-                })
-                    ->orWhereHas('notices', function ($q) {
-                        $q->where('notice_type', 5)
-                            ->where('email_status', 0);
-                    });
+            ->whereHas('notices', function ($query) {
+                $query->where('notice_type', 5)
+                      ->whereNotNull('notice')
+                      ->where('email_status', 0);
             })
             ->whereIn('organization_notice_timelines.notice_3a', function ($query) {
                 $query->select('notice_3a')
@@ -95,6 +91,8 @@ class Bulk3ANoticeSend extends Command
         foreach ($caseData as $key => $value) {
             try {
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();
+                $noticeData = Notice::where('file_case_id', $value->id)->where('notice_type', 5)->first();
+                $notice = $noticeData->notice;
                 // $noticedataFetchArbitrator = Notice::where('file_case_id', $value->id)->where('notice_type', 5)->first();
                 // dd($noticedataFetchArbitrator);
                 if (($assigncaseData->receiveto_casemanager == 0)) {
@@ -108,126 +106,126 @@ class Bulk3ANoticeSend extends Command
                     $noticeTemplate     = $noticetemplateData->notice_format;
 
                     // Define your replacement values
-                    $data = [
-                        "ARBITRATOR'S NAME"                                               => $arbitratorsName ?? '',
-                        "CASE MANAGER'S NAME"                                             => $casemanagerData->name ?? '',
-                        'PHONE NUMBER'                                                    => $casemanagerData->mobile ?? '',
-                        'EMAIL ADDRESS'                                                   => ($casemanagerData->address1 ?? '') . '&nbsp;' . ($casemanagerData->address2 ?? ''),
+                    // $data = [
+                    //     "ARBITRATOR'S NAME"                                               => $arbitratorsName ?? '',
+                    //     "CASE MANAGER'S NAME"                                             => $casemanagerData->name ?? '',
+                    //     'PHONE NUMBER'                                                    => $casemanagerData->mobile ?? '',
+                    //     'EMAIL ADDRESS'                                                   => ($casemanagerData->address1 ?? '') . '&nbsp;' . ($casemanagerData->address2 ?? ''),
 
-                        'CASE REGISTRATION NUMBER'                                        => $value->case_number ?? '',
-                        'BANK/ORGANISATION/CLAIMANT NAME'                                 => ($value->claimant_first_name ?? '') . '&nbsp;' . ($value->claimant_last_name ?? ''),
-                        'BANK/ORGANISATION/CLAIMANT REGISTERED ADDRESS'                   => ($value->claimant_address1 ?? '') . '&nbsp;' . ($value->claimant_address2 ?? ''),
+                    //     'CASE REGISTRATION NUMBER'                                        => $value->case_number ?? '',
+                    //     'BANK/ORGANISATION/CLAIMANT NAME'                                 => ($value->claimant_first_name ?? '') . '&nbsp;' . ($value->claimant_last_name ?? ''),
+                    //     'BANK/ORGANISATION/CLAIMANT REGISTERED ADDRESS'                   => ($value->claimant_address1 ?? '') . '&nbsp;' . ($value->claimant_address2 ?? ''),
 
-                        'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'                    => $value->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
-                        "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $casvalueeData->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
+                    //     'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'                    => $value->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
+                    //     "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $casvalueeData->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
 
-                        'LOAN NO'                                                         => $value->loan_number ?? '',
-                        'AGREEMENT DATE'                                                  => $value->agreement_date ?? '',
-                        'FINANCE AMOUNT'                                                  => $value->file_case_details->finance_amount ?? '',
-                        'TENURE'                                                          => $value->file_case_details->tenure ?? '',
-                        'STAGE 1 NOTICE: LOAN RECALL CUM PREARBITRATION NOTICE'           => now()->format('d-m-Y'),
-                        'FORECLOSURE AMOUNT'                                              => $value->file_case_details->foreclosure_amount ?? '',
+                    //     'LOAN NO'                                                         => $value->loan_number ?? '',
+                    //     'AGREEMENT DATE'                                                  => $value->agreement_date ?? '',
+                    //     'FINANCE AMOUNT'                                                  => $value->file_case_details->finance_amount ?? '',
+                    //     'TENURE'                                                          => $value->file_case_details->tenure ?? '',
+                    //     'STAGE 1 NOTICE: LOAN RECALL CUM PREARBITRATION NOTICE'           => now()->format('d-m-Y'),
+                    //     'FORECLOSURE AMOUNT'                                              => $value->file_case_details->foreclosure_amount ?? '',
 
-                        "ARBITRATOR'S NAME"                                               => $arbitratorsData->name ?? '',
-                        "ARBITRATOR'S SPECIALIZATION"                                     => $arbitratorsData->specialization ?? '',
-                        "ARBITRATOR'S ADDRESS"                                            => ($arbitratorsData->address1 ?? '') . '&nbsp;' . ($arbitratorsData->address2 ?? ''),
+                    //     "ARBITRATOR'S NAME"                                               => $arbitratorsData->name ?? '',
+                    //     "ARBITRATOR'S SPECIALIZATION"                                     => $arbitratorsData->specialization ?? '',
+                    //     "ARBITRATOR'S ADDRESS"                                            => ($arbitratorsData->address1 ?? '') . '&nbsp;' . ($arbitratorsData->address2 ?? ''),
 
-                        'STAGE 3-A NOTICE: PROPOSAL LETTER FOR APPOINTMENT OF ARBITRATOR' => now()->format('d-m-Y'),
+                    //     'STAGE 3-A NOTICE: PROPOSAL LETTER FOR APPOINTMENT OF ARBITRATOR' => now()->format('d-m-Y'),
 
-                        'CUSTOMER NAME'                                                   => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
-                        'CUSTOMER ADDRESS'                                                => ($value->respondent_address1 ?? '') . '&nbsp;' . ($value->respondent_address2 ?? ''),
-                        'CUSTOMER MOBILE NO'                                              => $value->respondent_mobile ?? '',
-                        'CUSTOMER MAIL ID'                                                => $value->respondent_email ?? '',
+                    //     'CUSTOMER NAME'                                                   => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
+                    //     'CUSTOMER ADDRESS'                                                => ($value->respondent_address1 ?? '') . '&nbsp;' . ($value->respondent_address2 ?? ''),
+                    //     'CUSTOMER MOBILE NO'                                              => $value->respondent_mobile ?? '',
+                    //     'CUSTOMER MAIL ID'                                                => $value->respondent_email ?? '',
 
-                        'ARBITRATION CLAUSE NO'                                           => 123456,
+                    //     'ARBITRATION CLAUSE NO'                                           => 123456,
 
-                        'DATE'                                                            => now()->format('d-m-Y'),
-                        'STAGE 2B NOTICE'                                                 => now()->format('d-m-Y'),
-                    ];
+                    //     'DATE'                                                            => now()->format('d-m-Y'),
+                    //     'STAGE 2B NOTICE'                                                 => now()->format('d-m-Y'),
+                    // ];
 
-                    $replaceSummernotePlaceholders = function ($html, $replacements) {
-                        foreach ($replacements as $key => $value) {
-                            // Escape key for regex
-                            $escapedKey = preg_quote($key, '/');
+                    // $replaceSummernotePlaceholders = function ($html, $replacements) {
+                    //     foreach ($replacements as $key => $value) {
+                    //         // Escape key for regex
+                    //         $escapedKey = preg_quote($key, '/');
 
-                            // Split into words
-                            $words = preg_split('/\s+/', $escapedKey);
+                    //         // Split into words
+                    //         $words = preg_split('/\s+/', $escapedKey);
 
-                            // Allow tags or spacing between words
-                            $pattern = '/\{\{(?:\s|&nbsp;|<[^>]+>)*' . implode('(?:\s|&nbsp;|<[^>]+>)*', $words) . '(?:\s|&nbsp;|<[^>]+>)*\}\}/iu';
+                    //         // Allow tags or spacing between words
+                    //         $pattern = '/\{\{(?:\s|&nbsp;|<[^>]+>)*' . implode('(?:\s|&nbsp;|<[^>]+>)*', $words) . '(?:\s|&nbsp;|<[^>]+>)*\}\}/iu';
 
-                            // Replace using callback
-                            $html = preg_replace_callback($pattern, function () use ($value) {
-                                return $value;
-                            }, $html);
-                        }
+                    //         // Replace using callback
+                    //         $html = preg_replace_callback($pattern, function () use ($value) {
+                    //             return $value;
+                    //         }, $html);
+                    //     }
 
-                        return $html;
-                    };
+                    //     return $html;
+                    // };
 
-                    $finalNotice = $replaceSummernotePlaceholders($noticeTemplate, $data);
+                    // $finalNotice = $replaceSummernotePlaceholders($noticeTemplate, $data);
 
-                    $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
-                    // Append the signature image at the end of the content, aligned right
-                    $finalNotice .= '
-                        <div style="text-align: right; margin-top: 0px;">
-                            <img src="' . asset('storage/' . $signature['mediateway_signature']) . '" style="height: 80px;" alt="Signature">
-                        </div>
-                    ';
+                    // $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
+                    // // Append the signature image at the end of the content, aligned right
+                    // $finalNotice .= '
+                    //     <div style="text-align: right; margin-top: 0px;">
+                    //         <img src="' . asset('storage/' . $signature['mediateway_signature']) . '" style="height: 80px;" alt="Signature">
+                    //     </div>
+                    // ';
 
-                    // 1. Prepare your HTML with custom styles
-                    $html = '
-                    <style>
-                        @page {
-                            size: A4;
-                            margin: 12mm;
-                        }
-                        body {
-                            font-family: DejaVu Sans, sans-serif;
-                            font-size: 12px;
-                            line-height: 1.4;
-                        }
-                        p {
-                            margin: 0px 0;
-                            padding: 0;
-                        }
-                        img {
-                            max-width: 100%;
-                            height: auto;
-                        }
-                    </style>
-                    ' . $finalNotice;
+                    // // 1. Prepare your HTML with custom styles
+                    // $html = '
+                    // <style>
+                    //     @page {
+                    //         size: A4;
+                    //         margin: 12mm;
+                    //     }
+                    //     body {
+                    //         font-family: DejaVu Sans, sans-serif;
+                    //         font-size: 12px;
+                    //         line-height: 1.4;
+                    //     }
+                    //     p {
+                    //         margin: 0px 0;
+                    //         padding: 0;
+                    //     }
+                    //     img {
+                    //         max-width: 100%;
+                    //         height: auto;
+                    //     }
+                    // </style>
+                    // ' . $finalNotice;
 
-                    // 2. Generate PDF with A4 paper size
-                    $pdf = PDF::loadHTML($html)->setPaper('A4', 'portrait')->setOptions(['isRemoteEnabled' => true]);
+                    // // 2. Generate PDF with A4 paper size
+                    // $pdf = PDF::loadHTML($html)->setPaper('A4', 'portrait')->setOptions(['isRemoteEnabled' => true]);
 
-                    // Create temporary PDF file
-                    $tempPdfPath = tempnam(sys_get_temp_dir(), 'pdf');
-                    $pdf->save($tempPdfPath);
+                    // // Create temporary PDF file
+                    // $tempPdfPath = tempnam(sys_get_temp_dir(), 'pdf');
+                    // $pdf->save($tempPdfPath);
 
-                    // Wrap temp file in UploadedFile so it can go through Helper::saveFile
-                    $uploadedFile = new \Illuminate\Http\UploadedFile(
-                        $tempPdfPath,
-                        'notice_' . time() . '.pdf',
-                        'application/pdf',
-                        null,
-                        true
-                    );
+                    // // Wrap temp file in UploadedFile so it can go through Helper::saveFile
+                    // $uploadedFile = new \Illuminate\Http\UploadedFile(
+                    //     $tempPdfPath,
+                    //     'notice_' . time() . '.pdf',
+                    //     'application/pdf',
+                    //     null,
+                    //     true
+                    // );
 
-                    // Save the PDF using your helper
-                    $savedPath = Helper::saveFile($uploadedFile, 'notices');
+                    // // Save the PDF using your helper
+                    // $savedPath = Helper::saveFile($uploadedFile, 'notices');
 
-                    $notice = Notice::create([
-                        'file_case_id'               => $value->id,
-                        'notice_type'                => 5,
-                        'notice'                     => $savedPath,
-                        'notice_date'                => now(),
-                        'notice_send_date'           => null,
-                        'email_status'               => 0,
-                        'whatsapp_status'            => 0,
-                        'whatsapp_notice_status'     => 0,
-                        'whatsapp_dispatch_datetime' => null,
-                    ]);
+                    // $notice = Notice::create([
+                    //     'file_case_id'               => $value->id,
+                    //     'notice_type'                => 5,
+                    //     'notice'                     => $savedPath,
+                    //     'notice_date'                => now(),
+                    //     'notice_send_date'           => null,
+                    //     'email_status'               => 0,
+                    //     'whatsapp_status'            => 0,
+                    //     'whatsapp_notice_status'     => 0,
+                    //     'whatsapp_dispatch_datetime' => null,
+                    // ]);
 
                     //Send Notice for Assign Arbitrator
                     $data = Setting::where('setting_type', '3')->get()->pluck('filed_value', 'setting_name')->toArray();
@@ -258,28 +256,28 @@ class Bulk3ANoticeSend extends Command
                         if ($validator->fails()) {
 
                             Log::warning("Invalid email address: $email");
-                            $notice->update(['email_status' => 2]);
+                            $noticeData->update(['email_status' => 2]);
 
                         } else {
 
                             $subject     = $noticetemplateData->subject;
                             $description = $noticetemplateData->email_content;
 
-                            // Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($savedPath, $subject, $email) {
-                            //     $message->to($email)
-                            //             ->subject($subject)
-                            //             ->attach(public_path(str_replace('\\', '/', $savedPath)), [
-                            //                 'mime' => 'application/pdf',
-                            //             ]);
-                            // });
+                            Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($notice, $subject, $email) {
+                                $message->to($email)
+                                        ->subject($subject)
+                                        ->attach(public_path(str_replace('\\', '/', $notice)), [
+                                            'mime' => 'application/pdf',
+                                        ]);
+                            });
 
-                            // if (Mail::failures()) {
+                            if (Mail::failures()) {
                             Log::error("Failed to send email to: $email");
-                            $notice->update(['email_status' => 2]);
-                            // } else {
-                            $notice->update(['notice_send_date' => now()]);
-                            $notice->update(['email_status' => 1]);
-                            // }
+                            $noticeData->update(['email_status' => 2]);
+                            } else {
+                            $noticeData->update(['notice_send_date' => now()]);
+                            $noticeData->update(['email_status' => 1]);
+                            }
                         }
                     }
 
@@ -308,7 +306,7 @@ class Bulk3ANoticeSend extends Command
             } catch (\Throwable $th) {
                 // Log the error and update the email status
                 Log::error("Error sending email for record ID {$value->id}: " . $th->getMessage());
-                // $value->update(['email_status' => 2]);
+                // $noticeData->update(['email_status' => 2]);
             }
         }
     }

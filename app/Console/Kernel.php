@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('bulk:send-2b-notice')->everyOneMinutes();
         $schedule->command('bulk:send-3a-notice')->everyOneMinutes();
         $schedule->command('bulk:send-3b-notice')->everyOneMinutes();
+        $schedule->command('bulk:send-3c-notice')->everyOneMinutes();
     }
 
     /**

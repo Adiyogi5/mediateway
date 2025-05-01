@@ -141,6 +141,16 @@
                                 class="fa-solid fa-bookmark faa-profile"></i> Cases Assign</a>
                     </li>
 
+                    {{-- ############################# All CASE NOTICES ############################### --}}
+                    <li
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.allnotices.cashmanagercasenoticelist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.allnotices.cashmanagercasenoticelist') ? 'text-white bg-lime' : '' }}"
+                            aria-current="page"
+                            style="{{ request()->routeIs($currentGuard . '.allnotices.cashmanagercasenoticelist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'allnotices.cashmanagercasenoticelist') }}"><i
+                                class="fa-solid fa-flag faa-profile"></i> All Assigned Case notices</a>
+                    </li>
+
                     {{-- ############################# SEND NOTICES ############################### --}}
                     <li
                         class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.notices.noticelist') ? 'text-white bg-lime' : '' }}">
@@ -172,6 +182,22 @@
                             style="{{ request()->routeIs($currentGuard . '.award') ? 'color:white !important;;' : '' }}"
                             href="{{ route($currentGuard . '.' . 'award') }}"><i
                                 class="fa-solid fa-file-shield faa-profile"></i> Awards</a>
+                    </li>
+                    <li
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.allcases.caselist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.allcases.caselist') ? 'text-white bg-lime' : '' }}"
+                            aria-current="page"
+                            style="{{ request()->routeIs($currentGuard . '.allcases.caselist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'allcases.caselist') }}"><i
+                                class="fa-solid fa-tags faa-profile"></i> All Assigned Cases</a>
+                    </li>
+                    <li
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.allnotices.arbitratorcasenoticelist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.allnotices.arbitratorcasenoticelist') ? 'text-white bg-lime' : '' }}"
+                            aria-current="page"
+                            style="{{ request()->routeIs($currentGuard . '.allnotices.arbitratorcasenoticelist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'allnotices.arbitratorcasenoticelist') }}"><i
+                                class="fa-solid fa-flag faa-profile"></i> All Assigned Case notices</a>
                     </li>
                     <li
                         class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.courtroom.courtroomlist') ? 'text-white bg-lime' : '' }}">
