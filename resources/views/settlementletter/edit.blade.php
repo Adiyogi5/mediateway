@@ -30,27 +30,6 @@
                 action="{{ route('settlementletter.edit', $settlementletter['id']) }}" enctype='multipart/form-data'>
                 @csrf
                 <div class="row">
-                    <div class="col-md-12">
-                        <!-- Modal -->
-                        <div class="modal fade" id="myModal" role="dialog">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header text-center justify-content-center">
-                                        <h4 class="modal-title text-dark fw-bold">Please follow Sequence of
-                                            Variable for Settlement Agreements</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row list-styled px-3" id="variableList"></div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
                     <div class="col-md-6 mt-2">
                         <div class="form-group">
                             <label class="form-label" for="drp_type">DRP Type <span class="required">*</span></label>
@@ -130,6 +109,27 @@
                     <button class="btn btn-secondary submitbtn" type="submit">Update</button>
                 </div>
             </form>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" role="dialog">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header text-center justify-content-center">
+                                    <h4 class="modal-title text-dark fw-bold">Variable for Settlement Agreements</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row list-styled px-3" id="variableList"></div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -146,10 +146,36 @@
                     variableList.empty(); // Clear previous data
 
                     if (data.length > 0) {
-                        data.forEach(function(item) {
-                            variableList.append(
-                                `<div class="col-md-4"><li>${item.name}</li></div>`);
+                        data.forEach(function(item, index) {
+                            const variableText = `@{{${item.name}}}`;
+                            const id = `copyText${index}`;
+                            variableList.append(`
+                                <div class="col-md-6 mb-3 d-flex align-items-center">
+                                    <div class="w-100 border rounded p-2 d-flex justify-content-between align-items-center">
+                                        <span class="text-dark fw-bold">${variableText}</span>
+                                        <button class="btn btn-sm btn-outline-secondary ms-2 copy-btn" data-variable="${variableText}">
+                                            Copy
+                                        </button>
+                                    </div>
+                                </div>
+                            `);
                         });
+
+                        // Attach copy functionality (no toastr)
+                        document.querySelectorAll('.copy-btn').forEach(btn => {
+                            btn.addEventListener('click', function () {
+                                const textToCopy = this.getAttribute('data-variable');
+                                navigator.clipboard.writeText(textToCopy).then(() => {
+                                    this.innerText = 'Copied!';
+                                    setTimeout(() => {
+                                        this.innerText = 'Copy';
+                                    }, 1500);
+                                }).catch(err => {
+                                    console.error('Failed to copy:', err);
+                                });
+                            });
+                        });
+
                     } else {
                         variableList.append('<p class="text-muted">No Variables Found</p>');
                     }

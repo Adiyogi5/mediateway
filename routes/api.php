@@ -39,6 +39,18 @@ Route::get('/bulk_send_3c_notice', function () {
     Artisan::call('bulk:send-3c-notice');   
     return '<h1>update bulk send 3c notice</h1>';
 });
+Route::get('/bulk_send_3d_notice', function () {
+    Artisan::call('bulk:send-3d-notice');   
+    return '<h1>update bulk send 3d notice</h1>';
+});
+Route::get('/bulk_send_4a_notice', function () {
+    Artisan::call('bulk:send-4a-notice');   
+    return '<h1>update bulk send 4a notice</h1>';
+});
+Route::get('/bulk_send_5a_notice', function () {
+    Artisan::call('bulk:send-5a-notice');   
+    return '<h1>update bulk send 5a notice</h1>';
+});
 
 
 Route::get('clear-all', function () {

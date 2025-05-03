@@ -120,7 +120,7 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
 
     });
 
-    // ----------------------- CaseAssign Routes ----------------------------------------------------
+    // ----------------------- CaseAssign Routes -------------------------------------------------
     Route::controller(CaseAssignController::class)->group(function () {
         Route::get('caseassign', 'index')->name('caseassign')->middleware('isAllow:111,can_view');
         Route::get('caseassign/{id}', 'assign')->name('caseassign.assign')->middleware('isAllow:111,can_edit');
@@ -130,7 +130,7 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::put('caseassign/casedetail/{id}', 'updateCaseDetail')->name('caseassign.updatecasedetail')->middleware('isAllow:111,can_edit');
     });
 
-    // ----------------------- All Case Notices Routes ----------------------------------------------------
+    // ----------------------- All Case Notices Routes -------------------------------------------
     Route::controller(CasesAllNoticeListController::class)->group(function () {
         Route::get('casenoticelist', 'index')->name('allcasenotices.casenoticelist');
     });

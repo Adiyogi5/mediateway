@@ -266,7 +266,7 @@ class Bulk3CNoticeSend extends Command
                         } else {
 
                             $subject     = $noticetemplateData->subject;
-                            $description = 'https://mediateway.com/drp/dashboard';
+                            $description = 'https://mediateway.com/drp/login';
 
                             Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($savedPath, $subject, $email) {
                                 $message->to($email)

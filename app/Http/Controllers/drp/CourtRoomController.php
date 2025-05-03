@@ -57,12 +57,15 @@ class CourtRoomController extends Controller
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
 
-        $caseData = FileCase::with(['file_case_details', 'guarantors'])->find(32);
-
+        $caseData = FileCase::select('file_cases.*','drps.name as arbitrator_name')->with(['file_case_details', 'guarantors'])
+                ->join('assign_cases','assign_cases.case_id','=','file_cases.id')
+                ->join('drps','drps.id','=','assign_cases.arbitrator_id')
+                ->find(32);
+       
         $flattenedCaseData = $this->flattenCaseData($caseData);
-        // dd($caseData);
-        $orderSheetTemplates = OrderSheet::where('status', 1)->where('drp_type', 5)->get();
-        $settlementLetterTemplates = SettlementLetter::where('status', 1)->where('drp_type', 5)->get();
+        // dd($flattenedCaseData);
+        $orderSheetTemplates = OrderSheet::where('status', 1)->where('drp_type', 1)->get();
+        $settlementLetterTemplates = SettlementLetter::where('status', 1)->where('drp_type', 1)->get();
 
         return view('drp.courtroom.livecourtroom', compact(
             'drp',
@@ -81,28 +84,29 @@ class CourtRoomController extends Controller
             if (is_array($value)) {
                 foreach ($value as $subkey => $subval) {
                     if (is_array($subval)) {
+                        // Flatten 2nd-level arrays (e.g., array of fields inside a hasOne relationship)
                         foreach ($subval as $subsubkey => $subsubval) {
-                            $flatKey = strtolower(preg_replace('/[^a-z0-9]+/', '_', "{$key}_{$subkey}_{$subsubkey}"));
+                            $flatKey = strtolower(preg_replace('/[^a-z0-9]+/', '_', $subsubkey));
                             $flat[$flatKey] = $subsubval;
                         }
                     } else {
-                        $flatKey = strtolower(preg_replace('/[^a-z0-9]+/', '_', "{$key}_{$subkey}"));
+                        // Flatten 1st-level arrays
+                        $flatKey = strtolower(preg_replace('/[^a-z0-9]+/', '_', $subkey));
                         $flat[$flatKey] = $subval;
                     }
                 }
             } else {
+                // Non-array value, just add it directly
                 $flatKey = strtolower(preg_replace('/[^a-z0-9]+/', '_', $key));
                 $flat[$flatKey] = $value;
             }
         }
-    
         return $flat;
     }
 
 
     public function saveNotice(Request $request)
     {
-        // dd($request->all());
         $request->validate([
             'file_case_id' => 'required|exists:file_cases,id',
             'livemeetingdata' => 'required|string',
@@ -110,119 +114,163 @@ class CourtRoomController extends Controller
             'tempType' => 'required',
         ]);
 
-        // Generate PDF from textarea data
-        // 1. Prepare your HTML with custom styles
-        $html = '
-        <style>
-            @page {
-                size: A4;
-                margin: 12mm;
-            }
-            body {
-                font-family: DejaVu Sans, sans-serif;
-                font-size: 12px;
-                line-height: 1.6;
-            }
-            p {
-                margin: 0px 0;
-                padding: 0;
-            }
-        </style>
-        ' . $request->livemeetingdata;
+        // Set notice type based on tempType
+        if($request->docType == 'ordersheet')
+        {    
+            $noticeType = $request->tempType == 1 ? 9 : 10;
 
-        // 2. Generate PDF with A4 paper size
-        $pdf = PDF::loadHTML($html)->setPaper('A4', 'portrait');
+            $noticeexistData = Notice::where('file_case_id', $request->file_case_id)
+                                    ->where('notice_type', $noticeType)->first();
+           
+            if (empty($noticeexistData)) {
+                // Get signature settings
+                $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
 
-        // Create temporary PDF file
-        $tempPdfPath = tempnam(sys_get_temp_dir(), 'pdf');
-        $pdf->save($tempPdfPath);
+                // Generate HTML with styles and content
+                $html = '
+                <style>
+                    @page {
+                        size: A4;
+                        margin: 12mm;
+                    }
+                    body {
+                        font-family: DejaVu Sans, sans-serif;
+                        font-size: 12px;
+                        line-height: 1.4;
+                    }
+                    p {
+                        margin: 0;
+                        padding: 0;
+                    }
+                    img {
+                        max-width: 100%;
+                        height: auto;
+                    }
+                </style>
+                ' . $request->livemeetingdata;
 
-        // Wrap temp file in UploadedFile so it can go through Helper::saveFile
-        $uploadedFile = new \Illuminate\Http\UploadedFile(
-            $tempPdfPath,
-            'notice_' . time() . '.pdf',
-            'application/pdf',
-            null,
-            true 
-        );
-
-        // Save the PDF using your helper
-        $savedPath = Helper::saveFile($uploadedFile, 'notices');
-
-        $notice = Notice::create([
-            'file_case_id' => $request->file_case_id,
-            'notice_type' => 1,
-            'notice' => $savedPath,
-            'notice_date' => now(),
-            'notice_send_date' => null,
-            'email_status' => 0,
-            'whatsapp_status' => 0,
-            'whatsapp_notice_status' => 0,
-            'whatsapp_dispatch_datetime' => null,
-        ]);
-
-        //Send Mail Using SMTP
-        $caseData = FileCase::with(['file_case_details', 'guarantors'])->find($request->file_case_id);
-        $data = Setting::where('setting_type','3')->get()->pluck('filed_value', 'setting_name')->toArray();
-        
-        Config::set("mail.mailers.smtp", [
-            'transport'     => 'smtp',
-            'host'          => $data['smtp_host'],
-            'port'          => $data['smtp_port'],
-            'encryption'    => in_array((int) $data['smtp_port'], [587, 2525]) ? 'tls' : 'ssl',
-            'username'      => $data['smtp_user'],
-            'password'      => $data['smtp_pass'],
-            'timeout'       =>  null,
-            'auth_mode'     =>  null,
-        ]);
-
-        Config::set("mail.from", [
-            'address'       =>  $data['email_from'],
-            'name'          =>  config('app.name'),
-        ]);
-
-        if (!empty($caseData->respondent_email)) {
-            $email = filter_var($caseData->respondent_email, FILTER_SANITIZE_EMAIL);
-        
-            $validator = Validator::make(['email' => $email], [
-                'email' => 'required|email:rfc,dns',
-            ]);
-        
-            if ($validator->fails()) {
-                Log::warning("Invalid email address: $email");
-                $notice->update(['email_status' => 2]);
-            } else {
-                // Convert docType to StudlyCase (e.g. 'ordersheet' => 'OrderSheet')
-                $modelName = Str::studly($request->docType);
-               
-                // Build the full model class name with namespace
-                $modelClass = "App\\Models\\{$modelName}";
-
-                // Then fetch the data dynamically
-                $emailData = $modelClass::where('id', $request->tempType)->first();
-
-                $subject = $emailData->subject;
-                $description = $emailData->email_content;
-        
-                Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($savedPath, $subject, $email) {
-                    $message->to($email)
-                            ->subject($subject)
-                            ->attach(public_path(str_replace('\\', '/', $savedPath)), [
-                                'mime' => 'application/pdf',
-                            ]);
-                });
-        
-                if (Mail::failures()) {
-                    Log::error("Failed to send email to: $email");
-                    $notice->update(['email_status' => 2]);
-                } else {
-                    $notice->update(['notice_send_date' => now()]);
-                    $notice->update(['email_status' => 1]);
+                // Append signature image
+                if (!empty($signature['mediateway_signature'])) {
+                    $html .= '
+                        <div style="text-align: right; margin-top: 20px;">
+                            <img src="' . asset('storage/' . $signature['mediateway_signature']) . '" style="height: 80px;" alt="Signature">
+                        </div>';
                 }
-            }
+
+                // Generate PDF
+                $pdf = PDF::loadHTML($html)->setPaper('A4', 'portrait')->setOptions(['isRemoteEnabled' => true]);
+
+                // Save temporary PDF
+                $tempPdfPath = tempnam(sys_get_temp_dir(), 'pdf');
+                $pdf->save($tempPdfPath);
+
+                // Wrap temp file in UploadedFile
+                $uploadedFile = new \Illuminate\Http\UploadedFile(
+                    $tempPdfPath,
+                    'notice_' . time() . '.pdf',
+                    'application/pdf',
+                    null,
+                    true
+                );
+
+                // Save file using helper
+                $savedPath = Helper::saveFile($uploadedFile, 'notices');
+            
+                Notice::create([
+                    'file_case_id' => $request->file_case_id,
+                    'notice_type' => $noticeType,
+                    'notice' => $savedPath,
+                    'notice_date' => now(),
+                    'notice_send_date' => null,
+                    'email_status' => 0,
+                    'whatsapp_status' => 0,
+                    'whatsapp_notice_status' => 0,
+                    'whatsapp_dispatch_datetime' => null,
+                ]);
+                
+                return back()->withSuccess('Notice saved successfully.');
+            } else {
+                return back()->with('error', 'Notice already exists for this Case.');
+            }    
         }
 
-        return back()->withSuccess('Notice saved successfully.');
+        elseif($request->docType == 'settlementletter')
+        {
+            $noticeType = $request->tempType == 1 ? 11 : 12;
+
+            $noticeexistData = Notice::where('file_case_id', $request->file_case_id)
+                                    ->where('notice_type', $noticeType)->first();
+            
+            if (empty($noticeexistData)) {
+                // Get signature settings
+                $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
+
+                // Generate HTML with styles and content
+                $html = '
+                <style>
+                    @page {
+                        size: A4;
+                        margin: 12mm;
+                    }
+                    body {
+                        font-family: DejaVu Sans, sans-serif;
+                        font-size: 12px;
+                        line-height: 1.4;
+                    }
+                    p {
+                        margin: 0;
+                        padding: 0;
+                    }
+                    img {
+                        max-width: 100%;
+                        height: auto;
+                    }
+                </style>
+                ' . $request->livemeetingdata;
+
+                // Append signature image
+                if (!empty($signature['mediateway_signature'])) {
+                    $html .= '
+                        <div style="text-align: right; margin-top: 20px;">
+                            <img src="' . asset('storage/' . $signature['mediateway_signature']) . '" style="height: 80px;" alt="Signature">
+                        </div>';
+                }
+
+                // Generate PDF
+                $pdf = PDF::loadHTML($html)->setPaper('A4', 'portrait')->setOptions(['isRemoteEnabled' => true]);
+
+                // Save temporary PDF
+                $tempPdfPath = tempnam(sys_get_temp_dir(), 'pdf');
+                $pdf->save($tempPdfPath);
+
+                // Wrap temp file in UploadedFile
+                $uploadedFile = new \Illuminate\Http\UploadedFile(
+                    $tempPdfPath,
+                    'notice_' . time() . '.pdf',
+                    'application/pdf',
+                    null,
+                    true
+                );
+
+                // Save file using helper
+                $savedPath = Helper::saveFile($uploadedFile, 'notices');
+            
+                Notice::create([
+                    'file_case_id' => $request->file_case_id,
+                    'notice_type' => $noticeType,
+                    'notice' => $savedPath,
+                    'notice_date' => now(),
+                    'notice_send_date' => null,
+                    'email_status' => 0,
+                    'whatsapp_status' => 0,
+                    'whatsapp_notice_status' => 0,
+                    'whatsapp_dispatch_datetime' => null,
+                ]);
+                return back()->withSuccess('Notice saved successfully.');
+            } else {
+                return back()->with('error', 'Notice already exists for this Case.');
+            }   
+        }
     }
 
     
