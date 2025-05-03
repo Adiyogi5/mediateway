@@ -4,21 +4,24 @@ namespace App\Http\Controllers\Drp;
 
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\CourtRoom;
 use App\Models\FileCase;
 use App\Models\OrderSheet;
 use App\Models\SettlementLetter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 use App\Models\Notice;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
 
 class CourtRoomController extends Controller
 {
@@ -40,11 +43,39 @@ class CourtRoomController extends Controller
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
 
-        return view('drp.courtroom.courtroomlist', compact('drp','title'));
+        $courtRoomLiveUpcoming = CourtRoom::select('court_rooms.*', 'drps.name as arbitrator_name')
+            ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
+            ->where('court_rooms.arbitrator_id', $drp->id)
+            ->where(function ($query) {
+                $query->where('court_rooms.date', '>', Carbon::today()->toDateString())
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
+                                ->where('court_rooms.time', '>=', Carbon::now()->format('H:i:s'));
+                    });
+            })
+            ->get();
+
+        $courtRoomLiveClosed = CourtRoom::select('court_rooms.*', 'drps.name as arbitrator_name')
+            ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
+            ->where('court_rooms.arbitrator_id', $drp->id)
+            ->where('court_rooms.status', 0) 
+            ->where(function ($query) {
+                $query->where('court_rooms.date', '<', Carbon::today()->toDateString())
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
+                                ->where('court_rooms.time', '<', Carbon::now()->format('H:i:s'));
+                    });
+            })
+            ->get();
+
+        $upcomingRooms = $courtRoomLiveUpcoming;
+        $closedRooms = $courtRoomLiveClosed;
+        
+        return view('drp.courtroom.courtroomlist', compact('drp','title','upcomingRooms','closedRooms'));
     }
 
 
-    public function livecourtroom(Request $request, $user = 1, $arbitrator = 1): View | JsonResponse | RedirectResponse
+    public function livecourtroom(Request $request, $caseID): View | JsonResponse | RedirectResponse
     {
         $title = 'Live Court Room';
         $drp = auth('drp')->user();
@@ -60,12 +91,19 @@ class CourtRoomController extends Controller
         $caseData = FileCase::select('file_cases.*','drps.name as arbitrator_name')->with(['file_case_details', 'guarantors'])
                 ->join('assign_cases','assign_cases.case_id','=','file_cases.id')
                 ->join('drps','drps.id','=','assign_cases.arbitrator_id')
-                ->find(32);
+                ->find($caseID);
        
         $flattenedCaseData = $this->flattenCaseData($caseData);
-        // dd($flattenedCaseData);
+     
         $orderSheetTemplates = OrderSheet::where('status', 1)->where('drp_type', 1)->get();
         $settlementLetterTemplates = SettlementLetter::where('status', 1)->where('drp_type', 1)->get();
+
+        //ZegoCloud Service---------------------
+        $localUserID = 'Drp_' . $drp->id; // e.g., drp_5 - Arbitrator
+        $remoteUserID = $caseData->id; // Individual or Organization
+        $roomID = $caseData->case_number;
+        // dd($remoteUserID);
+        $zegoToken = $this->generateZegoToken($localUserID, $drp->name);
 
         return view('drp.courtroom.livecourtroom', compact(
             'drp',
@@ -73,9 +111,37 @@ class CourtRoomController extends Controller
             'caseData',
             'orderSheetTemplates',
             'settlementLetterTemplates',
-            'flattenedCaseData'
+            'flattenedCaseData',
+            'localUserID',
+            'remoteUserID',
+            'roomID',
+            'zegoToken'
         ));
     }
+
+    public function generateZegoToken($userID)
+    {
+        $appId = env('ZEGO_APP_ID');
+        $serverSecret = env('ZEGO_SERVER_SECRET');
+        $expirationTime = 3600; // Token valid for 1 hour
+
+        return $this->createZegoToken($appId, $serverSecret, $userID, $expirationTime);
+    }
+    
+    private function createZegoToken($appId, $serverSecret, $userId, $expiration = 3600)
+    {
+        $currentTime = time();
+        $payload = [
+            "app_id" => (int)$appId,
+            "user_id" => (string)$userId,
+            "nonce" => rand(100000, 999999),
+            "ctime" => $currentTime,
+            "expire" => $expiration,
+        ];
+    
+        return JWT::encode($payload, $serverSecret, 'HS256');
+    }
+    
 
     function flattenCaseData($caseData) {
         $flat = [];

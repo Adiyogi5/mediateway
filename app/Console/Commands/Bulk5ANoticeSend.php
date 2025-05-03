@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class Bulk4ANoticeSend extends Command
+class Bulk5ANoticeSend extends Command
 {
     /**
      * The name and signature of the console command.

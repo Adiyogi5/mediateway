@@ -1,12 +1,24 @@
 @extends('layouts.front')
-<link href="{{ asset('assets/css/light/main.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/css/light/waves.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/plugins/fontawesome-pro/css/all.min.css') }}" rel="stylesheet" />
-<link href="{{ asset('assets/plugins/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/plugins/datatables/dt-global_style.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet" id="user-style-default" />
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/summernote/summernote.min.css') }}">
+<style type="text/css">
+    #local-video, #remote-video {
+        width: 100%;
+        height: 600px;
+        border: 1px solid #dfdfdf;
+    }
 
+    #local-video {
+        position: relative;
+        margin: 0 auto;
+        display: block;
+    }
+
+    #remote-video {
+        display: flex;
+        margin: auto;
+        position: relative !important;
+    }
+</style>
 @section('content')
     {{-- ===============Breadcrumb Start============= --}}
     @include('front.includes.profile_header')
@@ -29,25 +41,23 @@
                             </div>
                             <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon">
-                                    {{-- @if (Helper::userCan(111, 'can_add')) --}}
                                     <a href="{{ route('individual.courtroom.courtroomlist') }}" class="btn btn-outline-secondary">
                                         <i class="fa fa-list me-1"></i>
                                         Court Lists
                                     </a>
-                                    {{-- @endif --}}
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="card-body px-0 pb-0 table-meetinglist">
                         <div class="row gy-3">
-                            <div class="col-12">
+                            <div class="col-12 mb-3">
                                 <div class="livemeeting-card">
-                                    <div class="w-100" style="height: 500px"></div>
+                                    <div class="w-100" id="root"></div>
                                 </div>
                             </div>
 
-                            <div class="col-lg-7 col-12">
+                            <div class="col-lg-12 col-12">
                                 <div class="livemeeting-card h-100">
                                     <h4 class="livemeetingcard-heading">UPDATES</h4>
                                     <div class="card mt-3 border-1 active overflow-hidden">
@@ -98,13 +108,36 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/js/jquery.validate.js') }}"></script>
-    <script src="{{ asset('assets/js/custom-methods.js') }}"></script>
-    <script src="{{ asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
-    <script src="{{ asset('assets/js/waves.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/datatables.min.js') }}"></script>
-    <script src="{{ asset('assets/js/app.js') }}"></script>
-    <script src="{{ asset('assets/js/custom.js') }}"></script>
-    <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>    
+    <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>  
+    <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+
+    <script>
+        const roomID = "{{ $roomID }}"; // e.g., "SBI-000002-08-04-2025"
+        const userID = "{{ $localUserID }}"; // e.g., "1"
+        const userName = "{{ $individual->name }}"; // e.g., "Ravindra"
+        const appID = {{ config('services.zegocloud.app_id') }}; // e.g., 444149318
+        const serverSecret = "{{ config('services.zegocloud.server_secret') }}"; // must be from config (not empty string)
+        
+        // Generate a Kit Token using test method (ONLY for dev, not production)
+        const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, userID, userName);
+
+        try {
+            const zp = ZegoUIKitPrebuilt.create(kitToken);
+            zp.joinRoom({
+                container: document.querySelector("#root"),
+                sharedLinks: [{
+                    url: window.location.protocol + '//' + window.location.host + window.location.pathname + '?roomID=' + roomID,
+                }],
+                scenario: {
+                    mode: ZegoUIKitPrebuilt.VideoConference,
+                },
+                turnOnCameraWhenJoining: true,
+                turnOnMicrophoneWhenJoining: true
+            });
+        } catch (e) {
+            alert("Unable to access camera or microphone. Please check your device and browser permissions.");
+            console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(e));
+        }
+    </script>
 @endsection

@@ -44,71 +44,42 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Name</th>
+                                                <th scope="col">Case Number</th>
+                                                <th scope="col">Arbitrator Name</th>
                                                 <th scope="col">Date</th>
                                                 <th scope="col">Time</th>
                                                 <th scope="col">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr class="bg-blue">
-                                                <td class="pt-2"> <img
-                                                        src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                                                        class="rounded-circle" alt="">
-                                                    <div class="pl-lg-5 pl-md-3 pl-1 name">Emilia Kollette</div>
-                                                </td>
-                                                <td class="pt-3 mt-1">25 April 2025</td>
-                                                <td class="pt-3">11:00 AM</td>
-                                                <td class="pt-3"><span class="fa fa-check pl-3"></span></td>
-                                                <td class="pt-3"><button
-                                                        class="fa fa-video btn bg-success text-white text-capitalize fs-6"></button></td>
-                                            </tr>
-                                            <tr id="spacing-row">
-                                                <td></td>
-                                            </tr>
-                                            <tr class="bg-blue">
-                                                <td class="pt-2"> <img
-                                                        src="https://images.pexels.com/photos/3765114/pexels-photo-3765114.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-                                                        class="rounded-circle" alt="">
-                                                    <div class="pl-lg-5 pl-md-3 pl-1 name">Anny Adams</div>
-                                                </td>
-                                                <td class="pt-3">26 April 2025</td>
-                                                <td class="pt-3">11:00 AM</td>
-                                                <td class="pt-3"><span class="fa fa-check pl-3"></span></td>
-                                                <td class="pt-3"><button
-                                                        class="fa fa-video btn bg-secondary text-white"></button></td>
-                                            </tr>
-                                            <tr id="spacing-row">
-                                                <td></td>
-                                            </tr>
-                                            <tr class="bg-blue">
-                                                <td class="pt-2"> <img
-                                                        src="https://images.pexels.com/photos/3779448/pexels-photo-3779448.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                                                        class="rounded-circle" alt="">
-                                                    <div class="pl-lg-5 pl-md-3 pl-1 name">Arnold Linn</div>
-                                                </td>
-                                                <td class="pt-3">26 April 2025</td>
-                                                <td class="pt-3">02:00 PM</td>
-                                                <td class="pt-3"><span class="fa fa-check pl-3"></span></td>
-                                                <td class="pt-3"><button
-                                                        class="fa fa-video btn bg-secondary text-white"></button></td>
-                                            </tr>
-                                            <tr id="spacing-row">
-                                                <td></td>
-                                            </tr>
-                                            <tr class="bg-blue">
-                                                <td class="pt-2"> <img
-                                                        src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                                                        class="rounded-circle" alt="">
-                                                    <div class="pl-lg-5 pl-md-3 pl-1 name">Josh Limosel</div>
-                                                </td>
-                                                <td class="pt-3">26 April 2025</td>
-                                                <td class="pt-3">04:00 PM</td>
-                                                <td class="pt-3"><span class="fa fa-check pl-3"></span></td>
-                                                <td class="pt-3"><button
-                                                        class="fa fa-video btn bg-secondary text-white"></button></td>
-                                            </tr>
-                                        </tbody>
+                                            @forelse ($upcomingRooms as $room)
+                                                <tr class="bg-blue">
+                                                    <td class="pt-2">
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->case_number }}</div>
+                                                    </td>
+                                                    <td class="pt-2">
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->arbitrator_name }}</div>
+                                                    </td>
+                                                    <td class="pt-3">{{ \Carbon\Carbon::parse($room->date)->format('d F Y') }}</td>
+                                                    <td class="pt-3">{{ \Carbon\Carbon::parse($room->time)->format('h:i A') }}</td>
+                                                    <td class="pt-3">
+                                                        <span class="fa {{ $room->status == 1 ? 'fa-check' : 'fa-clock' }} pl-3"></span>
+                                                    </td>
+                                                    <td class="pt-3">
+                                                        @if($room->status == 1)
+                                                            <a href="{{ route('individual.courtroom.livecourtroom', $room->case_id) }}"
+                                                               class="fa fa-video btn bg-success text-white text-capitalize fs-6">
+                                                            </a>
+                                                        @else
+                                                            <span class="fa fa-video btn bg-secondary text-white text-capitalize fs-6" style="cursor: not-allowed;"></span>
+                                                        @endif
+                                                    </td>                                                    
+                                                </tr>
+                                                <tr id="spacing-row"><td colspan="6"></td></tr>
+                                            @empty
+                                                <tr><td colspan="6" class="text-center">No upcoming cases found.</td></tr>
+                                            @endforelse
+                                            </tbody>                                            
                                     </table>
                                 </div>
                             </div>
@@ -117,71 +88,37 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Name</th>
+                                                <th scope="col">Case Number</th>
+                                                <th scope="col">Arbitrator Name</th>
                                                 <th scope="col">Date</th>
                                                 <th scope="col">Time</th>
                                                 <th scope="col">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr class="bg-blue">
-                                                <td class="pt-2"> <img
-                                                        src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                                                        class="rounded-circle" alt="">
-                                                    <div class="pl-lg-5 pl-md-3 pl-1 name">Emilia Kollette</div>
-                                                </td>
-                                                <td class="pt-3 mt-1">25 Sep 2020</td>
-                                                <td class="pt-3">11:00 AM</td>
-                                                <td class="pt-3"><span class="fa fa-close pl-3"></span></td>
-                                                <td class="pt-3"><button
-                                                        class="fa fa-handshake btn bg-secondary text-white"></button></td>
-                                            </tr>
-                                            <tr id="spacing-row">
-                                                <td></td>
-                                            </tr>
-                                            <tr class="bg-blue">
-                                                <td class="pt-2"> <img
-                                                        src="https://images.pexels.com/photos/3765114/pexels-photo-3765114.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-                                                        class="rounded-circle" alt="">
-                                                    <div class="pl-lg-5 pl-md-3 pl-1 name">Anny Adams</div>
-                                                </td>
-                                                <td class="pt-3">26 Sep 2020</td>
-                                                <td class="pt-3">11:00 AM</td>
-                                                <td class="pt-3"><span class="fa fa-close pl-3"></span></td>
-                                                <td class="pt-3"><button
-                                                        class="fa fa-handshake btn bg-secondary text-white"></button></td>
-                                            </tr>
-                                            <tr id="spacing-row">
-                                                <td></td>
-                                            </tr>
-                                            <tr class="bg-blue">
-                                                <td class="pt-2"> <img
-                                                        src="https://images.pexels.com/photos/3779448/pexels-photo-3779448.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                                                        class="rounded-circle" alt="">
-                                                    <div class="pl-lg-5 pl-md-3 pl-1 name">Arnold Linn</div>
-                                                </td>
-                                                <td class="pt-3">26 Sep 2020</td>
-                                                <td class="pt-3">02:00 PM</td>
-                                                <td class="pt-3"><span class="fa fa-close pl-3"></span></td>
-                                                <td class="pt-3"><button
-                                                        class="fa fa-handshake btn bg-secondary text-white"></button></td>
-                                            </tr>
-                                            <tr id="spacing-row">
-                                                <td></td>
-                                            </tr>
-                                            <tr class="bg-blue">
-                                                <td class="pt-2"> <img
-                                                        src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                                                        class="rounded-circle" alt="">
-                                                    <div class="pl-lg-5 pl-md-3 pl-1 name">Josh Limosel</div>
-                                                </td>
-                                                <td class="pt-3">26 Sep 2020</td>
-                                                <td class="pt-3">04:00 PM</td>
-                                                <td class="pt-3"><span class="fa fa-close pl-3"></span></td>
-                                                <td class="pt-3"><button
-                                                        class="fa fa-handshake btn bg-secondary text-white"></button></td>
-                                            </tr>
-                                        </tbody>
+                                            @forelse ($closedRooms as $room)
+                                                <tr class="bg-blue">
+                                                    <td class="pt-2">
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->case_number }}</div>
+                                                    </td>
+                                                    <td class="pt-2">
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->arbitrator_name }}</div>
+                                                    </td>
+                                                    <td class="pt-3">{{ \Carbon\Carbon::parse($room->date)->format('d F Y') }}</td>
+                                                    <td class="pt-3">{{ \Carbon\Carbon::parse($room->time)->format('h:i A') }}</td>
+                                                    <td class="pt-3">
+                                                        <span class="fa fa-close pl-3"></span>
+                                                    </td>
+                                                    <td class="pt-3">
+                                                        <button class="fa fa-handshake btn bg-secondary text-white"></button>
+                                                    </td>
+                                                </tr>
+                                                <tr id="spacing-row"><td colspan="6"></td></tr>
+                                            @empty
+                                                <tr><td colspan="6" class="text-center">No closed cases found.</td></tr>
+                                            @endforelse
+                                            </tbody>
+                                            
                                     </table>
                                 </div>
                             </div>

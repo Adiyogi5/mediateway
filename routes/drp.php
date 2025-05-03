@@ -106,7 +106,7 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
     // ----------------------- Arbitrator - Meeting Room Routes ---------------------------------------
     Route::controller(CourtRoomController::class)->group(function () {
         Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
-        Route::get('livecourtroom', 'livecourtroom')->name('courtroom.livecourtroom');
+        Route::get('livecourtroom/{caseID}', 'livecourtroom')->name('courtroom.livecourtroom');
         Route::post('/courtroom/save-notice', 'saveNotice')->name('courtroom.savenotice');
     });
 

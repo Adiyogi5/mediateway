@@ -3,7 +3,7 @@
 <style type="text/css">
     #local-video, #remote-video {
         width: 100%;
-        height: 400px;
+        height: 600px;
         border: 1px solid #dfdfdf;
     }
 
@@ -53,9 +53,9 @@
                     </div>
                     <div class="card-body px-0 pb-0 table-meetinglist">
                         <div class="row gy-3">
-                            <div class="col-12">
+                            <div class="col-12 mb-3">
                                 <div class="livemeeting-card">
-                                    <div class="w-100" id="remote-video"></div>
+                                    <div class="w-100" id="root"></div>
                                 </div>
                             </div>
 
@@ -152,9 +152,37 @@
 @section('js')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>  
-<script>
-    var ZegoExpressEngine = require('zego-express-engine-webrtc').ZegoExpressEngine
-</script>
+    <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+
+    <script>
+        const roomID = "{{ $roomID }}"; // e.g., "SBI-000002-08-04-2025"
+        const userID = "{{ $localUserID }}"; // e.g., "1"
+        const userName = "{{ $drp->name }}"; // e.g., "Ravindra"
+        const appID = {{ config('services.zegocloud.app_id') }}; // e.g., 444149318
+        const serverSecret = "{{ config('services.zegocloud.server_secret') }}"; // must be from config (not empty string)
+
+        // Generate a Kit Token using test method (ONLY for dev, not production)
+        const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, userID, userName);
+
+        try {
+            const zp = ZegoUIKitPrebuilt.create(kitToken);
+            zp.joinRoom({
+                container: document.querySelector("#root"),
+                sharedLinks: [{
+                    url: window.location.protocol + '//' + window.location.host + window.location.pathname + '?roomID=' + roomID,
+                }],
+                scenario: {
+                    mode: ZegoUIKitPrebuilt.VideoConference,
+                },
+                turnOnCameraWhenJoining: false,
+                turnOnMicrophoneWhenJoining: false
+            });
+        } catch (e) {
+            alert("Unable to access camera or microphone. Please check your device and browser permissions.");
+            console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(e));
+        }
+    </script>
+
     <script type="text/javascript">
         const allTemplates = {
             ordersheet: @json($orderSheetTemplates),
@@ -266,44 +294,4 @@
             }
         });
     </script>
-    {{-- <script>
-        // $('#tempType').on('change', function() {
-                //     const selectedOption = $(this).find('option:selected');
-                //     const rawFormat = decodeURIComponent(selectedOption.data('format') || '');
-                //     const cleanedFormat = rawFormat.replace(/<(\/?)(b|font|span)[^>]*>/gi, '');
-
-                //     try {
-                //         if (!flattenedCaseData) {
-                //             console.error("flattenedCaseData is not available");
-                //             return;
-                //         }
-
-                //         // Replace placeholders in the template
-                //         const content = cleanedFormat.replace(/\{\{([^}]+)\}\}/g, function(match, key) {
-                //             // Normalize key
-                //             let normalizedKey = key
-                //                 .replace(/&nbsp;/gi, ' ')
-                //                 .replace(/\s+/g, ' ')
-                //                 .trim()
-                //                 .toLowerCase()
-                //                 .replace(/[^a-z0-9]/g, '_');
-
-                //             const value = flattenedCaseData[normalizedKey];
-
-                //             if (value !== undefined && value !== null) {
-                //                 return value;
-                //             } else {
-                //                 console.warn(`Placeholder {${key}} is missing a value.`);
-                //                 return `[Missing: ${key}]`;
-                //             }
-                //         }); 
-
-                //         // Set the content in the Summernote editor
-                //         $('#livemeetingdata').summernote('code', content);
-
-                //     } catch (err) {
-                //         console.error("Template parse error:", err);
-                //     }
-                // });
-    </script> --}}
 @endsection

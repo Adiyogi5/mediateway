@@ -21,6 +21,11 @@ Route::get('/', function () {
     ]);
 });
 
+//Live Rooms
+Route::get('/create_live_court_room', function () {
+    Artisan::call('bulk:create-live-court-room');   
+    return '<h1>create live court room</h1>';
+});
 
 // Send All Types of Notices 
 Route::get('/bulk_send_2b_notice', function () {

@@ -31,4 +31,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'zegocloud' =>[
+        'app_id' => env('ZEGO_APP_ID'),
+        'server_secret' => env('ZEGO_SERVER_SECRET'),
+    ],
+
 ];
