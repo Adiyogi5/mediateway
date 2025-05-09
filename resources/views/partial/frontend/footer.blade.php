@@ -198,6 +198,7 @@
 <input name="config" type="hidden" value="{{ isset($config) ? json_encode($config) : null }}">
 <script src="{{ asset('assets/plugins/bootstrap/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatables/datatables.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}"></script>
 <script src="{{ asset('assets/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('assets/js/owl.carousel.min.js') }}"></script>

@@ -49,7 +49,7 @@ Route::name('individual.')->middleware(['ensure.individual.session'])->prefix('i
 
     Route::controller(CourtRoomController::class)->group(function () {
         Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
-        Route::get('livecourtroom/{caseID}', 'livecourtroom')->name('courtroom.livecourtroom');
+        Route::get('livecourtroom/{room_id}', 'livecourtroom')->name('courtroom.livecourtroom');
     });
 
     Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');

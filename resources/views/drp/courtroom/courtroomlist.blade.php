@@ -52,8 +52,9 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Case Number</th>
-                                                <th scope="col">Arbitrator Name</th>
+                                                <th scope="col">Case Numbers</th>
+                                                <th scope="col">Individual Names</th>
+                                                <th scope="col">Organization Names</th>
                                                 <th scope="col">Date</th>
                                                 <th scope="col">Time</th>
                                                 <th scope="col">Status</th>
@@ -63,10 +64,13 @@
                                             @forelse ($upcomingRooms as $room)
                                                 <tr class="bg-blue">
                                                     <td class="pt-2">
-                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->case_number }}</div>
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->case_numbers ?? '-' }}</div>
                                                     </td>
                                                     <td class="pt-2">
-                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->arbitrator_name }}</div>
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->individual_name ?? '-' }}</div>
+                                                    </td>
+                                                    <td class="pt-2">
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->organization_name ?? '-' }}</div>
                                                     </td>
                                                     <td class="pt-3">{{ \Carbon\Carbon::parse($room->date)->format('d F Y') }}</td>
                                                     <td class="pt-3">{{ \Carbon\Carbon::parse($room->time)->format('h:i A') }}</td>
@@ -75,13 +79,13 @@
                                                     </td>
                                                     <td class="pt-3">
                                                         @if($room->status == 1)
-                                                            <a href="{{ route('individual.courtroom.livecourtroom', $room->case_id) }}"
-                                                               class="fa fa-video btn bg-success text-white text-capitalize fs-6">
+                                                            <a href="{{ route('drp.courtroom.livecourtroom', $room->room_id) }}?case_ids={{ $room->case_ids }}"
+                                                               class="fa fa-video btn bg-success text-white text-capitalize fs-6 me-1">
                                                             </a>
                                                         @else
                                                             <span class="fa fa-video btn bg-secondary text-white text-capitalize fs-6" style="cursor: not-allowed;"></span>
                                                         @endif
-                                                    </td>                                                    
+                                                    </td>                                                                                                       
                                                 </tr>
                                                 <tr id="spacing-row"><td colspan="6"></td></tr>
                                             @empty
@@ -97,8 +101,9 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Case Number</th>
-                                                <th scope="col">Arbitrator Name</th>
+                                                <th scope="col">Case Numbers</th>
+                                                <th scope="col">Individual Names</th>
+                                                <th scope="col">Organization Names</th>
                                                 <th scope="col">Date</th>
                                                 <th scope="col">Time</th>
                                                 <th scope="col">Status</th>
@@ -108,10 +113,13 @@
                                             @forelse ($closedRooms as $room)
                                                 <tr class="bg-blue">
                                                     <td class="pt-2">
-                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->case_number }}</div>
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->case_numbers ?? '-' }}</div>
                                                     </td>
                                                     <td class="pt-2">
-                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->arbitrator_name }}</div>
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->individual_name ?? '-' }}</div>
+                                                    </td>
+                                                    <td class="pt-2">
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->organization_name ?? '-' }}</div>
                                                     </td>
                                                     <td class="pt-3">{{ \Carbon\Carbon::parse($room->date)->format('d F Y') }}</td>
                                                     <td class="pt-3">{{ \Carbon\Carbon::parse($room->time)->format('h:i A') }}</td>

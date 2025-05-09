@@ -22,6 +22,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class CourtRoomController extends Controller
 {
@@ -43,22 +44,59 @@ class CourtRoomController extends Controller
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
 
-        $courtRoomLiveUpcoming = CourtRoom::select('court_rooms.*', 'drps.name as arbitrator_name')
+        
+        $courtRoomLiveUpcoming = CourtRoom::select(
+                'court_rooms.*',
+                'drps.name as arbitrator_name',
+                DB::raw('GROUP_CONCAT(DISTINCT individuals.name SEPARATOR ", ") as individual_name'),
+                DB::raw('GROUP_CONCAT(DISTINCT organizations.name SEPARATOR ", ") as organization_name'),
+                DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
+                DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
+            )
             ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
+            ->leftJoin('individuals', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(individuals.id, court_rooms.individual_id)"), '>', DB::raw('0'));
+            })
+            ->leftJoin('organizations', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(organizations.id, court_rooms.organization_id)"), '>', DB::raw('0'));
+            })
+            ->leftJoin('file_cases', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(file_cases.individual_id, court_rooms.individual_id)"), '>', DB::raw('0'))
+                    ->orOn(DB::raw("FIND_IN_SET(file_cases.organization_id, court_rooms.organization_id)"), '>', DB::raw('0'));
+            })
             ->where('court_rooms.arbitrator_id', $drp->id)
             ->where(function ($query) {
-                $query->where('court_rooms.date', '>', Carbon::today()->toDateString())
+                $query->where('court_rooms.date', '>=', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
                         $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
                                 ->where('court_rooms.time', '>=', Carbon::now()->format('H:i:s'));
                     });
             })
+            ->groupBy('court_rooms.id')
             ->get();
+        
 
-        $courtRoomLiveClosed = CourtRoom::select('court_rooms.*', 'drps.name as arbitrator_name')
+        $courtRoomLiveClosed = CourtRoom::select(
+                'court_rooms.*',
+                'drps.name as arbitrator_name',
+                DB::raw('GROUP_CONCAT(DISTINCT individuals.name SEPARATOR ", ") as individual_name'),
+                DB::raw('GROUP_CONCAT(DISTINCT organizations.name SEPARATOR ", ") as organization_name'),
+                DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
+                DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
+            )
             ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
+            ->leftJoin('individuals', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(individuals.id, court_rooms.individual_id)"), '>', DB::raw('0'));
+            })
+            ->leftJoin('organizations', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(organizations.id, court_rooms.organization_id)"), '>', DB::raw('0'));
+            })
+            ->leftJoin('file_cases', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(file_cases.individual_id, court_rooms.individual_id)"), '>', DB::raw('0'))
+                    ->orOn(DB::raw("FIND_IN_SET(file_cases.organization_id, court_rooms.organization_id)"), '>', DB::raw('0'));
+            })
             ->where('court_rooms.arbitrator_id', $drp->id)
-            ->where('court_rooms.status', 0) 
+            ->where('court_rooms.status', 0)
             ->where(function ($query) {
                 $query->where('court_rooms.date', '<', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
@@ -66,6 +104,7 @@ class CourtRoomController extends Controller
                                 ->where('court_rooms.time', '<', Carbon::now()->format('H:i:s'));
                     });
             })
+            ->groupBy('court_rooms.id')
             ->get();
 
         $upcomingRooms = $courtRoomLiveUpcoming;
@@ -75,7 +114,7 @@ class CourtRoomController extends Controller
     }
 
 
-    public function livecourtroom(Request $request, $caseID): View | JsonResponse | RedirectResponse
+    public function livecourtroom(Request $request, $room_id): View | JsonResponse | RedirectResponse
     {
         $title = 'Live Court Room';
         $drp = auth('drp')->user();
@@ -88,21 +127,26 @@ class CourtRoomController extends Controller
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
 
-        $caseData = FileCase::select('file_cases.*','drps.name as arbitrator_name')->with(['file_case_details', 'guarantors'])
-                ->join('assign_cases','assign_cases.case_id','=','file_cases.id')
-                ->join('drps','drps.id','=','assign_cases.arbitrator_id')
-                ->find($caseID);
+        $caseIds = explode(',', $request->query('case_ids'));
+
+          // Fetch the case data with all joins and relationships
+        $caseData = FileCase::select('file_cases.*', 'drps.name as arbitrator_name')
+            ->with(['file_case_details', 'guarantors'])
+            ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
+            ->join('drps', 'drps.id', '=', 'assign_cases.arbitrator_id')
+            ->whereIn('file_cases.id', $caseIds) // Use whereIn instead of find()
+            ->get();
        
         $flattenedCaseData = $this->flattenCaseData($caseData);
      
         $orderSheetTemplates = OrderSheet::where('status', 1)->where('drp_type', 1)->get();
         $settlementLetterTemplates = SettlementLetter::where('status', 1)->where('drp_type', 1)->get();
-
+        
         //ZegoCloud Service---------------------
-        $localUserID = 'Drp_' . $drp->id; // e.g., drp_5 - Arbitrator
-        $remoteUserID = $caseData->id; // Individual or Organization
-        $roomID = $caseData->case_number;
-        // dd($remoteUserID);
+        $localUserID = $drp->slug; // Arbitrator
+        $remoteUserID = $caseIds; // Individual
+        $roomID = $room_id;
+     
         $zegoToken = $this->generateZegoToken($localUserID, $drp->name);
 
         return view('drp.courtroom.livecourtroom', compact(
@@ -142,6 +186,23 @@ class CourtRoomController extends Controller
         return JWT::encode($payload, $serverSecret, 'HS256');
     }
     
+    public function getFlattenedCaseData($caseId)
+    {
+        $caseData = FileCase::select('file_cases.*', 'drps.name as arbitrator_name')
+            ->with(['file_case_details', 'guarantors'])
+            ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
+            ->join('drps', 'drps.id', '=', 'assign_cases.arbitrator_id')
+            ->where('file_cases.id', $caseId)
+            ->first();
+
+        if ($caseData) {
+            $flattenedCaseData = $this->flattenCaseData(collect([$caseData]));
+            return response()->json($flattenedCaseData, 200);
+        }
+
+        return response()->json(['error' => 'Case not found'], 404);
+    }
+
 
     function flattenCaseData($caseData) {
         $flat = [];

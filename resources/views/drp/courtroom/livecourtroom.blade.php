@@ -1,7 +1,8 @@
 @extends('layouts.front')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/summernote/summernote.min.css') }}">
 <style type="text/css">
-    #local-video, #remote-video {
+    #local-video,
+    #remote-video {
         width: 100%;
         height: 600px;
         border: 1px solid #dfdfdf;
@@ -54,9 +55,11 @@
                     <div class="card-body px-0 pb-0 table-meetinglist">
                         <div class="row gy-3">
                             <div class="col-12 mb-3">
+
                                 <div class="livemeeting-card">
                                     <div class="w-100" id="root"></div>
                                 </div>
+
                             </div>
 
                             <div class="col-lg-12 col-12 order-lg-1 order-2">
@@ -104,8 +107,20 @@
                             <div class="col-lg-12 col-12 order-lg-2 order-1">
                                 <form id="sendnoticeForm" action="{{ route('drp.courtroom.savenotice') }}" method="POST">
                                     @csrf
-                                    <input type="hidden" name="file_case_id" value="{{ $caseData->id }}">
                                     <div class="livemeeting-card h-100">
+                                        <!-- Case Number Select -->
+                                        <div class="form-group mb-3">
+                                            <label for="file_case_id" class="form-label fw-bold">Select Case</label>
+                                            <select class="form-select" id="caseSelector" name="file_case_id">
+                                                <option selected disabled>Select Case Number</option>
+                                                @foreach ($caseData as $case)
+                                                    <option value="{{ $case->id }}"
+                                                        data-case="{{ json_encode($case) }}">
+                                                        {{ $case->case_number }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                         <div class="form-group">
                                             <textarea class="form-control" rows="5" id="livemeetingdata" name="livemeetingdata">{{ old('livemeetingdata') }}</textarea>
                                             @error('livemeetingdata')
@@ -151,15 +166,15 @@
 
 @section('js')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>  
+    <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>
     <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
 
     <script>
-        const roomID = "{{ $roomID }}"; // e.g., "SBI-000002-08-04-2025"
-        const userID = "{{ $localUserID }}"; // e.g., "1"
-        const userName = "{{ $drp->name }}"; // e.g., "Ravindra"
-        const appID = {{ config('services.zegocloud.app_id') }}; // e.g., 444149318
-        const serverSecret = "{{ config('services.zegocloud.server_secret') }}"; // must be from config (not empty string)
+        const roomID = "{{ $roomID }}";
+        const userID = "{{ $localUserID }}";
+        const userName = "{{ $drp->name }}";
+        const appID = {{ config('services.zegocloud.app_id') }};
+        const serverSecret = "{{ config('services.zegocloud.server_secret') }}";
 
         // Generate a Kit Token using test method (ONLY for dev, not production)
         const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, userID, userName);
@@ -169,26 +184,27 @@
             zp.joinRoom({
                 container: document.querySelector("#root"),
                 sharedLinks: [{
-                    url: window.location.protocol + '//' + window.location.host + window.location.pathname + '?roomID=' + roomID,
+                    url: window.location.protocol + '//' + window.location.host + window.location.pathname +
+                        '?roomID=' + roomID,
                 }],
                 scenario: {
                     mode: ZegoUIKitPrebuilt.VideoConference,
                 },
-                turnOnCameraWhenJoining: false,
-                turnOnMicrophoneWhenJoining: false
+                turnOnCameraWhenJoining: true,
+                turnOnMicrophoneWhenJoining: true,
+                showPreJoinView: false
             });
         } catch (e) {
             alert("Unable to access camera or microphone. Please check your device and browser permissions.");
             console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(e));
         }
     </script>
-
     <script type="text/javascript">
         const allTemplates = {
             ordersheet: @json($orderSheetTemplates),
             settlementletter: @json($settlementLetterTemplates),
         };
-        const flattenedCaseData = @json($flattenedCaseData); // Make sure this is correct
+        let flattenedCaseData = @json($flattenedCaseData); // Make sure this is correct
 
         $(document).ready(function() {
             $('#livemeetingdata').summernote({
@@ -197,6 +213,27 @@
                     ['font', ['bold', 'italic', 'underline', 'clear']],
                     ['para', ['paragraph']],
                 ]
+            });
+
+            // Handle Case Selector Change
+            $('#caseSelector').on('change', function() {
+                const caseId = $(this).val();
+                // Reset `docType` and `tempType` to their default options
+                $('#docType').prop('selectedIndex', 0);  // Reset to "Document Type"
+                $('#tempType').html('<option selected disabled>Template Type</option>'); // Clear and reset
+                // Fetch the flattened data dynamically
+                $.ajax({
+                    url: "{{ route('drp.courtroom.getFlattenedCaseData', ':caseId') }}".replace(
+                        ':caseId', caseId),
+                    method: 'GET',
+                    success: function(data) {
+                        console.log("Flattened Data:", data);
+                        flattenedCaseData = data; // Update the global flattenedCaseData
+                    },
+                    error: function(error) {
+                        console.error("Error fetching case data:", error);
+                    }
+                });
             });
 
             $('#docType').on('change', function() {
@@ -279,13 +316,13 @@
             },
             errorElement: 'span',
             errorClass: 'invalid-feedback',
-            highlight: function (element) {
+            highlight: function(element) {
                 $(element).addClass('is-invalid');
             },
-            unhighlight: function (element) {
+            unhighlight: function(element) {
                 $(element).removeClass('is-invalid');
             },
-            errorPlacement: function (error, element) {
+            errorPlacement: function(error, element) {
                 if (element.parent('.input-group').length) {
                     error.insertAfter(element.parent());
                 } else {

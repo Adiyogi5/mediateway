@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Http;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class CourtRoomController extends Controller
 {
@@ -34,11 +35,19 @@ class CourtRoomController extends Controller
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
 
-        $courtRoomLiveUpcoming = CourtRoom::select('court_rooms.*', 'drps.name as arbitrator_name')
+        $courtRoomLiveUpcoming = CourtRoom::select(
+                'court_rooms.*',
+                'drps.name as arbitrator_name',
+                'file_cases.id as case_id',
+                'file_cases.case_number'
+            )
             ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
-            ->where('court_rooms.individual_id', $individual->id)
+            ->leftJoin('file_cases', function($join) use ($individual) {
+                $join->on('file_cases.individual_id', '=', DB::raw($individual->id));
+            })
+            ->whereRaw("FIND_IN_SET(?, court_rooms.individual_id) > 0", [$individual->id])
             ->where(function ($query) {
-                $query->where('court_rooms.date', '>', Carbon::today()->toDateString())
+                $query->where('court_rooms.date', '>=', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
                         $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
                                 ->where('court_rooms.time', '>=', Carbon::now()->format('H:i:s'));
@@ -46,9 +55,17 @@ class CourtRoomController extends Controller
             })
             ->get();
 
-        $courtRoomLiveClosed = CourtRoom::select('court_rooms.*', 'drps.name as arbitrator_name')
+        $courtRoomLiveClosed = CourtRoom::select(
+                'court_rooms.*',
+                'drps.name as arbitrator_name',
+                'file_cases.id as case_id',
+                'file_cases.case_number'
+            )
             ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
-            ->where('court_rooms.individual_id', $individual->id)
+            ->leftJoin('file_cases', function($join) use ($individual) {
+                $join->on('file_cases.individual_id', '=', DB::raw($individual->id));
+            })
+            ->whereRaw("FIND_IN_SET(?, court_rooms.individual_id) > 0", [$individual->id])
             ->where('court_rooms.status', 0) 
             ->where(function ($query) {
                 $query->where('court_rooms.date', '<', Carbon::today()->toDateString())
@@ -66,7 +83,7 @@ class CourtRoomController extends Controller
     }
 
 
-    public function livecourtroom(Request $request, $caseID): View | JsonResponse | RedirectResponse
+    public function livecourtroom(Request $request, $room_id): View | JsonResponse | RedirectResponse
     {
         $title = 'Live Court Room';
         $individual = auth('individual')->user();
@@ -75,16 +92,20 @@ class CourtRoomController extends Controller
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
 
-        $caseData = FileCase::select('file_cases.*','drps.name as arbitrator_name')->with(['file_case_details', 'guarantors'])
-            ->join('assign_cases','assign_cases.case_id','=','file_cases.id')
-            ->join('drps','drps.id','=','assign_cases.arbitrator_id')
-            ->find($caseID);
-
+        $caseId = $request->query('case_id');
+       
+        $caseData = FileCase::select('file_cases.*', 'drps.id as arbitrator_id', 'drps.name as arbitrator_name')
+            ->with(['file_case_details', 'guarantors'])
+            ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
+            ->join('drps', 'drps.id', '=', 'assign_cases.arbitrator_id')
+            ->where('file_cases.id', $caseId) // Use whereIn instead of find()
+            ->get();
+      
         //ZegoCloud Service---------------------
-        $localUserID = $individual->id; // e.g., Individual 
-        $remoteUserID = $caseData->id; // Individual or Organization
-        $roomID = $caseData->case_number;
-
+        $localUserID = $individual->slug; // e.g., Individual 
+        $remoteUserID = $caseData->first()->arbitrator_id; // Drp
+        $roomID = $room_id;
+    
         $zegoToken = $this->generateZegoToken($localUserID, $individual->name);
         
         return view('individual.courtroom.livecourtroom', compact(
