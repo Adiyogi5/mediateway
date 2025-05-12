@@ -15,9 +15,13 @@ use App\Models\News;
 use App\Rules\ReCaptcha;
 use App\Models\Testimonial;
 use Illuminate\Http\Request;
+use App\Models\FileCase;
+use Carbon\Carbon;
+use Firebase\JWT\JWT;
 
 class FrontController extends Controller
 {
+
     public function index(Request $request)
     {
         $banners             = Banner::where('status', 1)->get()->toArray();
@@ -29,6 +33,73 @@ class FrontController extends Controller
 
         return view('front.home', compact('banners', 'frontHomecmsWelcome', 'frontHomecmsAbout', 'features', 'testimonials', 'clients'));
     }
+
+
+    // =========== Guest Enty in Court Room =============
+    public function guestLivecourtroom(Request $request, $room_id)
+    {
+        $title = 'Live Court Room - Guest Access';
+        
+        // Check if case ID is present in the URL
+        $caseId = $request->query('case_id');
+        if (!$caseId) {
+            return redirect()->route('front.home')->withInfo('Invalid Case ID.');
+        }
+
+        // Fetch Case Data
+        $caseData = FileCase::select('file_cases.*', 'drps.id as arbitrator_id', 'drps.name as arbitrator_name')
+            ->with(['file_case_details', 'guarantors'])
+            ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
+            ->join('drps', 'drps.id', '=', 'assign_cases.arbitrator_id')
+            ->where('file_cases.id', $caseId)
+            ->get();
+
+        if ($caseData->isEmpty()) {
+            return redirect()->route('front.home')->withInfo('Invalid Case Data.');
+        }
+
+        // Generate guest details
+        $localUserID = $caseData->first()->case_number; 
+        $remoteUserID = $caseData->first()->arbitrator_id;
+        $guestName = $caseData->first()->respondent_first_name . ' ' . $caseData->first()->respondent_last_name . ' (' . $caseData->first()->case_number . ')';
+
+        // ZegoCloud Token Generation
+        $zegoToken = $this->generateZegoToken($localUserID, $guestName);
+
+        // Render the view
+        return view('front.guest.livecourtroom', compact(
+            'title',
+            'localUserID',
+            'remoteUserID',
+            'room_id',
+            'zegoToken',
+            'guestName'
+        ));
+    }
+
+    public function generateZegoToken($userID, $userName)
+    {
+        $appId = env('ZEGO_APP_ID');
+        $serverSecret = env('ZEGO_SERVER_SECRET');
+        $expirationTime = 3600; // Token valid for 1 hour
+
+        return $this->createZegoToken($appId, $serverSecret, $userID, $expirationTime);
+    }
+    
+    private function createZegoToken($appId, $serverSecret, $userId, $expiration = 3600)
+    {
+        $currentTime = time();
+        $payload = [
+            "app_id" => (int)$appId,
+            "user_id" => (string)$userId,
+            "nonce" => rand(100000, 999999),
+            "ctime" => $currentTime,
+            "expire" => $expiration,
+        ];
+    
+        return JWT::encode($payload, $serverSecret, 'HS256');
+    }
+
 
     // ############ Show CMS ###########
     public function showCms(Request $request, $slug)

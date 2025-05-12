@@ -47,7 +47,7 @@ class CourtRoomController extends Controller
             })
             ->whereRaw("FIND_IN_SET(?, court_rooms.individual_id) > 0", [$individual->id])
             ->where(function ($query) {
-                $query->where('court_rooms.date', '>=', Carbon::today()->toDateString())
+                $query->where('court_rooms.date', '>', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
                         $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
                                 ->where('court_rooms.time', '>=', Carbon::now()->format('H:i:s'));
@@ -71,7 +71,7 @@ class CourtRoomController extends Controller
                 $query->where('court_rooms.date', '<', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
                         $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
-                                ->where('court_rooms.time', '<', Carbon::now()->format('H:i:s'));
+                                ->where('court_rooms.time', '<=', Carbon::now()->format('H:i:s'));
                     });
             })
             ->get();

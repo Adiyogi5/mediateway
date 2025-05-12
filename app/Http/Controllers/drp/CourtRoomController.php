@@ -66,7 +66,7 @@ class CourtRoomController extends Controller
             })
             ->where('court_rooms.arbitrator_id', $drp->id)
             ->where(function ($query) {
-                $query->where('court_rooms.date', '>=', Carbon::today()->toDateString())
+                $query->where('court_rooms.date', '>', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
                         $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
                                 ->where('court_rooms.time', '>=', Carbon::now()->format('H:i:s'));
@@ -101,7 +101,7 @@ class CourtRoomController extends Controller
                 $query->where('court_rooms.date', '<', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
                         $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
-                                ->where('court_rooms.time', '<', Carbon::now()->format('H:i:s'));
+                                ->where('court_rooms.time', '<=', Carbon::now()->format('H:i:s'));
                     });
             })
             ->groupBy('court_rooms.id')
@@ -194,7 +194,7 @@ class CourtRoomController extends Controller
             ->join('drps', 'drps.id', '=', 'assign_cases.arbitrator_id')
             ->where('file_cases.id', $caseId)
             ->first();
-
+        
         if ($caseData) {
             $flattenedCaseData = $this->flattenCaseData(collect([$caseData]));
             return response()->json($flattenedCaseData, 200);
@@ -203,6 +203,15 @@ class CourtRoomController extends Controller
         return response()->json(['error' => 'Case not found'], 404);
     }
 
+    public function fetchNoticesByCaseId(Request $request)
+    {
+        $caseId = $request->case_id;
+        $notices = Notice::where('file_case_id', $caseId)
+            // ->where('email_status', 1)
+            ->get();
+
+        return response()->json($notices);
+    }
 
     function flattenCaseData($caseData) {
         $flat = [];
@@ -400,5 +409,26 @@ class CourtRoomController extends Controller
         }
     }
 
-    
+    public function closeCourtRoom(Request $request)
+    {
+        $roomId = $request->room_id;
+
+        $courtRoom = CourtRoom::where('room_id', $roomId)->first();
+
+        if ($courtRoom) {
+            $courtRoom->status = 0; // Change status to 0
+            $courtRoom->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Court Room closed successfully.'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Court Room not found.'
+        ]);
+    }
+
 }
