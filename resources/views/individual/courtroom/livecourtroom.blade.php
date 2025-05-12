@@ -62,45 +62,58 @@
                             </div>
 
                             <div class="col-lg-12 col-12">
-                                <div class="livemeeting-card h-100">
-                                    <h4 class="livemeetingcard-heading">UPDATES</h4>
-                                    <div class="card mt-3 border-1 active overflow-hidden">
-                                        <div class="card-body py-2 px-md-3 px-2">
-                                            <div class="row">
-                                                <div
-                                                    class="col-12 border-bottom d-md-flex justify-content-md-between d-flex justify-content-around text-center item-align-self">
-                                                    <h4 class="livemeetingcard-title">Registrar</h4>
-                                                    <h4 class="livemeetingcard-title">Registrar</h4>
-                                                    <h4 class="livemeetingcard-title">06-apr-2025 03:50pm</h4>
-                                                    <i class="fa-solid fa-trash-can"></i>
+                                <div class="livemeeting-card">
+                                    <h4 class="livemeetingcard-heading text-center justify-content-center"
+                                    style="background-color: black;color: white;padding: 5px;border-radius: 8px">Hearing/Notice
+                                    Updates</h4>
+                                
+                                    <div id="noticesContainer" style="max-height: 400px;overflow:scroll;">
+                                        @if($noticeData->isNotEmpty())
+                                            @foreach ($noticeData as $notice)
+                                                <div class="card mt-3 border-1 active overflow-hidden">
+                                                    <div class="card-body py-2 px-md-3 px-2">
+                                                        <div class="row">
+                                                            <div class="col-12 border-bottom d-md-flex justify-content-md-between d-flex justify-content-around text-center item-align-self">
+                                                                <h4 class="livemeetingcard-title mb-0">
+                                                                    Notice Date : <small>{{ \Carbon\Carbon::parse($notice->notice_date)->format('d-m-Y') }}</small>
+                                                                </h4>
+                                                                <h4 class="livemeetingcard-title mb-0">
+                                                                    Email : <small>
+                                                                        @if($notice->email_status == 0)
+                                                                            Unsend
+                                                                        @elseif($notice->email_status == 1)
+                                                                            Send
+                                                                        @elseif($notice->email_status == 2)
+                                                                            Failed
+                                                                        @else
+                                                                            Unknown
+                                                                        @endif
+                                                                    </small>
+                                                                </h4>
+                                                            </div>
+                                                            <div class="col">
+                                                                <p class="livemeetingcard-text text-muted small d-flex justify-content-between text-center">
+                                                                    {{ config('constant.notice_type')[$notice->notice_type] ?? 'Unknown Notice Type' }}
+                                                                    
+                                                                    @if($notice->notice)
+                                                                        <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                                                           href="{{ asset('storage/' . $notice->notice) }}" target="_blank">
+                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
+                                                                        </a>
+                                                                    @else
+                                                                        <span class="text-muted" style="font-size: 13px">No PDF Available</span>
+                                                                    @endif
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="col">
-                                                    <p class="livemeetingcard-text text-muted small ">
-                                                        1st Hearing MOM : The Respodent failed to attend the 1st Hearing.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            @endforeach
+                                        @else
+                                            <p class="text-muted mt-3">No notices found for this case.</p>
+                                        @endif
                                     </div>
-                                    <div class="card mt-3 border-1 active overflow-hidden">
-                                        <div class="card-body py-2 px-md-3 px-2">
-                                            <div class="row">
-                                                <div
-                                                    class="col-12 border-bottom d-md-flex justify-content-md-between d-flex justify-content-around text-center item-align-self">
-                                                    <h4 class="livemeetingcard-title">Registrar</h4>
-                                                    <h4 class="livemeetingcard-title">Registrar</h4>
-                                                    <h4 class="livemeetingcard-title">06-apr-2025 03:50pm</h4>
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                </div>
-                                                <div class="col">
-                                                    <p class="livemeetingcard-text text-muted small ">
-                                                        1st Hearing MOM : The Respodent failed to attend the 1st Hearing.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                </div>                                
                             </div>
 
                         </div>
@@ -146,4 +159,5 @@
             console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(e));
         }
     </script>
+
 @endsection

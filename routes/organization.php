@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\Organization\CourtRoomController;
 use App\Http\Controllers\Organization\FileCaseController;
 use App\Http\Controllers\Organization\HomeController;
 use App\Http\Controllers\Organization\ProfileController;
@@ -69,6 +70,11 @@ Route::name('organization.')->middleware(['ensure.organization.session', 'organi
 
     });
 
+    Route::controller(CourtRoomController::class)->group(function () {
+        Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
+        Route::get('livecourtroom/{room_id}', 'livecourtroom')->name('courtroom.livecourtroom');
+        Route::post('/fetch-organization-notices', 'fetchNoticesByCaseId')->name('courtroom.fetch.notices');
+    });
 
     Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');
 });

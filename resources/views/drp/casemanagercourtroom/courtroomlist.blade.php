@@ -29,7 +29,7 @@
                             </div>
                             {{-- <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon">
-                                    <a href="{{ route('drp.courtroom.courtroomlist') }}" class="btn btn-outline-secondary">
+                                    <a href="{{ route('drp.casemanagercourtroom.courtroomlist') }}" class="btn btn-outline-secondary">
                                         <i class="fa fa-plus me-1"></i>
                                         Add Court Room
                                     </a>
@@ -136,7 +136,7 @@
                                                     </td>
                                                     <td class="pt-3">
                                                         @if($room->status == 1)
-                                                            <a href="{{ route('drp.courtroom.livecourtroom', $room->room_id) }}?case_ids={{ $room->case_ids }}"
+                                                            <a href="{{ route('drp.casemanagercourtroom.livecourtroom', $room->room_id) }}?case_ids={{ $room->case_ids }}"
                                                                class="fa fa-video btn bg-success text-white text-capitalize fs-6 me-1">
                                                             </a>
                                                         @else

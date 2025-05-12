@@ -55,7 +55,26 @@
                                             @forelse ($upcomingRooms as $room)
                                                 <tr class="bg-blue">
                                                     <td class="pt-2">
-                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->case_number }}</div>
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">
+                                                            {{ Str::before($room->case_numbers, ',') ?? '-' }}
+                
+                                                            @if(Str::contains($room->case_numbers, ','))
+                                                                @php
+                                                                    $caseList = '<ul>';
+                                                                    foreach (explode(',', $room->case_numbers) as $case) {
+                                                                        $caseList .= "<li>$case</li>";
+                                                                    }
+                                                                    $caseList .= '</ul>';
+                                                                @endphp
+                                            
+                                                                <i class="fa fa-info-circle text-primary ml-2 info-icon"
+                                                                   id="caseInfo_{{ $room->id }}"
+                                                                   data-bs-toggle="popover"
+                                                                   data-bs-html="true"
+                                                                   data-bs-content='{!! $caseList !!}'>
+                                                                </i>
+                                                            @endif
+                                                        </div>
                                                     </td>
                                                     <td class="pt-2">
                                                         <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->arbitrator_name }}</div>
@@ -67,7 +86,7 @@
                                                     </td>
                                                     <td class="pt-3">
                                                         @if($room->status == 1)
-                                                            <a href="{{ route('individual.courtroom.livecourtroom', $room->room_id) }}?case_id={{ $room->case_id }}"
+                                                            <a href="{{ route('organization.courtroom.livecourtroom', $room->room_id) }}?case_id={{ $room->court_room_case_id }}"
                                                                class="fa fa-video btn bg-success text-white text-capitalize fs-6">
                                                             </a>
                                                         @else
@@ -99,7 +118,26 @@
                                             @forelse ($closedRooms as $room)
                                                 <tr class="bg-blue">
                                                     <td class="pt-2">
-                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->case_number }}</div>
+                                                        <div class="pl-lg-5 pl-md-3 pl-1 name">
+                                                            {{ Str::before($room->case_numbers, ',') ?? '-' }}
+                
+                                                            @if(Str::contains($room->case_numbers, ','))
+                                                                @php
+                                                                    $caseList = '<ul>';
+                                                                    foreach (explode(',', $room->case_numbers) as $case) {
+                                                                        $caseList .= "<li>$case</li>";
+                                                                    }
+                                                                    $caseList .= '</ul>';
+                                                                @endphp
+                                            
+                                                                <i class="fa fa-info-circle text-primary ml-2 info-icon"
+                                                                   id="caseInfo_{{ $room->id }}"
+                                                                   data-bs-toggle="popover"
+                                                                   data-bs-html="true"
+                                                                   data-bs-content='{!! $caseList !!}'>
+                                                                </i>
+                                                            @endif
+                                                        </div>
                                                     </td>
                                                     <td class="pt-2">
                                                         <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->arbitrator_name }}</div>
@@ -137,10 +175,29 @@
     <script src="{{ asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
     <script src="{{ asset('assets/js/waves.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables/datatables.min.js') }}"></script>
-    <script src="{{ asset('assets/js/app.js') }}"></script>
-    <script src="{{ asset('assets/js/custom.js') }}"></script>
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
-    <script type="text/javascript">
-     
-    </script>
+    <script>
+        $(document).ready(function () {
+            // Initialize all popovers
+            $('[data-bs-toggle="popover"]').popover({
+                html: true,
+                trigger: 'click',
+                placement: 'right'
+            });
+    
+            // Auto-close other popovers when one is clicked
+            $(document).on('click', function (e) {
+                $('[data-bs-toggle="popover"]').each(function () {
+                    if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                        $(this).popover('hide');
+                    }
+                });
+            });
+    
+            // Debugging: Check if the icon is clickable
+            $('.info-icon').on('click', function () {
+                console.log('Popover clicked:', $(this).attr('id'));
+            });
+        });
+    </script>     
 @endsection

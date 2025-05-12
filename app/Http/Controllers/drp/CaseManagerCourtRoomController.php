@@ -24,7 +24,7 @@ use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class CourtRoomController extends Controller
+class CaseManagerCourtRoomController extends Controller
 {
 
     public function __construct()
@@ -40,19 +40,19 @@ class CourtRoomController extends Controller
         if (!$drp) {
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
-        if ($drp->drp_type !== 1) {
+        if ($drp->drp_type !== 3) {
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
         
         $courtRoomLiveUpcoming = CourtRoom::select(
                 'court_rooms.*',
-                'drps.name as arbitrator_name',
+                'drps.name as case_manager_name',
                 DB::raw('GROUP_CONCAT(DISTINCT individuals.name SEPARATOR ", ") as individual_name'),
                 DB::raw('GROUP_CONCAT(DISTINCT organizations.name SEPARATOR ", ") as organization_name'),
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
             )
-            ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
+            ->leftJoin('drps', 'drps.id', '=', 'court_rooms.case_manager_id')
             ->leftJoin('individuals', function ($join) {
                 $join->on(DB::raw("FIND_IN_SET(individuals.id, court_rooms.individual_id)"), '>', DB::raw('0'));
             })
@@ -63,7 +63,7 @@ class CourtRoomController extends Controller
                 $join->on(DB::raw("FIND_IN_SET(file_cases.individual_id, court_rooms.individual_id)"), '>', DB::raw('0'))
                     ->orOn(DB::raw('FIND_IN_SET(file_cases.id, court_rooms.court_room_case_id)'), '>', DB::raw('0'));
             })
-            ->where('court_rooms.arbitrator_id', $drp->id)
+            ->where('court_rooms.case_manager_id', $drp->id)
             ->where(function ($query) {
                 $query->where('court_rooms.date', '>', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
@@ -81,13 +81,13 @@ class CourtRoomController extends Controller
 
         $courtRoomLiveClosed = CourtRoom::select(
                 'court_rooms.*',
-                'drps.name as arbitrator_name',
+                'drps.name as case_manager_name',
                 DB::raw('GROUP_CONCAT(DISTINCT individuals.name SEPARATOR ", ") as individual_name'),
                 DB::raw('GROUP_CONCAT(DISTINCT organizations.name SEPARATOR ", ") as organization_name'),
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
             )
-            ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
+            ->leftJoin('drps', 'drps.id', '=', 'court_rooms.case_manager_id')
             ->leftJoin('individuals', function ($join) {
                 $join->on(DB::raw("FIND_IN_SET(individuals.id, court_rooms.individual_id)"), '>', DB::raw('0'));
             })
@@ -98,7 +98,7 @@ class CourtRoomController extends Controller
                 $join->on(DB::raw("FIND_IN_SET(file_cases.individual_id, court_rooms.individual_id)"), '>', DB::raw('0'))
                 ->orOn(DB::raw('FIND_IN_SET(file_cases.id, court_rooms.court_room_case_id)'), '>', DB::raw('0'));
             })
-            ->where('court_rooms.arbitrator_id', $drp->id)
+            ->where('court_rooms.case_manager_id', $drp->id)
             ->where('court_rooms.status', 0)
             ->where(function ($query) {
                 $query->where('court_rooms.date', '<', Carbon::today()->toDateString())
@@ -113,7 +113,7 @@ class CourtRoomController extends Controller
         $upcomingRooms = $courtRoomLiveUpcoming;
         $closedRooms = $courtRoomLiveClosed;
         
-        return view('drp.courtroom.courtroomlist', compact('drp','title','upcomingRooms','closedRooms'));
+        return view('drp.casemanagercourtroom.courtroomlist', compact('drp','title','upcomingRooms','closedRooms'));
     }
 
 
@@ -126,33 +126,33 @@ class CourtRoomController extends Controller
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
 
-        if ($drp->drp_type !== 1) {
+        if ($drp->drp_type !== 3) {
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
 
         $caseIds = explode(',', $request->query('case_ids'));
 
           // Fetch the case data with all joins and relationships
-        $caseData = FileCase::select('file_cases.*', 'drps.name as arbitrator_name')
+        $caseData = FileCase::select('file_cases.*', 'drps.name as case_manager_name')
             ->with(['file_case_details', 'guarantors'])
             ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
-            ->join('drps', 'drps.id', '=', 'assign_cases.arbitrator_id')
+            ->join('drps', 'drps.id', '=', 'assign_cases.case_manager_id')
             ->whereIn('file_cases.id', $caseIds) // Use whereIn instead of find()
             ->get();
        
-        $flattenedCaseData = $this->flattenCaseData($caseData);
+        $flattenedCaseData = $this->flattenCasemanagerCaseData($caseData);
      
         $orderSheetTemplates = OrderSheet::where('status', 1)->where('drp_type', 1)->get();
         $settlementLetterTemplates = SettlementLetter::where('status', 1)->where('drp_type', 1)->get();
         
         //ZegoCloud Service---------------------
-        $localUserID = $drp->slug; // Arbitrator
+        $localUserID = $drp->slug; // case_manager
         $remoteUserID = $caseIds; // Individual
         $roomID = $room_id;
      
         $zegoToken = $this->generateZegoToken($localUserID, $drp->name);
 
-        return view('drp.courtroom.livecourtroom', compact(
+        return view('drp.casemanagercourtroom.livecourtroom', compact(
             'drp',
             'title',
             'caseData',
@@ -189,17 +189,17 @@ class CourtRoomController extends Controller
         return JWT::encode($payload, $serverSecret, 'HS256');
     }
     
-    public function getFlattenedCaseData($caseId)
+    public function getFlattenedCasemanagerCaseData($caseId)
     {
-        $caseData = FileCase::select('file_cases.*', 'drps.name as arbitrator_name')
+        $caseData = FileCase::select('file_cases.*', 'drps.name as case_manager_name')
             ->with(['file_case_details', 'guarantors'])
             ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
-            ->join('drps', 'drps.id', '=', 'assign_cases.arbitrator_id')
+            ->join('drps', 'drps.id', '=', 'assign_cases.case_manager_id')
             ->where('file_cases.id', $caseId)
             ->first();
         
         if ($caseData) {
-            $flattenedCaseData = $this->flattenCaseData(collect([$caseData]));
+            $flattenedCaseData = $this->flattenCasemanagerCaseData(collect([$caseData]));
             return response()->json($flattenedCaseData, 200);
         }
 
@@ -216,7 +216,7 @@ class CourtRoomController extends Controller
         return response()->json($notices);
     }
 
-    function flattenCaseData($caseData) {
+    function flattenCasemanagerCaseData($caseData) {
         $flat = [];
     
         foreach ($caseData->toArray() as $key => $value) {
@@ -410,28 +410,6 @@ class CourtRoomController extends Controller
                 return back()->with('error', 'Notice already exists for this Case.');
             }   
         }
-    }
-
-    public function closeCourtRoom(Request $request)
-    {
-        $roomId = $request->room_id;
-
-        $courtRoom = CourtRoom::where('room_id', $roomId)->first();
-
-        if ($courtRoom) {
-            $courtRoom->status = 0; // Change status to 0
-            $courtRoom->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Court Room closed successfully.'
-            ]);
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Court Room not found.'
-        ]);
     }
 
 }

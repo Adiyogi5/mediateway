@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Individual;
+namespace App\Http\Controllers\Organization;
 
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
@@ -24,29 +24,35 @@ class CourtRoomController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:individual');
+        $this->middleware('auth:organization');
     }
 
     public function index(Request $request): View | JsonResponse
     {
         $title = 'Court Room List';
-        $individual = auth('individual')->user();
+        $organization = auth('organization')->user();
 
-        if (!$individual) {
+        if (!$organization) {
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
 
+        // Get the parent organization ID if it exists, otherwise use its own ID
+        $parentId = $organization->parent_id ?? $organization->id;
+
+        // ---------------------- UPCOMING COURT ROOMS ----------------------
         $courtRoomLiveUpcoming = CourtRoom::select(
                 'court_rooms.*',
                 'drps.name as arbitrator_name',
-                'file_cases.id as case_id',
-                'file_cases.case_number'
+                DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers')
             )
             ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
-            ->leftJoin('file_cases', function($join) use ($individual) {
-                $join->on('file_cases.individual_id', '=', DB::raw($individual->id));
+            ->leftJoin('file_cases', function ($join) {
+                $join->on(DB::raw('FIND_IN_SET(file_cases.id, court_rooms.court_room_case_id)'), '>', DB::raw('0'));
             })
-            ->whereRaw("FIND_IN_SET(?, court_rooms.individual_id) > 0", [$individual->id])
+            ->where(function ($query) use ($organization, $parentId) {
+                $query->whereRaw("FIND_IN_SET(?, court_rooms.organization_id) > 0", [$parentId])
+                    ->orWhereRaw("FIND_IN_SET(?, court_rooms.organization_id) > 0", [$organization->id]);
+            })
             ->where(function ($query) {
                 $query->where('court_rooms.date', '>', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
@@ -58,20 +64,24 @@ class CourtRoomController extends Controller
                                 ->where('court_rooms.status', 1);
                     });
             })
+            ->groupBy('court_rooms.id', 'court_rooms.court_room_case_id')
             ->get();
 
+        // ---------------------- CLOSED COURT ROOMS ----------------------
         $courtRoomLiveClosed = CourtRoom::select(
                 'court_rooms.*',
                 'drps.name as arbitrator_name',
-                'file_cases.id as case_id',
-                'file_cases.case_number'
+                DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers')
             )
             ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
-            ->leftJoin('file_cases', function($join) use ($individual) {
-                $join->on('file_cases.individual_id', '=', DB::raw($individual->id));
+            ->leftJoin('file_cases', function ($join) {
+                $join->on(DB::raw('FIND_IN_SET(file_cases.id, court_rooms.court_room_case_id)'), '>', DB::raw('0'));
             })
-            ->whereRaw("FIND_IN_SET(?, court_rooms.individual_id) > 0", [$individual->id])
-            ->where('court_rooms.status', 0) 
+            ->where(function ($query) use ($organization, $parentId) {
+                $query->whereRaw("FIND_IN_SET(?, court_rooms.organization_id) > 0", [$parentId])
+                    ->orWhereRaw("FIND_IN_SET(?, court_rooms.organization_id) > 0", [$organization->id]);
+            })
+            ->where('court_rooms.status', 0)
             ->where(function ($query) {
                 $query->where('court_rooms.date', '<', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
@@ -79,49 +89,45 @@ class CourtRoomController extends Controller
                                 ->where('court_rooms.time', '<=', Carbon::now()->format('H:i:s'));
                     });
             })
+            ->groupBy('court_rooms.id', 'court_rooms.court_room_case_id')
             ->get();
 
         $upcomingRooms = $courtRoomLiveUpcoming;
         $closedRooms = $courtRoomLiveClosed;
 
-        return view('individual.courtroom.courtroomlist', compact('individual','title','upcomingRooms','closedRooms'));
+        return view('organization.courtroom.courtroomlist', compact('organization', 'title', 'upcomingRooms', 'closedRooms'));
     }
 
 
     public function livecourtroom(Request $request, $room_id): View | JsonResponse | RedirectResponse
     {
         $title = 'Live Court Room';
-        $individual = auth('individual')->user();
+        $organization = auth('organization')->user();
 
-        if (!$individual) {
+        if (!$organization) {
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
 
-        $caseId = $request->query('case_id');
-       
+        $caseIds = explode(',', $request->query('case_id'));
+    
         $caseData = FileCase::select('file_cases.*', 'drps.id as arbitrator_id', 'drps.name as arbitrator_name')
             ->with(['file_case_details', 'guarantors'])
             ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
             ->join('drps', 'drps.id', '=', 'assign_cases.arbitrator_id')
-            ->where('file_cases.id', $caseId) // Use whereIn instead of find()
+            ->whereIn('file_cases.id', $caseIds)
             ->get();
-
-        $noticeData = Notice::where('file_case_id', $caseId)
-            // ->where('email_status', 1)
-            ->get();
-    
+   
         //ZegoCloud Service---------------------
-        $localUserID = $individual->slug; // e.g., Individual 
+        $localUserID = $organization->slug; // e.g., organization 
         $remoteUserID = $caseData->first()->arbitrator_id; // Drp
         $roomID = $room_id;
     
-        $zegoToken = $this->generateZegoToken($localUserID, $individual->name);
+        $zegoToken = $this->generateZegoToken($localUserID, $organization->name);
         
-        return view('individual.courtroom.livecourtroom', compact(
-            'individual',
+        return view('organization.courtroom.livecourtroom', compact(
+            'organization',
             'title',
             'caseData',
-            'noticeData',
             'localUserID',
             'remoteUserID',
             'roomID',
@@ -152,5 +158,14 @@ class CourtRoomController extends Controller
         return JWT::encode($payload, $serverSecret, 'HS256');
     }
 
+    public function fetchNoticesByCaseId(Request $request)
+    {
+        $caseId = $request->case_id;
+        $notices = Notice::where('file_case_id', $caseId)
+            // ->where('email_status', 1)
+            ->get();
+
+        return response()->json($notices);
+    }
     
 }

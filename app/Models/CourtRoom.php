@@ -13,11 +13,12 @@ class CourtRoom extends Model
 
     protected $fillable = [
         'room_id',
-        'case_id',
+        'court_room_case_id',
+        'hearing_type',
         'individual_id',
         'organization_id',
-        'case_number',
         'arbitrator_id',
+        'case_manager_id',
         'date',
         'time',
         'status',

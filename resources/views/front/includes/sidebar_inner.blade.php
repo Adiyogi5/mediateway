@@ -114,6 +114,16 @@
                                     class="fa-solid fa-cash-register faa-profile"></i> File Cases</a>
                         </li>
                     @endif
+                    @if (Helper::organizationCan(206))
+                    <li
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.courtroom.courtroomlist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.courtroom.courtroomlist') ? 'text-white bg-lime' : '' }}"
+                            aria-current="page"
+                            style="{{ request()->routeIs($currentGuard . '.courtroom.courtroomlist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'courtroom.courtroomlist') }}"><i
+                                class="fa-solid fa-video faa-profile"></i> Court Room</a>
+                    </li>
+                    @endif
                 @endif
 
                 {{-- ################ DRP TYPE = 1,5 Arbitrator, Conciliator ################# --}}
@@ -169,6 +179,16 @@
                             style="{{ request()->routeIs($currentGuard . '.cases.casebulkupdate') ? 'color:white !important;;' : '' }}"
                             href="{{ route($currentGuard . '.' . 'cases.casebulkupdate') }}"><i
                                 class="fa-solid fa-upload faa-profile"></i> Case Bulk Update</a>
+                    </li>
+
+                    {{-- ########################### COURT ROOM ############################ --}}
+                    <li
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.casemanagercourtroom.courtroomlist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.casemanagercourtroom.courtroomlist') ? 'text-white bg-lime' : '' }}"
+                            aria-current="page"
+                            style="{{ request()->routeIs($currentGuard . '.casemanagercourtroom.courtroomlist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'casemanagercourtroom.courtroomlist') }}"><i
+                                class="fa-solid fa-video faa-profile"></i> Court Room</a>
                     </li>
                 @endif
 

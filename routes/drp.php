@@ -5,6 +5,7 @@ use App\Http\Controllers\Drp\AwardController;
 use App\Http\Controllers\Drp\CaseAssignController;
 use App\Http\Controllers\Drp\CaseBulkUpdateController;
 use App\Http\Controllers\Drp\CaseListController;
+use App\Http\Controllers\Drp\CaseManagerCourtRoomController;
 use App\Http\Controllers\Drp\CaseNoticeListController;
 use App\Http\Controllers\Drp\CasesAllNoticeListController;
 use App\Http\Controllers\Drp\CourtRoomController;
@@ -103,7 +104,16 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::get('cashmanagercasenoticelist', 'index')->name('allnotices.cashmanagercasenoticelist');
     });
 
-    // ----------------------- Arbitrator - Meeting Room Routes ---------------------------------------
+    // ----------------------- Case Manager - Court Room Routes ----------------------------------------
+    Route::controller(CaseManagerCourtRoomController::class)->group(function () {
+        Route::get('casemanagercourtroom', 'index')->name('casemanagercourtroom.courtroomlist');
+        Route::get('livecasemanagercourtroom/{room_id}', 'livecourtroom')->name('casemanagercourtroom.livecourtroom');
+        Route::get('/get-flattened-casemanager-case-data/{caseId}', 'getFlattenedCasemanagerCaseData')->name('casemanagercourtroom.getFlattenedCasemanagerCaseData');
+        Route::post('/fetch-casemanager-notices', 'fetchNoticesByCaseId')->name('casemanagercourtroom.fetch.notices');
+        Route::post('/casemanagercourtroom/save-notice', 'saveNotice')->name('casemanagercourtroom.savenotice');
+    });
+
+    // ----------------------- Arbitrator - Court Room Routes ---------------------------------------
     Route::controller(CourtRoomController::class)->group(function () {
         Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
         Route::get('livecourtroom/{room_id}', 'livecourtroom')->name('courtroom.livecourtroom');

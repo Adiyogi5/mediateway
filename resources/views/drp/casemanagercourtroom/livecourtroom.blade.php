@@ -38,15 +38,7 @@
                     <div class="card-header">
                         <div class="row flex-between-end">
                             <div class="col-auto align-self-center">
-                                <h5 class="mb-0" data-anchor="data-anchor">Arbitrator Court Room - Live</h5>
-                            </div>
-                            <div class="col-auto ms-auto">
-                                <div class="nav nav-pills nav-pills-falcon">
-                                    <a href="javascript:void(0);" class="btn btn-outline-danger py-1" id="endCourtRoom" data-room-id="{{ $roomID }}">
-                                        <i class="fa-solid fa-rectangle-xmark"></i>
-                                        End Court Room
-                                    </a>
-                                </div>
+                                <h5 class="mb-0" data-anchor="data-anchor">Case Manager Court Room - Live</h5>
                             </div>
                         </div>
                     </div>
@@ -63,8 +55,8 @@
                             <div class="col-lg-4 col-12 order-lg-1 order-2">
                                 <div class="livemeeting-card h-100">
                                     <h4 class="livemeetingcard-heading text-center justify-content-center"
-                                        style="background-color: black;color: white;padding: 5px;border-radius: 8px">Hearing/Notice
-                                        Updates</h4>
+                                    style="background-color: black;color: white;padding: 5px;border-radius: 8px">Hearing/Notice
+                                    Updates</h4>
                                     <!-- Notice Display Area -->
                                     <div id="noticesContainer">
 
@@ -75,7 +67,7 @@
                             </div>
 
                             <div class="col-lg-8 col-12 order-lg-2 order-1">
-                                <form id="sendnoticeForm" action="{{ route('drp.courtroom.savenotice') }}" method="POST">
+                                <form id="sendnoticeForm" action="{{ route('drp.casemanagercourtroom.savenotice') }}" method="POST">
                                     @csrf
                                     <div class="livemeeting-card h-100">
                                         <h4 class="livemeetingcard-heading text-center justify-content-center"
@@ -203,7 +195,7 @@
                 $('#tempType').html('<option selected disabled>Template Type</option>'); // Clear and reset
                 // Fetch the flattened data dynamically
                 $.ajax({
-                    url: "{{ route('drp.courtroom.getFlattenedCaseData', ':caseId') }}".replace(
+                    url: "{{ route('drp.casemanagercourtroom.getFlattenedCasemanagerCaseData', ':caseId') }}".replace(
                         ':caseId', caseId),
                     method: 'GET',
                     success: function(data) {
@@ -285,7 +277,7 @@
                 const caseId = $(this).val();
                 
                 $.ajax({
-                    url: "{{ route('drp.courtroom.fetch.notices') }}",
+                    url: "{{ route('drp.casemanagercourtroom.fetch.notices') }}",
                     method: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
@@ -396,63 +388,4 @@
         });
     </script>
 
-    {{-- ############# End Live Court Room ############### --}}
-    <script>
-        $(document).on('click', '#endCourtRoom', function () {
-            const roomId = $(this).data('room-id');
-    
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You want to close this Court Room?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, Close it!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{{ route('drp.courtroom.close') }}",
-                        method: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            room_id: roomId
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    title: 'Closed!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    confirmButtonText: 'OK'
-                                }).then(() => {
-                                    // Redirect with success message
-                                    window.location.href = "{{ route('drp.courtroom.courtroomlist') }}?success=1";
-                                });
-                            } else {
-                                Swal.fire('Error', response.message, 'error');
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
-                        }
-                    });
-                }
-            });
-        });
-    
-        // Display SweetAlert on page load if redirected with success message
-        $(document).ready(function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('success') === '1') {
-                Swal.fire({
-                    title: 'Success',
-                    text: 'Court Room has been closed successfully.',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-            }
-        });
-    </script>
 @endsection
