@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('db:backup')->twiceDaily(6, 18, 3);
         
         $schedule->command('bulk:create-live-court-room')->everyOneMinutes();
+        $schedule->command('bulk:create-claim-petition')->everyOneMinutes();
 
         $schedule->command('bulk:send-2b-notice')->everyOneMinutes();
         $schedule->command('bulk:send-3a-notice')->everyOneMinutes();

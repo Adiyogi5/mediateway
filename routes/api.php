@@ -21,10 +21,16 @@ Route::get('/', function () {
     ]);
 });
 
-//Live Rooms
+//Create Live Rooms
 Route::get('/create_live_court_room', function () {
     Artisan::call('bulk:create-live-court-room');   
     return '<h1>create live court room</h1>';
+});
+
+//Create Claim Petition
+Route::get('/create_claim_petition', function () {
+    Artisan::call('bulk:create-claim-petition');   
+    return '<h1>create claim petition</h1>';
 });
 
 // Send All Types of Notices 

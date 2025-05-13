@@ -18,6 +18,7 @@ use App\Models\Notice;
 use App\Models\Organization;
 use App\Models\State;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class FileCaseController extends Controller
@@ -228,6 +229,26 @@ class FileCaseController extends Controller
     //For Upload Notice By Organization
     public function store(Request $request, $id)
     {
+        $noticeTimeline = Organization::select(
+            'organizations.*',
+            'org_with_parent.effective_parent_id',
+            'org_with_parent.effective_parent_name',
+            'organization_lists.id as org_list_id',
+            'organization_notice_timelines.*'
+        )
+        ->join(DB::raw("(
+            SELECT
+                id AS org_id,
+                name AS org_name,
+                COALESCE(parent_id, id) AS effective_parent_id,
+                COALESCE((SELECT name FROM organizations AS parent_org WHERE parent_org.id = organizations.parent_id), name) AS effective_parent_name
+            FROM organizations
+        ) AS org_with_parent"), 'org_with_parent.org_id', '=', 'organizations.id')
+        ->join('organization_lists', 'organization_lists.name', '=', 'org_with_parent.effective_parent_name')
+        ->join('organization_notice_timelines', 'organization_notice_timelines.organization_list_id', '=', 'organization_lists.id')
+        ->first();
+   
+        // Get notices
         $existing1 = Notice::where('file_case_id', $id)->where('notice_type', 1)->exists();
         $existing2 = Notice::where('file_case_id', $id)->where('notice_type', 2)->exists();
         $existing3 = Notice::where('file_case_id', $id)->where('notice_type', 3)->exists();
@@ -242,6 +263,15 @@ class FileCaseController extends Controller
             'notice_third' => 'required|mimes:pdf|max:5120',
         ]);
 
+        // 🗓️ Get the date increments from $noticeTimeline
+        $noticeSecondDays = $noticeTimeline->notice_1a ?? 0;
+        $noticeThirdDays = $noticeTimeline->notice_1b ?? 0;
+
+        // 🕒 Calculate the dates based on current date + days
+        $firstNoticeDate = now(); // Today's date
+        $secondNoticeDate = now()->addDays($noticeSecondDays);
+        $thirdNoticeDate = now()->addDays($noticeThirdDays);
+
         // First notice (type 1)
         if ($request->hasFile('notice_first')) {
             $noticefirstPath = Helper::saveFile($request->file('notice_first'),'notices');
@@ -250,7 +280,7 @@ class FileCaseController extends Controller
                 'file_case_id' => $id,
                 'notice_type' => 1,
                 'notice' => $noticefirstPath,
-                'notice_date' => now(),
+                'notice_date' => $firstNoticeDate,
                 'notice_send_date' => null,
                 'email_status' => 0,
                 'whatsapp_status' => 0,
@@ -267,7 +297,7 @@ class FileCaseController extends Controller
                 'file_case_id' => $id,
                 'notice_type' => 2,
                 'notice' => $noticesecondPath,
-                'notice_date' => now(),
+                'notice_date' => $secondNoticeDate,
                 'notice_send_date' => null,
                 'email_status' => 0,
                 'whatsapp_status' => 0,
@@ -284,7 +314,7 @@ class FileCaseController extends Controller
                 'file_case_id' => $id,
                 'notice_type' => 3,
                 'notice' => $noticesecondPath,
-                'notice_date' => now(),
+                'notice_date' => $thirdNoticeDate,
                 'notice_send_date' => null,
                 'email_status' => 0,
                 'whatsapp_status' => 0,

@@ -67,10 +67,10 @@ class Bulk4ANoticeSend extends Command
             })
             ->where(function ($query) {
                 $query->whereDoesntHave('notices', function ($q) {
-                    $q->where('notice_type', 9);
+                    $q->where('notice_type', 8);
                 })
                     ->orWhereHas('notices', function ($q) {
-                        $q->where('notice_type', 9)
+                        $q->where('notice_type', 8)
                             ->where('email_status', 0);
                     });
             })
@@ -92,11 +92,11 @@ class Bulk4ANoticeSend extends Command
         foreach ($caseData as $key => $value) {
             try {
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();
-                $noticeData = Notice::where('file_case_id', $value->id)->where('notice_type', 9)->first();
+                $noticeData = Notice::where('file_case_id', $value->id)->where('notice_type', 8)->first();
                 $notice = $noticeData->notice;
                
                 if (!empty($caseData)) {
-                    $noticetemplateData = NoticeTemplate::where('id', 9)->first();
+                    $noticetemplateData = NoticeTemplate::where('id', 8)->first();
 
                     //Send Notice for Assign Arbitrator
                     $data = Setting::where('setting_type', '3')->get()->pluck('filed_value', 'setting_name')->toArray();
