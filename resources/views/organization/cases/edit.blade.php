@@ -29,10 +29,14 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="card-body">
                         <form class="row" id="uploadnoticeView" method="POST" action="{{ route('organization.cases.filecaseview.store', $caseviewData['id']) }}" enctype="multipart/form-data">
                             @csrf
                         
+                            <h4 class="livemeetingcard-heading text-center justify-content-center"
+                            style="background-color: black;color: white;padding: 5px;border-radius: 8px">Upload Notices - 1, 1A and 1B</h4>
+
                             <div class="col-md-6 col-12 mb-3">
                                 <label class="form-label">1. Notice - 1</label><br>
                                 @if(isset($noticeType1))
@@ -107,14 +111,34 @@
                                 <button type="submit" class="btn btn-md btn-primary py-1 px-3">Save Notices</button>
                                 </div>
                             @endif
-                        </form>         
+                        </form>
+                        
 
-                        <hr>
+                        <div class="row mb-3">
+                            <h4 class="livemeetingcard-heading text-center justify-content-center"
+                            style="background-color: black;color: white;padding: 5px;border-radius: 8px">Filed Claim Petition</h4>
+                            <label class="form-label">Claim Petition</label><br>
+                            @if(isset($caseviewData['claim_petition']))
+                                <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                                href="{{ asset('storage/' . $caseviewData['claim_petition']) }}" target="_blank">
+                                                <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                                    alt="PDF File" />
+                                                View Notice PDF
+                                            </a>
+                            @else
+                                <small>No Claim Petition Filed Yet</small>
+                            @endif
+                        </div>
+                        
                         
                         <form class="row" id="editcaseview" method="POST"
                             action="{{ route('organization.cases.filecaseview.edit', $caseviewData['id']) }}"
                             enctype='multipart/form-data'>
                             @csrf
+                            
+                            <h4 class="livemeetingcard-heading text-center justify-content-center"
+                            style="background-color: black;color: white;padding: 5px;border-radius: 8px">Upload Documents</h4>
+
                             {{-- claimant details  --}}
                             {{-- <div class="col-12 text-center justify-content-center">
                                 <h6 class="border-bottom bg-dark text-white p-2 border-2 my-3">Claimant Details</h6>
@@ -511,7 +535,7 @@
 @endsection
 
 @section('js')
-    <script>
+    {{-- <script>
         document.addEventListener("DOMContentLoaded", function () {
             const agreementSelect = document.getElementById("agreement_exist");
             const documentFields = document.querySelectorAll(".document-upload");
@@ -529,26 +553,36 @@
 
             agreementSelect.addEventListener("change", toggleDocumentFields);
         });
-    </script>
+    </script> --}}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Combine both your documents and notices into one array
             const documents = [
-                "notice_first",
-                "notice_second",
-                "notice_third",
                 "application_form",
                 "foreclosure_statement",
                 "loan_agreement",
                 "account_statement",
                 "other_document",
+                "notice_first",
+                "notice_second",
+                "notice_third",
             ];
 
+            // Loop through each item and bind the event listener
             documents.forEach(function (id) {
-                document.getElementById(id).addEventListener("change", function (event) {
-                    let fileName = event.target.files.length > 0 ? event.target.files[0].name :
-                        "Attach " + id.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase()) + " Document";
-                    document.getElementById("file-label-" + id).textContent = fileName;
-                });
+                const inputFile = document.getElementById(id);
+                const fileLabel = document.getElementById("file-label-" + id);
+
+                if (inputFile) {
+                    inputFile.addEventListener("change", function (event) {
+                        let fileName = event.target.files.length > 0 
+                            ? event.target.files[0].name 
+                            : "Attach PDF";
+
+                        // Update the label text
+                        fileLabel.textContent = fileName;
+                    });
+                }
             });
         });
     </script>

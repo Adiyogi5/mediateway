@@ -12,6 +12,7 @@ use App\Routes\Profile;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CmsController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\ClaimPetitionController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\FaqController;
@@ -99,6 +100,17 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::post('ordersheet/{id}', 'update')->name('ordersheet.edit');
         Route::delete('ordersheet', 'delete')->name('ordersheet.delete');
         Route::get('getordersheetVariables', 'getordersheetVariables')->name('getordersheetVariables');
+    });
+
+     // ----------------------- Order Sheet Routes ---------------------------------------
+     Route::controller(ClaimPetitionController::class)->group(function () {
+        Route::get('/claimpetition', 'index')->name('claimpetition');
+        Route::get('claimpetition/add', 'add')->name('claimpetition.add');
+        Route::post('claimpetition/add', 'save')->name('claimpetition.add');
+        Route::get('claimpetition/{id}', 'edit')->name('claimpetition.edit');
+        Route::post('claimpetition/{id}', 'update')->name('claimpetition.edit');
+        Route::delete('claimpetition', 'delete')->name('claimpetition.delete');
+        Route::get('getclaimpetitionVariables', 'getclaimpetitionVariables')->name('getclaimpetitionVariables');
     });
 
     // ----------------------- Settlement Order Routes ---------------------------------------

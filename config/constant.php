@@ -36,11 +36,11 @@ return [
     ],
 
     'case_type' => [
-        '1' => 'Civil', 
-        '2' => 'Arbitration' ,
-        '3' => 'Insolvency' ,
-        '4' => 'Suit' ,
-        '5' => 'Rent' 
+        '1' => 'VEHICLE LOAN', 
+        '2' => 'MORTGADGE LOAN',
+        '3' => 'PERSONAL BUSSINESS LOAN',
+        '4' => 'HOME LOAN',
+        '5' => 'CREDIT CARD'
     ],
 
     'language' => [

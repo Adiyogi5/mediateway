@@ -143,8 +143,8 @@
         </li>
 
         {{-- @if(Helper::userCan([105,106])) --}}
-        <li class="menu @routeis('ordersheet,award,settlementletter') active @endrouteis">
-            <a href="#location_content1" data-bs-toggle="collapse" aria-expanded="{{ Helper::routeis('ordersheet,award,settlementletter') }}"
+        <li class="menu @routeis('noticetemplate,ordersheet,award,settlementletter,claimpetition') active @endrouteis">
+            <a href="#location_content1" data-bs-toggle="collapse" aria-expanded="{{ Helper::routeis('noticetemplate,ordersheet,award,settlementletter,claimpetition') }}"
                 class="dropdown-toggle">
                 <div class="">
                     <i class="fa-duotone fa-file-lines"></i>
@@ -152,7 +152,7 @@
                 </div>
                 <div> <i class="fa-solid fa-chevron-right"></i> </div>
             </a>
-            <ul class="collapse submenu list-unstyled @routeis('noticetemplate,ordersheet,award,settlementletter') show @endrouteis" id="location_content1"
+            <ul class="collapse submenu list-unstyled @routeis('noticetemplate,ordersheet,award,settlementletter,claimpetition') show @endrouteis" id="location_content1"
                 data-bs-parent="#accordionExample">
                 {{-- @if(Helper::userCan(105)) --}}
                 <li class="@routeis('noticetemplate') active @endrouteis">
@@ -176,6 +176,12 @@
                 {{-- @if(Helper::userCan(106)) --}}
                 <li class="@routeis('settlementletter') active @endrouteis">
                     <a class="nav-link" href="{{ route('settlementletter') }}">Settlement Letter</a>
+                </li>
+                {{-- @endif --}}
+
+                {{-- @if(Helper::userCan(106)) --}}
+                <li class="@routeis('claimpetition') active @endrouteis">
+                    <a class="nav-link" href="{{ route('claimpetition') }}">Claim Petition</a>
                 </li>
                 {{-- @endif --}}
             </ul>

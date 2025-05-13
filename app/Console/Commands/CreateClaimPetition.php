@@ -3,10 +3,10 @@ namespace App\Console\Commands;
 
 use App\Helper\Helper;
 use App\Models\AssignCase;
+use App\Models\ClaimPetition;
 use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\Notice;
-use App\Models\NoticeTemplate;
 use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Console\Command;
@@ -51,7 +51,7 @@ class CreateClaimPetition extends Command
         // ##############################################
         // Create Claim Petition - 3D - Save Pdf
         // ##############################################
-        $caseData = FileCase::with('file_case_details')
+        $caseData = FileCase::with('file_case_details','guarantors')
             ->join(DB::raw("(
                 SELECT
                     id AS org_id,
@@ -83,42 +83,80 @@ class CreateClaimPetition extends Command
             )
             ->distinct()
             ->get();
-dd($caseData);
+
         foreach ($caseData as $key => $value) {
             try {
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();
                 // $noticedataFetchCaseManager = Notice::where('file_case_id', $value->id)->where('notice_type', 8)->first();
-
-                if (! empty($assigncaseData->case_manager_id)) {
+            
+                if (! empty($assigncaseData)) {
                     $arbitratorIds   = explode(',', $assigncaseData->arbitrator_id);
                     $arbitratorsName = Drp::whereIn('id', $arbitratorIds)->pluck('name')->implode(', ');
                     $casemanagerData = Drp::where('id', $assigncaseData->case_manager_id)->first();
 
-                    $noticetemplateData = NoticeTemplate::where('id', 8)->first();
-                    $noticeTemplate     = $noticetemplateData->notice_format;
+                    $claimpetitionData = ClaimPetition::where('case_type', $value->case_type)->first();
+                    $claimPetition     = $claimpetitionData->notice_format;
 
                     // Define your replacement values
                     $data = [
-                        "ARBITRATOR'S NAME"                             => $arbitratorsName ?? '',
-                        "CASE MANAGER'S NAME"                           => $casemanagerData->name ?? '',
-                        'PHONE NUMBER'                                  => $casemanagerData->mobile ?? '',
-                        'EMAIL ADDRESS'                                 => ($casemanagerData->address1 ?? '') . '&nbsp;' . ($casemanagerData->address2 ?? ''),
+                        "ARBITRATOR'S NAME"                                               => $arbitratorsName ?? '',
+                        "CASE MANAGER'S NAME"                                             => $casemanagerData->name ?? '',
+                        "CASE MANAGER'S PHONE NUMBER"                                     => $casemanagerData->mobile ?? '',
+                        "CASE MANAGER'S EMAIL ADDRESS"                                    => ($casemanagerData->address1 ?? '') . '&nbsp;' . ($casemanagerData->address2 ?? ''),
 
-                        'CASE REGISTRATION NUMBER'                      => $value->case_number ?? '',
-                        'BANK/ORGANISATION/CLAIMANT NAME'               => ($value->claimant_first_name ?? '') . '&nbsp;' . ($value->claimant_last_name ?? ''),
-                        'BANK/ORGANISATION/CLAIMANT REGISTERED ADDRESS' => ($value->claimant_address1 ?? '') . '&nbsp;' . ($value->claimant_address2 ?? ''),
+                        'CASE REGISTRATION NUMBER'                                        => $value->case_number ?? '',
+                        'BANK/ORGANISATION/CLAIMANT NAME'                                 => ($value->claimant_first_name ?? '') . '&nbsp;' . ($value->claimant_last_name ?? ''),
+                        'BANK/ORGANISATION/CLAIMANT REGISTERED ADDRESS'                   => ($value->claimant_address1 ?? '') . '&nbsp;' . ($value->claimant_address2 ?? ''),
 
-                        'CUSTOMER NAME'                                 => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
-                        'CUSTOMER ADDRESS'                              => ($value->respondent_address1 ?? '') . '&nbsp;' . ($value->respondent_address2 ?? ''),
-                        'CUSTOMER MOBILE NO'                            => $value->respondent_mobile ?? '',
-                        'CUSTOMER MAIL ID'                              => $value->respondent_email ?? '',
+                        'CLAIM SIGNATORY/AUTHORISED OFFICER NAME'                         => $value->file_case_details->claim_signatory_authorised_officer_name ?? '',
+                        'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'                    => $value->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
+                        "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $casvalueeData->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
 
-                        'ARBITRATION CLAUSE NO'                         => 123456,
+                        'ASSET DESCRIPTION'                                               => $value->file_case_details->asset_description ?? '',
+                        'REGISTRATION NO'                                                 => $value->file_case_details->registration_no ?? '',
 
-                        'DATE'                                          => now()->format('d-m-Y'),
-                        'STAGE 2B NOTICE'                               => now()->format('d-m-Y'),
+                        'LOAN NUMBER'                                                     => $value->loan_number ?? '',
+                        'LOAN APPLICATION DATE'                                           => $value->loan_application_date ?? '',
+                        'AGREEMENT DATE'                                                  => $value->agreement_date ?? '',
+                        'FINANCE AMOUNT'                                                  => $value->file_case_details->finance_amount ?? '',
+                        'FINANCE AMOUNT IN WORDS'                                         => $value->file_case_details->finance_amount_in_words ?? '',
+                        'TENURE'                                                          => $value->file_case_details->tenure ?? '',
+                        'EMI DUE DATE'                                                    => $value->file_case_details->emi_due_date ?? '',
+                        'FORECLOSURE AMOUNT'                                              => $value->file_case_details->foreclosure_amount ?? '',
+                        'FORECLOSURE AMOUNT IN WORDS'                                     => $value->file_case_details->foreclosure_amount_in_words ?? '',
+                        'FORECLOSURE AMOUNT DATE'                                         => $value->file_case_details->foreclosure_amount_date ?? '',
+
+                        "ARBITRATOR'S NAME"                                               => $arbitratorsData->name ?? '',
+                        "ARBITRATOR'S SPECIALIZATION"                                     => $arbitratorsData->specialization ?? '',
+                        "ARBITRATOR'S ADDRESS"                                            => ($arbitratorsData->address1 ?? '') . '&nbsp;' . ($arbitratorsData->address2 ?? ''),
+
+
+                        'CUSTOMER NAME'                                                   => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
+                        'CUSTOMER FATHER NAME'                                            => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
+                        'CUSTOMER ADDRESS'                                                => ($value->respondent_address1 ?? '') . '&nbsp;' . ($value->respondent_address2 ?? ''),
+                        'CUSTOMER MOBILE NO'                                              => $value->respondent_mobile ?? '',
+                        'CUSTOMER MAIL ID'                                                => $value->respondent_email ?? '',
+
+                        'ARBITRATION CLAUSE NO'                                           => 123456,
+
+                        'GUARANTOR 1 NAME'                                                => $value->guarantors->guarantor_1_name ?? '',
+                        'GUARANTOR 1 ADDRESS'                                             => $value->guarantors->guarantor_1_address ?? '',
+                        'GUARANTOR 1 MOBILE NO'                                           => $value->guarantors->guarantor_1_mobile_no ?? '',
+                        'GUARANTOR 1 MAIL ID'                                             => $value->guarantors->guarantor_1_email_id ?? '',
+
+                        'GUARANTOR 2 NAME'                                                => $value->guarantors->guarantor_2_name ?? '',
+                        'GUARANTOR 2 ADDRESS'                                             => $value->guarantors->guarantor_2_address ?? '',
+                        'GUARANTOR 2 MOBILE NO'                                           => $value->guarantors->guarantor_2_mobile_no ?? '',
+                        'GUARANTOR 2 MAIL ID'                                             => $value->guarantors->guarantor_2_email_id ?? '',
+
+                        'GUARANTOR 3 NAME'                                                => $value->guarantors->guarantor_3_name ?? '',
+                        'GUARANTOR 3 ADDRESS'                                             => $value->guarantors->guarantor_3_address ?? '',
+                        'GUARANTOR 3 MOBILE NO'                                           => $value->guarantors->guarantor_3_mobile_no ?? '',
+                        'GUARANTOR 3 MAIL ID'                                             => $value->guarantors->guarantor_3_email_id ?? '',
+
+                        'DATE'                                                            => now()->format('d-m-Y'),
                     ];
-
+                 
                     $replaceSummernotePlaceholders = function ($html, $replacements) {
                         foreach ($replacements as $key => $value) {
                             // Escape key for regex
@@ -139,8 +177,8 @@ dd($caseData);
                         return $html;
                     };
 
-                    $finalNotice = $replaceSummernotePlaceholders($noticeTemplate, $data);
-
+                    $finalNotice = $replaceSummernotePlaceholders($claimPetition, $data);
+                  
                     $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
                     // Append the signature image at the end of the content, aligned right
                     $finalNotice .= '
@@ -174,7 +212,7 @@ dd($caseData);
 
                     // 2. Generate PDF with A4 paper size
                     $pdf = PDF::loadHTML($html)->setPaper('A4', 'portrait')->setOptions(['isRemoteEnabled' => true]);
-
+                  
                     // Create temporary PDF file
                     $tempPdfPath = tempnam(sys_get_temp_dir(), 'pdf');
                     $pdf->save($tempPdfPath);
@@ -182,107 +220,22 @@ dd($caseData);
                     // Wrap temp file in UploadedFile so it can go through Helper::saveFile
                     $uploadedFile = new \Illuminate\Http\UploadedFile(
                         $tempPdfPath,
-                        'notice_' . time() . '.pdf',
+                        'claimpetition_' . time() . '.pdf',
                         'application/pdf',
                         null,
                         true
                     );
 
                     // Save the PDF using your helper
-                    $savedPath = Helper::saveFile($uploadedFile, 'notices');
-
-                    $notice = Notice::create([
-                        'file_case_id'               => $value->id,
-                        'notice_type'                => 8,
-                        'notice'                     => $savedPath,
-                        'notice_date'                => now(),
-                        'notice_send_date'           => null,
-                        'email_status'               => 0,
-                        'whatsapp_status'            => 0,
-                        'whatsapp_notice_status'     => 0,
-                        'whatsapp_dispatch_datetime' => null,
+                    $savedPath = Helper::saveFile($uploadedFile, 'casefile');
+                 
+                    // Update the existing Notice record with the claim petition path
+                    FileCase::where('id', $value->id)->update([
+                        'claim_petition' => $savedPath,
                     ]);
-
-                    //Send Notice for Assign Arbitrator
-                    $data = Setting::where('setting_type', '3')->get()->pluck('filed_value', 'setting_name')->toArray();
-
-                    Config::set("mail.mailers.smtp", [
-                        'transport'  => 'smtp',
-                        'host'       => $data['smtp_host'],
-                        'port'       => $data['smtp_port'],
-                        'encryption' => in_array((int) $data['smtp_port'], [587, 2525]) ? 'tls' : 'ssl',
-                        'username'   => $data['smtp_user'],
-                        'password'   => $data['smtp_pass'],
-                        'timeout'    => null,
-                        'auth_mode'  => null,
-                    ]);
-
-                    Config::set("mail.from", [
-                        'address' => $data['email_from'],
-                        'name'    => config('app.name'),
-                    ]);
-
-                    if (! empty($value->respondent_email)) {
-                        $email = filter_var($value->respondent_email, FILTER_SANITIZE_EMAIL);
-
-                        $validator = Validator::make(['email' => $email], [
-                            'email' => 'required|email:rfc,dns',
-                        ]);
-
-                        if ($validator->fails()) {
-
-                            Log::warning("Invalid email address: $email");
-                            $notice->update(['email_status' => 2]);
-
-                        } else {
-
-                            $subject     = $noticetemplateData->subject;
-                            $description = $noticetemplateData->email_content;
-
-                            // Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($savedPath, $subject, $email) {
-                            //     $message->to($email)
-                            //             ->subject($subject)
-                            //             ->attach(public_path(str_replace('\\', '/', $savedPath)), [
-                            //                 'mime' => 'application/pdf',
-                            //             ]);
-                            // });
-
-                            // if (Mail::failures()) {
-                            //     Log::error("Failed to send email to: $email");
-                            //     $notice->update(['email_status' => 2]);
-                            // } else {
-                            $notice->update(['notice_send_date' => now()]);
-                            $notice->update(['email_status' => 1]);
-                            // }
-                        }
-                    }
-
-                    // Send SMS Invitation using Twilio
-                    // try {
-                    //     $sid    = env("TWILIO_ACCOUNT_SID");
-                    //     $token  = env("TWILIO_AUTH_TOKEN");
-                    //     $sender = env("TWILIO_SENDER");
-
-                    //     $client = new Client($sid, $token);
-
-                    //     $country_data = Country::where('id', $request->country_id)->where('status', 1)->first();
-                    //     $phone_code = $country_data->phone_code ?? '';
-
-                    //     $message = "{$user->name} has invited you to join Patrimonial, an online testament and wealth management App, to securely manage and access patrimonial information. Accept the invitation here: https://www.name/login";
-
-                    //     $client->messages->create($phone_code . $request->mobile, [
-                    //         'from' => $sender,
-                    //         'body' => $message,
-                    //     ]);
-                    // } catch (\Throwable $th) {
-                    //     // Log SMS error but don't stop execution
-                    //     Log::error('SMS sending failed: ' . $th->getMessage());
-                    // }
                 }
             } catch (\Throwable $th) {
-                // Log the error and update the email status
-                Log::error("Error sending email for record ID {$value->id}: " . $th->getMessage());
-                // $value->update(['email_status' => 2]);
+                Log::error("Error save claim petition for record ID {$value->id}: " . $th->getMessage());
             }
         }
     }
