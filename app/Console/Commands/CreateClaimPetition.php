@@ -7,12 +7,14 @@ use App\Models\ClaimPetition;
 use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\Notice;
+use App\Models\OrganizationList;
 use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class CreateClaimPetition extends Command
@@ -83,12 +85,12 @@ class CreateClaimPetition extends Command
             )
             ->distinct()
             ->get();
-
+        //    dd($caseData);
         foreach ($caseData as $key => $value) {
             try {
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();
                 // $noticedataFetchCaseManager = Notice::where('file_case_id', $value->id)->where('notice_type', 8)->first();
-            
+
                 if (! empty($assigncaseData)) {
                     $arbitratorIds   = explode(',', $assigncaseData->arbitrator_id);
                     $arbitratorsName = Drp::whereIn('id', $arbitratorIds)->pluck('name')->implode(', ');
@@ -229,9 +231,17 @@ class CreateClaimPetition extends Command
                     // Save the PDF using your helper
                     $savedPath = Helper::saveFile($uploadedFile, 'casefile');
                  
+                    // First Hearing Date-- And -- Second Hearing Date--
+                    $casefirstnotice = Notice::where('file_case_id',$value->id)->where('notice_type',1)->where('email_status',1)->first();
+                    $secondhearingtimeleine = OrganizationList::with('noticeTimeline')->where('name',$value->parent_name)->first();
+                    $firsthearingdate = Carbon::parse($casefirstnotice->notice_date)->addDays($secondhearingtimeleine->noticeTimeline->notice_5a);
+                    $secondhearingdate = Carbon::parse($casefirstnotice->notice_date)->addDays($secondhearingtimeleine->noticeTimeline->notice_second_hearing);
+           
                     // Update the existing Notice record with the claim petition path
                     FileCase::where('id', $value->id)->update([
-                        'claim_petition' => $savedPath,
+                        'first_hearing_date'  => $firsthearingdate,
+                        'second_hearing_date' => $secondhearingdate,
+                        'claim_petition'      => $savedPath,
                     ]);
                 }
             } catch (\Throwable $th) {

@@ -26,6 +26,11 @@ Route::get('/create_live_court_room', function () {
     Artisan::call('bulk:create-live-court-room');   
     return '<h1>create live court room</h1>';
 });
+//Status Live Rooms
+Route::get('/status_live_court_room', function () {
+    Artisan::call('bulk:status-live-court-room');   
+    return '<h1>status live court room</h1>';
+});
 
 //Create Claim Petition
 Route::get('/create_claim_petition', function () {
