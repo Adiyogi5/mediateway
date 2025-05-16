@@ -92,10 +92,13 @@ class CourtRoomController extends Controller
             ->groupBy('court_rooms.id', 'court_rooms.court_room_case_id')
             ->get();
 
+        $upcomingroomCount = $courtRoomLiveUpcoming->count();
+        $closedroomCount = $courtRoomLiveClosed->count();
+
         $upcomingRooms = $courtRoomLiveUpcoming;
         $closedRooms = $courtRoomLiveClosed;
 
-        return view('organization.courtroom.courtroomlist', compact('organization', 'title', 'upcomingRooms', 'closedRooms'));
+        return view('organization.courtroom.courtroomlist', compact('organization', 'title', 'upcomingRooms', 'closedRooms','upcomingroomCount','closedroomCount'));
     }
 
 
@@ -162,6 +165,18 @@ class CourtRoomController extends Controller
     {
         $caseId = $request->case_id;
         $notices = Notice::where('file_case_id', $caseId)
+            ->whereIn('notice_type', [1,2,3,4,5,6,7,8,9,10])
+            // ->where('email_status', 1)
+            ->get();
+
+        return response()->json($notices);
+    }
+
+    public function fetchAwardsByCaseId(Request $request)
+    {
+        $caseId = $request->case_id;
+        $notices = Notice::where('file_case_id', $caseId)
+            ->whereIn('notice_type', [11,12,13,14,15,16,17,18,19,20,21,22])
             // ->where('email_status', 1)
             ->get();
 

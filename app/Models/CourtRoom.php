@@ -22,5 +22,10 @@ class CourtRoom extends Model
         'date',
         'time',
         'status',
+        'recording_url',
+        'send_mail_to_respondent',
+        'email_send_date',
+        'send_whatsapp_to_respondent',
+        'whatsapp_dispatch_datetime'
     ];
 }

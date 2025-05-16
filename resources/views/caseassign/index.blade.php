@@ -80,7 +80,7 @@
                         d.created_at = $('#filter_created_at').val();
                     }
                 },
-                order: [[7, 'desc']],
+                order: [[10, 'desc']],
                 columns: [
                     {
                         data: null,

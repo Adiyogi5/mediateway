@@ -59,8 +59,8 @@ class CaseListController extends Controller
 
                    // Check if a valid notice exists
                     $hasNotice = Notice::where('file_case_id', $row->id)
-                        ->where('notice_type', 7)
-                        ->where('email_status', 1)
+                        ->where('notice_type', 7)//Notice 3C send for arbitrator accept the case then show approve button
+                        // ->where('email_status', 1)
                         ->exists();
                     // Check if case is already approved
                     $isApproved = AssignCase::where('case_id', $row->id)

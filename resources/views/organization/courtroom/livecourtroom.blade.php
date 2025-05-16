@@ -61,11 +61,10 @@
 
                             </div>
 
-                            <div class="col-lg-12 col-12">
+                            <div class="col-lg-12 col-12"> 
                                 <div class="livemeeting-card h-100">
                                     <h4 class="livemeetingcard-heading text-center justify-content-center"
-                                    style="background-color: black;color: white;padding: 5px;border-radius: 8px">Hearing/Notice
-                                    Updates</h4>
+                                        style="background-color: black;color: white;padding: 5px;border-radius: 8px">Notice And Award Updates</h4>
 
                                     <div class="form-group mb-3">
                                         <label for="file_case_id" class="form-label fw-bold">Select Case</label>
@@ -79,13 +78,30 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div id="noticesContainer" style="max-height: 400px;overflow:scroll;">
 
-                                        {{-- Data Comes via selecting Case_id using Ajax script --}}
+                                    <!-- Notices Container -->
+                                    <div class="row mt-3">
+                                        <div class="col-md-6 col-12">
+                                            <label class="form-label fw-bold">Notices:</label>
+                                            {{-- <h5 style="background-color: #f5f5f5; padding: 5px; border-radius: 5px;">Notices:</h5> --}}
+                                            <div id="noticesContainer" style="max-height: 400px; overflow: scroll;">
 
+                                            </div>
+                                        </div>
+
+                                    <!-- Awards Container -->
+                                        <div class="col-md-6 col-12">
+                                            <label class="form-label fw-bold">Awards:</label>
+                                            {{-- <h5 style="background-color: #f5f5f5; padding: 5px; border-radius: 5px;">Awards:</h5> --}}
+                                            <div id="awardsContainer" style="max-height: 400px; overflow: scroll;">
+
+                                            </div>
+                                        </div>
                                     </div>
+                                    
                                 </div>
                             </div>
+
 
                         </div>
                     </div>
@@ -100,6 +116,7 @@
     <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>
     <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
 
+    {{-- ######### Gegocloud for live court room ######### --}}
     <script>
         const roomID = "{{ $roomID }}";
         const userID = "{{ $localUserID }}";
@@ -133,12 +150,13 @@
 
     {{-- ############# Show Notices Using Ajax ############### --}}
     <script>
-        $(document).ready(function() {
+       $(document).ready(function() {
             const noticeTypes = @json(config('constant.notice_type'));
 
             $('#caseSelector').on('change', function() {
                 const caseId = $(this).val();
 
+                // 📝 Fetch Notices
                 $.ajax({
                     url: "{{ route('organization.courtroom.fetch.notices') }}",
                     method: "POST",
@@ -151,44 +169,34 @@
 
                         if (response.length > 0) {
                             response.forEach(notice => {
-                                // Get the notice type label from the preloaded object
-                                const noticeTypeLabel = noticeTypes[notice
-                                    .notice_type] || 'Unknown Notice Type';
+                                const noticeTypeLabel = noticeTypes[notice.notice_type] || 'Unknown Notice Type';
+                                
+                                let pdfLink = notice.notice ? `
+                                    <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                        href="/storage/${notice.notice}" target="_blank">
+                                        <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
+                                    </a>` :
+                                    `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;
 
-                                // Check if PDF file exists
-                                let pdfLink = '';
-                                if (notice.notice) {
-                                    pdfLink = `<a class="text-decoration-none text-secondary" style="font-size: 13px"
-                                                    href="/storage/${notice.notice}" target="_blank">
-                                                    <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
-                                                </a>`;
-                                } else {
-                                    pdfLink =
-                                        `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;
-                                }
+                                const formattedDate = new Date(notice.notice_date).toLocaleDateString('en-GB');
 
-                                // Format the date to d-m-Y format
-                                const formattedDate = new Date(notice.notice_date)
-                                    .toLocaleDateString('en-GB');
-
-                                // Map email status to readable text
-                                const emailStatus = notice.email_status == 0 ?
-                                    'Unsend' :
+                                const emailStatus = notice.email_status == 0 ? 'Unsend' :
                                     notice.email_status == 1 ? 'Send' :
-                                    notice.email_status == 2 ? 'Failed' :
-                                    'Unknown';
+                                    notice.email_status == 2 ? 'Failed' : 'Unknown';
 
-                                // Append notice card
+                                const whatsappStatus = notice.whatsapp_status == 0 ? 'Unseen' :
+                                    notice.whatsapp_status == 1 ? 'Seen' :
+                                    notice.whatsapp_status == 2 ? 'Failed' : 'Unknown';
+
+                                // 📝 **Appending Notice Card**
                                 $('#noticesContainer').append(`
                                     <div class="card mt-3 border-1 active overflow-hidden">
                                         <div class="card-body py-2 px-md-3 px-2">
                                             <div class="row">
                                                 <div class="col-12 border-bottom d-md-flex justify-content-md-between d-flex justify-content-around text-center item-align-self">
-                                                   
-                                                        <h4 class="livemeetingcard-title mb-0">Notice Date : <small>${formattedDate}</small></h4>
-                                                        
-                                                        <h4 class="livemeetingcard-title mb-0">Email : <small>${emailStatus}</small></h4>
-                                                        
+                                                    <h4 class="livemeetingcard-title mb-0">Notice Date : <small>${formattedDate}</small></h4>
+                                                    <h4 class="livemeetingcard-title mb-0">Email : <small>${emailStatus}</small></h4>
+                                                    <h4 class="livemeetingcard-title mb-0">WhatsApp : <small>${whatsappStatus}</small></h4>
                                                 </div>
                                                 <div class="col">
                                                     <p class="livemeetingcard-text text-muted small d-flex justify-content-between text-center">
@@ -202,13 +210,62 @@
                                 `);
                             });
                         } else {
-                            $('#noticesContainer').append(`
-                                <p class="text-muted mt-3">No notices found for the selected case.</p>
-                            `);
+                            $('#noticesContainer').append(`<p class="text-muted mt-3">No notices found for the selected case.</p>`);
                         }
                     },
                     error: function(xhr, status, error) {
                         console.error("Error fetching notices:", error);
+                    }
+                });
+
+                // 📝 Fetch Awards
+                $.ajax({
+                    url: "{{ route('organization.courtroom.fetch.awards') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        case_id: caseId
+                    },
+                    success: function(response) {
+                        $('#awardsContainer').empty(); // Clear the container
+
+                        if (response.length > 0) {
+                            response.forEach(award => {
+                                const noticeTypeLabel = noticeTypes[award.notice_type] || 'Unknown Award Type';
+                                
+                                let pdfLink = award.notice ? `
+                                    <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                        href="/storage/${award.notice}" target="_blank">
+                                        <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
+                                    </a>` :
+                                    `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;
+
+                                const formattedDate = new Date(award.notice_date).toLocaleDateString('en-GB');
+
+                                $('#awardsContainer').append(`
+                                    <div class="card mt-3 border-1 active overflow-hidden">
+                                        <div class="card-body py-2 px-md-3 px-2">
+                                            <div class="row">
+                                                <div class="col-12 border-bottom d-md-flex justify-content-md-between d-flex justify-content-around text-center item-align-self">
+                                                    <h4 class="livemeetingcard-title mb-0">Award Date : <small>${formattedDate}</small></h4>
+                                                </div>
+                                                <div class="col">
+                                                    <p class="livemeetingcard-text text-muted small d-flex justify-content-between text-center">
+                                                        ${noticeTypeLabel}
+                                                        ${pdfLink}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `);
+                            });
+                        } else {
+                            $('#awardsContainer').append(`<p class="text-muted mt-3">No awards found for the selected case.</p>`);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching awards:", error);
                     }
                 });
             });

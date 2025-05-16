@@ -67,13 +67,13 @@ Route::name('organization.')->middleware(['ensure.organization.session', 'organi
         Route::get('filecase', 'filecase')->name('cases.filecase');
         Route::post('/import-filecases', 'importExcel')->name('cases.filecases.import');
         Route::get('/download-sample', 'downloadSample')->name('cases.filecase.sample');
-
     });
 
     Route::controller(CourtRoomController::class)->group(function () {
         Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
         Route::get('livecourtroom/{room_id}', 'livecourtroom')->name('courtroom.livecourtroom');
         Route::post('/fetch-organization-notices', 'fetchNoticesByCaseId')->name('courtroom.fetch.notices');
+        Route::post('/fetch-organization-awards', 'fetchAwardsByCaseId')->name('courtroom.fetch.awards');
     });
 
     Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');

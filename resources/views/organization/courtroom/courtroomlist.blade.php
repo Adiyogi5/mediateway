@@ -32,10 +32,10 @@
                     <div class="card-body px-0 pb-0 table-meetinglist">
                         <ul class="nav nav-tabs justify-content-center text-center" role="tablist">
                             <li class="nav-item w-50">
-                                <a href="#info" role="tab" data-bs-toggle="tab" class="nav-link active"> Upcoming </a>
+                                <a href="#info" role="tab" data-bs-toggle="tab" class="nav-link active"> Upcoming ({{$upcomingroomCount}})</a>
                             </li>
                             <li class="nav-item w-50">
-                                <a href="#ratings" role="tab" data-bs-toggle="tab" class="nav-link"> Closed </a>
+                                <a href="#ratings" role="tab" data-bs-toggle="tab" class="nav-link"> Closed ({{$closedroomCount}})</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -45,6 +45,7 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">Case Number</th>
+                                                <th scope="col">Hearing Type</th>
                                                 <th scope="col">Arbitrator Name</th>
                                                 <th scope="col">Date</th>
                                                 <th scope="col">Time</th>
@@ -75,6 +76,17 @@
                                                                 </i>
                                                             @endif
                                                         </div>
+                                                    </td>
+                                                    <td class="pt-3">
+                                                        @if ($room->hearing_type == 1)
+                                                            First Hearing
+                                                        @elseif ($room->hearing_type == 2)
+                                                            Second Hearing
+                                                        @elseif ($room->hearing_type == 3)
+                                                            Final Hearing
+                                                        @else
+                                                            Unknown
+                                                        @endif
                                                     </td>
                                                     <td class="pt-2">
                                                         <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->arbitrator_name }}</div>
@@ -108,6 +120,7 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">Case Number</th>
+                                                <th scope="col">Hearing Type</th>
                                                 <th scope="col">Arbitrator Name</th>
                                                 <th scope="col">Date</th>
                                                 <th scope="col">Time</th>
@@ -138,6 +151,17 @@
                                                                 </i>
                                                             @endif
                                                         </div>
+                                                    </td>
+                                                    <td class="pt-3">
+                                                        @if ($room->hearing_type == 1)
+                                                            First Hearing
+                                                        @elseif ($room->hearing_type == 2)
+                                                            Second Hearing
+                                                        @elseif ($room->hearing_type == 3)
+                                                            Final Hearing
+                                                        @else
+                                                            Unknown
+                                                        @endif
                                                     </td>
                                                     <td class="pt-2">
                                                         <div class="pl-lg-5 pl-md-3 pl-1 name">{{ $room->arbitrator_name }}</div>

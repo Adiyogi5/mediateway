@@ -46,7 +46,7 @@
                         class="col-12 col-md-12 my-3 p-lg-3 p-2 border border-2 d-flex justify-content-between item-align-self">
                         <div class="my-auto">
                             <span style="border-radius: 50px; background-color:#ffb53f; padding:5px 10px;">1.</span>
-                            Case File Sample file for download
+                            Case Sample Excel File Format for download
                         </div>
 
                         <div>
@@ -58,7 +58,7 @@
                     <div class="col-12 col-md-12 mt-3 p-lg-3 p-2 border border-2 d-grid item-align-self">
                         <div class="my-auto">
                             <span style="border-radius: 50px; background-color:#ffb53f; padding:5px 10px;">2.</span>
-                            If You Want to File Multiple Cases Using Excel SpreadSheet File (Allowed Type .xlxx Only)
+                            If You Want to File Multiple Cases Using Excel File (Allowed Type .xlxx Only)
                         </div>
                         <form id="submitfileCases" action="{{ route('organization.cases.filecases.import') }}" method="POST" enctype="multipart/form-data">
                             @csrf

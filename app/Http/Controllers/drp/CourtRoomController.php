@@ -110,12 +110,14 @@ class CourtRoomController extends Controller
             ->groupBy('court_rooms.id', 'court_rooms.court_room_case_id')
             ->get();
 
+        $upcomingroomCount = $courtRoomLiveUpcoming->count();
+        $closedroomCount = $courtRoomLiveClosed->count();
+
         $upcomingRooms = $courtRoomLiveUpcoming;
         $closedRooms = $courtRoomLiveClosed;
         
-        return view('drp.courtroom.courtroomlist', compact('drp','title','upcomingRooms','closedRooms'));
+        return view('drp.courtroom.courtroomlist', compact('drp','title','upcomingRooms','closedRooms','upcomingroomCount','closedroomCount'));
     }
-
 
     public function livecourtroom(Request $request, $room_id): View | JsonResponse | RedirectResponse
     {
@@ -188,6 +190,33 @@ class CourtRoomController extends Controller
     
         return JWT::encode($payload, $serverSecret, 'HS256');
     }
+
+    public function saveRecording(Request $request)
+    {
+        $validated = $request->validate([
+            'room_id' => 'required|string',
+            'recording' => 'required|file|mimes:mp4,mkv,avi,flv,wmv',
+        ]);
+
+        // Locate the courtroom based on room ID
+        $courtRoom = CourtRoom::where('room_id', $validated['room_id'])->first();
+
+        if ($courtRoom) {
+            // Save the uploaded recording using your existing helper function
+            $recordingPath = Helper::saveFile($request->file('recording'), 'recordings');
+
+            // Update the recording URL in the database
+            $courtRoom->recording_url = $recordingPath;
+            $courtRoom->save();
+
+            return response()->json([
+                'message' => 'Recording saved successfully.',
+                'path' => $recordingPath,
+            ], 200);
+        } else {
+            return response()->json(['message' => 'Courtroom not found.'], 404);
+        }
+    }
     
     public function getFlattenedCaseData($caseId)
     {
@@ -210,6 +239,18 @@ class CourtRoomController extends Controller
     {
         $caseId = $request->case_id;
         $notices = Notice::where('file_case_id', $caseId)
+            ->whereIn('notice_type', [1,2,3,4,5,6,7,8,9,10])
+            // ->where('email_status', 1)
+            ->get();
+
+        return response()->json($notices);
+    }
+
+    public function fetchAwardsByCaseId(Request $request)
+    {
+        $caseId = $request->case_id;
+        $notices = Notice::where('file_case_id', $caseId)
+            ->whereIn('notice_type', [11,12,13,14,15,16,17,18,19,20,21,22])
             // ->where('email_status', 1)
             ->get();
 
@@ -256,7 +297,41 @@ class CourtRoomController extends Controller
         // Set notice type based on tempType
         if($request->docType == 'ordersheet')
         {    
-            $noticeType = $request->tempType == 1 ? 9 : 10;
+            // Set $noticeType based on $request->tempType
+            switch ($request->tempType) {
+                case 1: $noticeType = 9;
+                    break;
+                case 2: $noticeType = 10;
+                    break;
+                case 3: $noticeType = 11;
+                    break;
+                case 4: $noticeType = 12;
+                    break;
+                case 5: $noticeType = 13;
+                    break;
+                case 6: $noticeType = 14;
+                    break;
+                case 7: $noticeType = 15;
+                    break;
+                case 8: $noticeType = 16;
+                    break;
+                case 9: $noticeType = 17;
+                    break;
+                case 10: $noticeType = 18;
+                    break;
+                case 11: $noticeType = 19;
+                    break;
+                case 12: $noticeType = 20;
+                    break;
+                case 13: $noticeType = 21;
+                    break;
+                case 14: $noticeType = 22;
+                    break;
+                case 15: $noticeType = 23;
+                    break;
+                default: $noticeType = 0; // default case or fallback value
+                    break;
+            }
 
             $noticeexistData = Notice::where('file_case_id', $request->file_case_id)
                                     ->where('notice_type', $noticeType)->first();
@@ -315,7 +390,7 @@ class CourtRoomController extends Controller
                 // Save file using helper
                 $savedPath = Helper::saveFile($uploadedFile, 'notices');
             
-                Notice::create([
+                  Notice::create([
                     'file_case_id' => $request->file_case_id,
                     'notice_type' => $noticeType,
                     'notice' => $savedPath,
@@ -327,15 +402,16 @@ class CourtRoomController extends Controller
                     'whatsapp_dispatch_datetime' => null,
                 ]);
                 
-                return back()->withSuccess('Notice saved successfully.');
+                // Return JSON response instead of back()->withSuccess()
+                return response()->json(['success' => true, 'message' => 'Notice saved successfully.']);
             } else {
-                return back()->with('error', 'Notice already exists for this Case.');
-            }    
+                return response()->json(['success' => false, 'message' => 'Notice already exists for this Case.']);
+            } 
         }
 
         elseif($request->docType == 'settlementletter')
         {
-            $noticeType = $request->tempType == 1 ? 11 : 12;
+            $noticeType = $request->tempType == 1 ? 24 : 25;
 
             $noticeexistData = Notice::where('file_case_id', $request->file_case_id)
                                     ->where('notice_type', $noticeType)->first();
@@ -394,7 +470,7 @@ class CourtRoomController extends Controller
                 // Save file using helper
                 $savedPath = Helper::saveFile($uploadedFile, 'notices');
             
-                Notice::create([
+                  Notice::create([
                     'file_case_id' => $request->file_case_id,
                     'notice_type' => $noticeType,
                     'notice' => $savedPath,
@@ -405,10 +481,12 @@ class CourtRoomController extends Controller
                     'whatsapp_notice_status' => 0,
                     'whatsapp_dispatch_datetime' => null,
                 ]);
-                return back()->withSuccess('Notice saved successfully.');
+                
+                // Return JSON response instead of back()->withSuccess()
+                return response()->json(['success' => true, 'message' => 'Notice saved successfully.']);
             } else {
-                return back()->with('error', 'Notice already exists for this Case.');
-            }   
+                return response()->json(['success' => false, 'message' => 'Notice already exists for this Case.']);
+            }
         }
     }
 

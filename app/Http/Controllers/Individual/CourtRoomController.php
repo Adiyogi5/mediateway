@@ -81,10 +81,13 @@ class CourtRoomController extends Controller
             })
             ->get();
 
+        $upcomingroomCount = $courtRoomLiveUpcoming->count();
+        $closedroomCount = $courtRoomLiveClosed->count();
+
         $upcomingRooms = $courtRoomLiveUpcoming;
         $closedRooms = $courtRoomLiveClosed;
 
-        return view('individual.courtroom.courtroomlist', compact('individual','title','upcomingRooms','closedRooms'));
+        return view('individual.courtroom.courtroomlist', compact('individual','title','upcomingRooms','closedRooms','upcomingroomCount','closedroomCount'));
     }
 
 
@@ -107,6 +110,7 @@ class CourtRoomController extends Controller
             ->get();
 
         $noticeData = Notice::where('file_case_id', $caseId)
+            ->whereIn('notice_type', [1,2,3,4,5,6,7,8,9,10])
             // ->where('email_status', 1)
             ->get();
     

@@ -32,10 +32,10 @@
                     <div class="card-body px-0 pb-0 table-meetinglist">
                         <ul class="nav nav-tabs justify-content-center text-center" role="tablist">
                             <li class="nav-item w-50">
-                                <a href="#info" role="tab" data-bs-toggle="tab" class="nav-link active"> Upcoming </a>
+                                <a href="#info" role="tab" data-bs-toggle="tab" class="nav-link active"> Upcoming ({{$upcomingroomCount}})</a>
                             </li>
                             <li class="nav-item w-50">
-                                <a href="#ratings" role="tab" data-bs-toggle="tab" class="nav-link"> Closed </a>
+                                <a href="#ratings" role="tab" data-bs-toggle="tab" class="nav-link"> Closed ({{$closedroomCount}})</a>
                             </li>
                         </ul>
                         <div class="tab-content">

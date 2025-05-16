@@ -117,8 +117,10 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
     Route::controller(CourtRoomController::class)->group(function () {
         Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
         Route::get('livecourtroom/{room_id}', 'livecourtroom')->name('courtroom.livecourtroom');
+        Route::post('save-recording', 'saveRecording')->name('courtroom.saveRecording');
         Route::get('/get-flattened-case-data/{caseId}', 'getFlattenedCaseData')->name('courtroom.getFlattenedCaseData');
         Route::post('/fetch-notices', 'fetchNoticesByCaseId')->name('courtroom.fetch.notices');
+        Route::post('/fetch-awards', 'fetchAwardsByCaseId')->name('courtroom.fetch.awards');
         Route::post('/courtroom/save-notice', 'saveNotice')->name('courtroom.savenotice');
         Route::post('/close-court-room','closeCourtRoom')->name('courtroom.close');
     });
