@@ -42,7 +42,7 @@
                             </div>
                             <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon">
-                                    <a href="{{ route('organization.courtroom.courtroomlist') }}"
+                                    <a href="{{ route('organization.organizationcourtroom.organizationcourtroomlist') }}"
                                         class="btn btn-outline-secondary">
                                         <i class="fa fa-list me-1"></i>
                                         Court Lists
@@ -82,7 +82,7 @@
                                     <!-- Notices Container -->
                                     <div class="row mt-3">
                                         <div class="col-md-6 col-12">
-                                            <label class="form-label fw-bold">Notices:</label>
+                                            <label class="form-label fw-bold">All Notices:</label>
                                             {{-- <h5 style="background-color: #f5f5f5; padding: 5px; border-radius: 5px;">Notices:</h5> --}}
                                             <div id="noticesContainer" style="max-height: 400px; overflow: scroll;">
 
@@ -91,7 +91,7 @@
 
                                     <!-- Awards Container -->
                                         <div class="col-md-6 col-12">
-                                            <label class="form-label fw-bold">Awards:</label>
+                                            <label class="form-label fw-bold">Daily OrderSheet:</label>
                                             {{-- <h5 style="background-color: #f5f5f5; padding: 5px; border-radius: 5px;">Awards:</h5> --}}
                                             <div id="awardsContainer" style="max-height: 400px; overflow: scroll;">
 
@@ -158,7 +158,7 @@
 
                 // 📝 Fetch Notices
                 $.ajax({
-                    url: "{{ route('organization.courtroom.fetch.notices') }}",
+                    url: "{{ route('organization.organizationcourtroom.fetch.notices') }}",
                     method: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
@@ -220,7 +220,7 @@
 
                 // 📝 Fetch Awards
                 $.ajax({
-                    url: "{{ route('organization.courtroom.fetch.awards') }}",
+                    url: "{{ route('organization.organizationcourtroom.fetch.awards') }}",
                     method: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",

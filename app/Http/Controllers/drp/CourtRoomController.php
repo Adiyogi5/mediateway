@@ -34,17 +34,74 @@ class CourtRoomController extends Controller
 
     public function index(Request $request): View | JsonResponse | RedirectResponse
     {
+       
         $title = 'Court Room List';
         $drp = auth('drp')->user();
-
+       
         if (!$drp) {
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
         if ($drp->drp_type !== 1) {
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
-        
+    
         $courtRoomLiveUpcoming = CourtRoom::select(
+            'court_rooms.*',
+            'drps.name as arbitrator_name',
+            DB::raw('GROUP_CONCAT(DISTINCT individuals.name SEPARATOR ", ") as individual_name'),
+            DB::raw('GROUP_CONCAT(DISTINCT organizations.name SEPARATOR ", ") as organization_name'),
+            DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
+            DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
+        )
+        ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
+        ->leftJoin('individuals', function ($join) {
+            $join->on(DB::raw("FIND_IN_SET(individuals.id, court_rooms.individual_id)"), '>', DB::raw('0'));
+        })
+        ->leftJoin('organizations', function ($join) {
+            $join->on(DB::raw("FIND_IN_SET(organizations.id, court_rooms.organization_id)"), '>', DB::raw('0'));
+        })
+        ->leftJoin('file_cases', function ($join) {
+            $join->on(DB::raw("FIND_IN_SET(file_cases.individual_id, court_rooms.individual_id)"), '>', DB::raw('0'))
+                ->orOn(DB::raw('FIND_IN_SET(file_cases.id, court_rooms.court_room_case_id)'), '>', DB::raw('0'));
+        })
+        ->where('court_rooms.arbitrator_id', $drp->id)
+        ->where(function ($query) {
+            $query->where('court_rooms.date', '>', Carbon::today()->toDateString())
+                ->orWhere(function ($subQuery) {
+                    $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
+                            ->where('court_rooms.time', '>=', Carbon::now()->format('H:i:s'));
+                })
+                ->orWhere(function ($subQuery) {
+                    $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
+                            ->where('court_rooms.status', 1);
+                });
+        })
+       ->groupBy(
+            'court_rooms.id', 
+            'court_rooms.court_room_case_id',
+            'court_rooms.room_id',
+            'court_rooms.date',
+            'court_rooms.time',
+            'court_rooms.hearing_type',
+            'court_rooms.case_manager_id',
+            'court_rooms.recording_url',
+            'court_rooms.arbitrator_id',
+            'court_rooms.individual_id',
+            'court_rooms.organization_id',
+            'court_rooms.send_mail_to_respondent',
+            'court_rooms.email_send_date',
+            'court_rooms.send_whatsapp_to_respondent',
+            'court_rooms.whatsapp_dispatch_datetime',
+            'court_rooms.status',
+            'court_rooms.deleted_at',
+            'court_rooms.created_at',
+            'court_rooms.updated_at',
+            'drps.name'
+        )
+        ->get();
+
+
+        $courtRoomLiveClosed = CourtRoom::select(
                 'court_rooms.*',
                 'drps.name as arbitrator_name',
                 DB::raw('GROUP_CONCAT(DISTINCT individuals.name SEPARATOR ", ") as individual_name'),
@@ -64,41 +121,6 @@ class CourtRoomController extends Controller
                     ->orOn(DB::raw('FIND_IN_SET(file_cases.id, court_rooms.court_room_case_id)'), '>', DB::raw('0'));
             })
             ->where('court_rooms.arbitrator_id', $drp->id)
-            ->where(function ($query) {
-                $query->where('court_rooms.date', '>', Carbon::today()->toDateString())
-                    ->orWhere(function ($subQuery) {
-                        $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
-                                ->where('court_rooms.time', '>=', Carbon::now()->format('H:i:s'));
-                    })
-                    ->orWhere(function ($subQuery) {
-                        $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
-                                ->where('court_rooms.status', 1);
-                    });
-            })
-            ->groupBy('court_rooms.id', 'court_rooms.court_room_case_id')
-            ->get();
-        
-
-        $courtRoomLiveClosed = CourtRoom::select(
-                'court_rooms.*',
-                'drps.name as arbitrator_name',
-                DB::raw('GROUP_CONCAT(DISTINCT individuals.name SEPARATOR ", ") as individual_name'),
-                DB::raw('GROUP_CONCAT(DISTINCT organizations.name SEPARATOR ", ") as organization_name'),
-                DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
-                DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
-            )
-            ->leftJoin('drps', 'drps.id', '=', 'court_rooms.arbitrator_id')
-            ->leftJoin('individuals', function ($join) {
-                $join->on(DB::raw("FIND_IN_SET(individuals.id, court_rooms.individual_id)"), '>', DB::raw('0'));
-            })
-            ->leftJoin('organizations', function ($join) {
-                $join->on(DB::raw("FIND_IN_SET(organizations.id, court_rooms.organization_id)"), '>', DB::raw('0'));
-            })
-            ->leftJoin('file_cases', function ($join) {
-                $join->on(DB::raw("FIND_IN_SET(file_cases.individual_id, court_rooms.individual_id)"), '>', DB::raw('0'))
-                ->orOn(DB::raw('FIND_IN_SET(file_cases.id, court_rooms.court_room_case_id)'), '>', DB::raw('0'));
-            })
-            ->where('court_rooms.arbitrator_id', $drp->id)
             ->where('court_rooms.status', 0)
             ->where(function ($query) {
                 $query->where('court_rooms.date', '<', Carbon::today()->toDateString())
@@ -107,7 +129,28 @@ class CourtRoomController extends Controller
                                 ->where('court_rooms.time', '<=', Carbon::now()->format('H:i:s'));
                     });
             })
-            ->groupBy('court_rooms.id', 'court_rooms.court_room_case_id')
+            ->groupBy(
+                'court_rooms.id', 
+                'court_rooms.court_room_case_id',
+                'court_rooms.room_id',
+                'court_rooms.date',
+                'court_rooms.time',
+                'court_rooms.hearing_type',
+                'court_rooms.case_manager_id',
+                'court_rooms.recording_url',
+                'court_rooms.arbitrator_id',
+                'court_rooms.individual_id',
+                'court_rooms.organization_id',
+                'court_rooms.send_mail_to_respondent',
+                'court_rooms.email_send_date',
+                'court_rooms.send_whatsapp_to_respondent',
+                'court_rooms.whatsapp_dispatch_datetime',
+                'court_rooms.status',
+                'court_rooms.deleted_at',
+                'court_rooms.created_at',
+                'court_rooms.updated_at',
+                'drps.name'
+            )
             ->get();
 
         $upcomingroomCount = $courtRoomLiveUpcoming->count();
@@ -250,7 +293,7 @@ class CourtRoomController extends Controller
     {
         $caseId = $request->case_id;
         $notices = Notice::where('file_case_id', $caseId)
-            ->whereIn('notice_type', [11,12,13,14,15,16,17,18,19,20,21,22])
+            ->whereIn('notice_type', [11,12,13,14,15,16,17,18,19,20,21,22,23,24,25])
             // ->where('email_status', 1)
             ->get();
 
@@ -338,7 +381,8 @@ class CourtRoomController extends Controller
            
             if (empty($noticeexistData)) {
                 // Get signature settings
-                $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
+                $drp = auth('drp')->user();
+                $signature = $drp->signature_drp;
 
                 // Generate HTML with styles and content
                 $html = '
@@ -364,10 +408,10 @@ class CourtRoomController extends Controller
                 ' . $request->livemeetingdata;
 
                 // Append signature image
-                if (!empty($signature['mediateway_signature'])) {
+                if (!empty($signature)) {
                     $html .= '
                         <div style="text-align: right; margin-top: 20px;">
-                            <img src="' . asset('storage/' . $signature['mediateway_signature']) . '" style="height: 80px;" alt="Signature">
+                            <img src="' . asset('storage/' . $signature) . '" style="height: 80px;" alt="Signature">
                         </div>';
                 }
 
@@ -418,7 +462,8 @@ class CourtRoomController extends Controller
             
             if (empty($noticeexistData)) {
                 // Get signature settings
-                $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
+                $drp = auth('drp')->user();
+                $signature = $drp->signature_drp;
 
                 // Generate HTML with styles and content
                 $html = '
@@ -444,10 +489,10 @@ class CourtRoomController extends Controller
                 ' . $request->livemeetingdata;
 
                 // Append signature image
-                if (!empty($signature['mediateway_signature'])) {
+                if (!empty($signature)) {
                     $html .= '
                         <div style="text-align: right; margin-top: 20px;">
-                            <img src="' . asset('storage/' . $signature['mediateway_signature']) . '" style="height: 80px;" alt="Signature">
+                            <img src="' . asset('storage/' . $signature) . '" style="height: 80px;" alt="Signature">
                         </div>';
                 }
 

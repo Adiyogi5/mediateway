@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\CityController;
-use App\Http\Controllers\Organization\CourtRoomController;
 use App\Http\Controllers\Organization\FileCaseController;
 use App\Http\Controllers\Organization\HomeController;
+use App\Http\Controllers\Organization\OrganizationCourtRoomController;
 use App\Http\Controllers\Organization\ProfileController;
 use App\Http\Controllers\Organization\StaffRolesController;
 use App\Http\Controllers\Organization\StaffsController;
@@ -69,11 +69,11 @@ Route::name('organization.')->middleware(['ensure.organization.session', 'organi
         Route::get('/download-sample', 'downloadSample')->name('cases.filecase.sample');
     });
 
-    Route::controller(CourtRoomController::class)->group(function () {
-        Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
-        Route::get('livecourtroom/{room_id}', 'livecourtroom')->name('courtroom.livecourtroom');
-        Route::post('/fetch-organization-notices', 'fetchNoticesByCaseId')->name('courtroom.fetch.notices');
-        Route::post('/fetch-organization-awards', 'fetchAwardsByCaseId')->name('courtroom.fetch.awards');
+    Route::controller(OrganizationCourtRoomController::class)->group(function () {
+        Route::get('organizationcourtroomlist', 'index')->name('organizationcourtroom.organizationcourtroomlist');
+        Route::get('liveorganizationcourtroom/{room_id}', 'livecourtroom')->name('organizationcourtroom.liveorganizationcourtroom');
+        Route::post('/fetch-organization-notices', 'fetchNoticesByCaseId')->name('organizationcourtroom.fetch.notices');
+        Route::post('/fetch-organization-awards', 'fetchAwardsByCaseId')->name('organizationcourtroom.fetch.awards');
     });
 
     Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');

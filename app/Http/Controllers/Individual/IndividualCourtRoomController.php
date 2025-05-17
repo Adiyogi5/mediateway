@@ -19,7 +19,7 @@ use Firebase\JWT\Key;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class CourtRoomController extends Controller
+class IndividualCourtRoomController extends Controller
 {
 
     public function __construct()
@@ -87,7 +87,7 @@ class CourtRoomController extends Controller
         $upcomingRooms = $courtRoomLiveUpcoming;
         $closedRooms = $courtRoomLiveClosed;
 
-        return view('individual.courtroom.courtroomlist', compact('individual','title','upcomingRooms','closedRooms','upcomingroomCount','closedroomCount'));
+        return view('individual.individualcourtroom.individualcourtroomlist', compact('individual','title','upcomingRooms','closedRooms','upcomingroomCount','closedroomCount'));
     }
 
 
@@ -113,6 +113,11 @@ class CourtRoomController extends Controller
             ->whereIn('notice_type', [1,2,3,4,5,6,7,8,9,10])
             // ->where('email_status', 1)
             ->get();
+
+        $ordersheetData = Notice::where('file_case_id', $caseId)
+            ->whereIn('notice_type', [11,12,13,14,15,16,17,18,19,20,21,22,23,24,25])
+            // ->where('email_status', 1)
+            ->get();
     
         //ZegoCloud Service---------------------
         $localUserID = $individual->slug; // e.g., Individual 
@@ -121,11 +126,12 @@ class CourtRoomController extends Controller
     
         $zegoToken = $this->generateZegoToken($localUserID, $individual->name);
         
-        return view('individual.courtroom.livecourtroom', compact(
+        return view('individual.individualcourtroom.liveindividualcourtroom', compact(
             'individual',
             'title',
             'caseData',
             'noticeData',
+            'ordersheetData',
             'localUserID',
             'remoteUserID',
             'roomID',

@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\CityController;
-use App\Http\Controllers\Individual\CourtRoomController;
 use App\Http\Controllers\Individual\FileCaseController;
 use App\Http\Controllers\Individual\HomeController;
+use App\Http\Controllers\Individual\IndividualCourtRoomController;
 use App\Http\Controllers\Individual\ProfileController;
 use App\Routes\Profile;
 use Illuminate\Support\Facades\Route;
@@ -47,9 +47,9 @@ Route::name('individual.')->middleware(['ensure.individual.session'])->prefix('i
         Route::get('/file-case-payment-success/{id}','filecasepayment_success')->name('case.filecasepayment_success');
     });
 
-    Route::controller(CourtRoomController::class)->group(function () {
-        Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
-        Route::get('livecourtroom/{room_id}', 'livecourtroom')->name('courtroom.livecourtroom');
+    Route::controller(IndividualCourtRoomController::class)->group(function () {
+        Route::get('individualcourtroomlist', 'index')->name('individualcourtroom.individualcourtroomlist');
+        Route::get('liveindividualcourtroom/{room_id}', 'livecourtroom')->name('individualcourtroom.liveindividualcourtroom');
     });
 
     Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');

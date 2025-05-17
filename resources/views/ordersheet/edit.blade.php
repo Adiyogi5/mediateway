@@ -145,7 +145,7 @@
                             const id = `copyText${index}`;
                             variableList.append(`
                                 <div class="col-md-6 mb-3 d-flex align-items-center">
-                                    <div class="w-100 border rounded p-2 d-flex justify-content-between align-items-center">
+                                    <div class="w-100 border rounded p-1 d-flex justify-content-between align-items-center">
                                         <span class="text-dark fw-bold">${variableText}</span>
                                         <button class="btn btn-sm btn-outline-secondary ms-2 copy-btn" data-variable="${variableText}">
                                             Copy

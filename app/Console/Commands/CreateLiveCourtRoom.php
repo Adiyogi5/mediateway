@@ -102,7 +102,7 @@ class CreateLiveCourtRoom extends Command
                     ->whereNull('deleted_at')
                     ->get()
                     ->groupBy($hearingDateColumn);
-
+               
                 foreach ($fileCases as $date => $cases) {
                     $courtroomData = CourtRoom::where('date', $date)
                         ->where('hearing_type', $hearingType)

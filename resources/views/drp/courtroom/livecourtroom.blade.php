@@ -141,7 +141,7 @@
                                 <div class="livemeeting-card h-100">
                                     <h4 class="livemeetingcard-heading text-center justify-content-center"
                                         style="background-color: black;color: white;padding: 5px;border-radius: 8px">
-                                        Award Updates</h4>
+                                        Daily OrderSheet</h4>
                                     <!-- Notice Display Area -->
                                     <div id="awardsContainer">
 
@@ -516,11 +516,11 @@
                                 `);
                             });
                         } else {
-                            $('#awardsContainer').append(`<p class="text-muted mt-3">No awards found for the selected case.</p>`);
+                            $('#awardsContainer').append(`<p class="text-muted mt-3">No OrderSheet found for the selected case.</p>`);
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.error("Error fetching awards:", error);
+                        console.error("Error fetching OrderSheet:", error);
                     }
                 });
             });

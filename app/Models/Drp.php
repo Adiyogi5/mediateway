@@ -28,6 +28,7 @@ class Drp extends Authenticatable
         'mobile',
         'status',
         'image',
+        'signature_drp',
         'state_id',
         'city_id',
         'approve_status',

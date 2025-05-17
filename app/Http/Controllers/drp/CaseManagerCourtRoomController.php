@@ -75,7 +75,28 @@ class CaseManagerCourtRoomController extends Controller
                                 ->where('court_rooms.status', 1);
                     });
             })
-            ->groupBy('court_rooms.id', 'court_rooms.court_room_case_id')
+            ->groupBy(
+                'court_rooms.id', 
+                'court_rooms.court_room_case_id',
+                'court_rooms.room_id',
+                'court_rooms.date',
+                'court_rooms.time',
+                'court_rooms.hearing_type',
+                'court_rooms.case_manager_id',
+                'court_rooms.recording_url',
+                'court_rooms.arbitrator_id',
+                'court_rooms.individual_id',
+                'court_rooms.organization_id',
+                'court_rooms.send_mail_to_respondent',
+                'court_rooms.email_send_date',
+                'court_rooms.send_whatsapp_to_respondent',
+                'court_rooms.whatsapp_dispatch_datetime',
+                'court_rooms.status',
+                'court_rooms.deleted_at',
+                'court_rooms.created_at',
+                'court_rooms.updated_at',
+                'drps.name',
+            )
             ->get();
         
 
@@ -96,7 +117,7 @@ class CaseManagerCourtRoomController extends Controller
             })
             ->leftJoin('file_cases', function ($join) {
                 $join->on(DB::raw("FIND_IN_SET(file_cases.individual_id, court_rooms.individual_id)"), '>', DB::raw('0'))
-                ->orOn(DB::raw('FIND_IN_SET(file_cases.id, court_rooms.court_room_case_id)'), '>', DB::raw('0'));
+                    ->orOn(DB::raw('FIND_IN_SET(file_cases.id, court_rooms.court_room_case_id)'), '>', DB::raw('0'));
             })
             ->where('court_rooms.case_manager_id', $drp->id)
             ->where('court_rooms.status', 0)
@@ -107,7 +128,28 @@ class CaseManagerCourtRoomController extends Controller
                                 ->where('court_rooms.time', '<=', Carbon::now()->format('H:i:s'));
                     });
             })
-            ->groupBy('court_rooms.id', 'court_rooms.court_room_case_id')
+            ->groupBy(
+                'court_rooms.id', 
+                'court_rooms.court_room_case_id',
+                'court_rooms.room_id',
+                'court_rooms.date',
+                'court_rooms.time',
+                'court_rooms.hearing_type',
+                'court_rooms.case_manager_id',
+                'court_rooms.recording_url',
+                'court_rooms.arbitrator_id',
+                'court_rooms.individual_id',
+                'court_rooms.organization_id',
+                'court_rooms.send_mail_to_respondent',
+                'court_rooms.email_send_date',
+                'court_rooms.send_whatsapp_to_respondent',
+                'court_rooms.whatsapp_dispatch_datetime',
+                'court_rooms.status',
+                'court_rooms.deleted_at',
+                'court_rooms.created_at',
+                'court_rooms.updated_at',
+                'drps.name',
+            )
             ->get();
 
         $upcomingRooms = $courtRoomLiveUpcoming;
@@ -210,6 +252,18 @@ class CaseManagerCourtRoomController extends Controller
     {
         $caseId = $request->case_id;
         $notices = Notice::where('file_case_id', $caseId)
+            ->whereIn('notice_type', [1,2,3,4,5,6,7,8,9,10])
+            // ->where('email_status', 1)
+            ->get();
+
+        return response()->json($notices);
+    }
+
+     public function fetchAwardsByCaseId(Request $request)
+    {
+        $caseId = $request->case_id;
+        $notices = Notice::where('file_case_id', $caseId)
+            ->whereIn('notice_type', [11,12,13,14,15,16,17,18,19,20,21,22,23,24,25])
             // ->where('email_status', 1)
             ->get();
 

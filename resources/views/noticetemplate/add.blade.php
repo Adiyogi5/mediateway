@@ -148,6 +148,9 @@
                                             $todayDateVariable = "{{DATE}}";
                                             $stage2bNoticeVariable = "{{STAGE 2B NOTICE}}";
                                             $stage3bNoticeVariable = "{{STAGE 3-B NOTICE: APPOINTMENT OF ARBITRATOR}}";
+
+                                            $stage3cNoticeVariable = "{{STAGE 3-C NOTICE: ACCEPTANCE AND DISCLOSURE}}";
+                                            $stage3cpendingarbitrationclaimVariable = "{{TOTAL NUMBER OF PENDING ARBITRATION CLAIMS}}";
                                         @endphp
 
                                         <div class="col-12 text-center justify-content-center">
@@ -349,6 +352,20 @@
                                         <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
                                             <span class="variable-text">{{ $stage3bNoticeVariable }}</span>
                                             <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $stage3bNoticeVariable }}">Copy</button>
+                                        </div>
+                                        
+                                        <hr class="mt-2">
+
+                                        <div class="col-12 text-center justify-content-center">
+                                            <h6><b><span class="text-success">Notice Type : 3C </span>- NOTICE Acceptance and Disclosure</b></h6>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $stage3cNoticeVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $stage3cNoticeVariable }}">Copy</button>
+                                        </div>
+                                         <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $stage3cpendingarbitrationclaimVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $stage3cpendingarbitrationclaimVariable }}">Copy</button>
                                         </div>
                                     </div>
                                 </div>

@@ -42,7 +42,7 @@
                             </div>
                             <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon">
-                                    <a href="{{ route('individual.courtroom.courtroomlist') }}"
+                                    <a href="{{ route('individual.individualcourtroom.individualcourtroomlist') }}"
                                         class="btn btn-outline-secondary">
                                         <i class="fa fa-list me-1"></i>
                                         Court Lists
@@ -61,11 +61,10 @@
 
                             </div>
 
-                            <div class="col-lg-12 col-12">
+                            <div class="col-md-6 col-12">
                                 <div class="livemeeting-card">
                                     <h4 class="livemeetingcard-heading text-center justify-content-center"
-                                    style="background-color: black;color: white;padding: 5px;border-radius: 8px">Hearing/Notice
-                                    Updates</h4>
+                                    style="background-color: black;color: white;padding: 5px;border-radius: 8px">Notice Updates</h4>
                                 
                                     <div id="noticesContainer" style="max-height: 400px;overflow:scroll;">
                                         @if($noticeData->isNotEmpty())
@@ -98,6 +97,60 @@
                                                                     @if($notice->notice)
                                                                         <a class="text-decoration-none text-secondary" style="font-size: 13px"
                                                                            href="{{ asset('storage/' . $notice->notice) }}" target="_blank">
+                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
+                                                                        </a>
+                                                                    @else
+                                                                        <span class="text-muted" style="font-size: 13px">No PDF Available</span>
+                                                                    @endif
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <p class="text-muted mt-3">No notices found for this case.</p>
+                                        @endif
+                                    </div>
+                                </div>                                
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="livemeeting-card">
+                                    <h4 class="livemeetingcard-heading text-center justify-content-center"
+                                    style="background-color: black;color: white;padding: 5px;border-radius: 8px">Daily OrderSheet</h4>
+                                
+                                    <div id="ordersheetContainer" style="max-height: 400px;overflow:scroll;">
+                                        @if($ordersheetData->isNotEmpty())
+                                            @foreach ($ordersheetData as $ordersheet)
+                                                <div class="card mt-3 border-1 active overflow-hidden">
+                                                    <div class="card-body py-2 px-md-3 px-2">
+                                                        <div class="row">
+                                                            <div class="col-12 border-bottom d-md-flex justify-content-md-between d-flex justify-content-around text-center item-align-self">
+                                                                <h4 class="livemeetingcard-title mb-0">
+                                                                    OrderSheet Date : <small>{{ \Carbon\Carbon::parse($ordersheet->notice_date)->format('d-m-Y') }}</small>
+                                                                </h4>
+                                                                <h4 class="livemeetingcard-title mb-0">
+                                                                    Email : <small>
+                                                                        @if($ordersheet->email_status == 0)
+                                                                            Unsend
+                                                                        @elseif($ordersheet->email_status == 1)
+                                                                            Send
+                                                                        @elseif($ordersheet->email_status == 2)
+                                                                            Failed
+                                                                        @else
+                                                                            Unknown
+                                                                        @endif
+                                                                    </small>
+                                                                </h4>
+                                                            </div>
+                                                            <div class="col">
+                                                                <p class="livemeetingcard-text text-muted small d-flex justify-content-between text-center">
+                                                                    {{ config('constant.notice_type')[$ordersheet->notice_type] ?? 'Unknown OrderSheet Type' }}
+                                                                    
+                                                                    @if($ordersheet->notice)
+                                                                        <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                                                           href="{{ asset('storage/' . $ordersheet->notice) }}" target="_blank">
                                                                             <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
                                                                         </a>
                                                                     @else

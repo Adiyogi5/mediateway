@@ -219,6 +219,21 @@
                                         </div>
                                     @endif
 
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <label class="form-label" for="signature_drp">Signature Image</label>
+                                        <input class="form-control" id="signature_drp" name="signature_drp" type="file" />
+                                        @error('signature_drp')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    @if ($drp->signature_drp)
+                                        <div class="mb-5">
+                                            <img src="{{ asset('storage/' . $drp->signature_drp) }}" class="img-thumbnail"
+                                                width="100" />
+                                        </div>
+                                    @endif
+
 
                                     <h4 class="mb-3 d-flex item-align-self">
                                         <i class="fas fa-circle text-dark faa-form-heading my-auto"></i> Public Details
@@ -606,6 +621,10 @@
                     extension: "jpg|jpeg|png",
                     filesize: 2
                 },
+                signature_drp: {
+                    extension: "jpg|jpeg|png",
+                    filesize: 2
+                },
                 middle_name: {
                     required: false,
                 },
@@ -660,6 +679,9 @@
                     required: "Please enter Mobile number",
                 },
                 image: {
+                    extension: "Supported Format Only : jpg, jpeg, png"
+                },
+                signature_drp: {
                     extension: "Supported Format Only : jpg, jpeg, png"
                 },
                 termsandconditions: {

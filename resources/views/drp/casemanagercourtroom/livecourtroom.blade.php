@@ -52,21 +52,7 @@
 
                             </div>
 
-                            <div class="col-lg-4 col-12 order-lg-1 order-2">
-                                <div class="livemeeting-card h-100">
-                                    <h4 class="livemeetingcard-heading text-center justify-content-center"
-                                    style="background-color: black;color: white;padding: 5px;border-radius: 8px">Hearing/Notice
-                                    Updates</h4>
-                                    <!-- Notice Display Area -->
-                                    <div id="noticesContainer">
-
-                                        {{-- Data Comes via selecting Case_id using Ajax script --}}
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-8 col-12 order-lg-2 order-1">
+                            <div class="col-lg-12 col-12">
                                 <form id="sendnoticeForm" action="{{ route('drp.casemanagercourtroom.savenotice') }}" method="POST">
                                     @csrf
                                     <div class="livemeeting-card h-100">
@@ -124,6 +110,34 @@
                                         </div>
                                     </div>
                                 </form>
+                            </div>
+
+                            <div class="col-lg-6 col-12">
+                                <div class="livemeeting-card h-100">
+                                    <h4 class="livemeetingcard-heading text-center justify-content-center"
+                                        style="background-color: black;color: white;padding: 5px;border-radius: 8px">
+                                        Notice Updates</h4>
+                                    <!-- Notice Display Area -->
+                                    <div id="noticesContainer">
+
+                                        {{-- Data Comes via selecting Case_id using Ajax script --}}
+
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6 col-12">
+                                <div class="livemeeting-card h-100">
+                                    <h4 class="livemeetingcard-heading text-center justify-content-center"
+                                        style="background-color: black;color: white;padding: 5px;border-radius: 8px">
+                                        Daily OrderSheet</h4>
+                                    <!-- Notice Display Area -->
+                                    <div id="awardsContainer">
+
+                                        {{-- Data Comes via selecting Case_id using Ajax script --}}
+
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -270,12 +284,13 @@
 
     {{-- ############# Show Notices Using Ajax ############### --}}
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             const noticeTypes = @json(config('constant.notice_type'));
-    
-            $('#caseSelector').on('change', function () {
+
+            $('#caseSelector').on('change', function() {
                 const caseId = $(this).val();
-                
+
+                // Fetch Notices
                 $.ajax({
                     url: "{{ route('drp.casemanagercourtroom.fetch.notices') }}",
                     method: "POST",
@@ -283,35 +298,30 @@
                         _token: "{{ csrf_token() }}",
                         case_id: caseId
                     },
-                    success: function (response) {
+                    success: function(response) {
                         $('#noticesContainer').empty(); // Clear the container
-    
+
                         if (response.length > 0) {
                             response.forEach(notice => {
-                                // Get the notice type label from the preloaded object
                                 const noticeTypeLabel = noticeTypes[notice.notice_type] || 'Unknown Notice Type';
-    
-                                // Check if PDF file exists
-                                let pdfLink = '';
-                                if (notice.notice) {
-                                    pdfLink = `<a class="text-decoration-none text-secondary" style="font-size: 13px"
-                                                    href="/storage/${notice.notice}" target="_blank">
-                                                    <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
-                                                </a>`;
-                                } else {
-                                    pdfLink = `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;
-                                }
+                                
+                                let pdfLink = notice.notice ? `
+                                    <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                        href="/storage/${notice.notice}" target="_blank">
+                                        <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
+                                    </a>` :
+                                    `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;
 
-                                // Format the date to d-m-Y format
                                 const formattedDate = new Date(notice.notice_date).toLocaleDateString('en-GB');
 
-                                // Map email status to readable text
-                                const emailStatus = notice.email_status == 0 ? 'Unsend' 
-                                                : notice.email_status == 1 ? 'Send' 
-                                                : notice.email_status == 2 ? 'Failed' 
-                                                : 'Unknown';
-    
-                                // Append notice card
+                                const whatsappStatus = notice.whatsapp_status == 0 ? 'Unseen' :
+                                    notice.whatsapp_status == 1 ? 'Seen' :
+                                    notice.whatsapp_status == 2 ? 'Failed' : 'Unknown';
+
+                                const emailStatus = notice.email_status == 0 ? 'Unsend' :
+                                    notice.email_status == 1 ? 'Send' :
+                                    notice.email_status == 2 ? 'Failed' : 'Unknown';
+
                                 $('#noticesContainer').append(`
                                     <div class="card mt-3 border-1 active overflow-hidden">
                                         <div class="card-body py-2 px-md-3 px-2">
@@ -320,6 +330,10 @@
                                                     <div class="text-center d-grid">
                                                         <h4 class="livemeetingcard-title mb-0">Notice Date :</h4>
                                                         <small>${formattedDate}</small>
+                                                    </div>
+                                                    <div class="text-center d-grid">
+                                                        <h4 class="livemeetingcard-title mb-0">Whatsapp :</h4>
+                                                        <small>${whatsappStatus}</small>
                                                     </div>
                                                     <div class="text-center d-grid">
                                                         <h4 class="livemeetingcard-title mb-0">Email :</h4>
@@ -338,18 +352,70 @@
                                 `);
                             });
                         } else {
-                            $('#noticesContainer').append(`
-                                <p class="text-muted mt-3">No notices found for the selected case.</p>
-                            `);
+                            $('#noticesContainer').append(`<p class="text-muted mt-3">No notices found for the selected case.</p>`);
                         }
                     },
-                    error: function (xhr, status, error) {
+                    error: function(xhr, status, error) {
                         console.error("Error fetching notices:", error);
+                    }
+                });
+
+                // Fetch Awards
+                $.ajax({
+                    url: "{{ route('drp.casemanagercourtroom.fetch.awards') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        case_id: caseId
+                    },
+                    success: function(response) {
+                        $('#awardsContainer').empty(); // Clear the container
+
+                        if (response.length > 0) {
+                            response.forEach(notice => {
+                                const noticeTypeLabel = noticeTypes[notice.notice_type] || 'Unknown Award Type';
+                                
+                                let pdfLink = notice.notice ? `
+                                    <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                        href="/storage/${notice.notice}" target="_blank">
+                                        <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
+                                    </a>` :
+                                    `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;
+
+                                const formattedDate = new Date(notice.notice_date).toLocaleDateString('en-GB');
+
+                                $('#awardsContainer').append(`
+                                    <div class="card mt-3 border-1 active overflow-hidden">
+                                        <div class="card-body py-2 px-md-3 px-2">
+                                            <div class="row">
+                                                <div class="col-12 border-bottom d-md-flex justify-content-md-between d-flex justify-content-around text-center item-align-self">
+                                                    <div class="text-center d-grid">
+                                                        <h4 class="livemeetingcard-title mb-0">Award Date :</h4>
+                                                        <small>${formattedDate}</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <p class="livemeetingcard-text text-muted small d-flex justify-content-between text-center">
+                                                        ${noticeTypeLabel}
+                                                        ${pdfLink}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `);
+                            });
+                        } else {
+                            $('#awardsContainer').append(`<p class="text-muted mt-3">No OrderSheet found for the selected case.</p>`);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching OrderSheet:", error);
                     }
                 });
             });
         });
-    </script> 
+    </script>
 
     {{-- ############# validation form ############### --}}
     <script type="text/javascript">

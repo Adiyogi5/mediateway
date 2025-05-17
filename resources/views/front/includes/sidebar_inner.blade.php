@@ -72,11 +72,11 @@
                                 class="fa-solid fa-cash-register faa-profile"></i> File A Case</a>
                     </li>
                     <li
-                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.courtroom.courtroomlist') ? 'text-white bg-lime' : '' }}">
-                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.courtroom.courtroomlist') ? 'text-white bg-lime' : '' }}"
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.individualcourtroom.individualcourtroomlist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.individualcourtroom.individualcourtroomlist') ? 'text-white bg-lime' : '' }}"
                             aria-current="page"
-                            style="{{ request()->routeIs($currentGuard . '.courtroom.courtroomlist') ? 'color:white !important;;' : '' }}"
-                            href="{{ route($currentGuard . '.' . 'courtroom.courtroomlist') }}"><i
+                            style="{{ request()->routeIs($currentGuard . '.individualcourtroom.individualcourtroomlist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'individualcourtroom.individualcourtroomlist') }}"><i
                                 class="fa-solid fa-video faa-profile"></i> Court Room</a>
                     </li>
                 @endif
@@ -116,11 +116,11 @@
                     @endif
                     @if (Helper::organizationCan(206))
                     <li
-                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.courtroom.courtroomlist') ? 'text-white bg-lime' : '' }}">
-                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.courtroom.courtroomlist') ? 'text-white bg-lime' : '' }}"
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.organizationcourtroom.organizationcourtroomlist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.organizationcourtroom.organizationcourtroomlist') ? 'text-white bg-lime' : '' }}"
                             aria-current="page"
-                            style="{{ request()->routeIs($currentGuard . '.courtroom.courtroomlist') ? 'color:white !important;;' : '' }}"
-                            href="{{ route($currentGuard . '.' . 'courtroom.courtroomlist') }}"><i
+                            style="{{ request()->routeIs($currentGuard . '.organizationcourtroom.organizationcourtroomlist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'organizationcourtroom.organizationcourtroomlist') }}"><i
                                 class="fa-solid fa-video faa-profile"></i> Court Room</a>
                     </li>
                     @endif

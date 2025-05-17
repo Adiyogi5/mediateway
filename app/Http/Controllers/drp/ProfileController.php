@@ -47,6 +47,7 @@ class ProfileController extends Controller
             'state_id' => 'required|exists:states,id',
             'city_id' => 'required|exists:cities,id',
             'image' => 'nullable|mimes:jpg,jpeg,png|max:2048',
+            'signature_drp' => 'nullable|mimes:jpg,jpeg,png|max:2048',
             'middle_name' => 'nullable',
             'last_name' => 'nullable',
             'dob' => 'nullable',
@@ -112,6 +113,10 @@ class ProfileController extends Controller
         if ($request->hasFile('image')) {
             Helper::deleteFile($user->image); // Delete old image
             $user->image = Helper::saveFile($request->file('image'), 'drps');
+        }
+          if ($request->hasFile('signature_drp')) {
+            Helper::deleteFile($user->signature_drp); // Delete old image
+            $user->signature_drp = Helper::saveFile($request->file('signature_drp'), 'drps');
         }
 
         $user->save();

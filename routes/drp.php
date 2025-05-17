@@ -110,6 +110,7 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::get('livecasemanagercourtroom/{room_id}', 'livecourtroom')->name('casemanagercourtroom.livecourtroom');
         Route::get('/get-flattened-casemanager-case-data/{caseId}', 'getFlattenedCasemanagerCaseData')->name('casemanagercourtroom.getFlattenedCasemanagerCaseData');
         Route::post('/fetch-casemanager-notices', 'fetchNoticesByCaseId')->name('casemanagercourtroom.fetch.notices');
+        Route::post('/fetch-casemanager-awards', 'fetchAwardsByCaseId')->name('casemanagercourtroom.fetch.awards');
         Route::post('/casemanagercourtroom/save-notice', 'saveNotice')->name('casemanagercourtroom.savenotice');
     });
 

@@ -98,7 +98,7 @@
                                                     </td>
                                                     <td class="pt-3">
                                                         @if($room->status == 1)
-                                                            <a href="{{ route('organization.courtroom.livecourtroom', $room->room_id) }}?case_id={{ $room->court_room_case_id }}"
+                                                            <a href="{{ route('organization.organizationcourtroom.liveorganizationcourtroom', $room->room_id) }}?case_id={{ $room->court_room_case_id }}"
                                                                class="fa fa-video btn bg-success text-white text-capitalize fs-6">
                                                             </a>
                                                         @else
