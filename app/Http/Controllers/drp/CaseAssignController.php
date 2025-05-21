@@ -14,6 +14,8 @@ use \Yajra\Datatables\Datatables;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use App\Exports\FileCaseExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CaseAssignController extends Controller
 {
@@ -58,8 +60,14 @@ class CaseAssignController extends Controller
             if ($request->filled('case_type')) {
                 $data->where('file_cases.case_type', $request->case_type);
             }
-            if ($request->filled('created_at')) {
-                $data->whereDate('file_cases.created_at', $request->created_at);
+            if ($request->filled('status')) {
+                $data->where('file_cases.status', $request->status);
+            }
+            if ($request->filled('date_from') && $request->filled('date_to')) {
+                $data->whereBetween('file_cases.created_at', [
+                    $request->date_from . ' 00:00:00',
+                    $request->date_to . ' 23:59:59'
+                ]);
             }
 
             return Datatables::of($data)
@@ -101,16 +109,9 @@ class CaseAssignController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
-
-                    // if (Helper::userCan(111, 'can_edit')) {
                         $btn .= '<a class="dropdown-item" href="' . route('drp.caseassign.assign', $row['id']) . '">Assign</a>';
                         $btn .= '<a class="dropdown-item" href="' . route('drp.caseassign.edit', $row['id']) . '">Edit</a>'; // Added Edit Button
-                    // }
-                    // if (Helper::userCan(111, 'can_delete')) {
-                        // $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
-                    // }
-
-                    // return Helper::userAllowed(111) ? $btn : '';
+                   
                     return $btn ;
                 })
                 ->orderColumn('created_at', function ($query, $order) {

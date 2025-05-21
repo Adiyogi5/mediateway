@@ -39,6 +39,33 @@ class CaseListController extends Controller
                 ->join('assign_cases','assign_cases.case_id','=','file_cases.id')
                 ->where('assign_cases.arbitrator_id',$drp->id)
                 ->where('file_cases.status', 1);
+                
+                if ($request->filled('case_type')) {
+                    $data->where('file_cases.case_type', $request->case_type);
+                }
+
+                if ($request->filled('case_number')) {
+                    $data->where('file_cases.case_number', 'like', '%' . $request->case_number . '%');
+                }
+
+                if ($request->filled('loan_number')) {
+                    $data->where('file_cases.loan_number', 'like', '%' . $request->loan_number . '%');
+                }
+
+                if ($request->filled('arbitrator_status')) {
+                    $data->where('assign_cases.confirm_to_arbitrator', $request->arbitrator_status);
+                }
+
+                if ($request->filled('status')) {
+                    $data->where('file_cases.status', $request->status);
+                }
+
+                if ($request->filled('date_from') && $request->filled('date_to')) {
+                    $data->whereBetween('file_cases.created_at', [
+                        $request->date_from . ' 00:00:00',
+                        $request->date_to . ' 23:59:59'
+                    ]);
+                }
             return Datatables::of($data)
                 ->editColumn('case_type', function ($row) {
                     return config('constant.case_type')[$row->case_type] ?? 'Unknown';

@@ -86,13 +86,38 @@ class CaseNoticeListController extends Controller
                 $selectFields[] = DB::raw("MAX(CASE WHEN n.notice_type = $type THEN n.whatsapp_status END) as {$alias}_whatsapp_status");
             }
 
-            // Execute the main query
-            $data = DB::table('file_cases')
+            $dataQuery = DB::table('file_cases')
                 ->select($selectFields)
                 ->leftJoinSub($latestNoticesQuery, 'n', 'file_cases.id', '=', 'n.file_case_id')
                 ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
-            ->where('assign_cases.arbitrator_id', $drp->id)
-                ->where('file_cases.status', 1)
+                ->where('assign_cases.arbitrator_id', $drp->id)
+                ->where('file_cases.status', 1);
+
+            // Apply filters if present
+            if ($request->filled('case_type')) {
+                $dataQuery->where('file_cases.case_type', $request->case_type);
+            }
+
+            if ($request->filled('case_number')) {
+                $dataQuery->where('file_cases.case_number', 'like', '%' . $request->case_number . '%');
+            }
+
+            if ($request->filled('loan_number')) {
+                $dataQuery->where('file_cases.loan_number', 'like', '%' . $request->loan_number . '%');
+            }
+
+            if ($request->filled('status')) {
+                $dataQuery->where('file_cases.status', $request->status);
+            }
+
+            if ($request->filled('from_date') && $request->filled('to_date')) {
+                $dataQuery->whereBetween('file_cases.created_at', [
+                    $request->from_date . ' 00:00:00',
+                    $request->to_date . ' 23:59:59'
+                ]);
+            }
+
+            $data = $dataQuery
                 ->orderBy('file_cases.created_at', 'DESC')
                 ->groupBy(
                     'file_cases.id',

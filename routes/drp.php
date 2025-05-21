@@ -83,7 +83,7 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
     });
 
      // ----------------------- CaseAssign Routes ----------------------------------------------------
-     Route::controller(CaseAssignController::class)->group(function () {
+    Route::controller(CaseAssignController::class)->group(function () {
         Route::get('caseassign', 'index')->name('caseassign');
         Route::get('caseassign/{id}', 'assign')->name('caseassign.assign');
         Route::put('caseassign/assigndetail/{id}', 'updateassigndetail')->name('caseassign.updateassigndetail');

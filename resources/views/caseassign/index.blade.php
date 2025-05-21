@@ -10,34 +10,40 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="row border-bottom border-1 pb-3">
+            <div class="row gy-2 border-bottom border-1 pb-3">
                 <div class="col-md-3">
-                    <label for="filter_user_type">User Type</label>
                     <select id="filter_user_type" class="form-select py-1">
-                        <option value="">All</option>
+                        <option value="">All User Type</option>
                         <option value="1">Individual</option>
                         <option value="2">Organization</option>
                     </select>
                 </div>
-
                 <div class="col-md-3">
-                    <label for="filter_case_type">Case Type</label>
                     <select id="filter_case_type" class="form-select py-1">
-                        <option value="">All</option>
+                        <option value="">All Case Type</option>
                         @foreach (config('constant.case_type') as $key => $case)
                             <option value="{{ $key }}">{{ $case }}</option>
                         @endforeach
                     </select>
                 </div>
-
-                <div class="col-md-3">
-                    <label for="filter_created_at">Created Date</label>
-                    <input type="date" id="filter_created_at" class="form-control py-1">
+                <div class="col-md-2">
+                    <select class="form-select py-1" id="filter_status">
+                        <option value="">All Status</option>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
                 </div>
-
-                <div class="col-md-3 d-flex align-items-end">
-                    <button id="filterBtn" class="btn btn-primary me-2 py-1">Filter</button>
-                    <button id="clearFilterBtn" class="btn btn-secondary py-1">Clear</button>
+                <div class="col-md-3">
+                    <input type="date" id="filter_date_from" class="form-control py-1" placeholder="From Date">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" id="filter_date_to" class="form-control py-1" placeholder="To Date">
+                </div>
+                <div class="col-md-2">
+                    <button id="filterBtn" class="btn btn-primary me-2 py-1 w-100">Filter</button>
+                </div>
+                <div class="col-md-2">
+                    <button id="clearFilterBtn" class="btn btn-secondary py-1 w-100">Clear</button>
                 </div>
             </div>
             <div class="table-responsive scrollbar">
@@ -68,7 +74,7 @@
 @section('js')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script type="text/javascript">
-       $(function() {
+        $(function() {
             var table = $('.table-datatable').DataTable({
                 processing: true,
                 serverSide: true,
@@ -77,37 +83,79 @@
                     data: function(d) {
                         d.user_type = $('#filter_user_type').val();
                         d.case_type = $('#filter_case_type').val();
-                        d.created_at = $('#filter_created_at').val();
+                        d.status = $('#filter_status').val();
+                        d.date_from = $('#filter_date_from').val();
+                        d.date_to = $('#filter_date_to').val();
                     }
                 },
-                order: [[10, 'desc']],
-                columns: [
-                    {
+                order: [
+                    [10, 'desc']
+                ],
+                columns: [{
                         data: null,
                         name: 'id',
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'user_type', name: 'user_type' },
-                    { data: 'case_type', name: 'case_type' },
-                    { data: 'case_number', name: 'case_number' },
-                    { data: 'loan_number', name: 'loan_number' },
-                    { data: 'status', name: 'status' },
-                    { data: 'send_status', name: 'send_status', orderable: false, searchable: false },
-                    { data: 'receive_status', name: 'receive_status', orderable: false, searchable: false },
-                    { data: 'arbitrator_status', name: 'arbitrator_status', orderable: false, searchable: false },
-                    { data: 'assigned_status', name: 'assigned_status' },
-                    { data: 'created_at', name: 'created_at' },
-                    { data: 'action', name: 'action', orderable: false, searchable: false }
-                ],
-                columnDefs: [
                     {
-                        targets: 0,
-                        render: function(data, type, row, meta) {
-                            return meta.row + 1;
-                        }
+                        data: 'user_type',
+                        name: 'user_type'
+                    },
+                    {
+                        data: 'case_type',
+                        name: 'case_type'
+                    },
+                    {
+                        data: 'case_number',
+                        name: 'case_number'
+                    },
+                    {
+                        data: 'loan_number',
+                        name: 'loan_number'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status'
+                    },
+                    {
+                        data: 'send_status',
+                        name: 'send_status',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'receive_status',
+                        name: 'receive_status',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'arbitrator_status',
+                        name: 'arbitrator_status',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'assigned_status',
+                        name: 'assigned_status'
+                    },
+                    {
+                        data: 'created_at',
+                        name: 'created_at'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
                     }
-                ]
+                ],
+                columnDefs: [{
+                    targets: 0,
+                    render: function(data, type, row, meta) {
+                        return meta.row + 1;
+                    }
+                }]
             });
 
             // Apply filters
@@ -119,7 +167,9 @@
             $('#clearFilterBtn').click(function() {
                 $('#filter_user_type').val('');
                 $('#filter_case_type').val('');
-                $('#filter_created_at').val('');
+                $('#filter_status').val('');
+                $('#filter_date_from').val('');
+                $('#filter_date_to').val('');
                 table.ajax.reload();
             });
 
@@ -136,11 +186,15 @@
                     if (willDelete) {
                         $.ajax({
                             url: "{{ route('caseassign.delete') }}",
-                            data: { 'id': id },
+                            data: {
+                                'id': id
+                            },
                             type: 'DELETE',
                             success: function(data) {
                                 if (data.status) {
-                                    swal(data?.message, { icon: "success" });
+                                    swal(data?.message, {
+                                        icon: "success"
+                                    });
                                     table.ajax.reload();
                                 } else {
                                     toastr.error(data?.message);

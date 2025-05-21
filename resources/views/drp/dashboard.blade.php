@@ -25,7 +25,7 @@
                                 <div class="custom-dropdown">
                                     <select name="Organization" class="form-control form-select form-dashboard-select">
                                         <option value="">All Organizations</option>
-                                        @foreach($allData as $key => $organization)
+                                        @foreach ($allData as $key => $organization)
                                             <option value="{{$key}}">{{$organization->organization_name}}</option>
                                         @endforeach
                                     </select>
@@ -33,7 +33,7 @@
                                 <div class="custom-dropdown">
                                     <select name="Organization" class="form-control form-select form-dashboard-select">
                                         <option value="">Case Type</option>
-                                         @foreach($allData as $key => $casetype)
+                                         @foreach ($allData as $key => $casetype)
                                             <option value="{{$key}}">{{$casetype->case_type}}</option>
                                         @endforeach
                                     </select>
@@ -306,36 +306,87 @@
                                 </div>
                             @endif
 
+
                             <div id="communication-log" class="content-section row mt-xl-5 mt-3 d-none">
                                 <div class="col-12">
-                                   @foreach ($caseManagerData as $caseManagerId => $cases)
-                                        @if(count($cases) > 0)
-                                            <div class="custom-table-container mb-4">
-                                                <div class="p-2">
-                                                    <h5>Case Manager: {{ $cases[0]['case_manager_name'] }}</h5>
-                                                    <p>Email: {{$cases[0]['case_manager_email']}} | Mobile: {{$cases[0]['case_manager_mobile']}}</p>
-                                                    <p>Gender: {{$cases[0]['case_manager_gender']}} | Profession: {{$cases[0]['case_manager_profession']}}</p>
-                                                    <p>Specialization: {{$cases[0]['case_manager_specialization']}}</p>
-                                                </div>
-                                                <table class="table custom-table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="text-start ps-3">Loan No</th>
-                                                            <th>Case Number</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($cases as $case)
+                                    @if (auth('drp')->check() && in_array(auth('drp')->user()->drp_type, [1, 2, 4, 5]))
+                                        @foreach ($caseManagerData as $caseManagerId => $cases)
+                                            @if (count($cases) > 0)
+                                                <div class="custom-table-container mb-4 overflow-scroll"
+                                                    style="max-height:600px;">
+                                                    <div class="p-2">
+                                                        <p class="mb-0"><b>Case Manager:
+                                                            </b>{{ $cases[0]['case_manager_name'] }}
+                                                            {{ $cases[0]['case_manager_last_name'] }}</p>
+                                                        <span class="mb-0"><b>Email:
+                                                            </b>{{ $cases[0]['case_manager_email'] }} | <b>Mobile:
+                                                            </b>{{ $cases[0]['case_manager_mobile'] }}</span></br>
+                                                        <span class="mb-0"><b>Gender:
+                                                            </b>{{ $cases[0]['case_manager_gender'] }} | <b>Profession:
+                                                            </b>{{ $cases[0]['case_manager_profession'] }}</span></br>
+                                                        <span class="mb-0"><b>Specialization:
+                                                            </b>{{ $cases[0]['case_manager_specialization'] }}</span>
+                                                    </div>
+                                                    <table class="table custom-table">
+                                                        <thead>
                                                             <tr>
-                                                                <td class="text-start ps-3">{{ $case['loan_number'] }}</td>
-                                                                <td>{{ $case['case_number'] }}</td>
+                                                                <th class="text-start ps-3 pt-1 pb-1 pe-1">Loan No</th>
+                                                                <th class="p-1">Case Number</th>
                                                             </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        @endif
-                                    @endforeach
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($cases as $case)
+                                                                <tr>
+                                                                    <td class="text-start ps-3 pt-1 pb-1 pe-1">
+                                                                        {{ $case['loan_number'] }}</td>
+                                                                    <td class="p-1">{{ $case['case_number'] }}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                    @if (auth('drp')->check() && auth('drp')->user()->drp_type == 3)
+                                        @foreach ($caseManagerData as $caseManagerId => $cases)
+                                            @if (count($cases) > 0)
+                                                <div class="custom-table-container mb-4 overflow-scroll"
+                                                    style="max-height:600px;">
+                                                    <div class="p-2">
+                                                        <p class="mb-0"><b>Arbitrator:
+                                                            </b>{{ $cases[0]['arbitrator_name'] }}
+                                                            {{ $cases[0]['arbitrator_last_name'] }}</p>
+                                                        <span class="mb-0"><b>Email:
+                                                            </b>{{ $cases[0]['arbitrator_email'] }} | <b>Mobile:
+                                                            </b>{{ $cases[0]['arbitrator_mobile'] }}</span></br>
+                                                        <span class="mb-0"><b>Gender:
+                                                            </b>{{ $cases[0]['arbitrator_gender'] }} | <b>Profession:
+                                                            </b>{{ $cases[0]['arbitrator_profession'] }}</span></br>
+                                                        <span class="mb-0"><b>Specialization:
+                                                            </b>{{ $cases[0]['arbitrator_specialization'] }}</span>
+                                                    </div>
+                                                    <table class="table custom-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-start ps-3 pt-1 pb-1 pe-1">Loan No</th>
+                                                                <th class="p-1">Case Number</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($cases as $case)
+                                                                <tr>
+                                                                    <td class="text-start ps-3 pt-1 pb-1 pe-1">
+                                                                        {{ $case['loan_number'] }}</td>
+                                                                    <td class="p-1">{{ $case['case_number'] }}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    @endif
                                 </div>
                             </div>
                         </div>
