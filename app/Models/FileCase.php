@@ -104,4 +104,21 @@ class FileCase extends Model
     {
         return $this->belongsTo(State::class);
     }
+
+    public function scopeFilter($query, $filters)
+    {
+        if (!is_array($filters)) return $query;
+
+        if (!empty($filters['product'])) {
+            $query->where('organization_id', $filters['product']);
+        }
+
+        if (!empty($filters['case_type'])) {
+            $query->where('case_type', $filters['case_type']);
+        }
+
+        return $query;
+    }
+
+
 }

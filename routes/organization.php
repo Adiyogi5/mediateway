@@ -27,6 +27,8 @@ Route::name('organization.')->middleware(['ensure.organization.session', 'organi
     Route::controller(HomeController::class)->group(function () {
         Profile::routes();
         Route::get('dashboard', 'index')->name('dashboard');
+        Route::get('/dashboard-filter', 'filter')->name('dashboard.filter');
+
        
     });
     Route::controller(ProfileController::class)->group(function () {
