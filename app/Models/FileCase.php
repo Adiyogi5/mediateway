@@ -24,6 +24,7 @@ class FileCase extends Model
         'final_hearing_date',
         'agreement_date',
         'loan_application_date',
+        'arbitration_clause_no',
         'arbitration_date',
         'claimant_first_name',
         'claimant_middle_name',

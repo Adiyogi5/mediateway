@@ -16,12 +16,12 @@ class BulkUpdateCaseImport implements ToModel, WithHeadingRow
     protected $organizationId;
 
     protected $expectedFields = [
-        'case_number', 'loan_number', 'agreement_date', 'loan_application_date', 'arbitration_date', 'claimant_first_name',
+        'case_number', 'loan_number', 'agreement_date', 'loan_application_date', 'arbitration_clause_no', 'arbitration_date', 'claimant_first_name',
         'claimant_middle_name', 'claimant_last_name', 'claimant_mobile', 'claimant_email',
         'claimant_address_type', 'claimant_address1', 'claimant_state', 'claimant_city', 'claimant_pincode',
         'respondent_first_name', 'respondent_middle_name', 'respondent_last_name', 'respondent_mobile', 'respondent_email',
         'respondent_address_type', 'respondent_address1', 'respondent_state', 'respondent_city', 'respondent_pincode',
-        'amount_in_dispute', 'case_type', 'brief_of_case', 'product', 'asset_description', 'sanction_letter_date','rate_of_intrest', 'registration_no', 'chassis_no',
+        'amount_in_dispute', 'case_type', 'brief_of_case', 'product', 'asset_description', 'sanction_letter_date','rate_of_interest', 'registration_no', 'chassis_no',
         'engin_no', 'finance_amount', 'finance_amount_in_words', 'emi_amt', 'emi_due_date', 'tenure', 'foreclosure_amount_date',
         'foreclosure_amount', 'foreclosure_amount_in_words', 'claim_signatory_authorised_officer_name',
         'claim_signatory_authorised_officer_father_name', 'claim_signatory_authorised_officer_designation',
@@ -76,6 +76,7 @@ class BulkUpdateCaseImport implements ToModel, WithHeadingRow
             'agreement_date'          => $this->parseDate($row['agreement_date']),
             'loan_application_date'   => $this->parseDate($row['loan_application_date']),
             'arbitration_date'        => $this->parseDate($row['arbitration_date']),
+            'arbitration_clause_no'   => $row['arbitration_clause_no'] ?? null,
             'claimant_first_name'     => $row['claimant_first_name'] ?? null,
             'claimant_middle_name'    => $row['claimant_middle_name'] ?? null,
             'claimant_last_name'      => $row['claimant_last_name'] ?? null,
@@ -110,7 +111,7 @@ class BulkUpdateCaseImport implements ToModel, WithHeadingRow
                 'product'                                        => $row['product'] ?? null,
                 'asset_description'                              => $row['asset_description'] ?? null,
                 'sanction_letter_date'                           => $row['sanction_letter_date'] ?? null,
-                'rate_of_intrest'                                => $row['rate_of_intrest'] ?? null,
+                'rate_of_interest'                                => $row['rate_of_interest'] ?? null,
                 'registration_no'                                => $row['registration_no'] ?? null,
                 'chassis_no'                                     => $row['chassis_no'] ?? null,
                 'engin_no'                                       => $row['engin_no'] ?? null,

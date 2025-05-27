@@ -7,17 +7,13 @@ use App\Models\AssignCase;
 use Carbon\Carbon;
 use App\Models\Drp;
 use App\Models\FileCase;
+use App\Models\FileCaseDetail;
 use App\Models\Notice;
 use App\Models\NoticeTemplate;
-use App\Models\OrderSheet;
 use App\Models\Setting;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use \Yajra\Datatables\Datatables;
 use Illuminate\Http\JsonResponse;
@@ -226,6 +222,8 @@ class CaseAssignController extends Controller
         $assigncaseData = AssignCase::where('case_id', $caseData->id)->first();
         $noticedataFetchArbitrator = Notice::where('file_case_id', $caseData->id)->where('notice_type', 5)->first();
         
+            //########## This is Stage 3A Notice for PDF save only for appoint 3 arbitartors ###########
+            //##########################################################################################
                 if (($assigncaseData->receiveto_casemanager == 0) && empty($noticedataFetchArbitrator)) {
                     $arbitratorIds   = explode(',', $assigncaseData->arbitrator_id);
                     $arbitratorsName = Drp::whereIn('id', $arbitratorIds)->pluck('name')->implode(', ');
@@ -238,6 +236,50 @@ class CaseAssignController extends Controller
 
                     $noticetemplateData = NoticeTemplate::where('id', 5)->first();
                     $noticeTemplate     = $noticetemplateData->notice_format;
+
+                    $noticedateData = FileCase::
+                        join(DB::raw("(
+                            SELECT
+                                id AS org_id,
+                                name AS org_name,
+                                IF(parent_id = 0, id, parent_id) AS effective_parent_id,
+                                IF(parent_id = 0, name,
+                                    (SELECT name FROM organizations AS parent_org WHERE parent_org.id = organizations.parent_id)
+                                ) AS effective_parent_name
+                            FROM organizations
+                        ) AS org_with_parent"), 'org_with_parent.org_id', '=', 'file_cases.organization_id')
+                        ->leftJoin(DB::raw("(SELECT * FROM notices WHERE notice_type = 1) AS notice_type1"), 'notice_type1.file_case_id', '=', 'file_cases.id')
+                        ->join('organization_lists', 'org_with_parent.effective_parent_name', '=', 'organization_lists.name')
+                        ->join('organization_notice_timelines', 'organization_notice_timelines.organization_list_id', '=', 'organization_lists.id')
+                        ->whereHas('notices', function ($query) {
+                            $query->where('notice_type', 1)
+                                ->whereRaw('DATEDIFF(CURDATE(), notices.notice_date) >= organization_notice_timelines.notice_3a');
+                        })
+                        ->where('file_cases.id', $id)
+                        ->whereHas('notices', function ($query) {
+                            $query->where('notice_type', 5)
+                                ->whereNotNull('notice')
+                                ->where('email_status', 0);
+                        })
+                        ->whereIn('organization_notice_timelines.notice_3a', function ($query) {
+                            $query->select('notice_3a')
+                                ->from('organization_notice_timelines')
+                                ->whereNull('deleted_at')
+                                ->whereRaw('organization_notice_timelines.organization_list_id = organization_lists.id');
+                        })
+                        ->select(
+                            'file_cases.*',
+                            'organization_notice_timelines.notice_3a',
+                            DB::raw('org_with_parent.effective_parent_id as parent_id'),
+                            DB::raw('org_with_parent.effective_parent_name as parent_name'),
+                            DB::raw('notice_type1.notice_date as notice_type_1_date')
+                        )
+                        ->distinct()
+                        ->first();
+
+                    $notice3adate = Carbon::parse($noticedateData->notice_type_1_date)
+                        ->addDays($noticedateData->notice_3a)
+                        ->format('Y-m-d');
 
                     // Define your replacement values
                     $data = [
@@ -257,7 +299,6 @@ class CaseAssignController extends Controller
                         'AGREEMENT DATE'                                                  => $value->agreement_date ?? '',
                         'FINANCE AMOUNT'                                                  => $value->file_case_details->finance_amount ?? '',
                         'TENURE'                                                          => $value->file_case_details->tenure ?? '',
-                        'STAGE 1 NOTICE: LOAN RECALL CUM PREARBITRATION NOTICE'           => now()->format('d-m-Y'),
                         'FORECLOSURE AMOUNT'                                              => $value->file_case_details->foreclosure_amount ?? '',
 
                         "FIRST ARBITRATOR'S NAME"                                         => $firstArb->name ?? '',
@@ -272,17 +313,17 @@ class CaseAssignController extends Controller
                         "THIRD ARBITRATOR'S SPECIALIZATION"                               => $thirdArb->specialization ?? '',
                         "THIRD ARBITRATOR'S ADDRESS"                                      => ($thirdArb->address1 ?? '') . '&nbsp;' . ($thirdArb->address2 ?? ''),
 
-                        'STAGE 3-A NOTICE: PROPOSAL LETTER FOR APPOINTMENT OF ARBITRATOR' => now()->format('d-m-Y'),
-
                         'CUSTOMER NAME'                                                   => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
                         'CUSTOMER ADDRESS'                                                => ($value->respondent_address1 ?? '') . '&nbsp;' . ($value->respondent_address2 ?? ''),
                         'CUSTOMER MOBILE NO'                                              => $value->respondent_mobile ?? '',
                         'CUSTOMER MAIL ID'                                                => $value->respondent_email ?? '',
 
-                        'ARBITRATION CLAUSE NO'                                           => 123456,
+                        'ARBITRATION CLAUSE NO'                                           => $value->arbitration_clause_no ?? '',
 
                         'DATE'                                                            => now()->format('d-m-Y'),
-                        'STAGE 2B NOTICE'                                                 => now()->format('d-m-Y'),
+                        'STAGE 1 NOTICE DATE'                                             => $value->file_case_details->stage_1_notice_date ?? '',
+                        'STAGE 2B NOTICE DATE'                                            => $value->file_case_details->stage_2b_notice_date ?? '',
+                        'STAGE 3A NOTICE DATE'                                            => $notice3adate ?? '',
                     ];
 
                     $replaceSummernotePlaceholders = function ($html, $replacements) {
@@ -361,13 +402,21 @@ class CaseAssignController extends Controller
                         'file_case_id'               => $caseData->id,
                         'notice_type'                => 5,
                         'notice'                     => $savedPath,
-                        'notice_date'                => now(),
+                        'notice_date'                => $notice3adate,
                         'notice_send_date'           => null,
                         'email_status'               => 0,
                         'whatsapp_status'            => 0,
                         'whatsapp_notice_status'     => 0,
                         'whatsapp_dispatch_datetime' => null,
                     ]);
+                    
+                    if ($notice) {
+                        FileCaseDetail::where('file_case_id', $notice->file_case_id)
+                            ->update([
+                                'stage_3a_notice_date' => $notice3adate,
+                            ]);
+                    }
+
                 }
 
         return to_route('caseassign')->withSuccess('Case Assign Successfully..!!');

@@ -70,19 +70,31 @@
                                             style="background-color: black;color: white;padding: 5px;border-radius: 8px">
                                             Live Cases Hearing Activity</h4>
                                         <!-- Case Number Select -->
-                                        <div class="form-group mb-3">
-                                            <label for="file_case_id" class="form-label fw-bold">Select Case</label>
-                                            <select class="form-select" id="caseSelector" name="file_case_id"
-                                                style="background-color: #fff2dc !important;">
-                                                <option selected disabled>Select Case Number</option>
-                                                @foreach ($caseData as $case)
-                                                    <option value="{{ $case->id }}"
-                                                        data-case="{{ json_encode($case) }}">
-                                                        {{ $case->case_number }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                        <div class="row">
+                                            <div class="col-md-6 col-12 form-group mb-3">
+                                                <label for="file_case_id" class="form-label fw-bold">Select Case</label>
+                                                <select class="form-select" id="caseSelector" name="file_case_id"
+                                                    style="background-color: #fff2dc !important;">
+                                                    <option selected disabled>Select Case Number</option>
+                                                    @foreach ($caseData as $case)
+                                                        <option value="{{ $case->id }}"
+                                                            data-final_hearing_date="{{ $case->final_hearing_date }}">
+                                                            {{ $case->case_number }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                {{-- data-case="{{ json_encode($case) }}" --}}
+                                            </div>
+                                            @if(($finalHeaingDate->hearing_type == 2))
+                                            <div class="col-md-6 col-12 form-group mb-3" id="finalHearingDateGroup" style="display: none;">
+                                                <label for="final_hearing_date" class="form-label fw-bold">Select Final Hearing Date</label>
+                                                <input type="date" id="final_hearing_date" name="final_hearing_date"
+                                                    class="form-control"
+                                                    style="background-color: #fff2dc !important;">
+                                            </div>
+                                            @endif
                                         </div>
+                                        
                                         <!-- Document Type and File Upload -->
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">Select Document Type and Attach</label>
@@ -122,7 +134,7 @@
                                 </form>
                             </div>
 
-                            
+                            <!-- Notice Display Area -->
                             <div class="col-lg-6 col-12">
                                 <div class="livemeeting-card h-100">
                                     <h4 class="livemeetingcard-heading text-center justify-content-center"
@@ -136,13 +148,14 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
+                            <!-- OrderSheet Display Area -->
                             <div class="col-lg-6 col-12">
                                 <div class="livemeeting-card h-100">
                                     <h4 class="livemeetingcard-heading text-center justify-content-center"
                                         style="background-color: black;color: white;padding: 5px;border-radius: 8px">
                                         Daily OrderSheet</h4>
-                                    <!-- Notice Display Area -->
+                                    <!-- OrderSheet Display Area -->
                                     <div id="awardsContainer">
 
                                         {{-- Data Comes via selecting Case_id using Ajax script --}}
@@ -414,10 +427,11 @@
                         if (response.length > 0) {
                             response.forEach(notice => {
                                 const noticeTypeLabel = noticeTypes[notice.notice_type] || 'Unknown Notice Type';
-                                
+                                const storageBaseUrl = "{{ asset('storage') }}";
+
                                 let pdfLink = notice.notice ? `
                                     <a class="text-decoration-none text-secondary" style="font-size: 13px"
-                                        href="/storage/${notice.notice}" target="_blank">
+                                        href="${storageBaseUrl}/${notice.notice}" target="_blank">
                                         <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
                                     </a>` :
                                     `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;
@@ -484,10 +498,11 @@
                         if (response.length > 0) {
                             response.forEach(notice => {
                                 const noticeTypeLabel = noticeTypes[notice.notice_type] || 'Unknown Award Type';
+                                const storageBaseUrl = "{{ asset('storage') }}";
                                 
                                 let pdfLink = notice.notice ? `
                                     <a class="text-decoration-none text-secondary" style="font-size: 13px"
-                                        href="/storage/${notice.notice}" target="_blank">
+                                        href="${storageBaseUrl}/${notice.notice}" target="_blank">
                                         <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
                                     </a>` :
                                     `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;
@@ -583,11 +598,11 @@
                         $('#uploadBtn').prop('disabled', false).text('UPLOAD / SAVE');
 
                         if (response.success) {
-                            toastr.success('Notice saved successfully.');
+                            toastr.success('Notice/OrderSheet saved successfully.');
                             $('#sendnoticeForm')[0].reset();
                             $('#tempType').empty(); // Clear template type options
                         } else {
-                            toastr.error(response.message || 'Notice could not be saved.');
+                            toastr.error(response.message || 'Notice/OrderSheet could not be saved.');
                         }
                     },
                     error: function(xhr) {
@@ -603,6 +618,32 @@
                         }
                     }
                 });
+            });
+        });
+    </script>
+
+    {{-- ############# Final Hearing date Change According to Case Id ############### --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const caseSelector = document.getElementById('caseSelector');
+            const finalHearingDateGroup = document.getElementById('finalHearingDateGroup');
+            const finalHearingDateInput = document.getElementById('final_hearing_date');
+
+            caseSelector.addEventListener('change', function () {
+                const selectedOption = this.options[this.selectedIndex];
+                const finalDate = selectedOption.getAttribute('data-final_hearing_date');
+                const today = new Date().toISOString().split('T')[0];
+
+                finalHearingDateInput.setAttribute('min', today);
+                finalHearingDateGroup.style.display = 'block';
+
+                if (finalDate && finalDate !== 'null') {
+                    finalHearingDateInput.value = finalDate;
+                    finalHearingDateInput.disabled = true;
+                } else {
+                    finalHearingDateInput.value = '';
+                    finalHearingDateInput.disabled = false;
+                }
             });
         });
     </script>

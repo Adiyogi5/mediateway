@@ -122,7 +122,6 @@
                                             $agreementDateVariable = "{{AGREEMENT DATE}}";
                                             $financeAmountVariable = "{{FINANCE AMOUNT}}";
                                             $tenureVariable = "{{TENURE}}";
-                                            $loanRecallVariable = "{{STAGE 1 NOTICE: LOAN RECALL CUM PREARBITRATION NOTICE}}";
                                             $foreclosureVariable = "{{FORECLOSURE AMOUNT}}";
 
                                             $arbitratorsNameVariable = "{{ARBITRATOR'S NAME}}";
@@ -141,15 +140,15 @@
                                             $thirdarbitratorsSpecializationVariable = "{{THIRD ARBITRATOR'S SPECIALIZATION}}";
                                             $thirdarbitratorsAddressVariable = "{{THIRD ARBITRATOR'S ADDRESS}}";
 
-                                            $appointmentofArbitratorVariable = "{{STAGE 3-A NOTICE: PROPOSAL LETTER FOR APPOINTMENT OF ARBITRATOR}}";
-
                                             $arbitrationClauseNoVariable = "{{ARBITRATION CLAUSE NO}}";
 
                                             $todayDateVariable = "{{DATE}}";
-                                            $stage2bNoticeVariable = "{{STAGE 2B NOTICE}}";
-                                            $stage3bNoticeVariable = "{{STAGE 3-B NOTICE: APPOINTMENT OF ARBITRATOR}}";
+                                            $loanRecallVariable = "{{STAGE 1 NOTICE DATE}}";
+                                            $stage2bNoticeVariable = "{{STAGE 2B NOTICE DATE}}";
+                                            $appointmentofArbitratorVariable = "{{STAGE 3A NOTICE DATE}}";
+                                            $stage3bNoticeVariable = "{{STAGE 3B NOTICE DATE}}";
+                                            $stage3cNoticeVariable = "{{STAGE 3C NOTICE DATE}}";
 
-                                            $stage3cNoticeVariable = "{{STAGE 3-C NOTICE: ACCEPTANCE AND DISCLOSURE}}";
                                             $stage3cpendingarbitrationclaimVariable = "{{TOTAL NUMBER OF PENDING ARBITRATION CLAIMS}}";
                                         @endphp
 

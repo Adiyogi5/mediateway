@@ -5,6 +5,7 @@ use App\Helper\Helper;
 use App\Models\AssignCase;
 use App\Models\Drp;
 use App\Models\FileCase;
+use App\Models\FileCaseDetail;
 use App\Models\Notice;
 use App\Models\NoticeTemplate;
 use App\Models\Setting;
@@ -121,10 +122,10 @@ class Bulk2BNoticeSend extends Command
                         'CUSTOMER MOBILE NO'                            => $value->respondent_mobile ?? '',
                         'CUSTOMER MAIL ID'                              => $value->respondent_email ?? '',
 
-                        'ARBITRATION CLAUSE NO'                         => 123456,
+                        'ARBITRATION CLAUSE NO'                         => $value->arbitration_clause_no ?? '',
 
                         'DATE'                                          => now()->format('d-m-Y'),
-                        'STAGE 2B NOTICE'                               => now()->format('d-m-Y'),
+                        'STAGE 2B NOTICE DATE'                          => now()->format('d-m-Y'),
                     ];
 
                     $replaceSummernotePlaceholders = function ($html, $replacements) {
@@ -199,6 +200,8 @@ class Bulk2BNoticeSend extends Command
                     // Save the PDF using your helper
                     $savedPath = Helper::saveFile($uploadedFile, 'notices');
 
+                    $now = now();
+
                     $notice = Notice::create([
                         'file_case_id'               => $value->id,
                         'notice_type'                => 4,
@@ -210,6 +213,13 @@ class Bulk2BNoticeSend extends Command
                         'whatsapp_notice_status'     => 0,
                         'whatsapp_dispatch_datetime' => null,
                     ]);
+                    
+                    if ($notice) {
+                        FileCaseDetail::where('file_case_id', $notice->file_case_id)
+                            ->update([
+                                'stage_2b_notice_date' => $now->format('d-m-Y'),
+                            ]);
+                    }
 
                     //Send Notice for Assign Arbitrator
                     $data = Setting::where('setting_type', '3')->get()->pluck('filed_value', 'setting_name')->toArray();

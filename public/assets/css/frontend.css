@@ -777,6 +777,7 @@ footer .contact p {
     font-family: "Inter";
     font-size: 15px !important;
     font-weight: 400;
+    color: #ffffff !important;
     overflow-wrap: anywhere;
 }
 
@@ -801,6 +802,7 @@ footer .social-icon .icon {
     font-family: "Inter";
     font-size: 14px;
     font-weight: 400;
+    color: #ffffff !important;
     font-style: italic;
 }
 .font-regular {

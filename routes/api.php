@@ -21,22 +21,36 @@ Route::get('/', function () {
     ]);
 });
 
-//Create Live Rooms
+//Create Live Court Rooms
 Route::get('/create_live_court_room', function () {
     Artisan::call('bulk:create-live-court-room');   
     return '<h1>create live court room</h1>';
 });
-//Status Live Rooms
+//Status Live Court Rooms
 Route::get('/status_live_court_room', function () {
     Artisan::call('bulk:status-live-court-room');   
     return '<h1>status live court room</h1>';
 });
+
+
+//Create Live Meeting Rooms
+Route::get('/create_live_meeting_room', function () {
+    Artisan::call('bulk:create-live-meeting-room');   
+    return '<h1>create live meeting room</h1>';
+});
+//Status Live Meeting Rooms
+Route::get('/status_live_meeting_room', function () {
+    Artisan::call('bulk:status-live-meeting-room');   
+    return '<h1>status live meeting room</h1>';
+});
+
 
 //Create Claim Petition
 Route::get('/create_claim_petition', function () {
     Artisan::call('bulk:create-claim-petition');   
     return '<h1>create claim petition</h1>';
 });
+
 
 // Send All Types of Notices 
 Route::get('/bulk_send_2b_notice', function () {

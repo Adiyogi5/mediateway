@@ -17,6 +17,7 @@ class SampleFileCaseExport implements FromArray, WithHeadings
             'case_type',
             'agreement_date',
             'loan_application_date',
+            'arbitration_clause_no',
             'arbitration_date',
             // 'claimant_first_name',
             // 'claimant_middle_name',
@@ -45,7 +46,7 @@ class SampleFileCaseExport implements FromArray, WithHeadings
             'product',
             'asset_description',
             'sanction_letter_date',
-            'rate_of_intrest',
+            'rate_of_interest',
             'registration_no',
             'chassis_no',
             'engin_no',
@@ -118,7 +119,7 @@ class SampleFileCaseExport implements FromArray, WithHeadings
                 'LN123456', // loan_number (required)
 
                 // FileCase sample values
-                '2', '2025-03-15', '2025-03-15', '2025-03-15',
+                '2', '2025-03-15', '2025-03-15', 'ABC1234', '2025-03-15',
                 // 'John', null, 'Doe', '9876543210', 'john@example.com', '1',
                 // '123 Main St', 'Rajasthan', 'Jodhpur', '90001',
                 'Jane', null, 'Smith', '9876543211', 'jane@example.com', '2',

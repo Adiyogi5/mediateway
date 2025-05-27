@@ -37,10 +37,10 @@ return [
 
     'case_type' => [
         '1' => 'VEHICLE LOAN', 
-        '2' => 'MORTGADGE LOAN',
+        '2' => 'CREDIT CARD',
         '3' => 'PERSONAL BUSSINESS LOAN',
-        '4' => 'HOME LOAN',
-        '5' => 'CREDIT CARD'
+        '4' => 'MORTGADGE LOAN',
+        '5' => 'HOME LOAN'
     ],
 
     'language' => [

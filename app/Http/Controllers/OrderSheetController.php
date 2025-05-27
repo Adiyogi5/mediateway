@@ -44,9 +44,9 @@ class OrderSheetController extends Controller
                 if (Helper::userCan(111, 'can_edit')) {
                     $btn .= '<a class="dropdown-item" href="' . route('ordersheet.edit', $row['id']) . '">Edit</a>';
                 }
-                if (Helper::userCan(111, 'can_delete')) {
-                    $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
-                }
+                // if (Helper::userCan(111, 'can_delete')) {
+                //     $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
+                // }
 
                 return Helper::userAllowed(111) ? $btn : '';
             })

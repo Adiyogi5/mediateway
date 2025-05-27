@@ -27,40 +27,34 @@
                             <div class="col-auto align-self-center">
                                 <h5 class="mb-0" data-anchor="data-anchor">Court Room Lists</h5>
                             </div>
-                            {{-- <div class="col-auto ms-auto">
-                                <div class="nav nav-pills nav-pills-falcon">
-                                    <a href="{{ route('drp.casemanagercourtroom.courtroomlist') }}" class="btn btn-outline-secondary">
-                                        <i class="fa fa-plus me-1"></i>
-                                        Add Court Room
-                                    </a>
-                                </div>
-                            </div> --}}
                         </div>
                     </div>
                     <div class="card-body px-0 pb-0 table-meetinglist">
                         <ul class="nav nav-tabs justify-content-center text-center" role="tablist">
                             <li class="nav-item w-50">
-                                <a href="#info" role="tab" data-bs-toggle="tab" class="nav-link active"> Upcoming </a>
+                                <a href="#info" role="tab" data-bs-toggle="tab" class="nav-link active"> Upcoming ({{$upcomingroomCount}})</a>
                             </li>
                             <li class="nav-item w-50">
-                                <a href="#ratings" role="tab" data-bs-toggle="tab" class="nav-link"> Closed </a>
+                                <a href="#ratings" role="tab" data-bs-toggle="tab" class="nav-link"> Closed ({{$closedroomCount}})</a>
                             </li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane fade show active" role="tabpanel" id="info">
                                 <div class="table-responsive">
-                                    <table class="table">
+                                    <table id="upcomingTable" class="table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Case Numbers</th>
+                                                <th scope="col">Hearing Type</th>
                                                 <th scope="col">Individual Names</th>
                                                 <th scope="col">Organization Names</th>
                                                 <th scope="col">Date</th>
                                                 <th scope="col">Time</th>
                                                 <th scope="col">Status</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        {{-- <tbody>
                                             @forelse ($upcomingRooms as $room)
                                                 <tr class="bg-blue">
                                                     <td class="pt-2">
@@ -148,25 +142,28 @@
                                             @empty
                                                 <tr><td colspan="6" class="text-center">No upcoming cases found.</td></tr>
                                             @endforelse
-                                            </tbody>                                            
+                                        </tbody>                                             --}}
                                     </table>
                                 </div>
                             </div>
                             
                             <div class="tab-pane fade" role="tabpanel" id="ratings">
                                 <div class="table-responsive">
-                                    <table class="table">
+                                    <table id="closedTable" class="table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Case Numbers</th>
+                                                <th scope="col">Hearing Type</th>
                                                 <th scope="col">Individual Names</th>
                                                 <th scope="col">Organization Names</th>
                                                 <th scope="col">Date</th>
                                                 <th scope="col">Time</th>
                                                 <th scope="col">Status</th>
+                                                <th scope="col">Recording</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        {{-- <tbody>
                                             @forelse ($closedRooms as $room)
                                                 <tr class="bg-blue">
                                                     <td class="pt-2">
@@ -248,8 +245,7 @@
                                             @empty
                                                 <tr><td colspan="6" class="text-center">No closed cases found.</td></tr>
                                             @endforelse
-                                            </tbody>
-                                            
+                                        </tbody> --}}
                                     </table>
                                 </div>
                             </div>
@@ -293,4 +289,51 @@
             });
         });
     </script>        
+    <script>
+        $(document).ready(function () {
+            const initPopover = () => {
+                $('[data-bs-toggle="popover"]').popover({
+                    trigger: 'hover',
+                    placement: 'top',
+                });
+            };
+
+            const upcomingTable = $('#upcomingTable').DataTable({
+                ajax: '{{ route("drp.casemanagercourtroom.datatable.upcoming") }}',
+                columns: [
+                    { data: 'case_numbers' },
+                    { data: 'hearing_type' },
+                    { data: 'individual_name' },
+                    { data: 'organization_name' },
+                    { data: 'date' },
+                    { data: 'time' },
+                    { data: 'status' },
+                    { data: 'action' }
+                ],
+                drawCallback: initPopover
+            });
+
+            const closedTable = $('#closedTable').DataTable({
+                ajax: '{{ route("drp.casemanagercourtroom.datatable.closed") }}',
+                columns: [
+                    { data: 'case_numbers' },
+                    { data: 'hearing_type' },
+                    { data: 'individual_name' },
+                    { data: 'organization_name' },
+                    { data: 'date' },
+                    { data: 'time' },
+                    { data: 'status' },
+                    { data: 'recording' },
+                    { data: 'action' }
+                ],
+                drawCallback: initPopover
+            });
+
+            // Optional: reload on tab switch
+            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                upcomingTable.ajax.reload(null, false);
+                closedTable.ajax.reload(null, false);
+            });
+        });
+    </script>
 @endsection

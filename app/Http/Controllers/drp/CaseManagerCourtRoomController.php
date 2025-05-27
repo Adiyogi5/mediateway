@@ -11,13 +11,10 @@ use App\Models\SettlementLetter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 use App\Models\Notice;
 use App\Models\Setting;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Http;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\JsonResponse;
@@ -97,7 +94,7 @@ class CaseManagerCourtRoomController extends Controller
                 'court_rooms.updated_at',
                 'drps.name',
             )
-            ->get();
+        ->get();
         
 
         $courtRoomLiveClosed = CourtRoom::select(
@@ -150,12 +147,249 @@ class CaseManagerCourtRoomController extends Controller
                 'court_rooms.updated_at',
                 'drps.name',
             )
-            ->get();
+        ->get();
+
+        $upcomingroomCount = $courtRoomLiveUpcoming->count();
+        $closedroomCount = $courtRoomLiveClosed->count();
 
         $upcomingRooms = $courtRoomLiveUpcoming;
         $closedRooms = $courtRoomLiveClosed;
         
-        return view('drp.casemanagercourtroom.courtroomlist', compact('drp','title','upcomingRooms','closedRooms'));
+        return view('drp.casemanagercourtroom.courtroomlist', compact('drp','title','upcomingRooms','closedRooms','upcomingroomCount','closedroomCount'));
+    }
+
+
+    public function upcomingRoomsData()
+    {
+        $drp = auth('drp')->user();
+
+        $upcomingRooms = CourtRoom::select(
+                'court_rooms.*',
+                'drps.name as case_manager_name',
+                DB::raw('GROUP_CONCAT(DISTINCT individuals.name SEPARATOR ", ") as individual_name'),
+                DB::raw('GROUP_CONCAT(DISTINCT organizations.name SEPARATOR ", ") as organization_name'),
+                DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
+                DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
+            )
+            ->leftJoin('drps', 'drps.id', '=', 'court_rooms.case_manager_id')
+            ->leftJoin('individuals', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(individuals.id, court_rooms.individual_id)"), '>', DB::raw('0'));
+            })
+            ->leftJoin('organizations', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(organizations.id, court_rooms.organization_id)"), '>', DB::raw('0'));
+            })
+            ->leftJoin('file_cases', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(file_cases.individual_id, court_rooms.individual_id)"), '>', DB::raw('0'))
+                    ->orOn(DB::raw('FIND_IN_SET(file_cases.id, court_rooms.court_room_case_id)'), '>', DB::raw('0'));
+            })
+            ->where('court_rooms.case_manager_id', $drp->id)
+            ->where(function ($query) {
+                $query->where('court_rooms.date', '>', Carbon::today()->toDateString())
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
+                                ->where('court_rooms.time', '>=', Carbon::now()->format('H:i:s'));
+                    })
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
+                                ->where('court_rooms.status', 1);
+                    });
+            })
+            ->groupBy(
+                'court_rooms.id', 
+                'court_rooms.court_room_case_id',
+                'court_rooms.room_id',
+                'court_rooms.date',
+                'court_rooms.time',
+                'court_rooms.hearing_type',
+                'court_rooms.case_manager_id',
+                'court_rooms.recording_url',
+                'court_rooms.arbitrator_id',
+                'court_rooms.individual_id',
+                'court_rooms.organization_id',
+                'court_rooms.send_mail_to_respondent',
+                'court_rooms.email_send_date',
+                'court_rooms.send_whatsapp_to_respondent',
+                'court_rooms.whatsapp_dispatch_datetime',
+                'court_rooms.status',
+                'court_rooms.deleted_at',
+                'court_rooms.created_at',
+                'court_rooms.updated_at',
+                'drps.name',
+            )
+        ->get();
+
+        return datatables()->of($upcomingRooms)
+            ->addColumn('case_numbers', function ($room) {
+                $main = Str::before($room->case_numbers, ',') ?? '-';
+                if (Str::contains($room->case_numbers, ',')) {
+                    $list = '<ul>';
+                    foreach (explode(',', $room->case_numbers) as $case) {
+                        $list .= "<li>$case</li>";
+                    }
+                    $list .= '</ul>';
+                    $main .= ' <i class="fa fa-info-circle text-primary ml-2 info-icon" data-bs-toggle="popover" data-bs-html="true" data-bs-content="' . e($list) . '"></i>';
+                }
+                return $main;
+            })
+            ->addColumn('hearing_type', function ($room) {
+                return match($room->hearing_type) {
+                    1 => 'First Hearing',
+                    2 => 'Second Hearing',
+                    3 => 'Final Hearing',
+                    default => 'Unknown',
+                };
+            })
+            ->addColumn('individual_name', function ($room) {
+                $main = Str::before($room->individual_name, ',') ?? '-';
+                if (Str::contains($room->individual_name, ',')) {
+                    $list = '<ul>';
+                    foreach (explode(',', $room->individual_name) as $item) {
+                        $list .= "<li>$item</li>";
+                    }
+                    $list .= '</ul>';
+                    $main .= ' <i class="fa fa-info-circle text-primary ml-2 info-icon" data-bs-toggle="popover" data-bs-html="true" data-bs-content="' . e($list) . '"></i>';
+                }
+                return $main;
+            })
+            ->addColumn('organization_name', function ($room) {
+                $main = Str::before($room->organization_name, ',') ?? '-';
+                if (Str::contains($room->organization_name, ',')) {
+                    $list = '<ul>';
+                    foreach (explode(',', $room->organization_name) as $item) {
+                        $list .= "<li>$item</li>";
+                    }
+                    $list .= '</ul>';
+                    $main .= ' <i class="fa fa-info-circle text-primary ml-2 info-icon" data-bs-toggle="popover" data-bs-html="true" data-bs-content="' . e($list) . '"></i>';
+                }
+                return $main;
+            })
+            ->addColumn('date', fn($room) => \Carbon\Carbon::parse($room->date)->format('d F Y'))
+            ->addColumn('time', fn($room) => \Carbon\Carbon::parse($room->time)->format('h:i A'))
+            ->addColumn('status', fn($room) => $room->status == 1 ? '<span class="fa fa-check pl-3"></span>' : '<span class="fa fa-clock pl-3"></span>')
+            ->addColumn('action', function ($room) {
+                if ($room->status == 1) {
+                    return '<a href="' . route('drp.casemanagercourtroom.livecourtroom', $room->room_id) . '?case_ids=' . $room->case_ids . '" class="fa fa-video btn bg-success text-white fs-6"></a>';
+                } else {
+                    return '<span class="fa fa-video btn bg-secondary text-white fs-6" style="cursor:not-allowed;"></span>';
+                }
+            })
+            ->rawColumns(['case_numbers', 'individual_name', 'organization_name', 'status', 'action'])
+            ->make(true);
+    }
+
+    public function closedRoomsData()
+    {
+        $drp = auth('drp')->user();
+
+        $closedRooms = CourtRoom::select(
+                'court_rooms.*',
+                'drps.name as case_manager_name',
+                DB::raw('GROUP_CONCAT(DISTINCT individuals.name SEPARATOR ", ") as individual_name'),
+                DB::raw('GROUP_CONCAT(DISTINCT organizations.name SEPARATOR ", ") as organization_name'),
+                DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
+                DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
+            )
+            ->leftJoin('drps', 'drps.id', '=', 'court_rooms.case_manager_id')
+            ->leftJoin('individuals', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(individuals.id, court_rooms.individual_id)"), '>', DB::raw('0'));
+            })
+            ->leftJoin('organizations', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(organizations.id, court_rooms.organization_id)"), '>', DB::raw('0'));
+            })
+            ->leftJoin('file_cases', function ($join) {
+                $join->on(DB::raw("FIND_IN_SET(file_cases.individual_id, court_rooms.individual_id)"), '>', DB::raw('0'))
+                    ->orOn(DB::raw('FIND_IN_SET(file_cases.id, court_rooms.court_room_case_id)'), '>', DB::raw('0'));
+            })
+            ->where('court_rooms.case_manager_id', $drp->id)
+            ->where('court_rooms.status', 0)
+            ->where(function ($query) {
+                $query->where('court_rooms.date', '<', Carbon::today()->toDateString())
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('court_rooms.date', Carbon::today()->toDateString())
+                                ->where('court_rooms.time', '<=', Carbon::now()->format('H:i:s'));
+                    });
+            })
+            ->groupBy(
+                'court_rooms.id', 
+                'court_rooms.court_room_case_id',
+                'court_rooms.room_id',
+                'court_rooms.date',
+                'court_rooms.time',
+                'court_rooms.hearing_type',
+                'court_rooms.case_manager_id',
+                'court_rooms.recording_url',
+                'court_rooms.arbitrator_id',
+                'court_rooms.individual_id',
+                'court_rooms.organization_id',
+                'court_rooms.send_mail_to_respondent',
+                'court_rooms.email_send_date',
+                'court_rooms.send_whatsapp_to_respondent',
+                'court_rooms.whatsapp_dispatch_datetime',
+                'court_rooms.status',
+                'court_rooms.deleted_at',
+                'court_rooms.created_at',
+                'court_rooms.updated_at',
+                'drps.name',
+            )
+        ->get();
+
+        return datatables()->of($closedRooms)
+            ->addColumn('case_numbers', function ($room) {
+                $main = Str::before($room->case_numbers, ',') ?? '-';
+                if (Str::contains($room->case_numbers, ',')) {
+                    $list = '<ul>';
+                    foreach (explode(',', $room->case_numbers) as $case) {
+                        $list .= "<li>$case</li>";
+                    }
+                    $list .= '</ul>';
+                    $main .= ' <i class="fa fa-info-circle text-primary ml-2 info-icon" data-bs-toggle="popover" data-bs-html="true" data-bs-content="' . e($list) . '"></i>';
+                }
+                return $main;
+            })
+            ->addColumn('hearing_type', function ($room) {
+                return match($room->hearing_type) {
+                    1 => 'First Hearing',
+                    2 => 'Second Hearing',
+                    3 => 'Final Hearing',
+                    default => 'Unknown',
+                };
+            })
+            ->addColumn('individual_name', function ($room) {
+                $main = Str::before($room->individual_name, ',') ?? '-';
+                if (Str::contains($room->individual_name, ',')) {
+                    $list = '<ul>';
+                    foreach (explode(',', $room->individual_name) as $item) {
+                        $list .= "<li>$item</li>";
+                    }
+                    $list .= '</ul>';
+                    $main .= ' <i class="fa fa-info-circle text-primary ml-2 info-icon" data-bs-toggle="popover" data-bs-html="true" data-bs-content="' . e($list) . '"></i>';
+                }
+                return $main;
+            })
+            ->addColumn('organization_name', function ($room) {
+                $main = Str::before($room->organization_name, ',') ?? '-';
+                if (Str::contains($room->organization_name, ',')) {
+                    $list = '<ul>';
+                    foreach (explode(',', $room->organization_name) as $item) {
+                        $list .= "<li>$item</li>";
+                    }
+                    $list .= '</ul>';
+                    $main .= ' <i class="fa fa-info-circle text-primary ml-2 info-icon" data-bs-toggle="popover" data-bs-html="true" data-bs-content="' . e($list) . '"></i>';
+                }
+                return $main;
+            })
+            ->addColumn('date', fn($room) => \Carbon\Carbon::parse($room->date)->format('d F Y'))
+            ->addColumn('time', fn($room) => \Carbon\Carbon::parse($room->time)->format('h:i A'))
+            ->addColumn('status', fn($room) => $room->status == 1 ? '<span class="fa fa-check pl-3"></span>' : '<span class="fa fa-clock pl-3"></span>')
+            ->addColumn('recording', function ($room) {
+                if ($room->recording_url) {
+                    return '<video controls width="300"><source src="' . asset('storage/' . $room->recording_url) . '" type="video/mp4"></video>';
+                }
+                return 'No recording available';
+            })
+            ->addColumn('action', fn($room) => '<button class="fa fa-handshake btn bg-secondary text-white"></button>')
+            ->rawColumns(['case_numbers', 'individual_name', 'organization_name', 'status', 'recording', 'action'])
+            ->make(true);
     }
 
 

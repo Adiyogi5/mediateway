@@ -60,12 +60,10 @@ Route::name('organization.')->middleware(['ensure.organization.session', 'organi
     Route::controller(FileCaseController::class)->group(function () {
         Route::get('filecaseview', 'index')->name('cases.filecaseview');
         Route::get('filecaseview/{id}', 'edit')->name('cases.filecaseview.edit');
-        Route::post('filecaseview/{id}', 'update')->name('cases.filecaseview.edit');
-        Route::post('filecaseview/{id}', 'store')->name('cases.filecaseview.store');
-        Route::delete('filecaseview', 'delete')->name('cases.filecaseview.delete');
-
+        Route::post('filecaseviewupdate/{id}', 'update')->name('cases.filecaseview.update');
+        Route::post('filecaseviewstore/{id}', 'store')->name('cases.filecaseview.store');
+        Route::delete('filecaseviewdelete', 'delete')->name('cases.filecaseview.delete');
         Route::get('viewcasedetail/{id}', 'viewcasedetail')->name('cases.viewcasedetail');
-
         Route::get('filecase', 'filecase')->name('cases.filecase');
         Route::post('/import-filecases', 'importExcel')->name('cases.filecases.import');
         Route::get('/download-sample', 'downloadSample')->name('cases.filecase.sample');
@@ -76,6 +74,8 @@ Route::name('organization.')->middleware(['ensure.organization.session', 'organi
         Route::get('liveorganizationcourtroom/{room_id}', 'livecourtroom')->name('organizationcourtroom.liveorganizationcourtroom');
         Route::post('/fetch-organization-notices', 'fetchNoticesByCaseId')->name('organizationcourtroom.fetch.notices');
         Route::post('/fetch-organization-awards', 'fetchAwardsByCaseId')->name('organizationcourtroom.fetch.awards');
+        Route::get('/organizationcourtroom/datatable/upcoming-rooms', 'upcomingRoomsData')->name('organizationcourtroom.datatable.upcoming');
+        Route::get('/organizationcourtroom/datatable/closed-rooms', 'closedRoomsData')->name('organizationcourtroom.datatable.closed');
     });
 
     Route::post('get-cities', [CityController::class, 'get_cities'])->name('cities.list');

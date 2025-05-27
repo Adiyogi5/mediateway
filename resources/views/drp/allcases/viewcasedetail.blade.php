@@ -349,237 +349,230 @@
                                             <h4 class="case-heading mt-0">Guarantors :</h4>
                                             <div class="row gx-5 gy-3">
                                                 @if ($case->guarantors->guarantor_1_name)
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">First Guarantor Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_1_name ?? '--' }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">First Guarantor Mobile</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_1_mobile_no ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">First Guarantor Email</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_1_email_id ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">First Guarantor Father Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_1_father_name ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">First Guarantor Address</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_1_address ?? '--' }}
-                                                        </p>
-                                                    </div>
-
-                                                    <div class="col-12">
-                                                        <hr class="m-0">
-                                                    </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">First Guarantor Name</p>
+                                                    <p class="case-text">{{ $case->guarantors->guarantor_1_name ?? '--' }}
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">First Guarantor Mobile</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_1_mobile_no ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">First Guarantor Email</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_1_email_id ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">First Guarantor Father Name</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_1_father_name ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">First Guarantor Address</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_1_address ?? '--' }}
+                                                    </p>
+                                                </div>
+                                                
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
                                                 @endif
 
                                                 @if ($case->guarantors->guarantor_2_name)
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Second Guarantor Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_2_name ?? '--' }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Second Guarantor Mobile</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_2_mobile_no ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Second Guarantor Email</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_2_email_id ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Second Guarantor Father Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_2_father_name ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Second Guarantor Address</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_2_address ?? '--' }}
-                                                        </p>
-                                                    </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Second Guarantor Name</p>
+                                                    <p class="case-text">{{ $case->guarantors->guarantor_2_name ?? '--' }}
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Second Guarantor Mobile</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_2_mobile_no ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Second Guarantor Email</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_2_email_id ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Second Guarantor Father Name</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_2_father_name ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Second Guarantor Address</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_2_address ?? '--' }}
+                                                    </p>
+                                                </div>
 
-                                                    <div class="col-12">
-                                                        <hr class="m-0">
-                                                    </div>
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
                                                 @endif
 
                                                 @if ($case->guarantors->guarantor_3_name)
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Third Guarantor Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_3_name ?? '--' }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Third Guarantor Mobile</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_3_mobile_no ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Third Guarantor Email</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_3_email_id ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Third Guarantor Father Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_3_father_name ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Third Guarantor Address</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_3_address ?? '--' }}
-                                                        </p>
-                                                    </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Third Guarantor Name</p>
+                                                    <p class="case-text">{{ $case->guarantors->guarantor_3_name ?? '--' }}
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Third Guarantor Mobile</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_3_mobile_no ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Third Guarantor Email</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_3_email_id ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Third Guarantor Father Name</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_3_father_name ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Third Guarantor Address</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_3_address ?? '--' }}
+                                                    </p>
+                                                </div>
 
-                                                    <div class="col-12">
-                                                        <hr class="m-0">
-                                                    </div>
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
                                                 @endif
 
                                                 @if ($case->guarantors->guarantor_4_name)
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Fourth Guarantor Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_4_name ?? '--' }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Fourth Guarantor Mobile</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_4_mobile_no ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Fourth Guarantor Email</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_4_email_id ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Fourth Guarantor Father Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_4_father_name ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Fourth Guarantor Address</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_4_address ?? '--' }}
-                                                        </p>
-                                                    </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Fourth Guarantor Name</p>
+                                                    <p class="case-text">{{ $case->guarantors->guarantor_4_name ?? '--' }}
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Fourth Guarantor Mobile</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_4_mobile_no ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Fourth Guarantor Email</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_4_email_id ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Fourth Guarantor Father Name</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_4_father_name ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Fourth Guarantor Address</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_4_address ?? '--' }}
+                                                    </p>
+                                                </div>
 
-                                                    <div class="col-12">
-                                                        <hr class="m-0">
-                                                    </div>
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
                                                 @endif
 
                                                 @if ($case->guarantors->guarantor_5_name)
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Fifth Guarantor Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_5_name ?? '--' }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Fifth Guarantor Mobile</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_5_mobile_no ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Fifth Guarantor Email</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_5_email_id ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Fifth Guarantor Father Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_5_father_name ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Fifth Guarantor Address</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_5_address ?? '--' }}
-                                                        </p>
-                                                    </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Fifth Guarantor Name</p>
+                                                    <p class="case-text">{{ $case->guarantors->guarantor_5_name ?? '--' }}
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Fifth Guarantor Mobile</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_5_mobile_no ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Fifth Guarantor Email</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_5_email_id ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Fifth Guarantor Father Name</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_5_father_name ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Fifth Guarantor Address</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_5_address ?? '--' }}
+                                                    </p>
+                                                </div>
 
-                                                    <div class="col-12">
-                                                        <hr class="m-0">
-                                                    </div>
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
                                                 @endif
 
                                                 @if ($case->guarantors->guarantor_6_name)
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Sixth Guarantor Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_6_name ?? '--' }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Sixth Guarantor Mobile</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_6_mobile_no ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Sixth Guarantor Email</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_6_email_id ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Sixth Guarantor Father Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_6_father_name ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Sixth Guarantor Address</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_6_address ?? '--' }}
-                                                        </p>
-                                                    </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Sixth Guarantor Name</p>
+                                                    <p class="case-text">{{ $case->guarantors->guarantor_6_name ?? '--' }}
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Sixth Guarantor Mobile</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_6_mobile_no ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Sixth Guarantor Email</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_6_email_id ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Sixth Guarantor Father Name</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_6_father_name ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Sixth Guarantor Address</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_6_address ?? '--' }}
+                                                    </p>
+                                                </div>
 
-                                                    <div class="col-12">
-                                                        <hr class="m-0">
-                                                    </div>
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
                                                 @endif
 
                                                 @if ($case->guarantors->guarantor_7_name)
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Seventh Guarantor Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_7_name ?? '--' }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Seventh Guarantor Mobile</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_7_mobile_no ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Seventh Guarantor Email</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_7_email_id ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Seventh Guarantor Father Name</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_7_father_name ?? '--' }}</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-6">
-                                                        <p class="case-title">Seventh Guarantor Address</p>
-                                                        <p class="case-text">
-                                                            {{ $case->guarantors->guarantor_7_address ?? '--' }}
-                                                        </p>
-                                                    </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Seventh Guarantor Name</p>
+                                                    <p class="case-text">{{ $case->guarantors->guarantor_7_name ?? '--' }}
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Seventh Guarantor Mobile</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_7_mobile_no ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Seventh Guarantor Email</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_7_email_id ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Seventh Guarantor Father Name</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_7_father_name ?? '--' }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Seventh Guarantor Address</p>
+                                                    <p class="case-text">
+                                                        {{ $case->guarantors->guarantor_7_address ?? '--' }}
+                                                    </p>
+                                                </div>
                                                 @endif
                                             </div>
                                         @endif
@@ -974,7 +967,7 @@
                                             </div>
                                         </div>
 
-                                    {{-- <hr>
+                                        {{-- <hr>
 
                                     <div class="accordion" id="accordionIntrimOrder">
                                         <div class="accordion-item">

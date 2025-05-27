@@ -3,6 +3,7 @@ namespace App\Console\Commands;
 
 use App\Models\AssignCase;
 use App\Models\FileCase;
+use App\Models\FileCaseDetail;
 use App\Models\Notice;
 use App\Models\NoticeTemplate;
 use App\Models\Setting;
@@ -94,6 +95,15 @@ class Bulk4ANoticeSend extends Command
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();
                 $noticeData = Notice::where('file_case_id', $value->id)->where('notice_type', 8)->first();
                 $notice = $noticeData->notice;
+               
+                $now = now();
+             
+                if ($noticeData) {
+                        FileCaseDetail::where('file_case_id', $value->id)
+                            ->update([
+                                'stage_4a_notice_date' => $now->format('d-m-Y'),
+                            ]);
+                    }
                
                 if (!empty($caseData)) {
                     $noticetemplateData = NoticeTemplate::where('id', 8)->first();

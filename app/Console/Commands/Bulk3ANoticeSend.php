@@ -5,6 +5,7 @@ use App\Helper\Helper;
 use App\Models\AssignCase;
 use App\Models\Drp;
 use App\Models\FileCase;
+use App\Models\FileCaseDetail;
 use App\Models\Notice;
 use App\Models\NoticeTemplate;
 use App\Models\Setting;
@@ -105,7 +106,9 @@ class Bulk3ANoticeSend extends Command
                     $noticetemplateData = NoticeTemplate::where('id', 5)->first();
                     $noticeTemplate     = $noticetemplateData->notice_format;
 
-                    // Define your replacement values
+                    //##### This pdf creation in case assign controller - in updateassigndetail function for appoint 3 arbitrators
+                    //############################################################################################################
+                    // // Define your replacement values
                     // $data = [
                     //     "ARBITRATOR'S NAME"                                               => $arbitratorsName ?? '',
                     //     "CASE MANAGER'S NAME"                                             => $casemanagerData->name ?? '',
@@ -121,26 +124,24 @@ class Bulk3ANoticeSend extends Command
 
                     //     'LOAN NO'                                                         => $value->loan_number ?? '',
                     //     'AGREEMENT DATE'                                                  => $value->agreement_date ?? '',
+                    //     'ARBITRATION CLAUSE NO'                                           => $value->arbitration_clause_no ?? '',
                     //     'FINANCE AMOUNT'                                                  => $value->file_case_details->finance_amount ?? '',
                     //     'TENURE'                                                          => $value->file_case_details->tenure ?? '',
-                    //     'STAGE 1 NOTICE: LOAN RECALL CUM PREARBITRATION NOTICE'           => now()->format('d-m-Y'),
                     //     'FORECLOSURE AMOUNT'                                              => $value->file_case_details->foreclosure_amount ?? '',
 
                     //     "ARBITRATOR'S NAME"                                               => $arbitratorsData->name ?? '',
                     //     "ARBITRATOR'S SPECIALIZATION"                                     => $arbitratorsData->specialization ?? '',
                     //     "ARBITRATOR'S ADDRESS"                                            => ($arbitratorsData->address1 ?? '') . '&nbsp;' . ($arbitratorsData->address2 ?? ''),
 
-                    //     'STAGE 3-A NOTICE: PROPOSAL LETTER FOR APPOINTMENT OF ARBITRATOR' => now()->format('d-m-Y'),
-
                     //     'CUSTOMER NAME'                                                   => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
                     //     'CUSTOMER ADDRESS'                                                => ($value->respondent_address1 ?? '') . '&nbsp;' . ($value->respondent_address2 ?? ''),
                     //     'CUSTOMER MOBILE NO'                                              => $value->respondent_mobile ?? '',
                     //     'CUSTOMER MAIL ID'                                                => $value->respondent_email ?? '',
 
-                    //     'ARBITRATION CLAUSE NO'                                           => 123456,
-
                     //     'DATE'                                                            => now()->format('d-m-Y'),
-                    //     'STAGE 2B NOTICE'                                                 => now()->format('d-m-Y'),
+                    //     'STAGE 1 NOTICE DATE'                                             => $value->file_case_details->stage_1_notice_date ?? '',
+                    //     'STAGE 2B NOTICE DATE'                                            => $value->file_case_details->stage_2b_notice_date ?? '',
+                    //     'STAGE 3A NOTICE DATE'                                            => now()->format('d-m-Y'),
                     // ];
 
                     // $replaceSummernotePlaceholders = function ($html, $replacements) {
@@ -215,6 +216,8 @@ class Bulk3ANoticeSend extends Command
                     // // Save the PDF using your helper
                     // $savedPath = Helper::saveFile($uploadedFile, 'notices');
 
+                    // $now = now();
+
                     // $notice = Notice::create([
                     //     'file_case_id'               => $value->id,
                     //     'notice_type'                => 5,
@@ -226,6 +229,13 @@ class Bulk3ANoticeSend extends Command
                     //     'whatsapp_notice_status'     => 0,
                     //     'whatsapp_dispatch_datetime' => null,
                     // ]);
+
+                    // if ($notice) {
+                    //     FileCaseDetail::where('file_case_id', $notice->file_case_id)
+                    //         ->update([
+                    //             'stage_3a_notice_date' => $now->format('d-m-Y'),
+                    //         ]);
+                    // }
 
                     //Send Notice for Assign Arbitrator
                     $data = Setting::where('setting_type', '3')->get()->pluck('filed_value', 'setting_name')->toArray();

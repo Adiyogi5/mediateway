@@ -33,7 +33,7 @@
                     <div class="card-body">
                         <form class="row" id="uploadnoticeView" method="POST" action="{{ route('organization.cases.filecaseview.store', $caseviewData['id']) }}" enctype="multipart/form-data">
                             @csrf
-                        
+                            {{-- ####### Notices - 1, 1A, 1B ######## --}}
                             <h4 class="livemeetingcard-heading text-center justify-content-center"
                             style="background-color: black;color: white;padding: 5px;border-radius: 8px">Upload Notices - 1, 1A and 1B</h4>
 
@@ -113,7 +113,7 @@
                             @endif
                         </form>
                         
-
+                        {{-- ####### Claim Petition ######## --}}
                         <div class="row mb-3">
                             <h4 class="livemeetingcard-heading text-center justify-content-center"
                             style="background-color: black;color: white;padding: 5px;border-radius: 8px">Filed Claim Petition</h4>
@@ -130,9 +130,9 @@
                             @endif
                         </div>
                         
-                        
+                        {{-- ####### Other Documents ######## --}}
                         <form class="row" id="editcaseview" method="POST"
-                            action="{{ route('organization.cases.filecaseview.edit', $caseviewData['id']) }}"
+                            action="{{ route('organization.cases.filecaseview.update', $caseviewData['id']) }}"
                             enctype='multipart/form-data'>
                             @csrf
                             
@@ -535,25 +535,6 @@
 @endsection
 
 @section('js')
-    {{-- <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const agreementSelect = document.getElementById("agreement_exist");
-            const documentFields = document.querySelectorAll(".document-upload");
-
-            // Function to toggle file fields
-            function toggleDocumentFields() {
-                if (agreementSelect.value === "1") {
-                    documentFields.forEach(field => field.style.display = "block");
-                } else {
-                    documentFields.forEach(field => field.style.display = "none");
-                }
-            }
-
-            toggleDocumentFields();
-
-            agreementSelect.addEventListener("change", toggleDocumentFields);
-        });
-    </script> --}}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Combine both your documents and notices into one array

@@ -17,6 +17,10 @@ class Kernel extends ConsoleKernel
         
         $schedule->command('bulk:create-live-court-room')->everyOneMinutes();
         $schedule->command('bulk:status-live-court-room')->everyOneMinutes();
+
+        $schedule->command('bulk:create-live-meeting-room')->everyOneMinutes();
+        $schedule->command('bulk:status-live-meeting-room')->everyOneMinutes();
+
         $schedule->command('bulk:create-claim-petition')->everyOneMinutes();
 
         $schedule->command('bulk:send-2b-notice')->everyOneMinutes();

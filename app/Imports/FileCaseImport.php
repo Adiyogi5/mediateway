@@ -18,12 +18,12 @@ class FileCaseImport implements ToModel, WithHeadingRow
     protected $organizationId;
 
     protected $expectedFields = [
-        'loan_number', 'agreement_date', 'loan_application_date', 'arbitration_date', 'claimant_first_name',
+        'loan_number', 'agreement_date', 'loan_application_date', 'arbitration_date', 'arbitration_clause_no', 'claimant_first_name',
         'claimant_middle_name', 'claimant_last_name', 'claimant_mobile', 'claimant_email',
         'claimant_address_type', 'claimant_address1', 'claimant_state', 'claimant_city', 'claimant_pincode',
         'respondent_first_name', 'respondent_middle_name', 'respondent_last_name', 'respondent_mobile', 'respondent_email',
         'respondent_address_type', 'respondent_address1', 'respondent_state', 'respondent_city', 'respondent_pincode',
-        'amount_in_dispute', 'case_type', 'brief_of_case', 'product', 'asset_description', 'sanction_letter_date','rate_of_intrest', 'registration_no', 'chassis_no', 'engin_no', 'finance_amount', 'finance_amount_in_words', 'emi_amt','emi_due_date', 'tenure', 'foreclosure_amount_date', 'foreclosure_amount', 'foreclosure_amount_in_words', 'claim_signatory_authorised_officer_name', 'claim_signatory_authorised_officer_father_name', 'claim_signatory_authorised_officer_designation', 'claim_signatory_authorised_officer_mobile_no', 'claim_signatory_authorised_officer_mail_id', 'receiver_name', 'receiver_designation', 'auction_date', 'auction_amount', 'auction_amount_in_words',
+        'amount_in_dispute', 'case_type', 'brief_of_case', 'product', 'asset_description', 'sanction_letter_date','rate_of_interest', 'registration_no', 'chassis_no', 'engin_no', 'finance_amount', 'finance_amount_in_words', 'emi_amt','emi_due_date', 'tenure', 'foreclosure_amount_date', 'foreclosure_amount', 'foreclosure_amount_in_words', 'claim_signatory_authorised_officer_name', 'claim_signatory_authorised_officer_father_name', 'claim_signatory_authorised_officer_designation', 'claim_signatory_authorised_officer_mobile_no', 'claim_signatory_authorised_officer_mail_id', 'receiver_name', 'receiver_designation', 'auction_date', 'auction_amount', 'auction_amount_in_words',
         'guarantor_1_name', 'guarantor_1_mobile_no', 'guarantor_1_email_id', 'guarantor_1_father_name', 'guarantor_1_address',
         'guarantor_2_name', 'guarantor_2_mobile_no', 'guarantor_2_email_id', 'guarantor_2_father_name', 'guarantor_2_address',
         'guarantor_3_name', 'guarantor_3_mobile_no', 'guarantor_3_email_id', 'guarantor_3_father_name', 'guarantor_3_address',
@@ -111,6 +111,7 @@ class FileCaseImport implements ToModel, WithHeadingRow
                     'agreement_date'          => ! empty($row['agreement_date']) ? Carbon::parse($row['agreement_date'])->format('Y-m-d') : null,
                     'loan_application_date'   => ! empty($row['loan_application_date']) ? Carbon::parse($row['loan_application_date'])->format('Y-m-d') : null,
                     'arbitration_date'        => ! empty($row['arbitration_date']) ? Carbon::parse($row['arbitration_date'])->format('Y-m-d') : null,
+                    'arbitration_clause_no'   => $row['arbitration_clause_no'] ?? null,
                     'claimant_first_name'     => $organizationData->name ?? null,
                     'claimant_middle_name'    => $row['claimant_middle_name'] ?? null,
                     'claimant_last_name'      => $row['claimant_last_name'] ?? null,
@@ -144,7 +145,7 @@ class FileCaseImport implements ToModel, WithHeadingRow
                     'product'                                        => $row['product'] ?? null,
                     'asset_description'                              => $row['asset_description'] ?? null,
                     'sanction_letter_date'                           => $row['sanction_letter_date'] ?? null,
-                    'rate_of_intrest'                                => $row['rate_of_intrest'] ?? null,
+                    'rate_of_interest'                                => $row['rate_of_interest'] ?? null,
                     'registration_no'                                => $row['registration_no'] ?? null,
                     'chassis_no'                                     => $row['chassis_no'] ?? null,
                     'engin_no'                                       => $row['engin_no'] ?? null,

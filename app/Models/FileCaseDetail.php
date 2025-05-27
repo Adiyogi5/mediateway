@@ -16,7 +16,7 @@ class FileCaseDetail extends Model
         'product',
         'asset_description',
         'sanction_letter_date',
-        'rate_of_intrest',
+        'rate_of_interest',
         'registration_no',
         'chassis_no',
         'engin_no',
@@ -38,6 +38,16 @@ class FileCaseDetail extends Model
         'auction_date',
         'auction_amount',
         'auction_amount_in_words',
+        'stage_1_notice_date',
+        'stage_1a_notice_date',
+        'stage_1b_notice_date',
+        'stage_2b_notice_date',
+        'stage_3a_notice_date',
+        'stage_3b_notice_date',
+        'stage_3c_notice_date',
+        'stage_3d_notice_date',
+        'stage_4a_notice_date',
+        'stage_5a_notice_date',
     ];
 
 

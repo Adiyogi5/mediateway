@@ -27,14 +27,6 @@
                             <div class="col-auto align-self-center">
                                 <h5 class="mb-0" data-anchor="data-anchor">Court Room Lists</h5>
                             </div>
-                            {{-- <div class="col-auto ms-auto">
-                                <div class="nav nav-pills nav-pills-falcon">
-                                    <a href="{{ route('drp.courtroom.courtroomlist') }}" class="btn btn-outline-secondary">
-                                        <i class="fa fa-plus me-1"></i>
-                                        Add Court Room
-                                    </a>
-                                </div>
-                            </div> --}}
                         </div>
                     </div>
                     <div class="card-body px-0 pb-0 table-meetinglist">
@@ -49,7 +41,7 @@
                         <div class="tab-content">
                             <div class="tab-pane fade show active" role="tabpanel" id="info">
                                 <div class="table-responsive">
-                                    <table class="table">
+                                    <table id="upcomingTable" class="table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Case Numbers</th>
@@ -59,9 +51,10 @@
                                                 <th scope="col">Date</th>
                                                 <th scope="col">Time</th>
                                                 <th scope="col">Status</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        {{-- <tbody>
                                             @forelse ($upcomingRooms as $room)
                                                 <tr class="bg-blue">
                                                     <td class="pt-2">
@@ -86,7 +79,7 @@
                                                             @endif
                                                         </div>
                                                     </td>
-                                                    <td class="pt-3">
+                                                    <td class="pt-2">
                                                         @if ($room->hearing_type == 1)
                                                             First Hearing
                                                         @elseif ($room->hearing_type == 2)
@@ -141,12 +134,12 @@
                                                             @endif
                                                         </div>
                                                     </td>
-                                                    <td class="pt-3">{{ \Carbon\Carbon::parse($room->date)->format('d F Y') }}</td>
-                                                    <td class="pt-3">{{ \Carbon\Carbon::parse($room->time)->format('h:i A') }}</td>
-                                                    <td class="pt-3">
+                                                    <td class="pt-2">{{ \Carbon\Carbon::parse($room->date)->format('d F Y') }}</td>
+                                                    <td class="pt-2">{{ \Carbon\Carbon::parse($room->time)->format('h:i A') }}</td>
+                                                    <td class="pt-2">
                                                         <span class="fa {{ $room->status == 1 ? 'fa-check' : 'fa-clock' }} pl-3"></span>
                                                     </td>
-                                                    <td class="pt-3">
+                                                    <td class="pt-2">
                                                         @if($room->status == 1)
                                                             <a href="{{ route('drp.courtroom.livecourtroom', $room->room_id) }}?case_ids={{ $room->case_ids }}"
                                                                class="fa fa-video btn bg-success text-white text-capitalize fs-6 me-1">
@@ -156,18 +149,18 @@
                                                         @endif
                                                     </td>                                                                                                       
                                                 </tr>
-                                                <tr id="spacing-row"><td colspan="6"></td></tr>
+                                                <tr id="spacing-row"><td colspan="6" class="p-0"></td></tr>
                                             @empty
                                                 <tr><td colspan="6" class="text-center">No upcoming cases found.</td></tr>
                                             @endforelse
-                                            </tbody>                                            
+                                        </tbody>                                             --}}
                                     </table>
                                 </div>
                             </div>
                             
                             <div class="tab-pane fade" role="tabpanel" id="ratings">
                                 <div class="table-responsive">
-                                    <table class="table">
+                                    <table id="closedTable" class="table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Case Numbers</th>
@@ -178,9 +171,10 @@
                                                 <th scope="col">Time</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Recording</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        {{-- <tbody>
                                             @forelse ($closedRooms as $room)
                                                 <tr class="bg-blue">
                                                     <td class="pt-2">
@@ -205,7 +199,7 @@
                                                             @endif
                                                         </div>
                                                     </td>
-                                                    <td class="pt-3">
+                                                    <td class="pt-2">
                                                         @if ($room->hearing_type == 1)
                                                             First Hearing
                                                         @elseif ($room->hearing_type == 2)
@@ -260,9 +254,9 @@
                                                             @endif
                                                         </div>
                                                     </td>
-                                                    <td class="pt-3">{{ \Carbon\Carbon::parse($room->date)->format('d F Y') }}</td>
-                                                    <td class="pt-3">{{ \Carbon\Carbon::parse($room->time)->format('h:i A') }}</td>
-                                                    <td class="pt-3">
+                                                    <td class="pt-2">{{ \Carbon\Carbon::parse($room->date)->format('d F Y') }}</td>
+                                                    <td class="pt-2">{{ \Carbon\Carbon::parse($room->time)->format('h:i A') }}</td>
+                                                    <td class="pt-2">
                                                         <span class="fa fa-close pl-3"></span>
                                                     </td>
                                                     <td>
@@ -275,16 +269,15 @@
                                                             No recording available
                                                         @endif
                                                     </td>                                                    
-                                                    <td class="pt-3">
+                                                    <td class="pt-2">
                                                         <button class="fa fa-handshake btn bg-secondary text-white"></button>
                                                     </td>                                                                                                     
                                                 </tr>
-                                                <tr id="spacing-row"><td colspan="6"></td></tr>
+                                                <tr id="spacing-row"><td colspan="6" class="p-0"></td></tr>
                                             @empty
                                                 <tr><td colspan="6" class="text-center">No closed cases found.</td></tr>
                                             @endforelse
-                                            </tbody>
-                                            
+                                        </tbody> --}}
                                     </table>
                                 </div>
                             </div>
@@ -327,5 +320,53 @@
                 console.log('Popover clicked:', $(this).attr('id'));
             });
         });
-    </script>        
+    </script>
+    
+    <script>
+        $(document).ready(function () {
+            const initPopover = () => {
+                $('[data-bs-toggle="popover"]').popover({
+                    trigger: 'hover',
+                    placement: 'top',
+                });
+            };
+
+            const upcomingTable = $('#upcomingTable').DataTable({
+                ajax: '{{ route("drp.courtroom.datatable.upcoming") }}',
+                columns: [
+                    { data: 'case_numbers' },
+                    { data: 'hearing_type' },
+                    { data: 'individual_name' },
+                    { data: 'organization_name' },
+                    { data: 'date' },
+                    { data: 'time' },
+                    { data: 'status' },
+                    { data: 'action' }
+                ],
+                drawCallback: initPopover
+            });
+
+            const closedTable = $('#closedTable').DataTable({
+                ajax: '{{ route("drp.courtroom.datatable.closed") }}',
+                columns: [
+                    { data: 'case_numbers' },
+                    { data: 'hearing_type' },
+                    { data: 'individual_name' },
+                    { data: 'organization_name' },
+                    { data: 'date' },
+                    { data: 'time' },
+                    { data: 'status' },
+                    { data: 'recording' },
+                    { data: 'action' }
+                ],
+                drawCallback: initPopover
+            });
+
+            // Optional: reload on tab switch
+            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                upcomingTable.ajax.reload(null, false);
+                closedTable.ajax.reload(null, false);
+            });
+        });
+</script>
 @endsection

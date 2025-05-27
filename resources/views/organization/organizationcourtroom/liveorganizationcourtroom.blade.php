@@ -170,10 +170,11 @@
                         if (response.length > 0) {
                             response.forEach(notice => {
                                 const noticeTypeLabel = noticeTypes[notice.notice_type] || 'Unknown Notice Type';
+                                const storageBaseUrl = "{{ asset('storage') }}";
                                 
                                 let pdfLink = notice.notice ? `
                                     <a class="text-decoration-none text-secondary" style="font-size: 13px"
-                                        href="/storage/${notice.notice}" target="_blank">
+                                        href="${storageBaseUrl}/${notice.notice}" target="_blank">
                                         <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
                                     </a>` :
                                     `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;
@@ -232,10 +233,11 @@
                         if (response.length > 0) {
                             response.forEach(award => {
                                 const noticeTypeLabel = noticeTypes[award.notice_type] || 'Unknown Award Type';
+                                const storageBaseUrl = "{{ asset('storage') }}";
                                 
                                 let pdfLink = award.notice ? `
                                     <a class="text-decoration-none text-secondary" style="font-size: 13px"
-                                        href="/storage/${award.notice}" target="_blank">
+                                        href="${storageBaseUrl}/${award.notice}" target="_blank">
                                         <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
                                     </a>` :
                                     `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;

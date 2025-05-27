@@ -6,6 +6,7 @@ use App\Models\AssignCase;
 use App\Models\ClaimPetition;
 use App\Models\Drp;
 use App\Models\FileCase;
+use App\Models\FileCaseDetail;
 use App\Models\Notice;
 use App\Models\OrganizationList;
 use App\Models\Setting;
@@ -85,7 +86,7 @@ class CreateClaimPetition extends Command
             )
             ->distinct()
             ->get();
-        //    dd($caseData);
+        
         foreach ($caseData as $key => $value) {
             try {
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();
@@ -123,6 +124,7 @@ class CreateClaimPetition extends Command
                         'FINANCE AMOUNT'                                                  => $value->file_case_details->finance_amount ?? '',
                         'FINANCE AMOUNT IN WORDS'                                         => $value->file_case_details->finance_amount_in_words ?? '',
                         'TENURE'                                                          => $value->file_case_details->tenure ?? '',
+                        'RATE OF INTEREST'                                                => $value->file_case_details->rate_of_interest ?? '',
                         'EMI DUE DATE'                                                    => $value->file_case_details->emi_due_date ?? '',
                         'FORECLOSURE AMOUNT'                                              => $value->file_case_details->foreclosure_amount ?? '',
                         'FORECLOSURE AMOUNT IN WORDS'                                     => $value->file_case_details->foreclosure_amount_in_words ?? '',
@@ -132,14 +134,13 @@ class CreateClaimPetition extends Command
                         "ARBITRATOR'S SPECIALIZATION"                                     => $arbitratorsData->specialization ?? '',
                         "ARBITRATOR'S ADDRESS"                                            => ($arbitratorsData->address1 ?? '') . '&nbsp;' . ($arbitratorsData->address2 ?? ''),
 
-
                         'CUSTOMER NAME'                                                   => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
                         'CUSTOMER FATHER NAME'                                            => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
                         'CUSTOMER ADDRESS'                                                => ($value->respondent_address1 ?? '') . '&nbsp;' . ($value->respondent_address2 ?? ''),
                         'CUSTOMER MOBILE NO'                                              => $value->respondent_mobile ?? '',
                         'CUSTOMER MAIL ID'                                                => $value->respondent_email ?? '',
 
-                        'ARBITRATION CLAUSE NO'                                           => 123456,
+                        'ARBITRATION CLAUSE NO'                                           => $value->arbitration_clause_no ?? '',
 
                         'GUARANTOR 1 NAME'                                                => $value->guarantors->guarantor_1_name ?? '',
                         'GUARANTOR 1 ADDRESS'                                             => $value->guarantors->guarantor_1_address ?? '',
@@ -157,6 +158,12 @@ class CreateClaimPetition extends Command
                         'GUARANTOR 3 MAIL ID'                                             => $value->guarantors->guarantor_3_email_id ?? '',
 
                         'DATE'                                                            => now()->format('d-m-Y'),
+                        'STAGE 1 NOTICE DATE'                                             => $value->file_case_details->stage_1_notice_date ?? '',
+                        'STAGE 2B NOTICE DATE'                                            => $value->file_case_details->stage_2b_notice_date ?? '',
+                        'STAGE 3A NOTICE DATE'                                            => $value->file_case_details->stage_3a_notice_date ?? '',
+                        'STAGE 3B NOTICE DATE'                                            => $value->file_case_details->stage_3b_notice_date ?? '',
+                        'STAGE 3C NOTICE DATE'                                            => $value->file_case_details->stage_3c_notice_date ?? '',
+                        'STAGE 3D NOTICE DATE'                                            => now()->format('d-m-Y'),
                     ];
                  
                     $replaceSummernotePlaceholders = function ($html, $replacements) {
@@ -230,7 +237,9 @@ class CreateClaimPetition extends Command
 
                     // Save the PDF using your helper
                     $savedPath = Helper::saveFile($uploadedFile, 'casefile');
-                                 
+                    
+                    $now = now();
+             
                     $notice = Notice::create([
                         'file_case_id'               => $value->id,
                         'notice_type'                => 8,
@@ -242,6 +251,13 @@ class CreateClaimPetition extends Command
                         'whatsapp_notice_status'     => 0,
                         'whatsapp_dispatch_datetime' => null,
                     ]);
+
+                    if ($notice) {
+                        FileCaseDetail::where('file_case_id', $notice->file_case_id)
+                            ->update([
+                                'stage_3d_notice_date' => $now->format('d-m-Y'),
+                            ]);
+                    }
 
                     // First Hearing Date-- And -- Second Hearing Date--
                     $casefirstnotice = Notice::where('file_case_id',$value->id)->where('notice_type',1)->first();

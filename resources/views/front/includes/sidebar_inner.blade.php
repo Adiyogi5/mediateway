@@ -242,11 +242,11 @@
                     </li>
 
                     <li
-                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.meetingroom.meetinglist') ? 'text-white bg-lime' : '' }}">
-                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.meetingroom.meetinglist') ? 'text-white bg-lime' : '' }}"
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.meetingroom.meetingroomlist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.meetingroom.meetingroomlist') ? 'text-white bg-lime' : '' }}"
                             aria-current="page"
-                            style="{{ request()->routeIs($currentGuard . '.meetingroom.meetinglist') ? 'color:white !important;;' : '' }}"
-                            href="{{ route($currentGuard . '.' . 'meetingroom.meetinglist') }}"><i
+                            style="{{ request()->routeIs($currentGuard . '.meetingroom.meetingroomlist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'meetingroom.meetingroomlist') }}"><i
                                 class="fa-solid fa-video faa-profile"></i> Meeting Room</a>
                     </li>
                 @endif

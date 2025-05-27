@@ -6,6 +6,7 @@ use App\Models\CourtRoom;
 use App\Models\FileCase;
 use App\Models\Setting;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -149,10 +150,10 @@ class CreateLiveCourtRoom extends Command
                           
                             $subject     = $hearingTypeLabels[$hearingType] ?? 'Hearing Link';
                             $case_id     = $case->id;
-                            // $description = route('guest.livecourtroom', ['room_id' => $room_id]) . "?case_id=" . $case_id;
+                           
                             $messageContent = "Your first hearing at Mediateway is scheduled for Date: $courtRoom->date at 10:00 AM. Join using this link. Thank you! Mediateway.";
                             $encodedMessage = urlencode($messageContent);
-                            $description = route('guest.livecourtroom', ['room_id' => $room_id]) . "?case_id=$case_id&message=$encodedMessage";
+                            $description = route('front.guest.livecourtroom', ['room_id' => $room_id]) . "?case_id=$case_id&message=$encodedMessage";
 
                             // Send Email
                             Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($subject, $email) {

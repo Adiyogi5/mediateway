@@ -98,7 +98,7 @@
                         @endif
 
                         <form class="row" id="editcaseview" method="POST"
-                            action="{{ route('individual.case.filecaseview.edit', $caseviewData['id']) }}"
+                            action="{{ route('individual.case.filecaseview.update', $caseviewData['id']) }}"
                             enctype='multipart/form-data'>
                             @csrf
 

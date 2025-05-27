@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Drp;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\AssignCase;
+use App\Models\CourtRoom;
 use App\Models\FileCase;
 use App\Models\Notice;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use \Yajra\Datatables\Datatables;
 use Illuminate\Http\JsonResponse;
@@ -98,7 +100,7 @@ class CaseListController extends Controller
                         $btn .= '<a class="dropdown-item btn-approve-case" href="javascript:void(0)" data-id="' . $row->id . '">Approve Case</a>';
                     }
 
-                    // $btn .= '<a class="dropdown-item" href="' . route('drp.allcases.viewcasedetail', $row->id) . '">View Case Details</a>';
+                    $btn .= '<a class="dropdown-item" href="' . route('drp.allcases.viewcasedetail', $row->id) . '">View Case Details</a>';
                     $btn .= '</div>'; 
                     return $btn;
                 })
@@ -132,4 +134,58 @@ class CaseListController extends Controller
         return response()->json(['success' => true, 'message' => 'Case approved successfully.']);
     }
 
+
+     public function viewcasedetail($id): View|RedirectResponse
+    {
+        $title = 'Filed Case Detail';
+        
+        $caseviewData = FileCase::find($id);
+        
+        if (!$caseviewData) {
+            return to_route('cases.filecaseview')->with('error', 'Filed Case Not Found..!!');
+        }
+
+        $caseData = FileCase::with([
+                'file_case_details', 
+                'guarantors',
+                'notices', 
+                'assignedCases.arbitrator', 
+                'assignedCases.advocate', 
+                'assignedCases.caseManager', 
+                'assignedCases.mediator', 
+                'assignedCases.conciliator'
+            ])
+            ->where('id', $caseviewData->id)
+            ->where('status', 1)
+            ->latest()
+            ->get();
+
+        $upcomingHearings = CourtRoom::where('court_room_case_id', $caseviewData->id)
+            ->where(function ($query) {
+                $query->where('date', '>', Carbon::today()->toDateString())
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('date', Carbon::today()->toDateString())
+                                ->where('time', '>=', Carbon::now()->format('H:i:s'));
+                    })
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('date', Carbon::today()->toDateString())
+                                ->where('status', 1);
+                    });
+            })->get();
+
+        $closedHearings = CourtRoom::where('court_room_case_id', $caseviewData->id)
+            ->where(function ($query) {
+                $query->where('date', '<', Carbon::today()->toDateString())
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('date', Carbon::today()->toDateString())
+                                ->where('time', '<=', Carbon::now()->format('H:i:s'));
+                    });
+            })->get();
+
+        if ($caseData->isEmpty()) {
+            return to_route('allcases.caselist')->with('error', 'You are not authorized to view this case.');
+        }
+    
+        return view('drp.allcases.viewcasedetail', compact('caseviewData', 'title','caseData','upcomingHearings','closedHearings'));
+    }
 }

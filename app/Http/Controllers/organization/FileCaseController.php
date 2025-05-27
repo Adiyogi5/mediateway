@@ -13,10 +13,13 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\FileCaseImport;
 use App\Exports\SampleFileCaseExport;
+use App\Models\CourtRoom;
 use App\Models\FileCase;
+use App\Models\FileCaseDetail;
 use App\Models\Notice;
 use App\Models\Organization;
 use App\Models\State;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -39,50 +42,87 @@ class FileCaseController extends Controller
         }
 
         if ($request->ajax()) {
-            $data = FileCase::select('file_cases.id', 'file_cases.case_type', 'file_cases.organization_id', 'file_cases.claimant_first_name', 'file_cases.claimant_last_name', 'file_cases.claimant_mobile', 'file_cases.respondent_first_name', 'file_cases.respondent_last_name', 'file_cases.respondent_mobile', 'file_cases.status', 'file_cases.created_at')
-                ->join('organizations', 'file_cases.organization_id', '=', 'organizations.id')
-                ->where(function ($query) use ($organization) {
-                    if ($organization->parent_id == null) {
-                        // If parent organization, show its own cases and cases filed by its child organizations
-                        $query->where('file_cases.organization_id', $organization->id)
-                              ->orWhere('organizations.parent_id', $organization->id);
-                    } else {
-                        // If child organization, show only its own filed cases
-                        $query->where('file_cases.organization_id', $organization->id);
-                    }
-                })
-                ->where('file_cases.status', 1);
-            return Datatables::of($data)
-                ->editColumn('case_type', function ($row) {
-                    return config('constant.case_type')[$row->case_type] ?? 'Unknown';
-                })
-                ->editColumn('created_at', function ($row) {
-                    return $row['created_at']->format('d M, Y');
-                })
-                ->editColumn('status', function ($row) {
-                    return $row['status'] == 1 ? '<small class="badge fw-semi-bold rounded-pill status badge-light-success"> Active</small>' : '<small class="badge fw-semi-bold rounded-pill status badge-light-danger"> Inactive</small>';
-                })
-                ->addColumn('action', function ($row) {
+        $data = FileCase::select('file_cases.id', 'file_cases.case_type', 'file_cases.organization_id', 'file_cases.case_number', 'file_cases.loan_number', 'file_cases.claimant_first_name', 'file_cases.claimant_last_name', 'file_cases.claimant_mobile', 'file_cases.respondent_first_name', 'file_cases.respondent_last_name', 'file_cases.respondent_mobile', 'file_cases.status', 'file_cases.created_at')
+            ->join('organizations', 'file_cases.organization_id', '=', 'organizations.id')
+            ->where(function ($query) use ($organization) {
+                if ($organization->parent_id == null) {
+                    $query->where('file_cases.organization_id', $organization->id)
+                        ->orWhere('organizations.parent_id', $organization->id);
+                } else {
+                    $query->where('file_cases.organization_id', $organization->id);
+                }
+            });
 
-                    $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
-                    if (Helper::organizationCan(205, 'can_edit')) {
-                        $btn .= '<a class="dropdown-item" href="' . route('organization.cases.filecaseview.edit', $row->id) . '">Upload Documents</a>';
-                    }
-                    // if (Helper::organizationCan(205, 'can_delete')) {
-                        // $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
-                    // }
-                    $btn .= '<a class="dropdown-item" href="' . route('organization.cases.viewcasedetail', $row->id) . '">View Case Details</a>';
-                    if (Helper::organizationAllowed(205)) {
-                        return $btn;
-                    } else {
-                        return '';
-                    }
-                })
-                ->orderColumn('created_at', function ($query, $order) {
-                    $query->orderBy('created_at', $order);
-                })
-                ->rawColumns(['action', 'status','case_type'])
-                ->make(true);
+        // Apply filters
+        if ($request->case_type) {
+            $data->where('file_cases.case_type', $request->case_type);
+        }
+
+        if ($request->case_number) {
+            $data->where('file_cases.case_number', 'like', '%' . $request->case_number . '%');
+        }
+
+        if ($request->loan_number) {
+            $data->where('file_cases.loan_number', 'like', '%' . $request->loan_number . '%');
+        }
+
+        if ($request->claimant_first_name) {
+            $data->where(function ($query) use ($request) {
+                $query->where('file_cases.claimant_first_name', 'like', '%' . $request->claimant_first_name . '%')
+                    ->orWhere('file_cases.claimant_last_name', 'like', '%' . $request->claimant_first_name . '%');
+            });
+        }
+
+        if ($request->claimant_mobile) {
+            $data->where('file_cases.claimant_mobile', 'like', '%' . $request->claimant_mobile . '%');
+        }
+
+        if ($request->respondent_first_name) {
+            $data->where(function ($query) use ($request) {
+                $query->where('file_cases.respondent_first_name', 'like', '%' . $request->respondent_first_name . '%')
+                    ->orWhere('file_cases.respondent_last_name', 'like', '%' . $request->respondent_first_name . '%');
+            });
+        }
+
+        if ($request->respondent_mobile) {
+            $data->where('file_cases.respondent_mobile', 'like', '%' . $request->respondent_mobile . '%');
+        }
+
+        if ($request->status !== null && $request->status !== '') {
+            $data->where('file_cases.status', $request->status);
+        }
+
+        if ($request->start_date && $request->end_date) {
+            $data->whereBetween(DB::raw('DATE(file_cases.created_at)'), [$request->start_date, $request->end_date]);
+        }
+
+        return Datatables::of($data)
+            ->editColumn('case_type', function ($row) {
+                return config('constant.case_type')[$row->case_type] ?? 'Unknown';
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row['created_at']->format('d M, Y');
+            })
+            ->editColumn('status', function ($row) {
+                return $row['status'] == 1 ? '<small class="badge fw-semi-bold rounded-pill status badge-light-success"> Active</small>' : '<small class="badge fw-semi-bold rounded-pill status badge-light-danger"> Inactive</small>';
+            })
+            ->addColumn('action', function ($row) {
+                $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
+                if (Helper::organizationCan(205, 'can_edit')) {
+                    $btn .= '<a class="dropdown-item" href="' . route('organization.cases.filecaseview.edit', $row->id) . '">Upload Documents</a>';
+                }
+                $btn .= '<a class="dropdown-item" href="' . route('organization.cases.viewcasedetail', $row->id) . '">View Case Details</a>';
+                if (Helper::organizationAllowed(205)) {
+                    return $btn;
+                } else {
+                    return '';
+                }
+            })
+            ->orderColumn('created_at', function ($query, $order) {
+                $query->orderBy('created_at', $order);
+            })
+            ->rawColumns(['action', 'status','case_type'])
+            ->make(true);
         }
 
         return view('organization.cases.filecaseview', compact('organization','title'));
@@ -276,7 +316,7 @@ class FileCaseController extends Controller
         if ($request->hasFile('notice_first')) {
             $noticefirstPath = Helper::saveFile($request->file('notice_first'),'notices');
 
-            Notice::create([
+            $notice = Notice::create([
                 'file_case_id' => $id,
                 'notice_type' => 1,
                 'notice' => $noticefirstPath,
@@ -287,13 +327,20 @@ class FileCaseController extends Controller
                 'whatsapp_notice_status' => 0,
                 'whatsapp_dispatch_datetime' => null,
             ]);
+
+            if ($notice) {
+                FileCaseDetail::where('file_case_id', $notice->file_case_id)
+                    ->update([
+                        'stage_1_notice_date' => $firstNoticeDate,
+                    ]);
+            }
         }
 
         // Second notice (type 2)
         if ($request->hasFile('notice_second')) {
             $noticesecondPath = Helper::saveFile($request->file('notice_second'),'notices');
 
-            Notice::create([
+            $notice = Notice::create([
                 'file_case_id' => $id,
                 'notice_type' => 2,
                 'notice' => $noticesecondPath,
@@ -304,13 +351,20 @@ class FileCaseController extends Controller
                 'whatsapp_notice_status' => 0,
                 'whatsapp_dispatch_datetime' => null,
             ]);
+
+            if ($notice) {
+                FileCaseDetail::where('file_case_id', $notice->file_case_id)
+                    ->update([
+                        'stage_1a_notice_date' => $secondNoticeDate,
+                    ]);
+            }
         }
 
          // Third notice (type 3)
          if ($request->hasFile('notice_third')) {
             $noticesecondPath = Helper::saveFile($request->file('notice_third'),'notices');
 
-            Notice::create([
+            $notice = Notice::create([
                 'file_case_id' => $id,
                 'notice_type' => 3,
                 'notice' => $noticesecondPath,
@@ -321,6 +375,13 @@ class FileCaseController extends Controller
                 'whatsapp_notice_status' => 0,
                 'whatsapp_dispatch_datetime' => null,
             ]);
+
+            if ($notice) {
+                FileCaseDetail::where('file_case_id', $notice->file_case_id)
+                    ->update([
+                        'stage_1b_notice_date' => $thirdNoticeDate,
+                    ]);
+            }
         }
 
         return redirect()->back()->with('success', 'Both notices uploaded successfully.');
@@ -394,7 +455,9 @@ class FileCaseController extends Controller
 
         // Fetch case data where the organization is either parent or child
         $caseData = FileCase::with([
-                'payments', 
+                'file_case_details', 
+                'guarantors',
+                'notices', 
                 'assignedCases.arbitrator', 
                 'assignedCases.advocate', 
                 'assignedCases.caseManager', 
@@ -407,11 +470,33 @@ class FileCaseController extends Controller
             ->latest()
             ->get();
 
+        $upcomingHearings = CourtRoom::where('court_room_case_id', $caseviewData->id)
+            ->where(function ($query) {
+                $query->where('date', '>', Carbon::today()->toDateString())
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('date', Carbon::today()->toDateString())
+                                ->where('time', '>=', Carbon::now()->format('H:i:s'));
+                    })
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('date', Carbon::today()->toDateString())
+                                ->where('status', 1);
+                    });
+            })->get();
+
+        $closedHearings = CourtRoom::where('court_room_case_id', $caseviewData->id)
+            ->where(function ($query) {
+                $query->where('date', '<', Carbon::today()->toDateString())
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('date', Carbon::today()->toDateString())
+                                ->where('time', '<=', Carbon::now()->format('H:i:s'));
+                    });
+            })->get();
+
         if ($caseData->isEmpty()) {
             return to_route('cases.filecaseview')->with('error', 'You are not authorized to view this case.');
         }
     
-        return view('organization.cases.viewcasedetail', compact('caseviewData', 'title', 'organization_authData','caseData'));
+        return view('organization.cases.viewcasedetail', compact('caseviewData', 'title', 'organization_authData','caseData','upcomingHearings','closedHearings'));
     }
     
 }

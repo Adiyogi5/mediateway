@@ -51,7 +51,7 @@ class SettlementLetterController extends Controller
                     $btn .= '<a class="dropdown-item" href="' . route('drp.settlementletter.edit', $row['id']) . '">Edit</a>';
                 // }
                 // if (Helper::userCan(111, 'can_delete')) {
-                    $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
+                    // $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
                 // }
                 return $btn;
                 // return Helper::userAllowed(111) ? $btn : '';

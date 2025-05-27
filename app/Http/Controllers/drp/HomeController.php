@@ -415,6 +415,18 @@ class HomeController extends Controller
                 })
                 ->count();
 
+            $settlementAgreements = FileCase::with('assignedCases','notices')
+                ->whereHas('assignedCases', function ($query) use ($drp) {
+                        $query->where('conciliator_id', $drp->id);
+                })
+                ->whereHas('notices', function ($query) use ($drp) {
+                    $query->where('notice_type', 11);
+                })
+                ->where(function ($query) {
+                    $query->where('status', 1);
+                })
+                ->count();
+
           $caseManagerData = FileCase::leftJoin('assign_cases', 'file_cases.id', '=', 'assign_cases.case_id')
                 ->leftJoin('drps', 'drps.id', '=', 'assign_cases.case_manager_id')
                 ->where('assign_cases.conciliator_id', $drp->id)
@@ -424,7 +436,7 @@ class HomeController extends Controller
         }
         //########### Other ##############
         else{
-            $totalFiledCases = $totalPendingCases = $totalResolvedCases = $upcomingHearings = $interimOrders = $awards = 0;
+            $totalFiledCases = $totalPendingCases = $totalResolvedCases = $upcomingHearings = $interimOrders = $awards = $settlementAgreements = 0;
             $caseManagerData = NULL;
         }
 
@@ -443,6 +455,7 @@ class HomeController extends Controller
                 'upcomingHearings',
                 'interimOrders',
                 'awards',
+                'settlementAgreements',
                 'caseManagerData'
             ));
         } else {

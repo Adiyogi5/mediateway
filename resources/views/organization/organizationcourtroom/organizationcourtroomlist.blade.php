@@ -41,7 +41,7 @@
                         <div class="tab-content">
                             <div class="tab-pane fade show active" role="tabpanel" id="info">
                                 <div class="table-responsive">
-                                    <table class="table">
+                                    <table id="upcomingTable" class="table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Case Number</th>
@@ -50,9 +50,10 @@
                                                 <th scope="col">Date</th>
                                                 <th scope="col">Time</th>
                                                 <th scope="col">Status</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        {{-- <tbody>
                                             @forelse ($upcomingRooms as $room)
                                                 <tr class="bg-blue">
                                                     <td class="pt-2">
@@ -110,13 +111,13 @@
                                             @empty
                                                 <tr><td colspan="6" class="text-center">No upcoming cases found.</td></tr>
                                             @endforelse
-                                            </tbody>                                            
+                                        </tbody>                                             --}}
                                     </table>
                                 </div>
                             </div>
                             <div class="tab-pane fade" role="tabpanel" id="ratings">
                                 <div class="table-responsive">
-                                    <table class="table">
+                                    <table id="closedTable" class="table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Case Number</th>
@@ -125,9 +126,10 @@
                                                 <th scope="col">Date</th>
                                                 <th scope="col">Time</th>
                                                 <th scope="col">Status</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        {{-- <tbody>
                                             @forelse ($closedRooms as $room)
                                                 <tr class="bg-blue">
                                                     <td class="pt-2">
@@ -179,8 +181,7 @@
                                             @empty
                                                 <tr><td colspan="6" class="text-center">No closed cases found.</td></tr>
                                             @endforelse
-                                            </tbody>
-                                            
+                                        </tbody> --}}
                                     </table>
                                 </div>
                             </div>
@@ -224,4 +225,48 @@
             });
         });
     </script>     
+    <script>
+        $(document).ready(function () {
+            const initPopover = () => {
+                $('[data-bs-toggle="popover"]').popover({
+                    trigger: 'hover',
+                    placement: 'top',
+                });
+            };
+
+            const upcomingTable = $('#upcomingTable').DataTable({
+                ajax: '{{ route("organization.organizationcourtroom.datatable.upcoming") }}',
+                columns: [
+                    { data: 'case_numbers' },
+                    { data: 'hearing_type' },
+                    { data: 'arbitrator_name' },
+                    { data: 'date' },
+                    { data: 'time' },
+                    { data: 'status' },
+                    { data: 'action' }
+                ],
+                drawCallback: initPopover
+            });
+
+            const closedTable = $('#closedTable').DataTable({
+                ajax: '{{ route("organization.organizationcourtroom.datatable.closed") }}',
+                columns: [
+                    { data: 'case_numbers' },
+                    { data: 'hearing_type' },
+                    { data: 'arbitrator_name' },
+                    { data: 'date' },
+                    { data: 'time' },
+                    { data: 'status' },
+                    { data: 'action' }
+                ],
+                drawCallback: initPopover
+            });
+
+            // Optional: reload on tab switch
+            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                upcomingTable.ajax.reload(null, false);
+                closedTable.ajax.reload(null, false);
+            });
+        });
+    </script>
 @endsection

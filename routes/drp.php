@@ -112,24 +112,29 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::post('/fetch-casemanager-notices', 'fetchNoticesByCaseId')->name('casemanagercourtroom.fetch.notices');
         Route::post('/fetch-casemanager-awards', 'fetchAwardsByCaseId')->name('casemanagercourtroom.fetch.awards');
         Route::post('/casemanagercourtroom/save-notice', 'saveNotice')->name('casemanagercourtroom.savenotice');
+        Route::get('/casemanagercourtroom/datatable/upcoming-rooms', 'upcomingRoomsData')->name('casemanagercourtroom.datatable.upcoming');
+        Route::get('/casemanagercourtroom/datatable/closed-rooms', 'closedRoomsData')->name('casemanagercourtroom.datatable.closed');
     });
 
     // ----------------------- Arbitrator - Court Room Routes ---------------------------------------
     Route::controller(CourtRoomController::class)->group(function () {
         Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
         Route::get('livecourtroom/{room_id}', 'livecourtroom')->name('courtroom.livecourtroom');
-        Route::post('save-recording', 'saveRecording')->name('courtroom.saveRecording');
-        Route::get('/get-flattened-case-data/{caseId}', 'getFlattenedCaseData')->name('courtroom.getFlattenedCaseData');
-        Route::post('/fetch-notices', 'fetchNoticesByCaseId')->name('courtroom.fetch.notices');
-        Route::post('/fetch-awards', 'fetchAwardsByCaseId')->name('courtroom.fetch.awards');
+        Route::post('/courtroom/save-recording', 'saveRecording')->name('courtroom.saveRecording');
+        Route::get('/courtroom/get-flattened-case-data/{caseId}', 'getFlattenedCaseData')->name('courtroom.getFlattenedCaseData');
+        Route::post('/courtroom/fetch-notices', 'fetchNoticesByCaseId')->name('courtroom.fetch.notices');
+        Route::post('/courtroom/fetch-awards', 'fetchAwardsByCaseId')->name('courtroom.fetch.awards');
         Route::post('/courtroom/save-notice', 'saveNotice')->name('courtroom.savenotice');
-        Route::post('/close-court-room','closeCourtRoom')->name('courtroom.close');
+        Route::post('/courtroom/close-court-room','closeCourtRoom')->name('courtroom.close');
+        Route::get('/courtroom/datatable/upcoming-rooms', 'upcomingRoomsData')->name('courtroom.datatable.upcoming');
+        Route::get('/courtroom/datatable/closed-rooms', 'closedRoomsData')->name('courtroom.datatable.closed');
     });
 
     // ----------------------- Arbitrator - Case List Routes ---------------------------------------
     Route::controller(CaseListController::class)->group(function () {
         Route::get('caselist', 'index')->name('allcases.caselist');
         Route::post('approve', 'approveCase')->name('allcases.approve');
+        Route::get('viewcasedetail/{id}', 'viewcasedetail')->name('allcases.viewcasedetail');
     });
 
     // ----------------------- Arbitrator - Case Notice List Routes ---------------------------------------
@@ -139,8 +144,19 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
 
     // ----------------------- Conciliator - Meeting Room Routes ---------------------------------------
     Route::controller(MeetingRoomController::class)->group(function () {
-        Route::get('meetinglist', 'index')->name('meetingroom.meetinglist');
-        Route::get('livemeeting', 'livemeeting')->name('meetingroom.livemeeting');
+        Route::get('meetingroomlist', 'index')->name('meetingroom.meetingroomlist');
+        Route::get('livemeetingroom/{room_id}', 'livemeetingroom')->name('meetingroom.livemeetingroom');
+        Route::get('/meetingroom/case-list', 'caseList')->name('meetingroom.caseList');
+        Route::post('meetingroom/save', 'store')->name('meetingroom.store');
+        Route::post('/meetingroom/save-recording', 'saveRecording')->name('meetingroom.saveRecording');
+        Route::get('/meetingroom/get-flattened-case-data/{caseId}', 'getFlattenedCaseData')->name('meetingroom.getFlattenedCaseData');
+        Route::post('/meetingroom/fetch-notices', 'fetchNoticesByCaseId')->name('meetingroom.fetch.notices');
+        Route::post('/meetingroom/fetch-awards', 'fetchAwardsByCaseId')->name('meetingroom.fetch.awards');
+        Route::post('/meetingroom/fetch-settlementagreements', 'fetchSettlementAgreementsByCaseId')->name('meetingroom.fetch.settlementagreements');
+        Route::post('/meetingroom/save-notice', 'saveNotice')->name('meetingroom.savenotice');
+        Route::post('/meetingroom/close-meeting-room','closeMeetingRoom')->name('meetingroom.close');
+        Route::get('/meetingroom/datatable/upcoming-rooms', 'upcomingRoomsData')->name('meetingroom.datatable.upcoming');
+        Route::get('/meetingroom/datatable/closed-rooms', 'closedRoomsData')->name('meetingroom.datatable.closed');
 
     });
 

@@ -1,5 +1,5 @@
 {{-- dashboard/partials/case-type-overview.blade.php --}}
-<div class="content-section row gy-lg-4 gy-3">
+<div class="content-section row gy-lg-3 gy-2">
     <div class="col-md-6 col-12 position-relative">
         <div class="custom-card row">
             <div class="col-4">
