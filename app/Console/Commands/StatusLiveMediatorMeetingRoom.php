@@ -1,19 +1,19 @@
 <?php
 namespace App\Console\Commands;
 
-use App\Models\CourtRoom;
+use App\Models\MediatorMeetingRoom;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class StatusLiveCourtRoom extends Command
+class StatusLiveMediatorMeetingRoom extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'bulk:status-live-court-room';
+    protected $signature = 'bulk:status-live-mediator-meeting-room';
 
     /**
      * The console command description.
@@ -40,19 +40,19 @@ class StatusLiveCourtRoom extends Command
     public function handle()
     {
         // ##############################################
-        // Status Live Court Room
+        // Status Live Meeting Room
         // ##############################################
 
         $now = Carbon::now();
         $start = $now->copy()->subMinute();  // 1 minute before now
         $end = $now->copy()->addMinute();    // 1 minute after now
 
-        $courtroomData = CourtRoom::where('date', Carbon::today())
+        $meetingroomData = MediatorMeetingRoom::where('date', Carbon::today())
             ->whereBetween('time', [$start->format('H:i:s'), $end->format('H:i:s')])
             ->where('status', 0)
             ->get();
 
-        foreach ($courtroomData as $value) {
+        foreach ($meetingroomData as $value) {
             try {
                 if (! empty($value->room_id)) {
                     $value->update([
@@ -60,7 +60,7 @@ class StatusLiveCourtRoom extends Command
                     ]);
                 }
             } catch (\Throwable $th) {
-                Log::error("Error updating courtroom status for ID {$value->id}: " . $th->getMessage());
+                Log::error("Error updating meetingroom status for ID {$value->id}: " . $th->getMessage());
             }
         }
     }

@@ -1,9 +1,9 @@
 <?php
 namespace App\Console\Commands;
 
+use App\Models\ConciliatorMeetingRoom;
 use App\Models\Country;
 use App\Models\FileCase;
-use App\Models\MeetingRoom;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Mail;
 use Twilio\Rest\Client;
@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class CreateLiveMeetingRoom extends Command
+class CreateLiveConciliatorMeetingRoom extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'bulk:create-live-meeting-room';
+    protected $signature = 'bulk:create-live-conciliator-meeting-room';
 
     /**
      * The console command description.
@@ -79,7 +79,7 @@ class CreateLiveMeetingRoom extends Command
                 'name'    => config('app.name'),
             ]);
 
-            $meetingroomData = MeetingRoom::where(function ($query) {
+            $meetingroomData = ConciliatorMeetingRoom::where(function ($query) {
                 $query->where('date', '>', now()->toDateString())
                     ->orWhere(function ($q) {
                         $q->where('date', now()->toDateString())
@@ -113,7 +113,7 @@ class CreateLiveMeetingRoom extends Command
 
                     $messageContent = "Your Meeting at Mediateway is scheduled for Date: {$meetingRoom->date} at {$meetingRoom->time}. Join using this link. Thank you! Mediateway.";
                     $encodedMessage = urlencode($messageContent);
-                    $description = route('front.guest.livemeetingroom', ['room_id' => $room_id]) . "?case_id=$case_id&message=$encodedMessage";
+                    $description = route('front.guest.liveconciliatormeetingroom', ['room_id' => $room_id]) . "?case_id=$case_id&message=$encodedMessage";
 
                     // Send Email
                     Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($subject, $email) {

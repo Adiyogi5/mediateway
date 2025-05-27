@@ -21,27 +21,39 @@ Route::get('/', function () {
     ]);
 });
 
-//Create Live Court Rooms
+//Create Live Court Rooms - Arbitrator
 Route::get('/create_live_court_room', function () {
     Artisan::call('bulk:create-live-court-room');   
     return '<h1>create live court room</h1>';
 });
-//Status Live Court Rooms
+//Status Live Court Rooms - Arbitrator
 Route::get('/status_live_court_room', function () {
     Artisan::call('bulk:status-live-court-room');   
     return '<h1>status live court room</h1>';
 });
 
 
-//Create Live Meeting Rooms
-Route::get('/create_live_meeting_room', function () {
-    Artisan::call('bulk:create-live-meeting-room');   
-    return '<h1>create live meeting room</h1>';
+//Create Live Meeting Rooms - Conciliator
+Route::get('/create_live_conciliator_meeting_room', function () {
+    Artisan::call('bulk:create-live-conciliator-meeting-room');   
+    return '<h1>create live conciliator meeting room</h1>';
 });
-//Status Live Meeting Rooms
-Route::get('/status_live_meeting_room', function () {
-    Artisan::call('bulk:status-live-meeting-room');   
-    return '<h1>status live meeting room</h1>';
+//Status Live Meeting Rooms - Conciliator
+Route::get('/status_live_conciliator_meeting_room', function () {
+    Artisan::call('bulk:status-live-conciliator-meeting-room');   
+    return '<h1>status live conciliator meeting room</h1>';
+});
+
+
+//Create Live Meeting Rooms - Mediator
+Route::get('/create_live_mediator_meeting_room', function () {
+    Artisan::call('bulk:create-live-mediator-meeting-room');   
+    return '<h1>create live mediator meeting room</h1>';
+});
+//Status Live Meeting Rooms - Mediator
+Route::get('/status_live_mediator_meeting_room', function () {
+    Artisan::call('bulk:status-live-mediator-meeting-room');   
+    return '<h1>status live mediator meeting room</h1>';
 });
 
 

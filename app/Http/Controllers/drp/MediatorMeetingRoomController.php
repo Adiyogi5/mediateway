@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Drp;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\FileCase;
-use App\Models\MeetingRoom;
+use App\Models\MediatorMeetingRoom;
 use App\Models\Notice;
 use App\Models\OrderSheet;
 use App\Models\SettlementLetter;
@@ -21,7 +21,7 @@ use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class MeetingRoomController extends Controller
+class MediatorMeetingRoomController extends Controller
 {
 
     public function __construct()
@@ -37,142 +37,142 @@ class MeetingRoomController extends Controller
         if (!$drp) {
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
-        if ($drp->drp_type !== 5) {
+        if ($drp->drp_type !== 4) {
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
 
-        $meetingRoomLiveUpcoming = MeetingRoom::select(
-                'meeting_rooms.*',
-                'drps.name as conciliator_name',
+        $mediatormeetingroomLiveUpcoming = MediatorMeetingRoom::select(
+                'mediator_meeting_rooms.*',
+                'drps.name as mediator_name',
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
             )
-            ->leftJoin('drps', 'drps.id', '=', 'meeting_rooms.conciliator_id')
+            ->leftJoin('drps', 'drps.id', '=', 'mediator_meeting_rooms.mediator_id')
             ->leftJoin('file_cases', function ($join) {
-                $join->On(DB::raw('FIND_IN_SET(file_cases.id, meeting_rooms.meeting_room_case_id)'), '>', DB::raw('0'));
+                $join->On(DB::raw('FIND_IN_SET(file_cases.id, mediator_meeting_rooms.meeting_room_case_id)'), '>', DB::raw('0'));
             })
-            ->where('meeting_rooms.conciliator_id', $drp->id)
+            ->where('mediator_meeting_rooms.mediator_id', $drp->id)
             ->where(function ($query) {
-                $query->where('meeting_rooms.date', '>', Carbon::today()->toDateString())
+                $query->where('mediator_meeting_rooms.date', '>', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
-                        $subQuery->where('meeting_rooms.date', Carbon::today()->toDateString())
-                                ->where('meeting_rooms.time', '>=', Carbon::now()->format('H:i:s'));
+                        $subQuery->where('mediator_meeting_rooms.date', Carbon::today()->toDateString())
+                                ->where('mediator_meeting_rooms.time', '>=', Carbon::now()->format('H:i:s'));
                     })
                     ->orWhere(function ($subQuery) {
-                        $subQuery->where('meeting_rooms.date', Carbon::today()->toDateString())
-                                ->where('meeting_rooms.status', 1);
+                        $subQuery->where('mediator_meeting_rooms.date', Carbon::today()->toDateString())
+                                ->where('mediator_meeting_rooms.status', 1);
                     });
             })
             ->groupBy(
-                    'meeting_rooms.id', 
-                    'meeting_rooms.meeting_room_case_id',
-                    'meeting_rooms.room_id',
-                    'meeting_rooms.date',
-                    'meeting_rooms.time',
-                    'meeting_rooms.conciliator_id',
-                    'meeting_rooms.recording_url',
-                    'meeting_rooms.send_mail_to_respondent',
-                    'meeting_rooms.email_send_date',
-                    'meeting_rooms.send_whatsapp_to_respondent',
-                    'meeting_rooms.whatsapp_dispatch_datetime',
-                    'meeting_rooms.status',
-                    'meeting_rooms.deleted_at',
-                    'meeting_rooms.created_at',
-                    'meeting_rooms.updated_at',
+                    'mediator_meeting_rooms.id', 
+                    'mediator_meeting_rooms.meeting_room_case_id',
+                    'mediator_meeting_rooms.room_id',
+                    'mediator_meeting_rooms.date',
+                    'mediator_meeting_rooms.time',
+                    'mediator_meeting_rooms.mediator_id',
+                    'mediator_meeting_rooms.recording_url',
+                    'mediator_meeting_rooms.send_mail_to_respondent',
+                    'mediator_meeting_rooms.email_send_date',
+                    'mediator_meeting_rooms.send_whatsapp_to_respondent',
+                    'mediator_meeting_rooms.whatsapp_dispatch_datetime',
+                    'mediator_meeting_rooms.status',
+                    'mediator_meeting_rooms.deleted_at',
+                    'mediator_meeting_rooms.created_at',
+                    'mediator_meeting_rooms.updated_at',
                     'drps.name'
                 )
         ->get();
 
-        $meetingRoomLiveClosed = MeetingRoom::select(
-                'meeting_rooms.*',
-                'drps.name as conciliator_name',
+        $mediatormeetingroomLiveClosed = MediatorMeetingRoom::select(
+                'mediator_meeting_rooms.*',
+                'drps.name as mediator_name',
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
             )
-            ->leftJoin('drps', 'drps.id', '=', 'meeting_rooms.conciliator_id')
+            ->leftJoin('drps', 'drps.id', '=', 'mediator_meeting_rooms.mediator_id')
             ->leftJoin('file_cases', function ($join) {
-                $join->On(DB::raw('FIND_IN_SET(file_cases.id, meeting_rooms.meeting_room_case_id)'), '>', DB::raw('0'));
+                $join->On(DB::raw('FIND_IN_SET(file_cases.id, mediator_meeting_rooms.meeting_room_case_id)'), '>', DB::raw('0'));
             })
-            ->where('meeting_rooms.conciliator_id', $drp->id)
-            ->where('meeting_rooms.status', 0)
+            ->where('mediator_meeting_rooms.mediator_id', $drp->id)
+            ->where('mediator_meeting_rooms.status', 0)
             ->where(function ($query) {
-                $query->where('meeting_rooms.date', '<', Carbon::today()->toDateString())
+                $query->where('mediator_meeting_rooms.date', '<', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
-                        $subQuery->where('meeting_rooms.date', Carbon::today()->toDateString())
-                                ->where('meeting_rooms.time', '<=', Carbon::now()->format('H:i:s'));
+                        $subQuery->where('mediator_meeting_rooms.date', Carbon::today()->toDateString())
+                                ->where('mediator_meeting_rooms.time', '<=', Carbon::now()->format('H:i:s'));
                     });
             })
             ->groupBy(
-                'meeting_rooms.id', 
-                'meeting_rooms.meeting_room_case_id',
-                'meeting_rooms.room_id',
-                'meeting_rooms.date',
-                'meeting_rooms.time',
-                'meeting_rooms.conciliator_id',
-                'meeting_rooms.recording_url',
-                'meeting_rooms.send_mail_to_respondent',
-                'meeting_rooms.email_send_date',
-                'meeting_rooms.send_whatsapp_to_respondent',
-                'meeting_rooms.whatsapp_dispatch_datetime',
-                'meeting_rooms.status',
-                'meeting_rooms.deleted_at',
-                'meeting_rooms.created_at',
-                'meeting_rooms.updated_at',
+                'mediator_meeting_rooms.id', 
+                'mediator_meeting_rooms.meeting_room_case_id',
+                'mediator_meeting_rooms.room_id',
+                'mediator_meeting_rooms.date',
+                'mediator_meeting_rooms.time',
+                'mediator_meeting_rooms.mediator_id',
+                'mediator_meeting_rooms.recording_url',
+                'mediator_meeting_rooms.send_mail_to_respondent',
+                'mediator_meeting_rooms.email_send_date',
+                'mediator_meeting_rooms.send_whatsapp_to_respondent',
+                'mediator_meeting_rooms.whatsapp_dispatch_datetime',
+                'mediator_meeting_rooms.status',
+                'mediator_meeting_rooms.deleted_at',
+                'mediator_meeting_rooms.created_at',
+                'mediator_meeting_rooms.updated_at',
                 'drps.name'
             )
         ->get();
 
-        $upcomingroomCount = $meetingRoomLiveUpcoming->count();
-        $closedroomCount = $meetingRoomLiveClosed->count();
+        $upcomingroomCount = $mediatormeetingroomLiveUpcoming->count();
+        $closedroomCount = $mediatormeetingroomLiveClosed->count();
 
-        $upcomingRooms = $meetingRoomLiveUpcoming;
-        $closedRooms = $meetingRoomLiveClosed;
+        $upcomingRooms = $mediatormeetingroomLiveUpcoming;
+        $closedRooms = $mediatormeetingroomLiveClosed;
 
-        return view('drp.meetingroom.meetingroomlist', compact('drp','title','upcomingRooms','closedRooms','upcomingroomCount','closedroomCount'));
+        return view('drp.mediatormeetingroom.mediatormeetingroomlist', compact('drp','title','upcomingRooms','closedRooms','upcomingroomCount','closedroomCount'));
     }
 
     public function upcomingRoomsData()
     {
         $drp = auth('drp')->user();
 
-        $upcomingRooms = MeetingRoom::select(
-                'meeting_rooms.*',
-                'drps.name as conciliator_name',
+        $upcomingRooms = MediatorMeetingRoom::select(
+                'mediator_meeting_rooms.*',
+                'drps.name as mediator_name',
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
             )
-            ->leftJoin('drps', 'drps.id', '=', 'meeting_rooms.conciliator_id')
+            ->leftJoin('drps', 'drps.id', '=', 'mediator_meeting_rooms.mediator_id')
             ->leftJoin('file_cases', function ($join) {
-                $join->On(DB::raw('FIND_IN_SET(file_cases.id, meeting_rooms.meeting_room_case_id)'), '>', DB::raw('0'));
+                $join->On(DB::raw('FIND_IN_SET(file_cases.id, mediator_meeting_rooms.meeting_room_case_id)'), '>', DB::raw('0'));
             })
-            ->where('meeting_rooms.conciliator_id', $drp->id)
+            ->where('mediator_meeting_rooms.mediator_id', $drp->id)
             ->where(function ($query) {
-                $query->where('meeting_rooms.date', '>', Carbon::today()->toDateString())
+                $query->where('mediator_meeting_rooms.date', '>', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
-                        $subQuery->where('meeting_rooms.date', Carbon::today()->toDateString())
-                                ->where('meeting_rooms.time', '>=', Carbon::now()->format('H:i:s'));
+                        $subQuery->where('mediator_meeting_rooms.date', Carbon::today()->toDateString())
+                                ->where('mediator_meeting_rooms.time', '>=', Carbon::now()->format('H:i:s'));
                     })
                     ->orWhere(function ($subQuery) {
-                        $subQuery->where('meeting_rooms.date', Carbon::today()->toDateString())
-                                ->where('meeting_rooms.status', 1);
+                        $subQuery->where('mediator_meeting_rooms.date', Carbon::today()->toDateString())
+                                ->where('mediator_meeting_rooms.status', 1);
                     });
             })
             ->groupBy(
-                    'meeting_rooms.id', 
-                    'meeting_rooms.meeting_room_case_id',
-                    'meeting_rooms.room_id',
-                    'meeting_rooms.date',
-                    'meeting_rooms.time',
-                    'meeting_rooms.conciliator_id',
-                    'meeting_rooms.recording_url',
-                    'meeting_rooms.send_mail_to_respondent',
-                    'meeting_rooms.email_send_date',
-                    'meeting_rooms.send_whatsapp_to_respondent',
-                    'meeting_rooms.whatsapp_dispatch_datetime',
-                    'meeting_rooms.status',
-                    'meeting_rooms.deleted_at',
-                    'meeting_rooms.created_at',
-                    'meeting_rooms.updated_at',
+                    'mediator_meeting_rooms.id', 
+                    'mediator_meeting_rooms.meeting_room_case_id',
+                    'mediator_meeting_rooms.room_id',
+                    'mediator_meeting_rooms.date',
+                    'mediator_meeting_rooms.time',
+                    'mediator_meeting_rooms.mediator_id',
+                    'mediator_meeting_rooms.recording_url',
+                    'mediator_meeting_rooms.send_mail_to_respondent',
+                    'mediator_meeting_rooms.email_send_date',
+                    'mediator_meeting_rooms.send_whatsapp_to_respondent',
+                    'mediator_meeting_rooms.whatsapp_dispatch_datetime',
+                    'mediator_meeting_rooms.status',
+                    'mediator_meeting_rooms.deleted_at',
+                    'mediator_meeting_rooms.created_at',
+                    'mediator_meeting_rooms.updated_at',
                     'drps.name'
                 )
         ->get();
@@ -195,7 +195,7 @@ class MeetingRoomController extends Controller
             ->addColumn('status', fn($room) => $room->status == 1 ? '<span class="fa fa-check pl-3"></span>' : '<span class="fa fa-clock pl-3"></span>')
             ->addColumn('action', function ($room) {
                 if ($room->status == 1) {
-                    return '<a href="' . route('drp.meetingroom.livemeetingroom', $room->room_id) . '?case_ids=' . $room->case_ids . '" class="fa fa-video btn bg-success text-white fs-6"></a>';
+                    return '<a href="' . route('drp.mediatormeetingroom.livemediatormeetingroom', $room->room_id) . '?case_ids=' . $room->case_ids . '" class="fa fa-video btn bg-success text-white fs-6"></a>';
                 } else {
                     return '<span class="fa fa-video btn bg-secondary text-white fs-6" style="cursor:not-allowed;"></span>';
                 }
@@ -208,41 +208,41 @@ class MeetingRoomController extends Controller
     {
         $drp = auth('drp')->user();
 
-        $closedRooms = MeetingRoom::select(
-                'meeting_rooms.*',
-                'drps.name as conciliator_name',
+        $closedRooms = MediatorMeetingRoom::select(
+                'mediator_meeting_rooms.*',
+                'drps.name as mediator_name',
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.case_number SEPARATOR ", ") as case_numbers'),
                 DB::raw('GROUP_CONCAT(DISTINCT file_cases.id SEPARATOR ", ") as case_ids')
             )
-            ->leftJoin('drps', 'drps.id', '=', 'meeting_rooms.conciliator_id')
+            ->leftJoin('drps', 'drps.id', '=', 'mediator_meeting_rooms.mediator_id')
             ->leftJoin('file_cases', function ($join) {
-                $join->On(DB::raw('FIND_IN_SET(file_cases.id, meeting_rooms.meeting_room_case_id)'), '>', DB::raw('0'));
+                $join->On(DB::raw('FIND_IN_SET(file_cases.id, mediator_meeting_rooms.meeting_room_case_id)'), '>', DB::raw('0'));
             })
-            ->where('meeting_rooms.conciliator_id', $drp->id)
-            ->where('meeting_rooms.status', 0)
+            ->where('mediator_meeting_rooms.mediator_id', $drp->id)
+            ->where('mediator_meeting_rooms.status', 0)
             ->where(function ($query) {
-                $query->where('meeting_rooms.date', '<', Carbon::today()->toDateString())
+                $query->where('mediator_meeting_rooms.date', '<', Carbon::today()->toDateString())
                     ->orWhere(function ($subQuery) {
-                        $subQuery->where('meeting_rooms.date', Carbon::today()->toDateString())
-                                ->where('meeting_rooms.time', '<=', Carbon::now()->format('H:i:s'));
+                        $subQuery->where('mediator_meeting_rooms.date', Carbon::today()->toDateString())
+                                ->where('mediator_meeting_rooms.time', '<=', Carbon::now()->format('H:i:s'));
                     });
             })
             ->groupBy(
-                'meeting_rooms.id', 
-                'meeting_rooms.meeting_room_case_id',
-                'meeting_rooms.room_id',
-                'meeting_rooms.date',
-                'meeting_rooms.time',
-                'meeting_rooms.conciliator_id',
-                'meeting_rooms.recording_url',
-                'meeting_rooms.send_mail_to_respondent',
-                'meeting_rooms.email_send_date',
-                'meeting_rooms.send_whatsapp_to_respondent',
-                'meeting_rooms.whatsapp_dispatch_datetime',
-                'meeting_rooms.status',
-                'meeting_rooms.deleted_at',
-                'meeting_rooms.created_at',
-                'meeting_rooms.updated_at',
+                'mediator_meeting_rooms.id', 
+                'mediator_meeting_rooms.meeting_room_case_id',
+                'mediator_meeting_rooms.room_id',
+                'mediator_meeting_rooms.date',
+                'mediator_meeting_rooms.time',
+                'mediator_meeting_rooms.mediator_id',
+                'mediator_meeting_rooms.recording_url',
+                'mediator_meeting_rooms.send_mail_to_respondent',
+                'mediator_meeting_rooms.email_send_date',
+                'mediator_meeting_rooms.send_whatsapp_to_respondent',
+                'mediator_meeting_rooms.whatsapp_dispatch_datetime',
+                'mediator_meeting_rooms.status',
+                'mediator_meeting_rooms.deleted_at',
+                'mediator_meeting_rooms.created_at',
+                'mediator_meeting_rooms.updated_at',
                 'drps.name'
             )
         ->get();
@@ -274,7 +274,7 @@ class MeetingRoomController extends Controller
             ->make(true);
     }
 
-    // ########### Show case list according to assigned conciliator #############
+    // ########### Show case list according to assigned mediator #############
     public function caseList(Request $request)
     {
         $drp = auth('drp')->user();
@@ -283,16 +283,16 @@ class MeetingRoomController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $cases = FileCase::select('file_cases.*', 'drps.name as conciliator_name')
+        $cases = FileCase::select('file_cases.*', 'drps.name as mediator_name')
             ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
-            ->join('drps', 'drps.id', '=', 'assign_cases.conciliator_id')
+            ->join('drps', 'drps.id', '=', 'assign_cases.mediator_id')
             ->where('drps.id', $drp->id)
             ->get();
 
         return response()->json(['data' => $cases]);
     }
 
-    // ############# meeting create by conciliator ##############
+    // ############# meeting create by mediator ##############
     public function store(Request $request): JsonResponse
     {
        $request->validate([
@@ -306,15 +306,15 @@ class MeetingRoomController extends Controller
         ]);
 
         $room_id_prefix = 'ORG-MEETING';
-        $lastRoom = MeetingRoom::where('room_id', 'like', $room_id_prefix . '-%')
+        $lastRoom = MediatorMeetingRoom::where('room_id', 'like', $room_id_prefix . '-%')
             ->orderBy('id', 'desc')->first();
         $nextNumber = $lastRoom ? ((int) str_replace($room_id_prefix . '-', '', $lastRoom->room_id) + 1) : 1;
         $room_id = $room_id_prefix . '-' . str_pad($nextNumber, 7, '0', STR_PAD_LEFT);
 
-        MeetingRoom::create([
+        MediatorMeetingRoom::create([
             'room_id' => $room_id,
             'meeting_room_case_id' => implode(',', $request->case_ids),
-            'conciliator_id' => auth('drp')->id(),
+            'mediator_id' => auth('drp')->id(),
             'date' => $request->date,
             'time' => $request->time,
             'status' => 0 // you can adjust based on your logic
@@ -324,7 +324,7 @@ class MeetingRoomController extends Controller
     }
 
 
-    public function livemeetingroom(Request $request, $room_id): View | JsonResponse | RedirectResponse
+    public function livemediatormeetingroom(Request $request, $room_id): View | JsonResponse | RedirectResponse
     {
         $title = 'Live Meeting Room';
         $drp = auth('drp')->user();
@@ -332,24 +332,24 @@ class MeetingRoomController extends Controller
         if (!$drp) {
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
-        if ($drp->drp_type !== 5) {
+        if ($drp->drp_type !== 4) {
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
 
         $caseIds = explode(',', $request->query('case_ids'));
 
         // Fetch the case data with all joins and relationships
-        $caseData = FileCase::select('file_cases.*', 'drps.name as conciliator_name')
+        $caseData = FileCase::select('file_cases.*', 'drps.name as mediator_name')
             ->with(['file_case_details', 'guarantors'])
             ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
-            ->join('drps', 'drps.id', '=', 'assign_cases.conciliator_id')
+            ->join('drps', 'drps.id', '=', 'assign_cases.mediator_id')
             ->whereIn('file_cases.id', $caseIds) // Use whereIn instead of find()
             ->get();
        
         $flattenedCaseData = $this->flattenCaseData($caseData);
 
-        $orderSheetTemplates = OrderSheet::where('status', 1)->where('drp_type', 5)->get();
-        $settlementLetterTemplates = SettlementLetter::where('status', 1)->where('drp_type', 5)->get();
+        $orderSheetTemplates = OrderSheet::where('status', 1)->where('drp_type', 4)->get();
+        $settlementLetterTemplates = SettlementLetter::where('status', 1)->where('drp_type', 4)->get();
 
         //ZegoCloud Service---------------------
         $localUserID = $drp->slug; // Arbitrator
@@ -358,7 +358,7 @@ class MeetingRoomController extends Controller
      
         $zegoToken = $this->generateZegoToken($localUserID, $drp->name);
 
-        return view('drp.meetingroom.livemeetingroom', compact('drp',
+        return view('drp.mediatormeetingroom.livemediatormeetingroom', compact('drp',
             'title',
             'caseData',
             'orderSheetTemplates', 
@@ -401,16 +401,16 @@ class MeetingRoomController extends Controller
             'recording' => 'required|file|mimes:mp4,mkv,avi,flv,wmv',
         ]);
 
-        // Locate the MeetingRoom based on room ID
-        $meetingRoom = MeetingRoom::where('room_id', $validated['room_id'])->first();
+        // Locate the mediatormeetingroom based on room ID
+        $mediatormeetingroom = MediatorMeetingRoom::where('room_id', $validated['room_id'])->first();
 
-        if ($meetingRoom) {
+        if ($mediatormeetingroom) {
             // Save the uploaded recording using your existing helper function
             $recordingPath = Helper::saveFile($request->file('recording'), 'recordings');
 
             // Update the recording URL in the database
-            $meetingRoom->recording_url = $recordingPath;
-            $meetingRoom->save();
+            $mediatormeetingroom->recording_url = $recordingPath;
+            $mediatormeetingroom->save();
 
             return response()->json([
                 'message' => 'Recording saved successfully.',
@@ -423,10 +423,10 @@ class MeetingRoomController extends Controller
     
     public function getFlattenedCaseData($caseId)
     {
-        $caseData = FileCase::select('file_cases.*', 'drps.name as conciliator_name')
+        $caseData = FileCase::select('file_cases.*', 'drps.name as mediator_name')
             ->with(['file_case_details', 'guarantors'])
             ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
-            ->join('drps', 'drps.id', '=', 'assign_cases.conciliator_id')
+            ->join('drps', 'drps.id', '=', 'assign_cases.mediator_id')
             ->where('file_cases.id', $caseId)
             ->first();
         
@@ -706,15 +706,15 @@ class MeetingRoomController extends Controller
         }
     }
 
-    public function closeMeetingRoom(Request $request)
+    public function closemediatormeetingroom(Request $request)
     {
         $roomId = $request->room_id;
 
-        $meetingRoom = MeetingRoom::where('room_id', $roomId)->first();
+        $mediatormeetingroom = MediatorMeetingRoom::where('room_id', $roomId)->first();
 
-        if ($meetingRoom) {
-            $meetingRoom->status = 0; // Change status to 0
-            $meetingRoom->save();
+        if ($mediatormeetingroom) {
+            $mediatormeetingroom->status = 0; // Change status to 0
+            $mediatormeetingroom->save();
 
             return response()->json([
                 'success' => true,

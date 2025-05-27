@@ -25,7 +25,7 @@
                     <div class="card-header">
                         <div class="row flex-between-end">
                             <div class="col-auto align-self-center">
-                                <h5 class="mb-0" data-anchor="data-anchor">Meeting Lists</h5>
+                                <h5 class="mb-0" data-anchor="data-anchor">Mediator Meeting Lists</h5>
                             </div>
                             <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon">
@@ -104,7 +104,7 @@
                                             <tr>
                                                 <th><input type="checkbox" id="selectAll" /></th>
                                                 <th>Case Number</th>
-                                                <th>Conciliator</th>
+                                                <th>mediator</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -180,7 +180,7 @@
             };
 
             const upcomingTable = $('#upcomingTable').DataTable({
-                ajax: '{{ route('drp.meetingroom.datatable.upcoming') }}',
+                ajax: '{{ route('drp.mediatormeetingroom.datatable.upcoming') }}',
                 columns: [{
                         data: 'case_numbers'
                     },
@@ -201,7 +201,7 @@
             });
 
             const closedTable = $('#closedTable').DataTable({
-                ajax: '{{ route('drp.meetingroom.datatable.closed') }}',
+                ajax: '{{ route('drp.mediatormeetingroom.datatable.closed') }}',
                 columns: [{
                         data: 'case_numbers'
                     },
@@ -270,7 +270,7 @@
             let table = $('#caseTable').DataTable({
                 processing: true,
                 serverSide: false,
-                ajax: '{{ route('drp.meetingroom.caseList') }}',
+                ajax: '{{ route('drp.mediatormeetingroom.caseList') }}',
                 columns: [{
                         data: 'id',
                         render: function(data, type, row) {
@@ -283,7 +283,7 @@
                         data: 'case_number'
                     },
                     {
-                        data: 'conciliator_name'
+                        data: 'mediator_name'
                     }
                 ]
             });
@@ -306,7 +306,7 @@
                 let formData = $(this).serialize();
 
                 $.ajax({
-                    url: '{{ route('drp.meetingroom.store') }}',
+                    url: '{{ route('drp.mediatormeetingroom.store') }}',
                     method: 'POST',
                     data: formData,
                     success: function (res) {

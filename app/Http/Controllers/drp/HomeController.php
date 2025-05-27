@@ -94,6 +94,18 @@ class HomeController extends Controller
                 })
                 ->count();
 
+            $settlementAgreements = FileCase::with('assignedCases','notices')
+                ->whereHas('assignedCases', function ($query) use ($drp) {
+                        $query->where('arbitrator_id', $drp->id);
+                })
+                ->whereHas('notices', function ($query) use ($drp) {
+                    $query->where('notice_type', 11);
+                })
+                ->where(function ($query) {
+                    $query->where('status', 1);
+                })
+                ->count();
+
             $caseManagerData = FileCase::leftJoin('assign_cases', 'file_cases.id', '=', 'assign_cases.case_id')
                 ->leftJoin('drps', 'drps.id', '=', 'assign_cases.case_manager_id')
                 ->where('assign_cases.arbitrator_id', $drp->id)
@@ -163,6 +175,18 @@ class HomeController extends Controller
                 ->count();
 
             $awards = FileCase::with('assignedCases','notices')
+                ->whereHas('assignedCases', function ($query) use ($drp) {
+                        $query->where('advocate_id', $drp->id);
+                })
+                ->whereHas('notices', function ($query) use ($drp) {
+                    $query->where('notice_type', 11);
+                })
+                ->where(function ($query) {
+                    $query->where('status', 1);
+                })
+                ->count();
+
+            $settlementAgreements = FileCase::with('assignedCases','notices')
                 ->whereHas('assignedCases', function ($query) use ($drp) {
                         $query->where('advocate_id', $drp->id);
                 })
@@ -254,6 +278,18 @@ class HomeController extends Controller
                 })
                 ->count();
 
+            $settlementAgreements = FileCase::with('assignedCases','notices')
+                ->whereHas('assignedCases', function ($query) use ($drp) {
+                        $query->where('case_manager_id', $drp->id);
+                })
+                ->whereHas('notices', function ($query) use ($drp) {
+                    $query->where('notice_type', 11);
+                })
+                ->where(function ($query) {
+                    $query->where('status', 1);
+                })
+                ->count();
+
           $caseManagerData = FileCase::leftJoin('assign_cases', 'file_cases.id', '=', 'assign_cases.case_id')
                 ->leftJoin('drps', 'drps.id', '=', 'assign_cases.arbitrator_id')
                 ->where('assign_cases.case_manager_id', $drp->id)
@@ -324,6 +360,18 @@ class HomeController extends Controller
                 ->count();
 
             $awards = FileCase::with('assignedCases','notices')
+                ->whereHas('assignedCases', function ($query) use ($drp) {
+                        $query->where('mediator_id', $drp->id);
+                })
+                ->whereHas('notices', function ($query) use ($drp) {
+                    $query->where('notice_type', 11);
+                })
+                ->where(function ($query) {
+                    $query->where('status', 1);
+                })
+                ->count();
+
+            $settlementAgreements = FileCase::with('assignedCases','notices')
                 ->whereHas('assignedCases', function ($query) use ($drp) {
                         $query->where('mediator_id', $drp->id);
                 })

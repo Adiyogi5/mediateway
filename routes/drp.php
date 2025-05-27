@@ -8,10 +8,11 @@ use App\Http\Controllers\Drp\CaseListController;
 use App\Http\Controllers\Drp\CaseManagerCourtRoomController;
 use App\Http\Controllers\Drp\CaseNoticeListController;
 use App\Http\Controllers\Drp\CasesAllNoticeListController;
+use App\Http\Controllers\Drp\ConciliatorMeetingRoomController;
 use App\Http\Controllers\Drp\CourtRoomController;
 use App\Http\Controllers\Drp\ProfileController;
 use App\Http\Controllers\Drp\HomeController;
-use App\Http\Controllers\Drp\MeetingRoomController;
+use App\Http\Controllers\Drp\MediatorMeetingRoomController;
 use App\Http\Controllers\Drp\OrderSheetController;
 use App\Http\Controllers\Drp\SendNoticeController;
 use App\Http\Controllers\Drp\SettlementLetterController;
@@ -143,20 +144,39 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
     });
 
     // ----------------------- Conciliator - Meeting Room Routes ---------------------------------------
-    Route::controller(MeetingRoomController::class)->group(function () {
-        Route::get('meetingroomlist', 'index')->name('meetingroom.meetingroomlist');
-        Route::get('livemeetingroom/{room_id}', 'livemeetingroom')->name('meetingroom.livemeetingroom');
-        Route::get('/meetingroom/case-list', 'caseList')->name('meetingroom.caseList');
-        Route::post('meetingroom/save', 'store')->name('meetingroom.store');
-        Route::post('/meetingroom/save-recording', 'saveRecording')->name('meetingroom.saveRecording');
-        Route::get('/meetingroom/get-flattened-case-data/{caseId}', 'getFlattenedCaseData')->name('meetingroom.getFlattenedCaseData');
-        Route::post('/meetingroom/fetch-notices', 'fetchNoticesByCaseId')->name('meetingroom.fetch.notices');
-        Route::post('/meetingroom/fetch-awards', 'fetchAwardsByCaseId')->name('meetingroom.fetch.awards');
-        Route::post('/meetingroom/fetch-settlementagreements', 'fetchSettlementAgreementsByCaseId')->name('meetingroom.fetch.settlementagreements');
-        Route::post('/meetingroom/save-notice', 'saveNotice')->name('meetingroom.savenotice');
-        Route::post('/meetingroom/close-meeting-room','closeMeetingRoom')->name('meetingroom.close');
-        Route::get('/meetingroom/datatable/upcoming-rooms', 'upcomingRoomsData')->name('meetingroom.datatable.upcoming');
-        Route::get('/meetingroom/datatable/closed-rooms', 'closedRoomsData')->name('meetingroom.datatable.closed');
+    Route::controller(ConciliatorMeetingRoomController::class)->group(function () {
+        Route::get('conciliator-meetingroom-list', 'index')->name('conciliatormeetingroom.conciliatormeetingroomlist');
+        Route::get('live-conciliator-meetingroom/{room_id}', 'liveconciliatormeetingroom')->name('conciliatormeetingroom.liveconciliatormeetingroom');
+        Route::get('/conciliator-meetingroom/case-list', 'caseList')->name('conciliatormeetingroom.caseList');
+        Route::post('conciliator-meetingroom/save', 'store')->name('conciliatormeetingroom.store');
+        Route::post('/conciliator-meetingroom/save-recording', 'saveRecording')->name('conciliatormeetingroom.saveRecording');
+        Route::get('/conciliator-meetingroom/get-flattened-case-data/{caseId}', 'getFlattenedCaseData')->name('conciliatormeetingroom.getFlattenedCaseData');
+        Route::post('/conciliator-meetingroom/fetch-notices', 'fetchNoticesByCaseId')->name('conciliatormeetingroom.fetch.notices');
+        Route::post('/conciliator-meetingroom/fetch-awards', 'fetchAwardsByCaseId')->name('conciliatormeetingroom.fetch.awards');
+        Route::post('/conciliator-meetingroom/fetch-settlementagreements', 'fetchSettlementAgreementsByCaseId')->name('conciliatormeetingroom.fetch.settlementagreements');
+        Route::post('/conciliator-meetingroom/save-notice', 'saveNotice')->name('conciliatormeetingroom.savenotice');
+        Route::post('/conciliator-meetingroom/close-meeting-room','closeconciliatormeetingroom')->name('conciliatormeetingroom.close');
+        Route::get('/conciliator-meetingroom/datatable/upcoming-rooms', 'upcomingRoomsData')->name('conciliatormeetingroom.datatable.upcoming');
+        Route::get('/conciliator-meetingroom/datatable/closed-rooms', 'closedRoomsData')->name('conciliatormeetingroom.datatable.closed');
+
+    });
+
+
+    // ----------------------- Mediator - Meeting Room Routes ---------------------------------------
+    Route::controller(MediatorMeetingRoomController::class)->group(function () {
+        Route::get('mediator-meetingroom-list', 'index')->name('mediatormeetingroom.mediatormeetingroomlist');
+        Route::get('live-mediator-meetingroom/{room_id}', 'livemediatormeetingroom')->name('mediatormeetingroom.livemediatormeetingroom');
+        Route::get('/mediator-meetingroom/case-list', 'caseList')->name('mediatormeetingroom.caseList');
+        Route::post('mediator-meetingroom/save', 'store')->name('mediatormeetingroom.store');
+        Route::post('/mediator-meetingroom/save-recording', 'saveRecording')->name('mediatormeetingroom.saveRecording');
+        Route::get('/mediator-meetingroom/get-flattened-case-data/{caseId}', 'getFlattenedCaseData')->name('mediatormeetingroom.getFlattenedCaseData');
+        Route::post('/mediator-meetingroom/fetch-notices', 'fetchNoticesByCaseId')->name('mediatormeetingroom.fetch.notices');
+        Route::post('/mediator-meetingroom/fetch-awards', 'fetchAwardsByCaseId')->name('mediatormeetingroom.fetch.awards');
+        Route::post('/mediator-meetingroom/fetch-settlementagreements', 'fetchSettlementAgreementsByCaseId')->name('mediatormeetingroom.fetch.settlementagreements');
+        Route::post('/mediator-meetingroom/save-notice', 'saveNotice')->name('mediatormeetingroom.savenotice');
+        Route::post('/mediator-meetingroom/close-meeting-room','closemediatormeetingroom')->name('mediatormeetingroom.close');
+        Route::get('/mediator-meetingroom/datatable/upcoming-rooms', 'upcomingRoomsData')->name('mediatormeetingroom.datatable.upcoming');
+        Route::get('/mediator-meetingroom/datatable/closed-rooms', 'closedRoomsData')->name('mediatormeetingroom.datatable.closed');
 
     });
 

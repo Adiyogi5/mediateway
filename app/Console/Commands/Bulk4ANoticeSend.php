@@ -8,6 +8,8 @@ use App\Models\Notice;
 use App\Models\NoticeTemplate;
 use App\Models\Setting;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
+use Twilio\Rest\Client;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

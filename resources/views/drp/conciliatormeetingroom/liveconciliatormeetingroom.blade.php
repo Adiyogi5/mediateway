@@ -38,7 +38,7 @@
                     <div class="card-header">
                         <div class="row flex-between-end">
                             <div class="col-auto align-self-center">
-                                <h5 class="mb-0" data-anchor="data-anchor">Meeting Room - Live</h5>
+                                <h5 class="mb-0" data-anchor="data-anchor">Conciliator Meeting Room - Live</h5>
                             </div>
                             <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon">
@@ -62,7 +62,7 @@
                             </div>
 
                             <div class="col-lg-12 col-12">
-                                <form id="sendnoticeForm" action="{{ route('drp.meetingroom.savenotice') }}" method="POST">
+                                <form id="sendnoticeForm" action="{{ route('drp.conciliatormeetingroom.savenotice') }}" method="POST">
                                     @csrf
                                     <div class="livemeeting-card h-100">
                                         <h4 class="livemeetingcard-heading text-center justify-content-center"
@@ -280,7 +280,7 @@
             //     formData.append('recording', recordingBlob, `recording_${roomID}.mp4`);
 
             //     try {
-            //         const response = await fetch("{{ route('drp.meetingroom.saveRecording') }}", {
+            //         const response = await fetch("{{ route('drp.conciliatormeetingroom.saveRecording') }}", {
             //             method: "POST",
             //             headers: {
             //                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
@@ -339,7 +339,7 @@
                 $('#tempType').html('<option selected disabled>Template Type</option>'); // Clear and reset
                 // Fetch the flattened data dynamically
                 $.ajax({
-                    url: "{{ route('drp.meetingroom.getFlattenedCaseData', ':caseId') }}".replace(
+                    url: "{{ route('drp.conciliatormeetingroom.getFlattenedCaseData', ':caseId') }}".replace(
                         ':caseId', caseId),
                     method: 'GET',
                     success: function(data) {
@@ -422,7 +422,7 @@
 
                 // Fetch Notices
                 $.ajax({
-                    url: "{{ route('drp.meetingroom.fetch.notices') }}",
+                    url: "{{ route('drp.conciliatormeetingroom.fetch.notices') }}",
                     method: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
@@ -493,7 +493,7 @@
 
                 // Fetch Awards
                 $.ajax({
-                    url: "{{ route('drp.meetingroom.fetch.awards') }}",
+                    url: "{{ route('drp.conciliatormeetingroom.fetch.awards') }}",
                     method: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
@@ -548,7 +548,7 @@
 
                 // Fetch settlement Agreements
                 $.ajax({
-                    url: "{{ route('drp.meetingroom.fetch.settlementagreements') }}",
+                    url: "{{ route('drp.conciliatormeetingroom.fetch.settlementagreements') }}",
                     method: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
@@ -651,7 +651,7 @@
                 $('#uploadBtn').prop('disabled', true).text('Saving...');
 
                 $.ajax({
-                    url: "{{ route('drp.meetingroom.savenotice') }}",
+                    url: "{{ route('drp.conciliatormeetingroom.savenotice') }}",
                     type: "POST",
                     data: formData,
                     processData: false,
@@ -701,7 +701,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{{ route('drp.meetingroom.close') }}",
+                        url: "{{ route('drp.conciliatormeetingroom.close') }}",
                         method: "POST",
                         data: {
                             _token: "{{ csrf_token() }}",
@@ -717,7 +717,7 @@
                                 }).then(() => {
                                     // Redirect with success message
                                     window.location.href =
-                                        "{{ route('drp.meetingroom.meetingroomlist') }}?success=1";
+                                        "{{ route('drp.conciliatormeetingroom.conciliatormeetingroomlist') }}?success=1";
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');

@@ -229,6 +229,21 @@
                     </li>
                 @endif
 
+                
+                {{-- ################### DRP TYPE 4 Mediator #################### --}}
+                {{-- ##################### SETTLEMENT AGREEMENT #################### --}}
+                @if (auth('drp')->check() && auth('drp')->user()->drp_type == 4)
+                    <li
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.mediatormeetingroom.mediatormeetingroomlist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.mediatormeetingroom.mediatormeetingroomlist') ? 'text-white bg-lime' : '' }}"
+                            aria-current="page"
+                            style="{{ request()->routeIs($currentGuard . '.mediatormeetingroom.mediatormeetingroomlist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'mediatormeetingroom.mediatormeetingroomlist') }}"><i
+                                class="fa-solid fa-video faa-profile"></i> Meeting Room</a>
+                    </li>
+                @endif
+
+
                 {{-- ################### DRP TYPE 5 Conciliator #################### --}}
                 {{-- ##################### SETTLEMENT AGREEMENT #################### --}}
                 @if (auth('drp')->check() && auth('drp')->user()->drp_type == 5)
@@ -242,14 +257,15 @@
                     </li>
 
                     <li
-                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.meetingroom.meetingroomlist') ? 'text-white bg-lime' : '' }}">
-                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.meetingroom.meetingroomlist') ? 'text-white bg-lime' : '' }}"
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.conciliatormeetingroom.conciliatormeetingroomlist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.conciliatormeetingroom.conciliatormeetingroomlist') ? 'text-white bg-lime' : '' }}"
                             aria-current="page"
-                            style="{{ request()->routeIs($currentGuard . '.meetingroom.meetingroomlist') ? 'color:white !important;;' : '' }}"
-                            href="{{ route($currentGuard . '.' . 'meetingroom.meetingroomlist') }}"><i
+                            style="{{ request()->routeIs($currentGuard . '.conciliatormeetingroom.conciliatormeetingroomlist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'conciliatormeetingroom.conciliatormeetingroomlist') }}"><i
                                 class="fa-solid fa-video faa-profile"></i> Meeting Room</a>
                     </li>
                 @endif
+
 
                 <li class="nav-item py-3 text-center justify-content-start d-flex border-bottom">
                 </li>

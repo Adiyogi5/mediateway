@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use App\Traits\CustomScopes;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class MeetingRoom extends Model
+class MediatorMeetingRoom extends Model
 {
     use HasFactory, SoftDeletes, CustomScopes;
 
     protected $fillable = [
         'room_id',
         'meeting_room_case_id',
-        'conciliator_id',
+        'mediator_id',
         'date',
         'time',
         'status',

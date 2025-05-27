@@ -1,19 +1,19 @@
 <?php
 namespace App\Console\Commands;
 
-use App\Models\MeetingRoom;
+use App\Models\ConciliatorMeetingRoom;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class StatusLiveMeetingRoom extends Command
+class StatusLiveConciliatorMeetingRoom extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'bulk:status-live-meeting-room';
+    protected $signature = 'bulk:status-live-conciliator-meeting-room';
 
     /**
      * The console command description.
@@ -42,8 +42,13 @@ class StatusLiveMeetingRoom extends Command
         // ##############################################
         // Status Live Meeting Room
         // ##############################################
-        $meetingroomData = MeetingRoom::where('date', Carbon::today())
-            ->where('time', '=', Carbon::now()->format('H:i:s'))
+
+        $now = Carbon::now();
+        $start = $now->copy()->subMinute();  // 1 minute before now
+        $end = $now->copy()->addMinute();    // 1 minute after now
+
+        $meetingroomData = ConciliatorMeetingRoom::where('date', Carbon::today())
+            ->whereBetween('time', [$start->format('H:i:s'), $end->format('H:i:s')])
             ->where('status', 0)
             ->get();
 
