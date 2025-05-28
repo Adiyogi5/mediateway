@@ -23,12 +23,15 @@ class OrderSheetController extends Controller
     public function index(Request $request): View|JsonResponse|RedirectResponse
     {
         // Ensure the user is authenticated and has drp_type == 1
-        if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [1, 5])){
+        if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [1, 4, 5])){
             return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
         }
         
+        $drp = auth('drp')->user();
+        
         if ($request->ajax()) {
-            $data = OrderSheet::select('id', 'drp_type', 'name', 'status', 'created_at');
+            $data = OrderSheet::select('id', 'drp_type', 'name', 'status', 'created_at')
+                        ->where('drp_type', $drp->drp_type);
 
             return Datatables::of($data)
                 ->editColumn('drp_type', function ($row) {
@@ -45,15 +48,9 @@ class OrderSheetController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
-                    
-                    // if (Helper::userCan(111, 'can_edit')) {
-                        $btn .= '<a class="dropdown-item" href="' . route('drp.ordersheet.edit', $row['id']) . '">Edit</a>';
-                    // }
-                    // if (Helper::userCan(111, 'can_delete')) {
-                        // $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
-                    // }
+                    $btn .= '<a class="dropdown-item" href="' . route('drp.ordersheet.edit', $row['id']) . '">Edit</a>';
+                    // $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
                     return $btn;
-                    // return Helper::userAllowed(111) ? $btn : '';
                 })
                 ->orderColumn('created_at', function ($query, $order) {
                     $query->orderBy('created_at', $order);
@@ -69,13 +66,14 @@ class OrderSheetController extends Controller
 
 public function add(): View|RedirectResponse
 {
-    // Ensure the user is authenticated and has drp_type == 1
-    if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [1, 5])){
+    $drp = auth('drp')->user();
+
+    if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [1, 4, 5])){
         return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
     }
     
     $title = "Add Order Sheet";
-    return view('drp.ordersheet.add', compact('title'));
+    return view('drp.ordersheet.add', compact('title','drp'));
 }
 
 public function save(Request $request): RedirectResponse
@@ -95,8 +93,9 @@ public function save(Request $request): RedirectResponse
 
 public function edit($id): View|RedirectResponse
 {
-    // Ensure the user is authenticated and has drp_type == 1
-    if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [1, 5])){
+    $drp = auth('drp')->user();
+
+    if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [1, 4, 5])){
         return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
     }
     
@@ -104,7 +103,7 @@ public function edit($id): View|RedirectResponse
     if (!$orderSheet) return to_route('drp.ordersheet')->withError('Order Sheet Not Found..!!');
 
     $title = "Add Order Sheet";
-    return view('drp.ordersheet.edit', compact('orderSheet','title'));
+    return view('drp.ordersheet.edit', compact('orderSheet','title','drp'));
 }
 
 public function update(Request $request, $id): RedirectResponse

@@ -54,10 +54,13 @@
                                         <label class="form-label" for="drp_type">DRP Type <span
                                                 class="required">*</span></label>
                                         <select name="drp_type" class="form-select" id="drp_type">
-                                            <option value="">Select DRP Type</option>
-                                            <option value="1">Arbitrator</option>
-                                            <option value="4">Mediator</option>
-                                            <option value="5">Conciliator</option>
+                                            @if ($drp->drp_type == 1)
+                                                <option value="1">Arbitrator</option>
+                                            @elseif ($drp->drp_type == 4)
+                                                <option value="4" selected>Mediator</option>
+                                            @elseif ($drp->drp_type == 5)
+                                                <option value="5" selected>Conciliator</option>
+                                            @endif
                                         </select>
                                         @error('drp_type')
                                             <span class="invalid-feedback" role="alert">

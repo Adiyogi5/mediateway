@@ -15,7 +15,8 @@ Route::controller(FrontController::class)->name('front.')->group(function () {
 
     // =========== Guest Enty in Court Room =============
     Route::get('guest/livecourtroom/{room_id}', 'guestLivecourtroom')->name('guest.livecourtroom');
-    Route::get('guest/livemeetingroom/{room_id}', 'guestLivemeetingroom')->name('guest.livemeetingroom');
+    Route::get('guest/live-conciliator-meetingroom/{room_id}', 'guestLiveconciliatormeetingroom')->name('guest.liveconciliatormeetingroom');
+    Route::get('guest/live-mediator-meetingroom/{room_id}', 'guestLivemediatormeetingroom')->name('guest.livemediatormeetingroom');
 
     // ============= call-back Routes ======
     Route::get('/call-back', 'callback')->name('callback');

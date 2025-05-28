@@ -124,7 +124,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "{{ route('settlementletter.delete') }}",
+                            url: "{{ route('drp.settlementletter.delete') }}",
                             type: "DELETE",
                             data: {
                                 id: id

@@ -77,10 +77,10 @@ class FrontController extends Controller
         ));
     }
 
-    // =========== Guest Enty in Meeting Room =============
-    public function guestLivemeetingroom(Request $request, $room_id)
+    // =========== Guest Enty in Conciliator Meeting Room =============
+    public function guestLiveconciliatormeetingroom(Request $request, $room_id)
     {
-        $title = 'Live Meeting Room - Guest Access';
+        $title = 'Live Conciliator Meeting Room - Guest Access';
         
         // Check if case ID is present in the URL
         $caseId = $request->query('case_id');
@@ -109,7 +109,49 @@ class FrontController extends Controller
         $zegoToken = $this->generateZegoToken($localUserID, $guestName);
 
         // Render the view
-        return view('front.guest.livemeetingroom', compact(
+        return view('front.guest.liveconciliatormeetingroom', compact(
+            'title',
+            'localUserID',
+            'remoteUserID',
+            'room_id',
+            'zegoToken',
+            'guestName'
+        ));
+    }
+
+    // =========== Guest Enty in Mediator Meeting Room =============
+    public function guestLivemediatormeetingroom(Request $request, $room_id)
+    {
+        $title = 'Live Mediator Meeting Room - Guest Access';
+        
+        // Check if case ID is present in the URL
+        $caseId = $request->query('case_id');
+        if (!$caseId) {
+            return redirect()->route('front.home')->withInfo('Invalid Case ID.');
+        }
+
+        // Fetch Case Data
+        $caseData = FileCase::select('file_cases.*', 'drps.id as mediator_id', 'drps.name as mediator_name')
+            ->with(['file_case_details', 'guarantors'])
+            ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
+            ->join('drps', 'drps.id', '=', 'assign_cases.mediator_id')
+            ->where('file_cases.id', $caseId)
+            ->get();
+
+        if ($caseData->isEmpty()) {
+            return redirect()->route('front.home')->withInfo('Invalid Case Data.');
+        }
+
+        // Generate guest details
+        $localUserID = $caseData->first()->case_number; 
+        $remoteUserID = $caseData->first()->mediator_id;
+        $guestName = $caseData->first()->respondent_first_name . ' ' . $caseData->first()->respondent_last_name . ' (' . $caseData->first()->case_number . ')';
+
+        // ZegoCloud Token Generation
+        $zegoToken = $this->generateZegoToken($localUserID, $guestName);
+
+        // Render the view
+        return view('front.guest.livemediatormeetingroom', compact(
             'title',
             'localUserID',
             'remoteUserID',

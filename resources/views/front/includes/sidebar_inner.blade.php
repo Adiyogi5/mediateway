@@ -128,7 +128,7 @@
 
                 {{-- ################ DRP TYPE = 1,5 Arbitrator, Conciliator ################# --}}
                 {{-- ############################# ORDER SHEET ############################### --}}
-                @if (auth('drp')->check() && in_array(auth('drp')->user()->drp_type, [1, 5]))
+                @if (auth('drp')->check() && in_array(auth('drp')->user()->drp_type, [1, 4, 5]))
                     <li
                         class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.ordersheet') ? 'text-white bg-lime' : '' }}">
                         <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.ordersheet') ? 'text-white bg-lime' : '' }}"
@@ -244,9 +244,9 @@
                 @endif
 
 
-                {{-- ################### DRP TYPE 5 Conciliator #################### --}}
+                {{-- ################### DRP TYPE  4 - Mediator, 5 - Conciliator #################### --}}
                 {{-- ##################### SETTLEMENT AGREEMENT #################### --}}
-                @if (auth('drp')->check() && auth('drp')->user()->drp_type == 5)
+                @if (auth('drp')->check() && in_array(auth('drp')->user()->drp_type, [4, 5]))
                     <li
                         class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.settlementletter') ? 'text-white bg-lime' : '' }}">
                         <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.settlementletter') ? 'text-white bg-lime' : '' }}"
@@ -255,7 +255,12 @@
                             href="{{ route($currentGuard . '.' . 'settlementletter') }}"><i
                                 class="fa-solid fa-file-zipper faa-profile"></i> Settlement Agreements</a>
                     </li>
+                @endif
 
+                
+                {{-- ################### DRP TYPE  5 Conciliator #################### --}}
+                {{-- ##################### SETTLEMENT AGREEMENT #################### --}}
+                @if (auth('drp')->check() && auth('drp')->user()->drp_type == 5)
                     <li
                         class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.conciliatormeetingroom.conciliatormeetingroomlist') ? 'text-white bg-lime' : '' }}">
                         <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.conciliatormeetingroom.conciliatormeetingroomlist') ? 'text-white bg-lime' : '' }}"
