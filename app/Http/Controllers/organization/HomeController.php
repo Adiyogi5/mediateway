@@ -152,7 +152,7 @@ class HomeController extends Controller
     {
         $filters = [
             'product' => $request->product,
-            'case_type' => $request->case_type,
+            'product_type' => $request->product_type,
         ];
 
         $organization = auth('organization')->user();
@@ -218,46 +218,6 @@ class HomeController extends Controller
 
         return response()->json(['html' => $view]);
     }
-
-    // public function filter(Request $request)
-    // {
-    //     $filters = [
-    //         'product' => $request->product,
-    //         'case_type' => $request->case_type,
-    //     ];
-
-    //     $baseQuery = FileCase::filter($filters);
-
-    //     $totalFiledCases = (clone $baseQuery)->count();
-    //     $totalPendingCases = (clone $baseQuery)
-    //         ->whereHas('notices', fn($q) => $q->whereIn('notice_type', range(1, 19)))
-    //         ->count();
-
-    //     $totalNewCases = (clone $baseQuery)->whereMonth('created_at', now()->month)->count();
-
-    //     // Use `notice_type` to determine awards/interims
-    //     $awards = (clone $baseQuery)
-    //         ->whereHas('notices', fn($q) => $q->where('notice_type', 11))
-    //         ->count();
-
-    //     $interimOrders = (clone $baseQuery)
-    //         ->whereHas('notices', fn($q) => $q->where('notice_type', 10))
-    //         ->count();
-
-    //     // Assuming `hearing_date` exists
-    //     $upcomingHearings = (clone $baseQuery)
-    //         ->whereDate('first_hearing_date', '>', now())
-    //         ->orWhereDate('second_hearing_date', '>', now())
-    //         ->orWhereDate('final_hearing_date', '>', now())
-    //         ->count();
-
-    //     $view = view('organization.partials.case-type-overview', compact(
-    //         'totalFiledCases', 'totalPendingCases', 'totalNewCases',
-    //         'awards', 'interimOrders', 'upcomingHearings'
-    //     ))->render();
-
-    //     return response()->json(['html' => $view]);
-    // }
 
 
 }

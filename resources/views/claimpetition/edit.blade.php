@@ -32,16 +32,16 @@
                 <div class="row">
                     <div class="col-md-6 mt-2">
                         <div class="form-group">
-                            <label class="form-label" for="case_type">Case Type <span class="required">*</span></label>
-                            <select name="case_type" class="form-select" id="case_type">
-                                <option value="">Select Case Type</option>
-                                @foreach (config('constant.case_type') as $key => $type)
-                                    <option value="{{ $key }}" {{ old('case_type', $claimpetition->case_type) == $key ? 'selected' : '' }}>
+                            <label class="form-label" for="product_type">Peoduct Type <span class="required">*</span></label>
+                            <select name="product_type" class="form-select" id="product_type">
+                                <option value="">Select Peoduct Type</option>
+                                @foreach (config('constant.product_type') as $key => $type)
+                                    <option value="{{ $key }}" {{ old('product_type', $claimpetition->product_type) == $key ? 'selected' : '' }}>
                                         {{ $type }}
                                     </option>
                                 @endforeach
                             </select>                                                     
-                                @error('case_type')
+                                @error('product_type')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

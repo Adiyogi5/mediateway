@@ -125,8 +125,8 @@
                                         <div class="view-all">view all <i class="fa-solid fa-circle-arrow-right"></i></div>
                                     </div>
                                     
-                                    {{-- ################ DRP TYPE 1,2,3,4 ################# --}}
-                                    @if (auth('drp')->check() && in_array(auth('drp')->user()->drp_type, [1, 2, 3, 4]))
+                                    {{-- ################ DRP TYPE 1,3,4 ################# --}}
+                                    @if (auth('drp')->check() && in_array(auth('drp')->user()->drp_type, [1, 3, 4]))
                                         <div class="col-md-6 col-12 position-relative">
                                             <div class="custom-card row">
                                                 <div class="col-4">

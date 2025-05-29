@@ -37,13 +37,17 @@ class CaseListController extends Controller
         }
 
         if ($request->ajax()) {
-            $data = FileCase::select('file_cases.id', 'file_cases.case_type', 'file_cases.case_number', 'file_cases.loan_number', 'file_cases.status', 'file_cases.created_at','assign_cases.arbitrator_id','assign_cases.confirm_to_arbitrator')
+            $data = FileCase::select('file_cases.id', 'file_cases.case_type', 'file_cases.product_type', 'file_cases.case_number', 'file_cases.loan_number', 'file_cases.status', 'file_cases.created_at','assign_cases.arbitrator_id','assign_cases.confirm_to_arbitrator')
                 ->join('assign_cases','assign_cases.case_id','=','file_cases.id')
                 ->where('assign_cases.arbitrator_id',$drp->id)
                 ->where('file_cases.status', 1);
                 
                 if ($request->filled('case_type')) {
                     $data->where('file_cases.case_type', $request->case_type);
+                }
+
+                if ($request->filled('product_type')) {
+                    $data->where('file_cases.product_type', $request->product_type);
                 }
 
                 if ($request->filled('case_number')) {
@@ -71,6 +75,9 @@ class CaseListController extends Controller
             return Datatables::of($data)
                 ->editColumn('case_type', function ($row) {
                     return config('constant.case_type')[$row->case_type] ?? 'Unknown';
+                })
+                ->editColumn('product_type', function ($row) {
+                    return config('constant.product_type')[$row->product_type] ?? 'Unknown';
                 })
                 ->editColumn('created_at', function ($row) {
                     return $row['created_at']->format('d M, Y');
@@ -107,7 +114,7 @@ class CaseListController extends Controller
                 ->orderColumn('created_at', function ($query, $order) {
                     $query->orderBy('created_at', $order);
                 })
-                ->rawColumns(['action', 'status','case_type','arbitrator_status'])
+                ->rawColumns(['action', 'status', 'case_type', 'product_type', 'arbitrator_status'])
                 ->make(true);
         }
         return view('drp.allcases.caselist', compact('drp','title'));

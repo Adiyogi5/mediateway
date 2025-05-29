@@ -40,6 +40,14 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
+                                <select class="form-control form-select py-1" id="filter_product_type">
+                                    <option value="">All Product Types</option>
+                                    @foreach (config('constant.product_type') as $key => $value)
+                                        <option value="{{ $key }}">{{ $value }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
                                 <input type="text" id="filter_case_number py-1" class="form-control"
                                     placeholder="Enter Case Number">
                             </div>
@@ -61,16 +69,14 @@
                                     <option value="0">Inactive</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <input type="date" id="filter_date_from" class="form-control py-1" placeholder="From Date">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <input type="date" id="filter_date_to" class="form-control py-1" placeholder="To Date">
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3 d-flex justify-content-between gap-1">
                                 <button class="btn btn-primary w-100 py-1" id="btn-filter">Search</button>
-                            </div>
-                            <div class="col-md-2">
                                 <button class="btn btn-secondary w-100 py-1" id="btn-reset">Reset</button>
                             </div>
                         </div>
@@ -82,6 +88,7 @@
                                 <thead class="bg-200 text-900">
                                     <tr>
                                         <th>Case Type</th>
+                                        <th>Product Type</th>
                                         <th>Case Number</th>
                                         <th>Loan Number</th>
                                         <th>Confirmation</th>
@@ -117,6 +124,7 @@
                     url: "{{ route('drp.allcases.caselist') }}",
                     data: function(d) {
                         d.case_type = $('#filter_case_type').val();
+                        d.product_type = $('#filter_product_type').val();
                         d.case_number = $('#filter_case_number').val();
                         d.loan_number = $('#filter_loan_number').val();
                         d.arbitrator_status = $('#filter_arbitrator_status').val();
@@ -126,11 +134,15 @@
                     }
                 },
                 order: [
-                    [5, 'desc']
+                    [6, 'desc']
                 ],
                 columns: [{
                         data: 'case_type',
                         name: 'case_type'
+                    },
+                    {
+                        data: 'product_type',
+                        name: 'product_type'
                     },
                     {
                         data: 'case_number',
@@ -167,6 +179,7 @@
 
             $('#btn-reset').on('click', function() {
                 $('#filter_case_type').val('');
+                $('#filter_product_type').val('');
                 $('#filter_case_number').val('');
                 $('#filter_loan_number').val('');
                 $('#filter_arbitrator_status').val('');

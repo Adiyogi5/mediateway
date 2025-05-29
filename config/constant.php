@@ -36,6 +36,12 @@ return [
     ],
 
     'case_type' => [
+        '1' => 'ARBITRATION', 
+        '2' => 'CIVIL',
+        '3' => 'CRIMINAL',
+    ],
+
+    'product_type' => [
         '1' => 'VEHICLE LOAN', 
         '2' => 'CREDIT CARD',
         '3' => 'PERSONAL BUSSINESS LOAN',

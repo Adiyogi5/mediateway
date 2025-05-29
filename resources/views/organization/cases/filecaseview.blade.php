@@ -49,6 +49,14 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
+                                <select id="filter_product_type" class="form-control form-select py-1">
+                                    <option value="">All Product Types</option>
+                                    @foreach (config('constant.product_type') as $key => $val)
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
                                 <input type="text" id="filter_case_number" class="form-control py-1"
                                     placeholder="Enter Case Number">
                             </div>
@@ -86,7 +94,7 @@
                             <div class="col-md-3">
                                 <input type="date" id="filter_end_date" class="form-control py-1" placeholder="End Date">
                             </div>
-                            <div class="col-md-4 d-flex align-items-end">
+                            <div class="col-md-3 d-flex align-items-end">
                                 <button type="button" id="filter-search"
                                     class="btn btn-primary w-100 btn-sm me-2 py-1">Search</button>
                                 <button type="button" id="filter-reset"
@@ -101,6 +109,7 @@
                                 <thead class="bg-200 text-900">
                                     <tr>
                                         <th>Case Type</th>
+                                        <th>Product Type</th>
                                         <th>Case Number</th>
                                         <th>Loan Number</th>
                                         <th>Claimant Name</th>
@@ -141,6 +150,7 @@
                     url: "{{ route('organization.cases.filecaseview') }}",
                     data: function(d) {
                         d.case_type = $('#filter_case_type').val();
+                        d.product_type = $('#filter_product_type').val();
                         d.case_number = $('#filter_case_number').val();
                         d.loan_number = $('#filter_loan_number').val();
                         d.claimant_first_name = $('#filter_claimant_name').val();
@@ -153,11 +163,15 @@
                     }
                 },
                 order: [
-                    [8, 'desc']
+                    [9, 'desc']
                 ],
                 columns: [{
                         data: 'case_type',
                         name: 'case_type'
+                    },
+                    {
+                        data: 'product_type',
+                        name: 'product_type'
                     },
                     {
                         data: 'case_number',

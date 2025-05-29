@@ -51,6 +51,7 @@ class FileCase extends Model
         'brief_of_case',
         'amount_in_dispute',
         'case_type',
+        'product_type',
         'language',
         'agreement_exist',
         'application_form',
@@ -114,8 +115,8 @@ class FileCase extends Model
             $query->where('organization_id', $filters['product']);
         }
 
-        if (!empty($filters['case_type'])) {
-            $query->where('case_type', $filters['case_type']);
+        if (!empty($filters['product_type'])) {
+            $query->where('product_type', $filters['product_type']);
         }
 
         return $query;

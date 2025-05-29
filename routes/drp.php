@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\Drp\AdvocateCourtRoomController;
 use App\Http\Controllers\Drp\AwardController;
 use App\Http\Controllers\Drp\CaseAssignController;
 use App\Http\Controllers\Drp\CaseBulkUpdateController;
@@ -91,6 +92,18 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::delete('caseassign', 'delete')->name('caseassign.delete');
         Route::get('caseassign/{id}/edit', 'edit')->name('caseassign.edit');
         Route::put('caseassign/casedetail/{id}', 'updateCaseDetail')->name('caseassign.updatecasedetail');
+    });
+
+    // ----------------------- Advocate - Court Room Routes ----------------------------------------
+    Route::controller(AdvocateCourtRoomController::class)->group(function () {
+        Route::get('advocatecourtroom', 'index')->name('advocatecourtroom.courtroomlist');
+        Route::get('liveadvocatecourtroom/{room_id}', 'livecourtroom')->name('advocatecourtroom.livecourtroom');
+        Route::get('/get-flattened-advocate-case-data/{caseId}', 'getFlattenedAdvocateCaseData')->name('advocatecourtroom.getFlattenedAdvocateCaseData');
+        Route::post('/fetch-advocate-notices', 'fetchNoticesByCaseId')->name('advocatecourtroom.fetch.notices');
+        Route::post('/fetch-advocate-awards', 'fetchAwardsByCaseId')->name('advocatecourtroom.fetch.awards');
+        Route::post('/advocatecourtroom/save-notice', 'saveNotice')->name('advocatecourtroom.savenotice');
+        Route::get('/advocatecourtroom/datatable/upcoming-rooms', 'upcomingRoomsData')->name('advocatecourtroom.datatable.upcoming');
+        Route::get('/advocatecourtroom/datatable/closed-rooms', 'closedRoomsData')->name('advocatecourtroom.datatable.closed');
     });
 
     // ----------------------- Case Manager - Case Bulk Update Routes ---------------------------------

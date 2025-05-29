@@ -23,12 +23,12 @@ class ClaimPetitionController extends Controller
     public function index(Request $request): View|JsonResponse
 {
     if ($request->ajax()) {
-        $data = ClaimPetition::select('id', 'case_type', 'name', 'status', 'created_at');
+        $data = ClaimPetition::select('id', 'product_type', 'name', 'status', 'created_at');
 
         return Datatables::of($data)
-            ->editColumn('case_type', function ($row) {
-                $drpTypes = config('constant.case_type');
-                return $drpTypes[$row->case_type] ?? 'Unknown';
+            ->editColumn('product_type', function ($row) {
+                $drpTypes = config('constant.product_type');
+                return $drpTypes[$row->product_type] ?? 'Unknown';
             })
             ->editColumn('status', function ($row) {
                 return $row['status'] == 1
@@ -70,7 +70,7 @@ public function add(): View
 public function save(Request $request): RedirectResponse
 {
     $validated = $request->validate([
-        'case_type'       => ['required', 'integer'],
+        'product_type'       => ['required', 'integer'],
         'name'           => ['required', 'string', 'unique:order_sheets,name', 'max:100'],
         'subject'        => ['required', 'string'],
         'email_content'  => ['required', 'string'],
@@ -96,7 +96,7 @@ public function update(Request $request, $id): RedirectResponse
     if (!$claimpetition) return to_route('claimpetition')->withError('Claim Petition Not Found..!!');
 
     $validated = $request->validate([
-        'case_type'       => ['required', 'integer'],
+        'product_type'       => ['required', 'integer'],
         'name'           => ['required', 'string', 'unique:order_sheets,name,' . $id, 'max:100'],
         'subject'        => ['required', 'string'],
         'email_content'  => ['required', 'string'],

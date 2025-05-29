@@ -12,7 +12,7 @@ class ClaimPetition extends Model
     use HasFactory, SoftDeletes, CustomScopes;
 
     protected $fillable = [
-        'case_type', 'name','subject', 'email_content', 'notice_format', 'status',
+        'product_type', 'name','subject', 'email_content', 'notice_format', 'status',
     ];
 
 }

@@ -57,6 +57,14 @@
                     </li>
 
                     @php
+                        $productType = config('constant.product_type')[$caseData['product_type']] ?? null;
+                    @endphp
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <strong>Product Type :</strong>
+                        <span>{{ $productType ?? 'N/A' }}</span>
+                    </li>
+
+                    @php
                         $langType = config('constant.language')[$caseData['language']] ?? null;
                     @endphp
                     <li class="list-group-item d-flex justify-content-between align-items-center">

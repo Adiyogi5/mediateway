@@ -38,16 +38,7 @@
                     <div class="card-header">
                         <div class="row flex-between-end">
                             <div class="col-auto align-self-center">
-                                <h5 class="mb-0" data-anchor="data-anchor">Arbitrator Court Room - Live</h5>
-                            </div>
-                            <div class="col-auto ms-auto">
-                                <div class="nav nav-pills nav-pills-falcon">
-                                    <a href="javascript:void(0);" class="btn btn-outline-danger py-1" id="endCourtRoom"
-                                        data-room-id="{{ $roomID }}">
-                                        <i class="fa-solid fa-rectangle-xmark"></i>
-                                        End Court Room
-                                    </a>
-                                </div>
+                                <h5 class="mb-0" data-anchor="data-anchor">Advocate Court Room - Live</h5>
                             </div>
                         </div>
                     </div>
@@ -61,42 +52,29 @@
 
                             </div>
 
-
                             <div class="col-lg-12 col-12">
-                                <form id="sendnoticeForm" action="{{ route('drp.courtroom.savenotice') }}" method="POST">
+                                <form id="sendnoticeForm" action="{{ route('drp.advocatecourtroom.savenotice') }}" method="POST">
                                     @csrf
                                     <div class="livemeeting-card h-100">
-                                        <h4 class="livemeetingcard-heading text-center justify-content-center"
+                                        {{-- <h4 class="livemeetingcard-heading text-center justify-content-center"
                                             style="background-color: black;color: white;padding: 5px;border-radius: 8px">
-                                            Live Cases Hearing Activity</h4>
+                                            Case OrderSheets / Settlement Agreements</h4> --}}
                                         <!-- Case Number Select -->
-                                        <div class="row">
-                                            <div class="col-md-6 col-12 form-group mb-3">
-                                                <label for="file_case_id" class="form-label fw-bold">Select Case</label>
-                                                <select class="form-select" id="caseSelector" name="file_case_id"
-                                                    style="background-color: #fff2dc !important;">
-                                                    <option selected disabled>Select Case Number</option>
-                                                    @foreach ($caseData as $case)
-                                                        <option value="{{ $case->id }}"
-                                                            data-final_hearing_date="{{ $case->final_hearing_date }}">
-                                                            {{ $case->case_number }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                {{-- data-case="{{ json_encode($case) }}" --}}
-                                            </div>
-                                            @if(($finalHeaingDate->hearing_type == 2))
-                                            <div class="col-md-6 col-12 form-group mb-3" id="finalHearingDateGroup" style="display: none;">
-                                                <label for="final_hearing_date" class="form-label fw-bold">Select Final Hearing Date</label>
-                                                <input type="date" id="final_hearing_date" name="final_hearing_date"
-                                                    class="form-control"
-                                                    style="background-color: #fff2dc !important;">
-                                            </div>
-                                            @endif
+                                        <div class="form-group">
+                                            <label for="file_case_id" class="form-label fw-bold">Select Case</label>
+                                            <select class="form-select" id="caseSelector" name="file_case_id"
+                                                style="background-color: #fff2dc !important;">
+                                                <option selected disabled>Select Case Number</option>
+                                                @foreach ($caseData as $case)
+                                                    <option value="{{ $case->id }}"
+                                                        data-case="{{ json_encode($case) }}">
+                                                        {{ $case->case_number }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         </div>
-                                        
                                         <!-- Document Type and File Upload -->
-                                        <div class="mb-3">
+                                        {{-- <div class="mb-3">
                                             <label class="form-label fw-bold">Select Document Type and Attach</label>
                                             <div class="row g-2">
                                                 <div class="col-xl-6 col-12">
@@ -104,7 +82,7 @@
                                                         style="background-color: #fff2dc !important;">
                                                         <option selected disabled>Document Type</option>
                                                         <option value="ordersheet">Case OrderSheet</option>
-                                                        {{-- <option value="settlementletter">Settlement Agreement</option> --}}
+                                                        <option value="settlementletter">Settlement Agreement</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-xl-6 col-12">
@@ -129,12 +107,11 @@
                                         <div class="text-center mt-3">
                                             <button class="btn btn-secondary w-100" id="uploadBtn" type="submit">UPLOAD /
                                                 SAVE</button>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </form>
                             </div>
 
-                            <!-- Notice Display Area -->
                             <div class="col-lg-6 col-12">
                                 <div class="livemeeting-card h-100">
                                     <h4 class="livemeetingcard-heading text-center justify-content-center"
@@ -148,14 +125,13 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- OrderSheet Display Area -->
+                            
                             <div class="col-lg-6 col-12">
                                 <div class="livemeeting-card h-100">
                                     <h4 class="livemeetingcard-heading text-center justify-content-center"
                                         style="background-color: black;color: white;padding: 5px;border-radius: 8px">
                                         Daily OrderSheet</h4>
-                                    <!-- OrderSheet Display Area -->
+                                    <!-- Notice Display Area -->
                                     <div id="awardsContainer">
 
                                         {{-- Data Comes via selecting Case_id using Ajax script --}}
@@ -175,7 +151,6 @@
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>
     <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
-    
     {{-- ######### Gegocloud for live court room ######### --}}
     <script>
         const roomID = "{{ $roomID }}";
@@ -197,117 +172,19 @@
                 }],
                 scenario: {
                     mode: ZegoUIKitPrebuilt.VideoConference,
-                    config: {
-                        recording: {
-                            isRecording: true, // Enable recording
-                        }
-                    }
                 },
                 turnOnCameraWhenJoining: true,
                 turnOnMicrophoneWhenJoining: true,
                 showPreJoinView: false
             });
-
-            // const startRecording = async () => {
-            //     const response = await axios.post(
-            //         'https://api.zegocloud.com/v1/room/recording/start', {
-            //             roomID: roomID,
-            //             userID: userID,
-            //             userName: userName,
-            //             appID: appID,
-            //         }, {
-            //             headers: {
-            //                 'Authorization': `Bearer ${kitToken}`,
-            //                 'Content-Type': 'application/json',
-            //             }
-            //         }
-            //     );
-
-            //     console.log('Recording started:', response.data);
-            //     return response.data.recordingID; // Save this ID for later when stopping the recording
-            // };
-
-            // // Stop Recording API Call
-            // const stopRecording = async (recordingID) => {
-            //     const token = generateJWT(appID, serverSecret, roomID, userID, userName);
-
-            //     const response = await axios.post(
-            //         'https://api.zegocloud.com/v1/room/recording/stop', {
-            //             roomID: roomID,
-            //             recordingID: recordingID,
-            //         }, {
-            //             headers: {
-            //                 'Authorization': `Bearer ${token}`,
-            //                 'Content-Type': 'application/json',
-            //             }
-            //         }
-            //     );
-
-            //     console.log('Recording stopped:', response.data);
-            //     return response.data.recordingURL; // This is the URL of the recorded video
-            // };
-
-            // // Example usage
-            // startRecording()
-            //     .then((recordingID) => {
-            //         // After some time (or when session ends), stop the recording
-            //         setTimeout(() => {
-            //             stopRecording(recordingID)
-            //                 .then((recordingURL) => {
-            //                     console.log('Recording URL:',
-            //                     recordingURL); // The URL of the recorded video
-            //                 })
-            //                 .catch((error) => console.error('Error stopping recording:', error));
-            //         }, 30000); // Simulate a 30-second recording
-            //     })
-            //     .catch((error) => console.error('Error starting recording:', error));
-
-            // === ⚡️ Listen for recording completion event ⚡️ ===
-            // zp.on('recordingCompleted', async (event) => {
-            //     console.log("Recording Completed Event: ", event);
-
-            //     // Assuming event.data.blob contains the recording
-            //     const recordingBlob = event.data.blob;
-            //     const formData = new FormData();
-            //     formData.append('room_id', roomID);
-            //     formData.append('recording', recordingBlob, `recording_${roomID}.mp4`);
-
-            //     try {
-            //         const response = await fetch("{{ route('drp.courtroom.saveRecording') }}", {
-            //             method: "POST",
-            //             headers: {
-            //                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            //             },
-            //             body: formData
-            //         });
-
-            //         if (response.ok) {
-            //             const data = await response.json();
-            //             console.log("Recording saved successfully: ", data);
-            //         } else {
-            //             console.error("Failed to save recording");
-            //         }
-            //     } catch (error) {
-            //         console.error("Error saving recording: ", error);
-            //     }
-            // });
-
-            // // Handle when the conference ends or the user quits the room
-            // zp.on('roomWillEnd', () => {
-            //     console.log("Conference ended or user is leaving the room");
-            //     // Here, you can trigger any final steps or checks
-            //     // e.g., ensure the recording is saved automatically before the user leaves
-            // });
-
         } catch (e) {
             alert("Unable to access camera or microphone. Please check your device and browser permissions.");
             console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(e));
         }
     </script>
 
-
     {{-- ####### Fetch the flattened data dynamically #######
-         ####### Replace placeholders in the template ####### --}}
+         ####### Replace placeholders in the template #######--}}
     <script type="text/javascript">
         const allTemplates = {
             ordersheet: @json($orderSheetTemplates),
@@ -332,7 +209,7 @@
                 $('#tempType').html('<option selected disabled>Template Type</option>'); // Clear and reset
                 // Fetch the flattened data dynamically
                 $.ajax({
-                    url: "{{ route('drp.courtroom.getFlattenedCaseData', ':caseId') }}".replace(
+                    url: "{{ route('drp.advocatecourtroom.getFlattenedAdvocateCaseData', ':caseId') }}".replace(
                         ':caseId', caseId),
                     method: 'GET',
                     success: function(data) {
@@ -415,7 +292,7 @@
 
                 // Fetch Notices
                 $.ajax({
-                    url: "{{ route('drp.courtroom.fetch.notices') }}",
+                    url: "{{ route('drp.advocatecourtroom.fetch.notices') }}",
                     method: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
@@ -428,7 +305,7 @@
                             response.forEach(notice => {
                                 const noticeTypeLabel = noticeTypes[notice.notice_type] || 'Unknown Notice Type';
                                 const storageBaseUrl = "{{ asset('storage') }}";
-
+                                
                                 let pdfLink = notice.notice ? `
                                     <a class="text-decoration-none text-secondary" style="font-size: 13px"
                                         href="${storageBaseUrl}/${notice.notice}" target="_blank">
@@ -486,7 +363,7 @@
 
                 // Fetch Awards
                 $.ajax({
-                    url: "{{ route('drp.courtroom.fetch.awards') }}",
+                    url: "{{ route('drp.advocatecourtroom.fetch.awards') }}",
                     method: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
@@ -579,134 +456,4 @@
         });
     </script>
 
-    {{-- ############# form Submission using ajax ############### --}}
-    <script>
-        $(document).ready(function() {
-            $('#sendnoticeForm').on('submit', function(e) {
-                e.preventDefault(); // Prevent default form submission
-
-                let formData = new FormData(this);
-                $('#uploadBtn').prop('disabled', true).text('Saving...');
-
-                $.ajax({
-                    url: "{{ route('drp.courtroom.savenotice') }}",
-                    type: "POST",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        $('#uploadBtn').prop('disabled', false).text('UPLOAD / SAVE');
-
-                        if (response.success) {
-                            toastr.success('Notice/OrderSheet saved successfully.');
-                            $('#sendnoticeForm')[0].reset();
-                            $('#tempType').empty(); // Clear template type options
-                        } else {
-                            toastr.error(response.message || 'Notice/OrderSheet could not be saved.');
-                        }
-                    },
-                    error: function(xhr) {
-                        $('#uploadBtn').prop('disabled', false).text('UPLOAD / SAVE');
-                        
-                        if (xhr.status === 422) {
-                            let errors = xhr.responseJSON.errors;
-                            $.each(errors, function(key, value) {
-                                toastr.error(value); // Show each error in Toastr
-                            });
-                        } else {
-                            toastr.error('An error occurred. Please try again.');
-                        }
-                    }
-                });
-            });
-        });
-    </script>
-
-    {{-- ############# Final Hearing date Change According to Case Id ############### --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const caseSelector = document.getElementById('caseSelector');
-            const finalHearingDateGroup = document.getElementById('finalHearingDateGroup');
-            const finalHearingDateInput = document.getElementById('final_hearing_date');
-
-            caseSelector.addEventListener('change', function () {
-                const selectedOption = this.options[this.selectedIndex];
-                const finalDate = selectedOption.getAttribute('data-final_hearing_date');
-                const today = new Date().toISOString().split('T')[0];
-
-                finalHearingDateInput.setAttribute('min', today);
-                finalHearingDateGroup.style.display = 'block';
-
-                if (finalDate && finalDate !== 'null') {
-                    finalHearingDateInput.value = finalDate;
-                    finalHearingDateInput.disabled = true;
-                } else {
-                    finalHearingDateInput.value = '';
-                    finalHearingDateInput.disabled = false;
-                }
-            });
-        });
-    </script>
-
-    {{-- ############# End Live Court Room ############### --}}
-    <script>
-        $(document).on('click', '#endCourtRoom', function() {
-            const roomId = $(this).data('room-id');
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You want to close this Court Room?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, Close it!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{{ route('drp.courtroom.close') }}",
-                        method: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            room_id: roomId
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    title: 'Closed!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    confirmButtonText: 'OK'
-                                }).then(() => {
-                                    // Redirect with success message
-                                    window.location.href =
-                                        "{{ route('drp.courtroom.courtroomlist') }}?success=1";
-                                });
-                            } else {
-                                Swal.fire('Error', response.message, 'error');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            Swal.fire('Error', 'Something went wrong. Please try again.',
-                                'error');
-                        }
-                    });
-                }
-            });
-        });
-
-        // Display SweetAlert on page load if redirected with success message
-        $(document).ready(function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('success') === '1') {
-                Swal.fire({
-                    title: 'Success',
-                    text: 'Court Room has been closed successfully.',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-            }
-        });
-    </script>
 @endsection

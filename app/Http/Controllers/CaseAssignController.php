@@ -34,6 +34,7 @@ class CaseAssignController extends Controller
                     'file_cases.id',
                     'file_cases.user_type',
                     'file_cases.case_type',
+                    'file_cases.product_type',
                     'file_cases.case_number',
                     'file_cases.loan_number',
                     'file_cases.status',

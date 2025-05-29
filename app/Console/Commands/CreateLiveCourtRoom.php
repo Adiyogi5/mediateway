@@ -97,7 +97,7 @@ class CreateLiveCourtRoom extends Command
 
             foreach ($hearingTypes as $hearingType => $hearingDateColumn) {
                 $fileCases = FileCase::with(['assignedCases' => function ($query) {
-                    $query->select('case_id', 'arbitrator_id', 'case_manager_id');
+                    $query->select('case_id', 'arbitrator_id', 'case_manager_id', 'advocate_id');
                 }])
                     ->whereNotNull($hearingDateColumn)
                     ->where('status', 1)
@@ -117,6 +117,7 @@ class CreateLiveCourtRoom extends Command
 
                         $arbitrator_id   = optional($cases->first()->assignedCases->first())->arbitrator_id;
                         $case_manager_id = optional($cases->first()->assignedCases->first())->case_manager_id;
+                        $advocate_id     = optional($cases->first()->assignedCases->first())->advocate_id;
 
                         $prefix     = $individual_ids ? 'INDI' : 'ORG';
                         $lastRoom   = CourtRoom::where('room_id', 'like', $prefix . '-%')->orderBy('id', 'desc')->first();
@@ -131,6 +132,7 @@ class CreateLiveCourtRoom extends Command
                             'organization_id'    => $organization_ids ?? null,
                             'arbitrator_id'      => $arbitrator_id,
                             'case_manager_id'    => $case_manager_id,
+                            'advocate_id'        => $advocate_id,
                             'date'               => $date,
                             'time'               => '10:00:00',
                             'status'             => 0,

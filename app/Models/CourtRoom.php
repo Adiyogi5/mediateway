@@ -19,6 +19,7 @@ class CourtRoom extends Model
         'organization_id',
         'arbitrator_id',
         'case_manager_id',
+        'advocate_id',
         'date',
         'time',
         'status',

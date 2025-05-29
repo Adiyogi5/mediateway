@@ -81,6 +81,7 @@
                     </li>
                 @endif
 
+
                 {{-- #################### Organization #################### --}}
                 {{-- ####################################################### --}}
                 @if (auth('organization')->check())
@@ -126,18 +127,20 @@
                     @endif
                 @endif
 
-                {{-- ################ DRP TYPE = 1,5 Arbitrator, Conciliator ################# --}}
-                {{-- ############################# ORDER SHEET ############################### --}}
-                @if (auth('drp')->check() && in_array(auth('drp')->user()->drp_type, [1, 4, 5]))
+
+                {{-- #################### DRP TYPE = 2 Advocate ################# --}}
+                @if (auth('drp')->check() && auth('drp')->user()->drp_type == 2)
+                {{-- ########################### COURT ROOM ############################ --}}
                     <li
-                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.ordersheet') ? 'text-white bg-lime' : '' }}">
-                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.ordersheet') ? 'text-white bg-lime' : '' }}"
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.advocatecourtroom.courtroomlist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.advocatecourtroom.courtroomlist') ? 'text-white bg-lime' : '' }}"
                             aria-current="page"
-                            style="{{ request()->routeIs($currentGuard . '.ordersheet') ? 'color:white !important;;' : '' }}"
-                            href="{{ route($currentGuard . '.' . 'ordersheet') }}"><i
-                                class="fa-solid fa-file-pen faa-profile"></i> Case Order Sheets</a>
+                            style="{{ request()->routeIs($currentGuard . '.advocatecourtroom.courtroomlist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'advocatecourtroom.courtroomlist') }}"><i
+                                class="fa-solid fa-video faa-profile"></i> Court Room</a>
                     </li>
                 @endif
+
 
                 {{-- #################### DRP TYPE = 3 Case Manager ################# --}}
                 @if (auth('drp')->check() && auth('drp')->user()->drp_type == 3)
@@ -192,6 +195,7 @@
                     </li>
                 @endif
 
+                
                 {{-- ################## DRP TYPE = 1 Arbitrator ################## --}}
                 {{-- ########################## AWARD ########################### --}}
                 @if (auth('drp')->check() && auth('drp')->user()->drp_type == 1)
@@ -228,23 +232,23 @@
                                 class="fa-solid fa-video faa-profile"></i> Court Room</a>
                     </li>
                 @endif
-
                 
-                {{-- ################### DRP TYPE 4 Mediator #################### --}}
-                {{-- ##################### SETTLEMENT AGREEMENT #################### --}}
-                @if (auth('drp')->check() && auth('drp')->user()->drp_type == 4)
+
+                {{-- ################ DRP TYPE = 1- Arbitrator,  4- Mediator,  5- Conciliator ################# --}}
+                {{-- ############################# ORDER SHEET ############################### --}}
+                @if (auth('drp')->check() && in_array(auth('drp')->user()->drp_type, [1, 4, 5]))
                     <li
-                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.mediatormeetingroom.mediatormeetingroomlist') ? 'text-white bg-lime' : '' }}">
-                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.mediatormeetingroom.mediatormeetingroomlist') ? 'text-white bg-lime' : '' }}"
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.ordersheet') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.ordersheet') ? 'text-white bg-lime' : '' }}"
                             aria-current="page"
-                            style="{{ request()->routeIs($currentGuard . '.mediatormeetingroom.mediatormeetingroomlist') ? 'color:white !important;;' : '' }}"
-                            href="{{ route($currentGuard . '.' . 'mediatormeetingroom.mediatormeetingroomlist') }}"><i
-                                class="fa-solid fa-video faa-profile"></i> Meeting Room</a>
+                            style="{{ request()->routeIs($currentGuard . '.ordersheet') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'ordersheet') }}"><i
+                                class="fa-solid fa-file-pen faa-profile"></i> Case Order Sheets</a>
                     </li>
                 @endif
 
 
-                {{-- ################### DRP TYPE  4 - Mediator, 5 - Conciliator #################### --}}
+                {{-- ################### DRP TYPE  4 - Mediator,  5 - Conciliator #################### --}}
                 {{-- ##################### SETTLEMENT AGREEMENT #################### --}}
                 @if (auth('drp')->check() && in_array(auth('drp')->user()->drp_type, [4, 5]))
                     <li
@@ -258,8 +262,22 @@
                 @endif
 
                 
+                {{-- ################### DRP TYPE 4 Mediator #################### --}}
+                {{-- ##################### Meeting Room #################### --}}
+                @if (auth('drp')->check() && auth('drp')->user()->drp_type == 4)
+                    <li
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.mediatormeetingroom.mediatormeetingroomlist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.mediatormeetingroom.mediatormeetingroomlist') ? 'text-white bg-lime' : '' }}"
+                            aria-current="page"
+                            style="{{ request()->routeIs($currentGuard . '.mediatormeetingroom.mediatormeetingroomlist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'mediatormeetingroom.mediatormeetingroomlist') }}"><i
+                                class="fa-solid fa-video faa-profile"></i> Meeting Room</a>
+                    </li>
+                @endif
+
+                
                 {{-- ################### DRP TYPE  5 Conciliator #################### --}}
-                {{-- ##################### SETTLEMENT AGREEMENT #################### --}}
+                {{-- ##################### Meeting Room #################### --}}
                 @if (auth('drp')->check() && auth('drp')->user()->drp_type == 5)
                     <li
                         class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.conciliatormeetingroom.conciliatormeetingroomlist') ? 'text-white bg-lime' : '' }}">

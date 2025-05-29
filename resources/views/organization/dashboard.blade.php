@@ -26,9 +26,9 @@
                                 </div>
 
                                 <div class="custom-dropdown">
-                                    <select id="caseTypeFilter" class="form-control form-select form-dashboard-select">
-                                        <option value="">Case Type</option>
-                                        @foreach (config('constant.case_type') as $key => $label)
+                                    <select id="productTypeFilter" class="form-control form-select form-dashboard-select">
+                                        <option value="">Product Type</option>
+                                        @foreach (config('constant.product_type') as $key => $label)
                                             <option value="{{ $key }}">{{ $label }}</option>
                                         @endforeach
                                     </select>
@@ -39,14 +39,14 @@
                         <div class="row mt-xl-4 mt-3 justify-content-center">
                             <!-- Tabs Section -->
                             <div class="d-flex flex-wrap justify-content-center">
-                                <div class="custom-tab active" data-target="case-type-overview">CASE TYPE OVERVIEW</div>
+                                <div class="custom-tab active" data-target="product-type-overview">PRODUCT TYPE OVERVIEW</div>
                                 {{-- <div class="custom-tab" data-target="product-wise-distribution">PRODUCT WISE DISTRIBUTION
                                 </div> --}}
                                 <div class="custom-tab" data-target="support-contacts">SUPPORT CONTACTS</div>
                             </div>
 
                             <!-- Content Boxes -->
-                            <div id="case-type-overview" class="content-section row gy-lg-3 gy-2">
+                            <div id="product-type-overview" class="content-section row gy-lg-3 gy-2">
                                 <div class="col-md-6 col-12 position-relative">
                                     <div class="custom-card row">
                                         <div class="col-4">
@@ -320,17 +320,17 @@
         $(document).ready(function() {
             function fetchDashboardData() {
                 let productSlug = $('#productFilter').val();
-                let caseType = $('#caseTypeFilter').val();
+                let productType = $('#productTypeFilter').val();
 
                 $.ajax({
                     url: '{{ route('organization.dashboard.filter') }}',
                     type: 'GET',
                     data: {
                         product: productSlug,
-                        case_type: caseType
+                        product_type: productType
                     },
                     success: function(response) {
-                        $('#case-type-overview').html(response.html);
+                        $('#product-type-overview').html(response.html);
                     },
                     error: function() {
                         alert('Something went wrong while fetching dashboard data.');
@@ -338,7 +338,7 @@
                 });
             }
 
-            $('#productFilter, #caseTypeFilter').change(function() {
+            $('#productFilter, #productTypeFilter').change(function() {
                 fetchDashboardData();
             });
         });

@@ -25,7 +25,7 @@
                 <thead class="bg-200 text-900">
                     <tr>
                         <th>#</th>
-                        <th>Case Type</th>
+                        <th>Product Type</th>
                         <th>Claim Petition Name</th>
                         <th>Status</th>
                         <th width="100px">Action</th>
@@ -54,7 +54,7 @@
             order: [[0, 'asc']],
             columns: [
                 { data: 'id', name: 'id' },
-                { data: 'case_type', name: 'case_type' },
+                { data: 'product_type', name: 'product_type' },
                 { data: 'name', name: 'name' },
                 { data: 'status', name: 'status' },
                 { data: 'action', name: 'action', orderable: false, searchable: false }

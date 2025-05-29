@@ -27,6 +27,13 @@
                             <div class="col-auto align-self-center">
                                 <h5 class="mb-0" data-anchor="data-anchor">Filed Case Details</h5>
                             </div>
+                             <div class="col-auto ms-auto">
+                                <div class="nav nav-pills nav-pills-falcon flex-grow-1" role="tablist">
+                                    <a href="{{ route('drp.allcases.caselist') }}"
+                                        class="btn btn-outline-secondary"> <i class="fa fa-arrow-left me-1"></i> Go
+                                        Back</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     @if ($caseData->isNotEmpty())
@@ -208,6 +215,12 @@
                                             <hr style="border: 3px solid #ffb000; margin-bottom:0px;">
                                             <h4 class="case-heading mt-0">File Case Details :</h4>
                                             <div class="row gx-5 gy-3">
+                                                <div class="col-md-4 col-6">
+                                                    <p class="case-title">Product Type</p>
+                                                    <p class="case-text">
+                                                        {{ config('constant.product_type')[$case->product_type] ?? '--' }}
+                                                    </p>
+                                                </div>
                                                 <div class="col-md-4 col-6">
                                                     <p class="case-title">Product</p>
                                                     <p class="case-text">{{ $case->file_case_details->product ?? '--' }}

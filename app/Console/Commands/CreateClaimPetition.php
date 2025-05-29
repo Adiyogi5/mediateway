@@ -97,7 +97,7 @@ class CreateClaimPetition extends Command
                     $arbitratorsName = Drp::whereIn('id', $arbitratorIds)->pluck('name')->implode(', ');
                     $casemanagerData = Drp::where('id', $assigncaseData->case_manager_id)->first();
 
-                    $claimpetitionData = ClaimPetition::where('case_type', $value->case_type)->first();
+                    $claimpetitionData = ClaimPetition::where('product_type', $value->product_type)->first();
                     $claimPetition     = $claimpetitionData->notice_format;
 
                     // Define your replacement values

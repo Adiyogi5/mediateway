@@ -21,7 +21,7 @@ class BulkUpdateCaseImport implements ToModel, WithHeadingRow
         'claimant_address_type', 'claimant_address1', 'claimant_state', 'claimant_city', 'claimant_pincode',
         'respondent_first_name', 'respondent_middle_name', 'respondent_last_name', 'respondent_mobile', 'respondent_email',
         'respondent_address_type', 'respondent_address1', 'respondent_state', 'respondent_city', 'respondent_pincode',
-        'amount_in_dispute', 'case_type', 'brief_of_case', 'product', 'asset_description', 'sanction_letter_date','rate_of_interest', 'registration_no', 'chassis_no',
+        'amount_in_dispute', 'case_type', 'brief_of_case', 'product_type', 'product', 'asset_description', 'sanction_letter_date','rate_of_interest', 'registration_no', 'chassis_no',
         'engin_no', 'finance_amount', 'finance_amount_in_words', 'emi_amt', 'emi_due_date', 'tenure', 'foreclosure_amount_date',
         'foreclosure_amount', 'foreclosure_amount_in_words', 'claim_signatory_authorised_officer_name',
         'claim_signatory_authorised_officer_father_name', 'claim_signatory_authorised_officer_designation',
@@ -101,6 +101,7 @@ class BulkUpdateCaseImport implements ToModel, WithHeadingRow
             'respondent_pincode'      => $row['respondent_pincode'] ?? null,
             'amount_in_dispute'       => $row['amount_in_dispute'] ?? null,
             'case_type'               => $row['case_type'] ?? null,
+            'product_type'            => $row['product_type'] ?? null,
             'brief_of_case'           => $row['brief_of_case'] ?? null,
         ]);
     

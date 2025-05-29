@@ -22,7 +22,6 @@ class OrderSheetController extends Controller
 
     public function index(Request $request): View|JsonResponse|RedirectResponse
     {
-        // Ensure the user is authenticated and has drp_type == 1
         if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [1, 4, 5])){
             return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
         }

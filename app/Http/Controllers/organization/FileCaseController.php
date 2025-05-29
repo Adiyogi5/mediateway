@@ -42,7 +42,7 @@ class FileCaseController extends Controller
         }
 
         if ($request->ajax()) {
-        $data = FileCase::select('file_cases.id', 'file_cases.case_type', 'file_cases.organization_id', 'file_cases.case_number', 'file_cases.loan_number', 'file_cases.claimant_first_name', 'file_cases.claimant_last_name', 'file_cases.claimant_mobile', 'file_cases.respondent_first_name', 'file_cases.respondent_last_name', 'file_cases.respondent_mobile', 'file_cases.status', 'file_cases.created_at')
+        $data = FileCase::select('file_cases.id', 'file_cases.case_type', 'file_cases.product_type', 'file_cases.organization_id', 'file_cases.case_number', 'file_cases.loan_number', 'file_cases.claimant_first_name', 'file_cases.claimant_last_name', 'file_cases.claimant_mobile', 'file_cases.respondent_first_name', 'file_cases.respondent_last_name', 'file_cases.respondent_mobile', 'file_cases.status', 'file_cases.created_at')
             ->join('organizations', 'file_cases.organization_id', '=', 'organizations.id')
             ->where(function ($query) use ($organization) {
                 if ($organization->parent_id == null) {
@@ -56,6 +56,10 @@ class FileCaseController extends Controller
         // Apply filters
         if ($request->case_type) {
             $data->where('file_cases.case_type', $request->case_type);
+        }
+
+        if ($request->product_type) {
+            $data->where('file_cases.product_type', $request->product_type);
         }
 
         if ($request->case_number) {
@@ -100,6 +104,9 @@ class FileCaseController extends Controller
             ->editColumn('case_type', function ($row) {
                 return config('constant.case_type')[$row->case_type] ?? 'Unknown';
             })
+            ->editColumn('product_type', function ($row) {
+                return config('constant.product_type')[$row->product_type] ?? 'Unknown';
+            })
             ->editColumn('created_at', function ($row) {
                 return $row['created_at']->format('d M, Y');
             })
@@ -121,7 +128,7 @@ class FileCaseController extends Controller
             ->orderColumn('created_at', function ($query, $order) {
                 $query->orderBy('created_at', $order);
             })
-            ->rawColumns(['action', 'status','case_type'])
+            ->rawColumns(['action', 'status', 'case_type', 'product_type'])
             ->make(true);
         }
 
