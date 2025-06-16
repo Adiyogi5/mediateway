@@ -1,16 +1,18 @@
 <?php
 namespace App\Console\Commands;
 
+use App\Library\TextLocal;
 use App\Models\Country;
 use App\Models\FileCase;
 use App\Models\MediatorMeetingRoom;
 use App\Models\Setting;
-use Illuminate\Support\Facades\Mail;
-use Twilio\Rest\Client;
+use App\Models\SmsCount;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Twilio\Rest\Client;
 
 class CreateLiveMediatorMeetingRoom extends Command
 {
@@ -90,11 +92,11 @@ class CreateLiveMediatorMeetingRoom extends Command
                 ->where('send_whatsapp_to_respondent', 0)
                 ->get();
 
-           foreach ($meetingroomData as $meetingRoom) {
+            foreach ($meetingroomData as $meetingRoom) {
                 $room_id = $meetingRoom->room_id;
 
                 $caseIds = explode(',', $meetingRoom->meeting_room_case_id);
-                $cases = FileCase::whereIn('id', $caseIds)->get();
+                $cases   = FileCase::whereIn('id', $caseIds)->get();
 
                 foreach ($cases as $case) {
                     $email = filter_var($case->respondent_email, FILTER_SANITIZE_EMAIL);
@@ -113,7 +115,7 @@ class CreateLiveMediatorMeetingRoom extends Command
 
                     $messageContent = "Your Meeting at Mediateway is scheduled for Date: {$meetingRoom->date} at {$meetingRoom->time}. Join using this link. Thank you! Mediateway.";
                     $encodedMessage = urlencode($messageContent);
-                    $description = route('front.guest.livemediatormeetingroom', ['room_id' => $room_id]) . "?case_id=$case_id&message=$encodedMessage";
+                    $description    = route('front.guest.livemediatormeetingroom', ['room_id' => $room_id]) . "?case_id=$case_id&message=$encodedMessage";
 
                     // Send Email
                     Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($subject, $email) {
@@ -132,6 +134,47 @@ class CreateLiveMediatorMeetingRoom extends Command
                         ]);
                     } catch (\Throwable $th) {
                         Log::error('SMS sending failed: ' . $th->getMessage());
+                    }
+
+                    // ############# Send Message using Mobile Number #############
+                    if (! empty($case->respondent_mobile)) {
+                        $approved_sms_count = SmsCount::where('count', '>', 0)->first();
+
+                        if (! $approved_sms_count) {
+                            return response()->json([
+                                'status'  => false,
+                                'message' => "Message can't be sent because your SMS quota is empty.",
+                            ], 422);
+                        }
+
+                        $mobile        = preg_replace('/\D/', '', trim($case->respondent_mobile));
+                        $mobilemessage = "Hello User Your Login Verification Code is $otp. Thanks AYT";
+                        try {
+                            $smsResponse = TextLocal::sendSms(['+91' . $mobile], $mobilemessage);
+
+                            if ($smsResponse) {
+                                $approved_sms_count->decrement('count');
+
+                                return response()->json([
+                                    'status'  => true,
+                                    'message' => 'Message sent successfully to your mobile!',
+                                    'data'    => '',
+                                ]);
+                            } else {
+                                return response()->json([
+                                    'status'  => false,
+                                    'message' => "Message couldn't be sent, please retry later.",
+                                    'data'    => '',
+                                ], 422);
+                            }
+                        } catch (\Exception $e) {
+                            Log::error('SMS send failed: ' . $e->getMessage());
+
+                            return response()->json([
+                                'status'  => false,
+                                'message' => 'An error occurred while sending SMS.',
+                            ], 500);
+                        }
                     }
                 }
 

@@ -84,6 +84,7 @@ class CourtRoomController extends Controller
                     'court_rooms.time',
                     'court_rooms.hearing_type',
                     'court_rooms.case_manager_id',
+                    'court_rooms.advocate_id',
                     'court_rooms.recording_url',
                     'court_rooms.arbitrator_id',
                     'court_rooms.individual_id',
@@ -136,6 +137,7 @@ class CourtRoomController extends Controller
                 'court_rooms.time',
                 'court_rooms.hearing_type',
                 'court_rooms.case_manager_id',
+                'court_rooms.advocate_id',
                 'court_rooms.recording_url',
                 'court_rooms.arbitrator_id',
                 'court_rooms.individual_id',
@@ -205,6 +207,7 @@ class CourtRoomController extends Controller
                 'court_rooms.time',
                 'court_rooms.hearing_type',
                 'court_rooms.case_manager_id',
+                'court_rooms.advocate_id',
                 'court_rooms.recording_url',
                 'court_rooms.arbitrator_id',
                 'court_rooms.individual_id',
@@ -320,6 +323,7 @@ class CourtRoomController extends Controller
                     'court_rooms.time',
                     'court_rooms.hearing_type',
                     'court_rooms.case_manager_id',
+                    'court_rooms.advocate_id',
                     'court_rooms.recording_url',
                     'court_rooms.arbitrator_id',
                     'court_rooms.individual_id',
@@ -563,7 +567,6 @@ class CourtRoomController extends Controller
         }
         return $flat;
     }
-
 
     public function saveNotice(Request $request)
     {

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Models\OrganizationPermission;
-
+use Carbon\Carbon;
 
 class RegisteredUserController extends Controller
 {
@@ -50,18 +50,18 @@ class RegisteredUserController extends Controller
                 'drp_type' => $guard === 'drp' ? 'required|in:' . implode(',', array_keys(config('constant.drp_type'))) : 'nullable',
             ]);
 
-            // $checkOtp = RegistrationOtp::firstWhere(['mobile' => $request->mobile, 'otp' => $request->otp]);
-            // if (!$checkOtp) {
-            //     throw ValidationException::withMessages([
-            //         'otp' => 'Incorrect OTP..!!',
-            //     ]);
-            // }
+            $checkOtp = RegistrationOtp::firstWhere(['mobile' => $request->mobile, 'otp' => $request->otp]);
+            if (!$checkOtp) {
+                throw ValidationException::withMessages([
+                    'otp' => 'Incorrect OTP..!!',
+                ]);
+            }
     
-            // if ($checkOtp && Carbon::now()->isAfter($checkOtp->expire_at)) {
-            //     throw ValidationException::withMessages([
-            //         'otp' => 'Your OTP has been expired',
-            //     ]);
-            // }
+            if ($checkOtp && Carbon::now()->isAfter($checkOtp->expire_at)) {
+                throw ValidationException::withMessages([
+                    'otp' => 'Your OTP has been expired',
+                ]);
+            }
 
             $userModel = '\App\Models\\' . ucfirst($guard);
             $user = $userModel::create([

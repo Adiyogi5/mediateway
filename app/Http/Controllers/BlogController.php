@@ -91,34 +91,4 @@ class BlogController extends Controller
         return view('blogs.edit', compact('blogs'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
-    {
-        $blogs = Blog::find($id);
-        if (!$blogs) {
-            return to_route('blogs')->withError('Blog Not Found..!!');
-        }
-
-        $data = $request->validate([
-            'title'             => ['required', 'string', 'max:200'],
-            'post_by'           => ['required'],
-            'date'              => ['required'],
-            'short_description' => ['required', 'string', 'max:300'],
-            'description'       => ['required', 'string', 'max:10000'],
-            'status'            => ['required', 'integer'],
-            'image'             => ['image', 'mimes:jpg,png,jpeg', 'max:5048']
-        ]);
-
-        if ($request->file('image')) {
-            Helper::deleteFile($blogs->image);
-            $data['image'] = Helper::saveFile($request->file('image'), 'blogs');
-        }
-
-        $blogs->update($data);
-        return to_route('blogs')->withSuccess('Blog Updated Successfully..!!');
-    }
-
-    public function delete(Request $request): JsonResponse
-    {
-        return Helper::deleteRecord(new Blog, $request->id);
-    }
 }

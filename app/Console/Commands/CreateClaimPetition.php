@@ -69,7 +69,7 @@ class CreateClaimPetition extends Command
             ->join('organization_notice_timelines', 'organization_notice_timelines.organization_list_id', '=', 'organization_lists.id')
             ->whereHas('notices', function ($query) {
                 $query->where('notice_type', 1)
-                    ->whereRaw('DATEDIFF(CURDATE(), notices.notice_date) >= organization_notice_timelines.notice_3d');
+                    ->whereRaw('DATEDIFF(CURDATE(), DATE(CONVERT_TZ(notices.notice_date, "+00:00", "-06:00"))) >= organization_notice_timelines.notice_3d');
             })
             ->where('file_cases.claim_petition', NULL)
             ->whereIn('organization_notice_timelines.notice_3d', function ($query) {

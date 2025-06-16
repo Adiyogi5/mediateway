@@ -19,6 +19,12 @@
             </ul>
 
             <ul class="navbar-item flex-row ms-lg-auto ms-0 action-area">
+                <li class="nav-item theme-text ms-auto">
+                    <b>Total SMS Count: </b> {{ $approved_sms_summary->total_count }}/{{ $approved_sms_summary->total_credited }}
+                    <a href="{{ route('all_sms_count') }}" class="text-decoration-none text-white px-1">
+                        <i class="fa-solid fa-info faa-count"></i>
+                    </a>
+                </li>
                 <li class="nav-item dropdown user-profile-dropdown order-lg-0 order-1">
                     <a href="javascript:void(0);" class="nav-link dropdown-toggle user" id="userProfileDropdown"
                         data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

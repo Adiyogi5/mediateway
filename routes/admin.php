@@ -46,6 +46,7 @@ use App\Http\Controllers\TestimonialController;
 Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(function () {
     Profile::routes();
     Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard');
+    Route::get('all-sms-count', [HomeController::class,  'all_sms_count'])->name('all_sms_count');
 
     // ----------------------- Role Routes ----------------------------------------------------
     Route::controller(RolesController::class)->name('roles')->group(function () {
@@ -195,10 +196,10 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
 
     // ----------------------- Organization Routes ----------------------------------------------------
     Route::controller(OrganizationListController::class)->group(function () {
-        Route::get('organizationlist', 'index')->name('organizationlist')->middleware('isAllow:112,can_view');
-        Route::post('organizationlist', 'save')->name('organizationlist')->middleware('isAllow:112,can_add');
-        Route::put('organizationlist', 'update')->name('organizationlist')->middleware('isAllow:112,can_edit');
-        Route::delete('organizationlist', 'delete')->name('organizationlist')->middleware('isAllow:112,can_delete');
+        Route::get('organizationlist', 'index')->name('organizationlist.index')->middleware('isAllow:112,can_view');
+        Route::post('organizationlist', 'save')->name('organizationlist.store')->middleware('isAllow:112,can_add');
+        Route::put('organizationlist', 'update')->name('organizationlist.update')->middleware('isAllow:112,can_edit');
+        Route::delete('organizationlist', 'delete')->name('organizationlist.destroy')->middleware('isAllow:112,can_delete');
     });
 
     // ----------------------- BLOG Routes ----------------------------------------------------

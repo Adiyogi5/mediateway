@@ -26,6 +26,8 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('bulk:create-claim-petition')->everyOneMinutes();
 
+        $schedule->command('bulk:send-1-notice')->everyOneMinutes();
+        $schedule->command('bulk:send-1b-notice')->everyOneMinutes();
         $schedule->command('bulk:send-2b-notice')->everyOneMinutes();
         $schedule->command('bulk:send-3a-notice')->everyOneMinutes();
         $schedule->command('bulk:send-3b-notice')->everyOneMinutes();

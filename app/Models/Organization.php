@@ -68,7 +68,7 @@ class Organization extends Authenticatable
 
     public function organizationDetail()
     {
-        return $this->hasOne(organizationDetail::class, 'organization_id');
+        return $this->hasOne(OrganizationDetail::class, 'organization_id');
     }
 
     public function city()

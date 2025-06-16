@@ -960,6 +960,7 @@
     }
     .navbar-toggler{
         padding: 2px;
+        margin: auto;
     }
     .nav-title {
         margin: 0px 3px;

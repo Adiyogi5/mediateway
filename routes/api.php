@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CommonController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
@@ -65,6 +66,14 @@ Route::get('/create_claim_petition', function () {
 
 
 // Send All Types of Notices 
+// Route::get('/bulk_send_1_notice', function () {
+//     Artisan::call('bulk:send-1-notice');   
+//     return '<h1>update bulk send 1 notice</h1>';
+// });
+// Route::get('/bulk_send_1b_notice', function () {
+//     Artisan::call('bulk:send-1b-notice');   
+//     return '<h1>update bulk send 1b notice</h1>';
+// });
 Route::get('/bulk_send_2b_notice', function () {
     Artisan::call('bulk:send-2b-notice');   
     return '<h1>update bulk send 2b notice</h1>';
@@ -104,6 +113,9 @@ Route::get('clear-all', function () {
     return '<h1>Clear All</h1>';
 });
 
+Route::controller(CommonController::class)->group(function () {
+    Route::post('send-otp', 'sendOtp');
+});
 
 Route::any('{path}', function () {
     return response()->json([

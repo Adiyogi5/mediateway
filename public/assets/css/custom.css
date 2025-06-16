@@ -26,7 +26,16 @@ div.dataTables_wrapper div.dataTables_paginate {
 div.dataTables_wrapper div.dataTables_paginate .pagination {
     width: 100%;
 }
-
+.faa-count{
+    background-color: white;
+    border-radius: 50%;
+    height: 20px;
+    width: 20px;
+    color: #0e1726;
+    line-height: 20px;
+    text-align: center;
+    font-size: small;
+}
 .invalid-feedback {
     display: block;
 }

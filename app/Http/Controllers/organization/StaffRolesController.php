@@ -32,19 +32,19 @@ class StaffRolesController extends Controller
             return Datatables::of($data)
                 ->addColumn('action', function ($row) {
                     $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
-                    // if (Helper::userCan(102, 'can_edit')) {
+                    if (Helper::organizationCan(202, 'can_edit')) {
                         $btn .= '<button class="dropdown-item edit" data-all="' . htmlspecialchars(json_encode($row))  . '">Edit</button>';
                         $btn .= '<a class="dropdown-item" href="' . route('organization.staffroles.permission.view', $row->slug) . '">Permission</a>';
-                    // }
-                    // if (Helper::userCan(102, 'can_delete')) {
+                    }
+                    if (Helper::organizationCan(202, 'can_delete')) {
                         $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
-                    // }
+                    }
 
-                    // if (Helper::userAllowed(102)) {
+                    if (Helper::organizationAllowed(202)) {
                         return $btn;
-                    // } else {
-                    //     return '';
-                    // }
+                    } else {
+                        return '';
+                    }
                 })
                 ->editColumn('status', function ($row) {
                     return $row['status'] == 1 ? '<small class="badge fw-semi-bold rounded-pill status badge-success"> Active</small>' : '<small class="badge fw-semi-bold rounded-pill status badge-light-danger"> Inactive</small>';

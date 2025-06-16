@@ -6,7 +6,7 @@
 
     <div class="container blog-section">
         <div class="row my-5">
-            <div class="col-lg-9">
+            <div class="col-md-9 col-12">
                 <div class="row" id="blog-container">
                     @include('front.blogs_data')
                 </div>
@@ -17,14 +17,16 @@
             </div>
 
             <!-- Right Sidebar -->
-            <div class="col-lg-3">
+            <div class="col-md-3 col-12">
                 <h5 class="popular-heading">POPULAR</h5>
                 <div class="popular-list">
                     @foreach($blogssidebar as $sidebar)
-                    <div class="popular-item d-flex align-items-center">
-                        <img src="{{ asset('storage/' . $sidebar['image']) }}" alt="{{$sidebar['title']}}">
-                        <p class="card-text fw-bold">{{$sidebar['title']}}</p>
-                    </div>
+                    <a class="text-decoration-none" href="{{ route('front.blogdetails', $sidebar['id']) }}">
+                        <div class="popular-item d-flex align-items-center">
+                            <img src="{{ asset('storage/' . $sidebar['image']) }}" alt="{{$sidebar['title']}}">
+                            <p class="card-text fw-bold">{{$sidebar['title']}}</p>
+                        </div>
+                    </a>
                     @endforeach
                 </div>
             </div>

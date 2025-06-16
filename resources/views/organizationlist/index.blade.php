@@ -45,6 +45,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content position-relative">
                 <form id="addForm">
+                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="tabsModalLabel">Add Organization</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
@@ -150,6 +151,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content position-relative">
                 <form id="editForm">
+                    @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="tabsModalLabel">Edit Organization</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
@@ -258,7 +260,7 @@
         $(function() {
             var base_url = "{{ asset('storage') }}/";
             var table = $('.table-datatable').DataTable({
-                ajax: "{{ request()->url() }}",
+                ajax: "{{ route('organizationlist.index') }}",
                 order: [
                     [2, 'desc']
                 ],
@@ -318,7 +320,10 @@
                 submitHandler: function(form) {
                     var formData = new FormData(form);
                     $.ajax({
-                        url: "{{ request()->url() }}",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "{{ route('organizationlist.store') }}",
                         data: formData,
                         contentType: false,
                         processData: false,
@@ -410,7 +415,10 @@
                     $("#overlay").show();
                     formData.append('_method', 'PUT')
                     $.ajax({
-                        url: "{{ request()->url() }}",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "{{ route('organizationlist.update') }}",
                         data: formData,
                         contentType: false,
                         processData: false,
@@ -434,7 +442,7 @@
                 Swal.fire(deleteMessageSwalConfig).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "{{ request()->url() }}",
+                            url: "{{ route('organizationlist.destroy') }]",
                             data: {
                                 'id': id
                             },

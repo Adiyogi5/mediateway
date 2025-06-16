@@ -23,7 +23,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item-footer mb-2">
-                                    <a href="{{ route('front.news') }}" class="nav-link-footer">
+                                    <a href="{{ route('front.faqs') }}" class="nav-link-footer">
                                         FAQ's
                                     </a>
                                 </li>

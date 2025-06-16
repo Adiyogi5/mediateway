@@ -36,4 +36,9 @@ return [
         'server_secret' => env('ZEGO_SERVER_SECRET'),
     ],
 
+    'whatsapp' => [
+        'api_key' => env('WHATSAPP_API_KEY'),
+        'url' => env('WHATSAPP_API_URL'),
+    ],
+
 ];

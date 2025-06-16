@@ -30,7 +30,7 @@ class ProfileController extends Controller
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
 
-        $organizationDetail = $organization->organizationDetail;
+        $organizationDetail = $organization->organizationDetail ?? null;
 
         return view('organization.profile', compact('organization','states','title','organizationDetail'));
     }

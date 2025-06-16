@@ -305,33 +305,33 @@ class FileCaseController extends Controller
         }
 
         $request->validate([
-            'notice_first' => 'required|mimes:pdf|max:5120',
+            'notice_first'  => 'required|mimes:pdf|max:5120',
             'notice_second' => 'required|mimes:pdf|max:5120',
-            'notice_third' => 'required|mimes:pdf|max:5120',
+            'notice_third'  => 'required|mimes:pdf|max:5120',
         ]);
 
         // 🗓️ Get the date increments from $noticeTimeline
-        $noticeSecondDays = $noticeTimeline->notice_1a ?? 0;
-        $noticeThirdDays = $noticeTimeline->notice_1b ?? 0;
+        $noticeSecondDays   = $noticeTimeline->notice_1a ?? 0;
+        $noticeThirdDays    = $noticeTimeline->notice_1b ?? 0;
 
         // 🕒 Calculate the dates based on current date + days
-        $firstNoticeDate = now(); // Today's date
-        $secondNoticeDate = now()->addDays($noticeSecondDays);
-        $thirdNoticeDate = now()->addDays($noticeThirdDays);
+        $firstNoticeDate    = now(); // Today's date
+        $secondNoticeDate   = now()->copy()->addDays($noticeSecondDays - 1);
+        $thirdNoticeDate    = now()->copy()->addDays($noticeThirdDays - 1);
 
         // First notice (type 1)
         if ($request->hasFile('notice_first')) {
             $noticefirstPath = Helper::saveFile($request->file('notice_first'),'notices');
 
             $notice = Notice::create([
-                'file_case_id' => $id,
-                'notice_type' => 1,
-                'notice' => $noticefirstPath,
-                'notice_date' => $firstNoticeDate,
-                'notice_send_date' => null,
-                'email_status' => 0,
-                'whatsapp_status' => 0,
-                'whatsapp_notice_status' => 0,
+                'file_case_id'              => $id,
+                'notice_type'               => 1,
+                'notice'                    => $noticefirstPath,
+                'notice_date'               => $firstNoticeDate,
+                'notice_send_date'          => null,
+                'email_status'              => 0,
+                'whatsapp_status'           => 0,
+                'whatsapp_notice_status'    => 0,
                 'whatsapp_dispatch_datetime' => null,
             ]);
 

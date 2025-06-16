@@ -5,6 +5,8 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\Common\CommonController;
 use App\Http\Controllers\FireController;
 use App\Http\Controllers\FrontController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Route;
 
 // ================== Frontend Routes ==================
@@ -32,13 +34,32 @@ Route::controller(FrontController::class)->name('front.')->group(function () {
 
     // ============= Blogs Routes ======
     Route::get('/blogs', 'blogs')->name('blogs');
+    Route::get('/blog-details/{id}', 'blogdetails')->name('blogdetails');
 
     // ============= News Routes ======
     Route::get('/news', 'news')->name('news');
+    Route::get('/news-details/{id}', 'newsdetails')->name('newsdetails');
 
     // ============= Faqs Routes ======
     Route::get('/faqs', 'faqs')->name('faqs');
 });
+
+
+Route::controller(ServiceController::class)->name('front.')->group(function () {
+    Route::get('/services', 'index')->name('services.services');
+    Route::get('/services/msme', 'msme')->name('services.msme');
+    Route::get('/services/mediation', 'mediation')->name('services.mediation');
+    Route::get('/services/conciliation', 'conciliation')->name('services.conciliation');
+    Route::get('/services/arbitration', 'arbitration')->name('services.arbitration');
+    Route::get('/services/odr', 'odr')->name('services.odr');
+    Route::get('/services/lokadalat', 'lokadalat')->name('services.lokadalat');
+});
+
+Route::controller(ProductController::class)->name('front.')->group(function () {
+    Route::get('/products/digital-room', 'digitalroom')->name('products.digitalroom');
+    Route::get('/products/odr-platform', 'odrplatform')->name('products.odrplatform');
+});
+
 
 // ================== Push Notification Routes ==================
 Route::get('/push-notificaiton', [FireController::class, 'index'])->name('push-notificaiton');

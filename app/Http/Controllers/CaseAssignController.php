@@ -368,6 +368,7 @@ class CaseAssignController extends Controller
                             font-family: DejaVu Sans, sans-serif;
                             font-size: 12px;
                             line-height: 1.4;
+                            color: #000;
                         }
                         p {
                             margin: 0px 0;

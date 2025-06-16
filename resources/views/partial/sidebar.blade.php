@@ -106,8 +106,8 @@
         </li>
         @endif
 
-        <li class="menu @routeis('organizationlist') active @endrouteis">
-            <a href="{{route('organizationlist')}}" class="dropdown-toggle">
+        <li class="menu @routeis('organizationlist.index') active @endrouteis">
+            <a href="{{route('organizationlist.index')}}" class="dropdown-toggle">
                 <div class="">
                     <i class="fa-duotone fa-sitemap"></i>
                     <span>Organization List</span>

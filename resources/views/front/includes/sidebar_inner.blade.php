@@ -84,7 +84,7 @@
 
                 {{-- #################### Organization #################### --}}
                 {{-- ####################################################### --}}
-                @if (auth('organization')->check())
+                @if (auth('organization')->check()) 
                     @if (Helper::organizationCan(203))
                         <li
                             class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.staffroles') ? 'text-white bg-lime' : '' }}">

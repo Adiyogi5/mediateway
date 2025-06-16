@@ -10,7 +10,7 @@
                     </div>
                     <h5 class="card-title">{{$new['title']}}</h5>
                     <p class="card-text">{{$new['short_description']}}</p>
-                    <a href="#" class="read-more">Read More</a>
+                    <a href="{{ route('front.newsdetails', $new['id'])}}" class="read-more">Read More</a>
                 </div>
             </div>
         </div>

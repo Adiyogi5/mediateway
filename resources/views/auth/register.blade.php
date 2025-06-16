@@ -30,7 +30,7 @@
                                     id="{{ $guard }}">
                                     <form method="POST" action="{{ route('register') }}" id="{{ $guard . 'Form' }}">
                                         @csrf
-                                        
+
                                         <input type="hidden" name="guard" value="{{ $guard }}">
 
                                         <div class="row">
@@ -56,25 +56,29 @@
                                             <div class="col-md-6 mb-3 name-field">
                                                 <label for="name">Name</label>
                                                 @if (old('guard') === $guard && $guard === 'organization')
-                                                    <select name="name" class="form-select @error('name') is-invalid @enderror">
+                                                    <select name="name"
+                                                        class="form-select @error('name') is-invalid @enderror">
                                                         <option value="">-- Select Organization --</option>
                                                         @foreach (\App\Models\OrganizationList::where('status', 1)->get() as $org)
-                                                            <option value="{{ $org->name }}" {{ old('name') == $org->name ? 'selected' : '' }}>
+                                                            <option value="{{ $org->name }}"
+                                                                {{ old('name') == $org->name ? 'selected' : '' }}>
                                                                 {{ $org->name }}
                                                             </option>
                                                         @endforeach
                                                     </select>
                                                 @else
                                                     <div class="input-group">
-                                                        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                                                        <input type="text" name="name" style="border-left: 1px solid #ffffff00;"
+                                                        <span class="input-group-text"><i
+                                                                class="fa-solid fa-user"></i></span>
+                                                        <input type="text" name="name"
+                                                            style="border-left: 1px solid #ffffff00;"
                                                             class="form-control @error('name') is-invalid @enderror">
                                                     </div>
                                                 @endif
                                                 @error('name')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
-                                            </div>                                            
+                                            </div>
 
 
                                             <div class="col-md-6 mb-3">
@@ -127,9 +131,9 @@
                                             </div>
                                             <div class="col-4">
                                                 <div class="mb-3 text-end">
-                                                    <button type="button"
+                                                    <button type="button" id="sendOtp"
                                                         class="btn btn-send border-0 bg-transparent sendOtp pt-0 mt-0"
-                                                        data-target="otp-{{ $guard }}">
+                                                        data-target="otp-{{ $guard }}" data-guard="{{ $guard }}">
                                                         Send OTP <i class="fa fa-refresh ms-2"></i>
                                                     </button>
                                                 </div>
@@ -162,7 +166,6 @@
 @endsection
 
 @section('js')
-
     <script>
         $(function() {
             // Set default active tab (Individual)
@@ -184,10 +187,11 @@
                     $.ajax({
                         url: "{{ url('/get-organizations') }}",
                         method: 'GET',
-                        success: function (response) {
+                        success: function(response) {
                             let options = '<option value="">-- Select Organization --</option>';
-                            response.forEach(function (org) {
-                                options += `<option value="${org.name}">${org.name}</option>`;
+                            response.forEach(function(org) {
+                                options +=
+                                    `<option value="${org.name}">${org.name}</option>`;
                             });
 
                             $form.find('.name-field').html(`
@@ -215,20 +219,64 @@
             });
 
             // OTP sending logic
-            $('.sendOtp').on('click', function() {
-                var targetOtpInput = $('#' + $(this).data('target'));
-                var mobileInput = targetOtpInput.closest('form').find(
-                    'input[name="mobile"]'); // Find the corresponding mobile input
+            $(function() {
+                $('.sendOtp').on('click', function() {
+                    var targetOtpInput = $('#' + $(this).data('target'));
+                    var form = targetOtpInput.closest('form');
+                    var mobileInput = form.find('input[name="mobile"]');
+                    var mobile = mobileInput.val().trim();
+                    var button = $(this);
 
-                if (mobileInput.val().trim().length !== 10) {
-                    toastr.error("Please enter a valid 10-digit mobile number before requesting OTP.");
-                    return;
-                }
+                    var guard = form.find('input[name="guard"]').val(); // ✅ Correct: Dynamic from the form
 
-                var generatedOtp = Math.floor(100000 + Math.random() * 900000);
-                targetOtpInput.val(generatedOtp);
-                toastr.success("OTP sent successfully! (For testing: " + generatedOtp + ")");
+                    if (!mobile || mobile.length !== 10) {
+                        toastr.error(
+                            "Please enter a valid 10-digit mobile number before requesting OTP."
+                            );
+                        return;
+                    }
+
+                    button.prop('disabled', true);
+                    button.find('i').addClass('fa-spin');
+
+                    $.ajax({
+                        url: "{{ url('api/send-otp') }}",
+                        type: 'POST',
+                        data: {
+                            mobile: mobile,
+                            guard: guard, // send as string
+                            is_register: 1 // or 0 depending on logic
+                        },
+                        headers: {
+                            'x-api-key': "{{ config('constant.secret_token') }}"
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            if (data.status) {
+                                toastr.success(data.message);
+                                setTimeout(() => {
+                                    button.prop('disabled', false);
+                                    button.find('i').removeClass('fa-spin');
+                                }, 30000);
+                            } else {
+                                toastr.error(data.message);
+                                if (data.data) {
+                                    form.validate().showErrors(data.data);
+                                }
+                                button.prop('disabled', false);
+                                button.find('i').removeClass('fa-spin');
+                            }
+                        },
+                        error: function(xhr) {
+                            toastr.error("Something went wrong while sending OTP.");
+                            console.log(xhr.responseText);
+                            button.prop('disabled', false);
+                            button.find('i').removeClass('fa-spin');
+                        }
+                    });
+                });
             });
+
 
             // Function to initialize validation based on the active tab
             function initializeValidation(targetTab) {

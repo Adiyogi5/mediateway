@@ -2,7 +2,7 @@
     <section class="bg-orange-custom nav-top-head">
         <div class="container">
             <div class="row d-flex align-items-center justify-content-center justify-content-md-betweeen">
-                <div class="col-12 col-sm-6 col-md-6 col-lg-6 px-0 d-block d-md-block align-self-center">
+                <div class="col-12 col-sm-6 col-md-8 col-lg-6 px-0 d-block d-md-block align-self-center">
                     <ul
                         class="nav align-self-center text-center justify-content-center text-md-start justify-content-md-start">
                         <li class="top-li me-1 ps-lg-0 pe-xl-2 pe-2 my-auto d-block d-md-block">
@@ -24,7 +24,7 @@
                         @endif
                     </ul>
                 </div>
-                <div class="col-12 col-sm-6 col-md-6 col-lg-6 px-0 d-block d-md-block align-self-center">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-6 px-0 d-block d-md-block align-self-center">
                     <ul class="nav align-self-center gap-2">
                         <li class="top-li me-1 ps-lg-0 pe-xl-2 pe-2 ms-none ms-md-auto my-auto d-block d-md-block">
                             @if (!empty($site_settings['instagram']))
@@ -98,7 +98,7 @@
                         @if ($currentGuard)
                             <ul class="nav ms-auto d-flex">
                                 <li class="nav-item dropdown rounded-2 d-xl-none d-lg-none d-md-block d-block">
-                                    <a class="nav-link text-dark dropdown-toggle d-flex align-items-center"
+                                    <a class="nav-link text-dark dropdown-toggle d-flex align-items-center px-1"
                                         href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                                         aria-expanded="false">
 
@@ -112,7 +112,15 @@
                                             class="rounded-circle me-2" alt="" width="40px" height="40px">
 
                                             <div class="flex-column text-start">
-                                                {{ auth($currentGuard)->user()->name }}
+                                                @php
+                                                    $name = auth($currentGuard)->user()->name;
+                                                    $formattedName = strlen($name) > 15
+                                                        ? substr($name, 0, 14) . '<br>' . substr($name, 14)
+                                                        : $name;
+                                                @endphp
+                                                <small style="line-height: 18px;">{!! $formattedName !!}</small>
+
+
                                                 @php
                                                     $drpType =
                                                         config('constant.drp_type')[
@@ -180,18 +188,18 @@
                                     <a class="nav-link nav-title {{ request()->route()->getName() === 'front.show-cms' && request()->route('cms') === 'about-us' ? 'active-nav' : '' }}"
                                         href="{{ route('front.show-cms', 'about-us') }}">About us</a>
                                 </li>
-                                <li class="nav-item my-auto">
+                                {{-- <li class="nav-item my-auto">
                                     <a class="nav-link nav-title {{ request()->routeIs('front.news') ? 'active-nav' : '' }}"
                                         href="{{ route('front.news') }}">News Room</a>
                                 </li>
                                 <li class="nav-item my-auto">
                                     <a class="nav-link nav-title {{ request()->routeIs('front.blogs') ? 'active-nav' : '' }}"
                                         href="{{ route('front.blogs') }}">Blogs</a>
-                                </li>
-                                {{-- <li class="nav-item dropdown my-auto">
-                                    <a class="nav-link nav-title dropdown-toggle {{ request()->routeIs('front.home') ? 'active-nav' : '' }}"
-                                        href="#" id="serviceDropdown" role="button">
-                                        Service
+                                </li> --}}
+                                <li class="nav-item dropdown my-auto">
+                                    <a class="nav-link nav-title dropdown-toggle {{ request()->routeIs('front.services.services') ? 'active-nav' : '' }}"
+                                        href="{{ route('front.services.services') }}" id="serviceDropdown" role="button">
+                                        Services
                                         <span class="dropdown-arrow">
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -201,14 +209,18 @@
                                         </span>
                                     </a>
                                     <ul class="dropdown-menu py-1" aria-labelledby="serviceDropdown">
-                                        <li class="border-bottom"><a class="dropdown-item" href="">Web
-                                                Development</a></li>
+                                        <li class="border-bottom"><a class="dropdown-item" href="{{ route('front.services.msme') }}">MSME</a></li>
+                                        <li class="border-bottom"><a class="dropdown-item" href="{{ route('front.services.mediation') }}">MEDIATION</a></li>
+                                        <li class="border-bottom"><a class="dropdown-item" href="{{ route('front.services.conciliation') }}">CONCILIATION</a></li>
+                                        <li class="border-bottom"><a class="dropdown-item" href="{{ route('front.services.arbitration') }}">ARBITRATION</a></li>
+                                        <li class="border-bottom"><a class="dropdown-item" href="{{ route('front.services.odr') }}">ODR</a></li>
+                                        <li class=""><a class="dropdown-item" href="{{ route('front.services.lokadalat') }}">LOK ADALAT</a></li>
                                     </ul>
                                 </li>
                                 <li class="nav-item dropdown me-xl-5 me-xl-4 me-md-3 me-auto my-auto">
-                                    <a class="nav-link nav-title dropdown-toggle {{ request()->routeIs('front.home') ? 'active-nav' : '' }}"
-                                        href="#" id="serviceDropdown" role="button">
-                                        Product
+                                    <a class="nav-link nav-title dropdown-toggle {{ request()->routeIs('front.products.digitalroom') ? 'active-nav' : '' }}"
+                                        href="" id="serviceDropdown" role="button">
+                                        Products
                                         <span class="dropdown-arrow">
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -218,10 +230,10 @@
                                         </span>
                                     </a>
                                     <ul class="dropdown-menu py-1" aria-labelledby="serviceDropdown">
-                                        <li class="border-bottom"><a class="dropdown-item" href="">Web
-                                                Development</a></li>
+                                        <li class="border-bottom"><a class="dropdown-item" href="{{ route('front.products.digitalroom') }}">Digital Room</a></li>
+                                        <li class=""><a class="dropdown-item" href="{{ route('front.products.odrplatform') }}">ODR Platform</a></li>
                                     </ul>
-                                </li> --}}
+                                </li>
                                 {{-- <li class="nav-item">
                                     <a class="nav-link nav-title {{ request()->route('slug') === 'about-us' ? 'active-nav' : '' }}" href="{{ route('front.cms', ['slug' => 'about-us']) }}">Product</a>
                                 </li> --}}
@@ -253,7 +265,14 @@
                                                 class="rounded-circle me-2" alt="" width="40px"
                                                 height="40px">
                                             <div class="flex-column text-start">
-                                                {{ auth($currentGuard)->user()->name }}
+                                            @php
+                                                $name = auth($currentGuard)->user()->name;
+                                                $formattedName = strlen($name) > 20
+                                                    ? substr($name, 0, 20) . '<br>' . substr($name, 20)
+                                                    : $name;
+                                            @endphp
+                                            <span style="line-height: 18px">{!! $formattedName !!}</span>
+
                                                 @php
                                                     $drpType =
                                                         config('constant.drp_type')[

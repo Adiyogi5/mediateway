@@ -26,16 +26,14 @@
                             <div class="col-auto align-self-center">
                                 <h5 class="mb-0" data-anchor="data-anchor">Case Order Sheets :: Order Sheet List </h5>
                             </div>
-                            <div class="col-auto ms-auto">
+                            {{-- <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon">
-                                    {{-- @if (Helper::userCan(111, 'can_add')) --}}
                                     <a href="{{ route('drp.ordersheet.add') }}" class="btn btn-outline-secondary">
                                         <i class="fa fa-plus me-1"></i>
                                         Add Order Sheet
                                     </a>
-                                    {{-- @endif --}}
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                     <div class="card-body">

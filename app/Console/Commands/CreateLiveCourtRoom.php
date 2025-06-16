@@ -1,16 +1,18 @@
 <?php
 namespace App\Console\Commands;
 
+use App\Library\TextLocal;
 use App\Models\Country;
 use App\Models\CourtRoom;
 use App\Models\FileCase;
 use App\Models\Setting;
+use App\Models\SmsCount;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Mail;
-use Twilio\Rest\Client;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Twilio\Rest\Client;
 
 class CreateLiveCourtRoom extends Command
 {
@@ -104,12 +106,12 @@ class CreateLiveCourtRoom extends Command
                     ->whereNull('deleted_at')
                     ->get()
                     ->groupBy($hearingDateColumn);
-               
+
                 foreach ($fileCases as $date => $cases) {
                     $courtroomData = CourtRoom::where('date', $date)
                         ->where('hearing_type', $hearingType)
                         ->first();
-  
+
                     if (! $courtroomData) {
                         $individual_ids      = $cases->pluck('individual_id')->filter()->unique()->implode(',');
                         $organization_ids    = $cases->pluck('organization_id')->filter()->unique()->implode(',');
@@ -150,13 +152,13 @@ class CreateLiveCourtRoom extends Command
                                 $courtRoom->update(['send_mail_to_respondent' => 2]);
                                 continue;
                             }
-                          
-                            $subject     = $hearingTypeLabels[$hearingType] ?? 'Hearing Link';
-                            $case_id     = $case->id;
-                           
+
+                            $subject = $hearingTypeLabels[$hearingType] ?? 'Hearing Link';
+                            $case_id = $case->id;
+
                             $messageContent = "Your first hearing at Mediateway is scheduled for Date: $courtRoom->date at 10:00 AM. Join using this link. Thank you! Mediateway.";
                             $encodedMessage = urlencode($messageContent);
-                            $description = route('front.guest.livecourtroom', ['room_id' => $room_id]) . "?case_id=$case_id&message=$encodedMessage";
+                            $description    = route('front.guest.livecourtroom', ['room_id' => $room_id]) . "?case_id=$case_id&message=$encodedMessage";
 
                             // Send Email
                             Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($subject, $email) {
@@ -174,15 +176,56 @@ class CreateLiveCourtRoom extends Command
                                 ]);
                             }
 
-                            // Send SMS
+                            // Send WhatsApp
                             try {
-                                $message =  $description;
+                                $message = $description;
                                 $client->messages->create($phone_code . $case->respondent_mobile, [
                                     'from' => $sender,
                                     'body' => $message,
                                 ]);
                             } catch (\Throwable $th) {
                                 Log::error('SMS sending failed: ' . $th->getMessage());
+                            }
+
+                            // ############# Send Message using Mobile Number #############
+                            if (! empty($case->respondent_mobile)) {
+                                $approved_sms_count = SmsCount::where('count', '>', 0)->first();
+
+                                if (! $approved_sms_count) {
+                                    return response()->json([
+                                        'status'  => false,
+                                        'message' => "Message can't be sent because your SMS quota is empty.",
+                                    ], 422);
+                                }
+
+                                $mobile        = preg_replace('/\D/', '', trim($case->respondent_mobile));
+                                $mobilemessage = "Hello User Your Login Verification Code is $otp. Thanks AYT";
+                                try {
+                                    $smsResponse = TextLocal::sendSms(['+91' . $mobile], $mobilemessage);
+
+                                    if ($smsResponse) {
+                                        $approved_sms_count->decrement('count');
+
+                                        return response()->json([
+                                            'status'  => true,
+                                            'message' => 'Message sent successfully to your mobile!',
+                                            'data'    => '',
+                                        ]);
+                                    } else {
+                                        return response()->json([
+                                            'status'  => false,
+                                            'message' => "Message couldn't be sent, please retry later.",
+                                            'data'    => '',
+                                        ], 422);
+                                    }
+                                } catch (\Exception $e) {
+                                    Log::error('SMS send failed: ' . $e->getMessage());
+
+                                    return response()->json([
+                                        'status'  => false,
+                                        'message' => 'An error occurred while sending SMS.',
+                                    ], 500);
+                                }
                             }
                         }
                     }

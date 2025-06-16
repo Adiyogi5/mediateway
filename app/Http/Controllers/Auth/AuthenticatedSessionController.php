@@ -50,19 +50,11 @@ class AuthenticatedSessionController extends Controller
             ]);
 
             // Check if OTP is valid
-            // $checkOtp = RegistrationOtp::firstWhere(['mobile' => $request->mobile, 'otp' => $request->otp]);
+            $checkOtp = RegistrationOtp::where('mobile', $request->mobile)->where('otp', $request->otp)->first();
 
-            // if (! $checkOtp) {
-            //     throw ValidationException::withMessages([
-            //         'otp' => 'Incorrect OTP..!!',
-            //     ]);
-            // }
-
-            // if (Carbon::now()->isAfter($checkOtp->expire_at)) {
-            //     throw ValidationException::withMessages([
-            //         'otp' => 'Your OTP has expired..!!',
-            //     ]);
-            // }
+            if (!$checkOtp){
+                return back()->withError("Invalid Otp..!!");
+            }
 
             // Retrieve user model dynamically based on guard
             $userModel = '\App\Models\\' . ucfirst($guard);

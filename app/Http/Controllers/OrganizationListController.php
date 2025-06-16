@@ -17,7 +17,7 @@ class OrganizationListController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(Request $request): View|JsonResponse
+    public function index(Request $request)
     {
         if ($request->ajax()) {
             // $data = OrganizationList::query();
@@ -82,7 +82,7 @@ class OrganizationListController extends Controller
             'notice_5a' => ['required'],
             'notice_second_hearing' => ['required'],
             'notice_final_hearing' => ['required'],
-        ], function ($validator, $request) {
+        ], function ($validator) use($request) {
             $data = $validator->validated();
             $organization = OrganizationList::create($data);
 

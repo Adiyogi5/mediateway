@@ -306,6 +306,16 @@ class FrontController extends Controller
         return view('front.blogs', compact('title', 'blogs', 'blogssidebar'));
     }
 
+    public function blogdetails(Request $request, $id)
+    {
+        $title = 'Blog Details';
+
+        $blogdetails = Blog::where('id', $id)->where('status', 1)->first();
+        $blogssidebar = Blog::where('status', 1)->limit(6)->orderby('id','DESC')->get();
+    
+        return view('front.blogdetails',compact('title', 'blogdetails','blogssidebar'));
+    }
+
 
     // ############ News Appointment Form ###########
     public function news(Request $request)
@@ -320,5 +330,15 @@ class FrontController extends Controller
         }
 
         return view('front.news',compact('title', 'news','newssidebar'));
+    }
+
+    public function newsdetails(Request $request, $id)
+    {
+        $title = 'News Details';
+
+        $newsdetails = News::where('id', $id)->where('status', 1)->first();
+        $newssidebar = News::where('status', 1)->limit(6)->orderby('id','DESC')->get();
+    
+        return view('front.newsdetails',compact('title', 'newsdetails','newssidebar'));
     }
 }

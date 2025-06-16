@@ -53,7 +53,7 @@
                                             value="{{ old('name', $organization->name) }}" disabled>
                                             @else
                                             <input type="text" name="name" class="form-control"
-                                            value="{{ old('name', $organization->name) }}">
+                                            value="{{ old('name') ?? ($organization->name ?? '') }}">
                                             @endif
                                         @error('name')
                                             <span class="text-danger">{{ $message }}</span>
@@ -64,7 +64,7 @@
                                     <div class="col-md-6 col-12 mb-3">
                                         <label class="form-label" for="email">Email (Primary)</label>
                                         <input type="email" name="email" class="form-control"
-                                            value="{{ old('email', $organization->email) }}">
+                                            value="{{ old('email') ?? ($organization->email ?? '') }}">
                                         @error('email')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -72,7 +72,7 @@
                                     <div class="col-md-6 col-12 mb-3">
                                         <label class="form-label" for="email_secondary">Email (Secondary opt.)</label>
                                         <input type="email_secondary" name="email_secondary" class="form-control"
-                                            value="{{ old('email_secondary', $organization->email_secondary) }}">
+                                            value="{{ old('email_secondary') ?? ($organization->email_secondary ?? '') }}">
                                         @error('email_secondary')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -82,7 +82,7 @@
                                     <div class="col-md-6 col-12 mb-3">
                                         <label class="form-label" for="mobile">Mobile Number (Primary)</label>
                                         <input type="text" name="mobile" class="form-control"
-                                            value="{{ old('mobile', $organization->mobile) }}">
+                                            value="{{ old('mobile') ?? ($organization->mobile ?? '') }}">
                                         @error('mobile')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -91,7 +91,7 @@
                                         <label class="form-label" for="mobile_secondary">Mobile Number (Secondary
                                             opt.)</label>
                                         <input type="text" name="mobile_secondary" class="form-control"
-                                            value="{{ old('mobile_secondary', $organization->mobile_secondary) }}">
+                                            value="{{ old('mobile_secondary') ?? ($organization->mobile_secondary ?? '') }}">
                                         @error('mobile_secondary')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -104,7 +104,7 @@
                                             id="state_id">
                                             <option value="">Select State</option>
                                             @foreach ($states as $state)
-                                                <option value="{{ $state->id }}" @selected(old('state_id', $organization->state_id) == $state->id)>
+                                                <option value="{{ $state->id }}" @selected(old('state_id') ?? ($organization->state_id ?? '') == $state->id)>
                                                     {{ $state->name }}
                                                 </option>
                                             @endforeach
@@ -135,7 +135,7 @@
                                     <div class="col-md-6 col-12 mb-3">
                                         <label class="form-label" for="address1">Address Line 1</label>
                                         <input type="text" name="address1" class="form-control"
-                                            value="{{ old('address1', $organization->address1) }}">
+                                            value="{{ old('address1') ?? ($organization->address1 ?? '') }}">
                                         @error('address1')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -143,7 +143,7 @@
                                     <div class="col-md-6 col-12 mb-3">
                                         <label class="form-label" for="address2">Address Line 2</label>
                                         <input type="text" name="address2" class="form-control"
-                                            value="{{ old('address2', $organization->address2) }}">
+                                            value="{{ old('address2') ?? ($organization->address2 ?? '') }}">
                                         @error('address2')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror

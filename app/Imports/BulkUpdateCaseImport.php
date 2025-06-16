@@ -111,8 +111,8 @@ class BulkUpdateCaseImport implements ToModel, WithHeadingRow
             [
                 'product'                                        => $row['product'] ?? null,
                 'asset_description'                              => $row['asset_description'] ?? null,
-                'sanction_letter_date'                           => $row['sanction_letter_date'] ?? null,
-                'rate_of_interest'                                => $row['rate_of_interest'] ?? null,
+                'sanction_letter_date'                           => $this->parseDate($row['sanction_letter_date']) ?? null,
+                'rate_of_interest'                               => $row['rate_of_interest'] ?? null,
                 'registration_no'                                => $row['registration_no'] ?? null,
                 'chassis_no'                                     => $row['chassis_no'] ?? null,
                 'engin_no'                                       => $row['engin_no'] ?? null,
@@ -131,7 +131,7 @@ class BulkUpdateCaseImport implements ToModel, WithHeadingRow
                 'claim_signatory_authorised_officer_mail_id'     => $row['claim_signatory_authorised_officer_mail_id'] ?? null,
                 'receiver_name'                                  => $row['receiver_name'] ?? null,
                 'receiver_designation'                           => $row['receiver_designation'] ?? null,
-                'auction_date'                                   => $row['auction_date'] ?? null,
+                'auction_date'                                   => $this->parseDate($row['auction_date']) ?? null,
                 'auction_amount'                                 => $row['auction_amount'] ?? null,
                 'auction_amount_in_words'                        => $row['auction_amount_in_words'] ?? null,
             ]

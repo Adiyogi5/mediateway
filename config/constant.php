@@ -12,6 +12,7 @@ return [
         '1'             => 'General Settings',
         '2'             => 'Social Links Setting',
         '3'             => 'Mail Setting',
+        '5'             => 'SMS Setting',
         '8'             => 'Google Recaptcha',
         '9'             => 'Counters',
         '10'            => 'Razor Pay',
@@ -37,16 +38,28 @@ return [
 
     'case_type' => [
         '1' => 'ARBITRATION', 
-        '2' => 'CIVIL',
-        '3' => 'CRIMINAL',
+        '2' => 'MEDIATION',
+        '3' => 'CONCILIATION',
+        '4' => 'CIVIL',
+        '5' => 'CRIMINAL',
+        '6' => 'NI ACT',
+        '7' => 'PASA ACT',
+        '8' => 'CONSUMER',
+        '9' => 'LOK ADALAT',
+        '10' => 'OTHER',
     ],
-
+    
     'product_type' => [
-        '1' => 'VEHICLE LOAN', 
-        '2' => 'CREDIT CARD',
-        '3' => 'PERSONAL BUSSINESS LOAN',
-        '4' => 'MORTGADGE LOAN',
-        '5' => 'HOME LOAN'
+        '1' => 'TW', 
+        '2' => 'AUTO',
+        '3' => 'UCL',
+        '4' => 'CV',
+        '5' => 'CE',
+        '6' => 'HL',
+        '7' => 'LAP',
+        '8' => 'PL',
+        '9' => 'BL',
+        '10' => 'OTHER',
     ],
 
     'language' => [

@@ -10,7 +10,7 @@
                     </div>
                     <h5 class="card-title">{{$blog['title']}}</h5>
                     <p class="card-text">{{$blog['short_description']}}</p>
-                    <a href="#" class="read-more">Read More</a>
+                    <a href="{{ route('front.blogdetails', $blog['id'])}}" class="read-more">Read More</a>
                 </div>
             </div>
         </div>
