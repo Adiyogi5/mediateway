@@ -26,9 +26,13 @@ class CaseAssignController extends Controller
 
     public function index(Request $request): View|JsonResponse
     {
-         // Ensure the user is authenticated and has drp_type == 1
-         if (!auth('drp')->check() || auth('drp')->user()->drp_type != 3) {
+        $drp = auth('drp')->user();
+        // Ensure the user is authenticated and has drp_type == 1
+        if (!auth('drp')->check() || auth('drp')->user()->drp_type != 3) {
             return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        }
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
         }
 
         if ($request->ajax()) {
@@ -126,9 +130,13 @@ class CaseAssignController extends Controller
 
     public function edit($id)
     {
-         // Ensure the user is authenticated and has drp_type == 1
-         if (!auth('drp')->check() || auth('drp')->user()->drp_type != 3) {
+        $drp = auth('drp')->user();
+        // Ensure the user is authenticated and has drp_type == 1
+        if (!auth('drp')->check() || auth('drp')->user()->drp_type != 3) {
             return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        }
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
         }
 
         $case = FileCase::findOrFail($id);
@@ -187,9 +195,13 @@ class CaseAssignController extends Controller
 
     public function assign($id): View|RedirectResponse
     {
-         // Ensure the user is authenticated and has drp_type == 1
-         if (!auth('drp')->check() || auth('drp')->user()->drp_type != 3) {
+        $drp = auth('drp')->user();
+        // Ensure the user is authenticated and has drp_type == 1
+        if (!auth('drp')->check() || auth('drp')->user()->drp_type != 3) {
             return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        }
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
         }
 
         $caseData = FileCase::with(['individual', 'organization'])->find($id);

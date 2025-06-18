@@ -493,7 +493,41 @@ class HomeController extends Controller
         $drpSlug = $drp ? $drp->slug : null;
 
         $drps = Drp::where('slug', $drpSlug)->get();
-         if ($drps->count()) {
+
+
+        ################## Profile Incomplete Start ##################
+        $drpdata = Drp::with('drpDetail')->where('id', $drp->id)->first();
+
+        // Required fields to check
+        $requiredFields = [
+            'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image', 'signature_drp','dob',
+            'nationality', 'gender','address1', 'profession', 'specialization',
+        ];
+        $requiredDetailFields = ['registration_no', 'registration_certificate', 'attach_registration_certificate'];
+
+        // Check if any field is null or empty
+        $missingFields = collect($requiredFields)->filter(fn($field) => empty($drpdata->$field));
+        $missingDetailFields = collect($requiredDetailFields)->filter(fn($field) => empty($drpdata->drpDetail?->$field));
+
+        if ($missingFields->isNotEmpty() || $missingDetailFields->isNotEmpty()) {
+            return view('drp.dashboard', compact(
+                'drpdata',
+                'drps',
+                'title',
+                'totalFiledCases',
+                'totalPendingCases',
+                'totalResolvedCases',
+                'upcomingHearings',
+                'interimOrders',
+                'awards',
+                'settlementAgreements',
+                'caseManagerData'
+                ))
+                ->with('showProfilePopup', true);
+        }
+        ################## Profile Incomplete End ##################
+
+        if ($drps->count()) {
             return view('drp.dashboard', compact(
                 'drps',
                 'title',

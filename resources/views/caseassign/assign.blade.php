@@ -262,7 +262,7 @@
                     @enderror
                 </div>
 
-                {{-- <div class="col-lg-6 mt-2">
+                <div class="col-lg-6 mt-2">
                     <label class="form-label" for="mediator_id">Mediator</label>
                     <select name="mediator_id" class="form-select" id="mediator_id">
                         <option value="">Select Mediator</option>
@@ -278,7 +278,7 @@
                             <strong>{{ $message }}</strong>
                         </span>
                     @enderror
-                </div> --}}
+                </div>
 
                 <div class="col-lg-6 mt-2">
                     <label class="form-label" for="conciliator_id">Conciliator</label>
@@ -341,11 +341,11 @@
                 case_manager_id: {
                     required: true,
                 },
-                // mediator_id: {
-                //     required: true,
-                // },
+                mediator_id: {
+                    required: false,
+                },
                 conciliator_id: {
-                    required: true,
+                    required: false,
                 },
             },
             messages: {
@@ -358,9 +358,9 @@
                 case_manager_id: {
                     required: "Please Select Case Manager",
                 },
-                // mediator_id: {
-                //     required: "Please Select Mediator",
-                // },
+                mediator_id: {
+                    required: "Please Select Mediator",
+                },
                 conciliator_id: {
                     required: "Please Select Conciliator",
                 },

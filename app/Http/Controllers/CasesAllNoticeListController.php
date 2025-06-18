@@ -19,7 +19,7 @@ class CasesAllNoticeListController extends Controller
         $this->middleware('auth');
     }
 
-   public function index(Request $request): View|JsonResponse
+    public function index(Request $request): View|JsonResponse
     {
         if ($request->ajax()) {
             // Get the latest notices per file_case_id and notice_type
@@ -33,6 +33,7 @@ class CasesAllNoticeListController extends Controller
                     'n1.email_status',
                     'n1.whatsapp_status'
                 )
+                ->whereDate('n1.notice_date', '<=', now())
                 ->join(DB::raw('
                     (SELECT file_case_id, notice_type, MAX(created_at) as max_created
                     FROM notices

@@ -37,6 +37,9 @@ class AdvocateCourtRoomController extends Controller
         if (!$drp) {
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+        }
         if ($drp->drp_type !== 2) {
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
@@ -401,7 +404,9 @@ class AdvocateCourtRoomController extends Controller
         if (!$drp) {
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
-
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
+        }
         if ($drp->drp_type !== 2) {
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }

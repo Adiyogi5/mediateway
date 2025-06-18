@@ -28,6 +28,9 @@ class CasesAllNoticeListController extends Controller
         if (!$drp) {
             return to_route('front.home')->withInfo('Please enter your valid details.');
         }
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+        }
         if ($drp->drp_type !== 3) {
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
@@ -43,6 +46,7 @@ class CasesAllNoticeListController extends Controller
                     'n1.email_status',
                     'n1.whatsapp_status'
                 )
+                ->whereDate('n1.notice_date', '<=', now())
                 ->join(DB::raw('
                     (SELECT file_case_id, notice_type, MAX(created_at) as max_created
                     FROM notices

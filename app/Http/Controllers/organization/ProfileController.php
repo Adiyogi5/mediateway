@@ -41,7 +41,7 @@ class ProfileController extends Controller
 
         // Validation
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:100',
+            'name' => 'nullable|string|max:100',
             'email' => 'required|email|max:100|unique:organizations,email,' . $user->id,
             'mobile' => 'required|digits:10',
             'state_id' => 'required|exists:states,id',
@@ -65,7 +65,7 @@ class ProfileController extends Controller
         }
 
         // Update user data
-        $user->name = $request->name;
+        // $user->name = $request->name;
         $user->email = $request->email;
         $user->mobile = $request->mobile;
         $user->state_id = $request->state_id;
@@ -99,7 +99,7 @@ class ProfileController extends Controller
 
         if (!$organizationDetail) {
             $organizationDetail = new OrganizationDetail();
-            $organizationDetail->individual_id = $user->id; // Assign ID if creating a new record
+            $organizationDetail->organization_id = $user->id; // Assign ID if creating a new record
         }
         // Handle attach_registration_certificate file upload
         if ($request->hasFile('attach_registration_certificate')) {

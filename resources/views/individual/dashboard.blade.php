@@ -639,9 +639,12 @@
                     title: "Profile Incomplete!",
                     text: "Please complete your profile before proceeding.",
                     icon: "warning",
-                    showCancelButton: false,
                     confirmButtonText: "Update Now",
-                    allowOutsideClick: false
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCancelButton: false,
+                    showCloseButton: false
                 }).then((result) => {
                     if (result.isConfirmed) {
                         window.location.href = "{{ route('individual.profile') }}";

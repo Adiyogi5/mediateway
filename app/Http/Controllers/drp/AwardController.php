@@ -22,9 +22,13 @@ class AwardController extends Controller
 
     public function index(Request $request): View|JsonResponse|RedirectResponse
     {
+        $drp = auth('drp')->user();
         // Ensure the user is authenticated and has drp_type == 1
         if (!auth('drp')->check() || auth('drp')->user()->drp_type != 1) {
             return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        }
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
         }
 
         if ($request->ajax()) {
@@ -63,70 +67,78 @@ class AwardController extends Controller
     }
 
 
-public function add(): View|RedirectResponse
-{
-    // Ensure the user is authenticated and has drp_type == 1
-    if (!auth('drp')->check() || auth('drp')->user()->drp_type != 1) {
-        return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+    public function add(): View|RedirectResponse
+    {
+        $drp = auth('drp')->user();
+        // Ensure the user is authenticated and has drp_type == 1
+        if (!auth('drp')->check() || auth('drp')->user()->drp_type != 1) {
+            return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        }
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+        }
+    
+        $title = "Add Award";
+        return view('drp.award.add', compact('title'));
     }
-    
-    $title = "Add Award";
-    return view('drp.award.add', compact('title'));
-}
 
-public function save(Request $request): RedirectResponse
-{
-    $validated = $request->validate([
-        'name'           => ['required', 'string', 'unique:awards,name', 'max:50'],
-        'subject'        => ['required', 'string'],
-        'email_content'  => ['required', 'string'],
-        'notice_format'  => ['required', 'string']
-    ]);
+    public function save(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name'           => ['required', 'string', 'unique:awards,name', 'max:50'],
+            'subject'        => ['required', 'string'],
+            'email_content'  => ['required', 'string'],
+            'notice_format'  => ['required', 'string']
+        ]);
 
-    Award::create($validated + ['status' => 1]);
-    
-    return to_route('drp.award')->withSuccess('Award Added Successfully..!!');
-}
-
-public function edit($id): View|RedirectResponse
-{
-    // Ensure the user is authenticated and has drp_type == 1
-    if (!auth('drp')->check() || auth('drp')->user()->drp_type != 1) {
-        return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        Award::create($validated + ['status' => 1]);
+        
+        return to_route('drp.award')->withSuccess('Award Added Successfully..!!');
     }
+
+    public function edit($id): View|RedirectResponse
+    {
+        $drp = auth('drp')->user();
+        // Ensure the user is authenticated and has drp_type == 1
+        if (!auth('drp')->check() || auth('drp')->user()->drp_type != 1) {
+            return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        }
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+        }
     
-    $title = "Add Award";
-    $award = Award::find($id);
-    if (!$award) return to_route('drp.award')->withError('Award Not Found..!!');
+        $title = "Add Award";
+        $award = Award::find($id);
+        if (!$award) return to_route('drp.award')->withError('Award Not Found..!!');
 
-    return view('drp.award.edit', compact('award','title'));
-}
+        return view('drp.award.edit', compact('award','title'));
+    }
 
-public function update(Request $request, $id): RedirectResponse
-{
-    $award = Award::find($id);
-    if (!$award) return to_route('drp.award')->withError('Award Not Found..!!');
+    public function update(Request $request, $id): RedirectResponse
+    {
+        $award = Award::find($id);
+        if (!$award) return to_route('drp.award')->withError('Award Not Found..!!');
 
-    $validated = $request->validate([
-        'name'           => ['required', 'string', 'unique:awards,name,' . $id, 'max:50'],
-        'subject'        => ['required', 'string'],
-        'email_content'  => ['required', 'string'],
-        'notice_format'  => ['required', 'string']
-    ]);
+        $validated = $request->validate([
+            'name'           => ['required', 'string', 'unique:awards,name,' . $id, 'max:50'],
+            'subject'        => ['required', 'string'],
+            'email_content'  => ['required', 'string'],
+            'notice_format'  => ['required', 'string']
+        ]);
 
-    $award->update($validated);
-    
-    return to_route('drp.award')->withSuccess('Award Updated Successfully..!!');
-}
+        $award->update($validated);
+        
+        return to_route('drp.award')->withSuccess('Award Updated Successfully..!!');
+    }
 
-public function delete(Request $request): JsonResponse
-{
-    return Helper::deleteRecord(new Award, $request->id);
-}
+    public function delete(Request $request): JsonResponse
+    {
+        return Helper::deleteRecord(new Award, $request->id);
+    }
 
-public function getawardVariables(): JsonResponse
-{
-    return response()->json(AwardVariable::all());
-}
+    public function getawardVariables(): JsonResponse
+    {
+        return response()->json(AwardVariable::all());
+    }
 
 }

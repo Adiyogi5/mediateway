@@ -126,8 +126,40 @@ class HomeController extends Controller
         }
 
         $organizationSlug = $organization ? $organization->slug : null;
-
         $organizations = Organization::where('slug', $organizationSlug)->get();
+
+        ################## Profile Incomplete Start ##################
+        $organizationdata = Organization::with('organizationDetail')->where('slug', $organizationSlug)->first();
+
+        // Required fields to check
+        $requiredFields = [
+            'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image', 
+            'address1', 
+        ];
+        $requiredDetailFields = ['registration_no', 'registration_certificate', 'attach_registration_certificate'];
+
+        // Check if any field is null or empty
+        $missingFields = collect($requiredFields)->filter(fn($field) => empty($organizationdata->$field));
+        $missingDetailFields = collect($requiredDetailFields)->filter(fn($field) => empty($organizationdata->organizationDetail?->$field));
+
+        if ($missingFields->isNotEmpty() || $missingDetailFields->isNotEmpty()) {
+            return view('organization.dashboard', compact(
+                'organizationdata',
+                'organizations',
+                'title',
+                'totalFiledCases',
+                'totalPendingCases',
+                'totalNewCases',
+                'upcomingHearings',
+                'interimOrders',
+                'awards',
+                'arbitratorData',
+                'caseManagerData',
+                'childOrganizations'
+                ))
+                ->with('showProfilePopup', true);
+        }
+        ################## Profile Incomplete End ##################
 
         if ($organizations->count()) {
             return view('organization.dashboard', compact(

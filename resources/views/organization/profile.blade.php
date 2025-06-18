@@ -340,7 +340,7 @@
             errorElement: "span",
             rules: {
                 name: {
-                    required: true,
+                    required: false,
                     minlength: 2,
                     maxlength: 100
                 },

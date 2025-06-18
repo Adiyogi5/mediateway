@@ -122,7 +122,7 @@ class ProfileController extends Controller
         $user->save();
 
         // Update or create DrpDetail
-        DrpDetail::updateOrCreate(
+        $drpDetail = DrpDetail::updateOrCreate(
             ['drp_id' => $user->id], // Find by this column
             [
                 'university' => $request->university,
@@ -148,6 +148,22 @@ class ProfileController extends Controller
                 'functional_area_of_drp' => $request->functional_area_of_drp,
             ]
         );
+        
+        $drpDetail = DrpDetail::where('drp_id', $user->id)->first();
+
+        if (!$drpDetail) {
+            $drpDetail = new DrpDetail();
+            $drpDetail->drp_id = $user->id; // Assign ID if creating a new record
+        }
+        // Handle attach_registration_certificate file upload
+        if ($request->hasFile('attach_registration_certificate')) {
+            // Delete old file if exists
+            Helper::deleteFile($drpDetail->attach_registration_certificate);
+            
+            // Save new file
+            $drpDetail->attach_registration_certificate = Helper::saveFile($request->file('attach_registration_certificate'), 'organization/registrationcertificate');
+            $drpDetail->save();
+        }
 
         return redirect()->back()->with('success', 'Profile updated successfully.');
     }

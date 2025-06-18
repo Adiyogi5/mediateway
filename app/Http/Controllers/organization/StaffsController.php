@@ -26,6 +26,8 @@ class StaffsController extends Controller
 
     public function index(Request $request): View|JsonResponse
     {
+        $organization = auth('organization')->user();
+
         if ($request->ajax()) {
             $data = Organization::select('organizations.id', 'organizations.name', 'organizations.email', 'organizations.slug', 'organizations.mobile', 'organizations.image', 'organizations.status', 'organizations.created_at', 'organization_roles.name as organization_role_name')
                 ->where('organizations.organization_role_id', '!=', 1)
@@ -73,6 +75,30 @@ class StaffsController extends Controller
         }
 
         $title = 'Staff';
+
+        ################## Profile Incomplete Start ##################
+        $organizationdata = Organization::with('organizationDetail')->where('id', $organization->id)->first();
+
+        // Required fields to check
+        $requiredFields = [
+            'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image', 
+            'address1', 
+        ];
+        $requiredDetailFields = ['registration_no', 'registration_certificate', 'attach_registration_certificate'];
+
+        // Check if any field is null or empty
+        $missingFields = collect($requiredFields)->filter(fn($field) => empty($organizationdata->$field));
+        $missingDetailFields = collect($requiredDetailFields)->filter(fn($field) => empty($organizationdata->organizationDetail?->$field));
+
+        if ($missingFields->isNotEmpty() || $missingDetailFields->isNotEmpty()) {
+            return view('organization.staffs.index', compact(
+                'organizationdata',
+                'title',
+                ))
+                ->with('showProfilePopup', true);
+        }
+        ################## Profile Incomplete End ##################
+
         return view('organization.staffs.index',compact('title'));
     }
 

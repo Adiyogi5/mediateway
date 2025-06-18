@@ -253,6 +253,12 @@
                                             Specialization</label>
                                         <select name="specialization" class="form-control form-select">
                                             <option value="">Select Specialization</option>
+                                            @foreach (config('constant.case_type') as $key => $label)
+                                                <option value="{{ $key }}">{{ $label }}</option>
+                                                <option value="{{ $key }}" {{ old('specialization', $drp->specialization ?? '') == $key ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
+                                            @endforeach
                                         </select>
                                         @error('specialization')
                                             <span class="text-danger">{{ $message }}</span>
@@ -470,9 +476,17 @@
                                         @enderror
                                     </div>
                                     @if (optional($drpDetail)->attach_registration_certificate)
+                                        @php
+                                            $filePath = asset('storage/' . $drpDetail->attach_registration_certificate);
+                                            $fileExtension = pathinfo($drpDetail->attach_registration_certificate, PATHINFO_EXTENSION);
+                                        @endphp
+
                                         <div class="mb-5">
-                                            <img src="{{ asset('storage/' . $drpDetail->attach_registration_certificate) }}"
-                                                class="img-thumbnail" width="100" />
+                                            @if (in_array(strtolower($fileExtension), ['jpg', 'jpeg', 'png']))
+                                                <img src="{{ $filePath }}" class="img-thumbnail" width="100" />
+                                            @elseif (strtolower($fileExtension) == 'pdf')
+                                                <a href="{{ $filePath }}" target="_blank" class="btn btn-sm py-0 btn-dark">View PDF</a>
+                                            @endif
                                         </div>
                                     @endif
 

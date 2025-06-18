@@ -132,6 +132,30 @@ class FileCaseController extends Controller
             ->make(true);
         }
 
+        ################## Profile Incomplete Start ##################
+        $organizationdata = Organization::with('organizationDetail')->where('id', $organization->id)->first();
+
+        // Required fields to check
+        $requiredFields = [
+            'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image', 
+            'address1', 
+        ];
+        $requiredDetailFields = ['registration_no', 'registration_certificate', 'attach_registration_certificate'];
+
+        // Check if any field is null or empty
+        $missingFields = collect($requiredFields)->filter(fn($field) => empty($organizationdata->$field));
+        $missingDetailFields = collect($requiredDetailFields)->filter(fn($field) => empty($organizationdata->organizationDetail?->$field));
+
+        if ($missingFields->isNotEmpty() || $missingDetailFields->isNotEmpty()) {
+            return view('organization.cases.filecaseview', compact(
+                'organizationdata',
+                'organization',
+                'title',
+                ))
+                ->with('showProfilePopup', true);
+        }
+        ################## Profile Incomplete End ##################
+
         return view('organization.cases.filecaseview', compact('organization','title'));
     }
 
@@ -305,9 +329,9 @@ class FileCaseController extends Controller
         }
 
         $request->validate([
-            'notice_first'  => 'required|mimes:pdf|max:5120',
-            'notice_second' => 'required|mimes:pdf|max:5120',
-            'notice_third'  => 'required|mimes:pdf|max:5120',
+            'notice_first'  => 'nullable|mimes:pdf|max:5120',
+            'notice_second' => 'nullable|mimes:pdf|max:5120',
+            'notice_third'  => 'nullable|mimes:pdf|max:5120',
         ]);
 
         // 🗓️ Get the date increments from $noticeTimeline

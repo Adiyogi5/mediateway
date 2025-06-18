@@ -21,9 +21,13 @@ class CaseBulkUpdateController extends Controller
     {
         $title = 'Bulk Update Cases';
 
-        // Ensure the user is authenticated and has drp_type == 1
+        $drp = auth('drp')->user();
+        // Ensure the user is authenticated and has drp_type == 3
         if (!auth('drp')->check() || auth('drp')->user()->drp_type != 3) {
             return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        }
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
         }
 
         return view('drp.cases.casebulkupdate', compact('title'));

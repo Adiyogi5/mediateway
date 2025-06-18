@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CourtRoom;
 use App\Models\FileCase;
 use App\Models\Notice;
+use App\Models\Organization;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -138,6 +139,31 @@ class OrganizationCourtRoomController extends Controller
 
         $upcomingRooms = $courtRoomLiveUpcoming;
         $closedRooms = $courtRoomLiveClosed;
+
+
+        ################## Profile Incomplete Start ##################
+        $organizationdata = Organization::with('organizationDetail')->where('id', $organization->id)->first();
+
+        // Required fields to check
+        $requiredFields = [
+            'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image', 
+            'address1', 
+        ];
+        $requiredDetailFields = ['registration_no', 'registration_certificate', 'attach_registration_certificate'];
+
+        // Check if any field is null or empty
+        $missingFields = collect($requiredFields)->filter(fn($field) => empty($organizationdata->$field));
+        $missingDetailFields = collect($requiredDetailFields)->filter(fn($field) => empty($organizationdata->organizationDetail?->$field));
+
+        if ($missingFields->isNotEmpty() || $missingDetailFields->isNotEmpty()) {
+            return view('organization.organizationcourtroom.organizationcourtroomlist', compact(
+                'organizationdata',
+                'organization',
+                'title','upcomingRooms', 'closedRooms','upcomingroomCount','closedroomCount'
+                ))
+                ->with('showProfilePopup', true);
+        }
+        ################## Profile Incomplete End ##################
 
         return view('organization.organizationcourtroom.organizationcourtroomlist', compact('organization', 'title', 'upcomingRooms', 'closedRooms','upcomingroomCount','closedroomCount'));
     }

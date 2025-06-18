@@ -128,6 +128,11 @@
                 @endif
 
 
+
+                {{-- ####################  DRP  #################### --}}
+                {{-- ####################################################### --}}
+                @if (auth('drp')->user()->approve_status == 1)
+
                 {{-- #################### DRP TYPE = 2 Advocate ################# --}}
                 @if (auth('drp')->check() && auth('drp')->user()->drp_type == 2)
                 {{-- ########################### COURT ROOM ############################ --}}
@@ -288,7 +293,7 @@
                                 class="fa-solid fa-video faa-profile"></i> Meeting Room</a>
                     </li>
                 @endif
-
+                @endif
 
                 <li class="nav-item py-3 text-center justify-content-start d-flex border-bottom">
                 </li>

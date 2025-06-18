@@ -200,23 +200,30 @@ class CaseAssignController extends Controller
         
         if (!$caseData) return to_route('caseassign')->withError('Case Not Found..!!');
 
+        $firstnoticeData = Notice::where('file_case_id', $id)->where('notice_type', 1)->first();
+
+        if (empty($firstnoticeData)) {
+            return back()->with('error', 'Notice 1 Not Uploaded..!!');
+        }
+
         $data = $request->validate([
             // 'case_id'          => ['required'],
             'arbitrator_id'    => ['required'],
             // 'advocate_id'      => ['required'],
             'case_manager_id'  => ['required'],
-            // 'mediator_id'      => ['required'],
-            'conciliator_id'   => ['required'],
+            'mediator_id'      => ['nullable'],
+            'conciliator_id'   => ['nullable'],
         ]);
 
         AssignCase::updateOrCreate(
             ['case_id' => $id],
             array_merge([
-                'case_id'        => $id,
-                'arbitrator_id'   => implode(',', $data['arbitrator_id'] ?? []),
-                'case_manager_id'=> $data['case_manager_id'],
-                'conciliator_id' => $data['conciliator_id'],
-                'sendto_casemanager' => 1,
+                'case_id'               => $id,
+                'arbitrator_id'         => implode(',', $data['arbitrator_id'] ?? []),
+                'case_manager_id'       => $data['case_manager_id'],
+                'conciliator_id'        => $data['conciliator_id'] ?? null,
+                'mediator_id'           => $data['mediator_id'] ?? null,
+                'sendto_casemanager'    => 1,
             ])               
         );
 
@@ -252,15 +259,9 @@ class CaseAssignController extends Controller
                         ->leftJoin(DB::raw("(SELECT * FROM notices WHERE notice_type = 1) AS notice_type1"), 'notice_type1.file_case_id', '=', 'file_cases.id')
                         ->join('organization_lists', 'org_with_parent.effective_parent_name', '=', 'organization_lists.name')
                         ->join('organization_notice_timelines', 'organization_notice_timelines.organization_list_id', '=', 'organization_lists.id')
-                        ->whereHas('notices', function ($query) {
-                            $query->where('notice_type', 1)
-                                ->whereRaw('DATEDIFF(CURDATE(), notices.notice_date) >= organization_notice_timelines.notice_3a');
-                        })
                         ->where('file_cases.id', $id)
-                        ->whereHas('notices', function ($query) {
-                            $query->where('notice_type', 5)
-                                ->whereNotNull('notice')
-                                ->where('email_status', 0);
+                        ->whereDoesntHave('notices', function ($query) {
+                            $query->where('notice_type', 5);
                         })
                         ->whereIn('organization_notice_timelines.notice_3a', function ($query) {
                             $query->select('notice_3a')
@@ -277,9 +278,9 @@ class CaseAssignController extends Controller
                         )
                         ->distinct()
                         ->first();
-
+                         
                     $notice3adate = Carbon::parse($noticedateData->notice_type_1_date)
-                        ->addDays($noticedateData->notice_3a)
+                        ->addDays($noticedateData->notice_3a - 1)
                         ->format('Y-m-d');
 
                     // Define your replacement values
@@ -368,7 +369,6 @@ class CaseAssignController extends Controller
                             font-family: DejaVu Sans, sans-serif;
                             font-size: 12px;
                             line-height: 1.4;
-                            color: #000;
                         }
                         p {
                             margin: 0px 0;

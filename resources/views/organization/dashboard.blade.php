@@ -304,6 +304,27 @@
 
 @section('js')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
+     @if (session('showProfilePopup') || isset($showProfilePopup))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Profile Incomplete!",
+                    text: "Please complete your profile before proceeding.",
+                    icon: "warning",
+                    confirmButtonText: "Update Now",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showCancelButton: false,
+                    showCloseButton: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('organization.profile') }}";
+                    }
+                });
+            });
+        </script>
+    @endif
     <script>
         $(document).ready(function() {
             $(".custom-tab").click(function() {

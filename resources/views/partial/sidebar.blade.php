@@ -115,6 +115,15 @@
             </a>
         </li>
 
+        <li class="menu @routeis('drplist.index') active @endrouteis">
+            <a href="{{route('drplist.index')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-sitemap"></i>
+                    <span>DRP List</span>
+                </div>
+            </a>
+        </li>
+
         <li class="menu @routeis('cases.casebulkupdate') active @endrouteis">
             <a href="{{route('cases.casebulkupdate')}}" class="dropdown-toggle">
                 <div class="">

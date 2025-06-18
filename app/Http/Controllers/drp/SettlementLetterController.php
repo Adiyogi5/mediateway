@@ -28,6 +28,10 @@ class SettlementLetterController extends Controller
         }
         
         $drp = auth('drp')->user();
+        
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+        }
 
         if ($request->ajax()) {
             $data = SettlementLetter::select('id', 'drp_type', 'name', 'status', 'created_at')
@@ -64,74 +68,82 @@ class SettlementLetterController extends Controller
     }
 
 
-public function add(): View|RedirectResponse
-{
-    $drp = auth('drp')->user();
-   
-    if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [4, 5])) {
-        return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+    public function add(): View|RedirectResponse
+    {
+        $drp = auth('drp')->user();
+    
+        if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [4, 5])) {
+            return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        }
+    
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+        }
+
+        $title = "Add Settlement Agreement";
+        return view('drp.settlementletter.add', compact('title','drp'));
     }
-    
-    $title = "Add Settlement Agreement";
-    return view('drp.settlementletter.add', compact('title','drp'));
-}
 
-public function save(Request $request): RedirectResponse
-{
-    $validated = $request->validate([
-        'drp_type'       => ['required', 'integer'],
-        'name'           => ['required', 'string', 'unique:settlement_letters,name', 'max:50'],
-        'subject'        => ['required', 'string'],
-        'email_content'  => ['required', 'string'],
-        'notice_format'  => ['required', 'string']
-    ]);
+    public function save(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'drp_type'       => ['required', 'integer'],
+            'name'           => ['required', 'string', 'unique:settlement_letters,name', 'max:50'],
+            'subject'        => ['required', 'string'],
+            'email_content'  => ['required', 'string'],
+            'notice_format'  => ['required', 'string']
+        ]);
 
-    SettlementLetter::create($validated + ['status' => 1]);
-    
-    return to_route('drp.settlementletter')->withSuccess('Settlement Agreement Added Successfully..!!');
-}
-
-public function edit($id): View|RedirectResponse
-{
-    $drp = auth('drp')->user();
-    
-    if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [4, 5])) {
-        return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        SettlementLetter::create($validated + ['status' => 1]);
+        
+        return to_route('drp.settlementletter')->withSuccess('Settlement Agreement Added Successfully..!!');
     }
+
+    public function edit($id): View|RedirectResponse
+    {
+        $drp = auth('drp')->user();
+        
+        if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [4, 5])) {
+            return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        }
     
-    $settlementletter = SettlementLetter::find($id);
-    if (!$settlementletter) return to_route('drp.settlementletter')->withError('Settlement Agreement Not Found..!!');
-
-    $title = "Edit Settlement Agreement";
-    return view('drp.settlementletter.edit', compact('settlementletter','title','drp'));
-}
-
-public function update(Request $request, $id): RedirectResponse
-{
-    $settlementletter = SettlementLetter::find($id);
-    if (!$settlementletter) return to_route('drp.settlementletter')->withError('Settlement Agreement Not Found..!!');
-
-    $validated = $request->validate([
-        'drp_type'       => ['required', 'integer'],
-        'name'           => ['required', 'string', 'unique:settlement_letters,name,' . $id, 'max:50'],
-        'subject'        => ['required', 'string'],
-        'email_content'  => ['required', 'string'],
-        'notice_format'  => ['required', 'string']
-    ]);
-
-    $settlementletter->update($validated);
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+        }
     
-    return to_route('drp.settlementletter')->withSuccess('Settlement Agreement Updated Successfully..!!');
-}
+        $settlementletter = SettlementLetter::find($id);
+        if (!$settlementletter) return to_route('drp.settlementletter')->withError('Settlement Agreement Not Found..!!');
 
-public function delete(Request $request): JsonResponse
-{
-    return Helper::deleteRecord(new SettlementLetter, $request->id);
-}
+        $title = "Edit Settlement Agreement";
+        return view('drp.settlementletter.edit', compact('settlementletter','title','drp'));
+    }
 
-public function getsettlementletterVariables(): JsonResponse
-{
-    return response()->json(SettlementLetterVariable::all());
-}
+    public function update(Request $request, $id): RedirectResponse
+    {
+        $settlementletter = SettlementLetter::find($id);
+        if (!$settlementletter) return to_route('drp.settlementletter')->withError('Settlement Agreement Not Found..!!');
+
+        $validated = $request->validate([
+            'drp_type'       => ['required', 'integer'],
+            'name'           => ['required', 'string', 'unique:settlement_letters,name,' . $id, 'max:50'],
+            'subject'        => ['required', 'string'],
+            'email_content'  => ['required', 'string'],
+            'notice_format'  => ['required', 'string']
+        ]);
+
+        $settlementletter->update($validated);
+        
+        return to_route('drp.settlementletter')->withSuccess('Settlement Agreement Updated Successfully..!!');
+    }
+
+    public function delete(Request $request): JsonResponse
+    {
+        return Helper::deleteRecord(new SettlementLetter, $request->id);
+    }
+
+    public function getsettlementletterVariables(): JsonResponse
+    {
+        return response()->json(SettlementLetterVariable::all());
+    }
 
 }

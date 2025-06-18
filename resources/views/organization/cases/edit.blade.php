@@ -575,17 +575,17 @@
             rules: {
                 @if(!isset($noticeType1))
                 notice_first: {
-                    required: true
+                    required: false
                 },
                 @endif
                 @if(!isset($noticeType2))
                 notice_second: {
-                    required: true
+                    required: false
                 },
                 @endif
                 @if(!isset($noticeType3))
                 notice_third: {
-                    required: true
+                    required: false
                 },
                 @endif
             },

@@ -15,6 +15,7 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\ClaimPetitionController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\DrpListController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\HomeCmsController;
@@ -194,12 +195,20 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::delete('banners', 'delete')->name('banners')->middleware('isAllow:112,can_delete');
     });
 
-    // ----------------------- Organization Routes ----------------------------------------------------
+    // ----------------------- Organization List Routes ----------------------------------------------------
     Route::controller(OrganizationListController::class)->group(function () {
         Route::get('organizationlist', 'index')->name('organizationlist.index')->middleware('isAllow:112,can_view');
         Route::post('organizationlist', 'save')->name('organizationlist.store')->middleware('isAllow:112,can_add');
         Route::put('organizationlist', 'update')->name('organizationlist.update')->middleware('isAllow:112,can_edit');
         Route::delete('organizationlist', 'delete')->name('organizationlist.destroy')->middleware('isAllow:112,can_delete');
+    });
+
+    // ----------------------- DRP List Routes ----------------------------------------------------
+    Route::controller(DrpListController::class)->group(function () {
+        Route::get('drplist', 'index')->name('drplist.index')->middleware('isAllow:112,can_view');
+        Route::get('drplist/drp-detail/{id}', 'show')->name('drplist.drpdetail')->middleware('isAllow:112,can_view');
+        Route::post('drplist/approve/{id}', 'approve')->name('drplist.approve')->middleware('isAllow:112,can_add');;
+        Route::post('drplist/reject/{id}', 'reject')->name('drplist.reject')->middleware('isAllow:112,can_add');;
     });
 
     // ----------------------- BLOG Routes ----------------------------------------------------

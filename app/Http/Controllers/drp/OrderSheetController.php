@@ -28,6 +28,10 @@ class OrderSheetController extends Controller
         
         $drp = auth('drp')->user();
         
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+        }
+        
         if ($request->ajax()) {
             $data = OrderSheet::select('id', 'drp_type', 'name', 'status', 'created_at')
                         ->where('drp_type', $drp->drp_type);
@@ -71,6 +75,10 @@ public function add(): View|RedirectResponse
         return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
     }
     
+    if ($drp->approve_status !== 1) {
+        return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+    }
+
     $title = "Add Order Sheet";
     return view('drp.ordersheet.add', compact('title','drp'));
 }
@@ -96,6 +104,10 @@ public function edit($id): View|RedirectResponse
 
     if (!auth('drp')->check() || !in_array(auth('drp')->user()->drp_type, [1, 4, 5])){
         return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+    }
+    
+    if ($drp->approve_status !== 1) {
+        return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
     }
     
     $orderSheet = OrderSheet::find($id);
