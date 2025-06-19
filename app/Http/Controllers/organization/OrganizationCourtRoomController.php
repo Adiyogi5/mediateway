@@ -388,14 +388,14 @@ class OrganizationCourtRoomController extends Controller
         }
 
         $caseIds = explode(',', $request->query('case_id'));
-    
+   
         $caseData = FileCase::select('file_cases.*', 'drps.id as arbitrator_id', 'drps.name as arbitrator_name')
             ->with(['file_case_details', 'guarantors'])
             ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
             ->join('drps', 'drps.id', '=', 'assign_cases.arbitrator_id')
             ->whereIn('file_cases.id', $caseIds)
             ->get();
-   
+
         //ZegoCloud Service---------------------
         $localUserID = $organization->slug; // e.g., organization 
         $remoteUserID = $caseData->first()->arbitrator_id; // Drp

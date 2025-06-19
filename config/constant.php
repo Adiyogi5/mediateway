@@ -129,4 +129,12 @@ return [
     ],
 
 
+    'organization_type' => [
+        '1' => 'Bank', 
+        '2' => 'NBFC',
+        '3' => 'Limited Company',
+        '4' => 'Society',
+        '5' => 'Others',
+    ],
+
 ];

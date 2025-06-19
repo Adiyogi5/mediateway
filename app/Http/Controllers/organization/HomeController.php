@@ -34,7 +34,7 @@ class HomeController extends Controller
             $totalFiledCases = FileCase::with('assignedCases')
                 ->whereIn('file_cases.organization_id', $organizationIds)
                 ->where('status', 1)
-                ->count();
+            ->count();
 
             $totalPendingCases = FileCase::with('assignedCases', 'notices')
                 ->whereHas('notices', function ($query) {
@@ -42,14 +42,14 @@ class HomeController extends Controller
                 })
                 ->whereIn('organization_id', $organizationIds)
                 ->where('status', 1)
-                ->count();
+            ->count();
 
             $totalNewCases = FileCase::with('assignedCases', 'notices')
                 ->whereIn('organization_id', $organizationIds)
                 ->where('status', 1)
                 ->whereMonth('created_at', Carbon::now()->month)
                 ->whereYear('created_at', Carbon::now()->year)
-                ->count();
+            ->count();
 
             $awards = FileCase::with('assignedCases', 'notices')
                 ->whereHas('notices', function ($query) {
@@ -57,7 +57,7 @@ class HomeController extends Controller
                 })
                 ->whereIn('organization_id', $organizationIds)
                 ->where('status', 1)
-                ->count();
+            ->count();
 
             $interimOrders = FileCase::with('assignedCases', 'notices')
                 ->whereHas('notices', function ($query) {
@@ -65,7 +65,7 @@ class HomeController extends Controller
                 })
                 ->whereIn('organization_id', $organizationIds)
                 ->where('status', 1)
-                ->count();
+            ->count();
 
             $upcomingHearings = FileCase::with('assignedCases')
                 ->where(function ($query) {
@@ -75,7 +75,7 @@ class HomeController extends Controller
                 })
                 ->whereIn('organization_id', $organizationIds)
                 ->where('status', 1)
-                ->count();
+            ->count();
 
             $arbitratorData = FileCase::leftJoin('assign_cases', 'file_cases.id', '=', 'assign_cases.case_id')
                 ->leftJoin('organizations', 'organizations.id', '=', 'file_cases.organization_id')
@@ -95,7 +95,7 @@ class HomeController extends Controller
                 )
                 ->get()
                 ->groupBy('arbitrator_id')
-                ->toArray();
+            ->toArray();
 
             $caseManagerData = FileCase::leftJoin('assign_cases', 'file_cases.id', '=', 'assign_cases.case_id')
                 ->leftJoin('organizations', 'organizations.id', '=', 'file_cases.organization_id')
@@ -115,7 +115,7 @@ class HomeController extends Controller
                 )
                 ->get()
                 ->groupBy('case_manager_id')
-                ->toArray();
+            ->toArray();
 
             $childOrganizations = Organization::whereIn('id', $organizationIds)->get();
         } else {

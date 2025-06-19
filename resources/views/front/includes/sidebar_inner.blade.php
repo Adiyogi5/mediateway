@@ -131,7 +131,7 @@
 
                 {{-- ####################  DRP  #################### --}}
                 {{-- ####################################################### --}}
-                @if (auth('drp')->user()->approve_status == 1)
+                @if(auth('drp')->check() && auth('drp')->user()->approve_status == 1)
 
                 {{-- #################### DRP TYPE = 2 Advocate ################# --}}
                 @if (auth('drp')->check() && auth('drp')->user()->drp_type == 2)

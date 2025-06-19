@@ -78,7 +78,7 @@
                                                     @foreach ($caseData as $case)
                                                         <option value="{{ $case->id }}"
                                                             data-final_hearing_date="{{ $case->final_hearing_date }}">
-                                                            {{ $case->case_number }}
+                                                            {{ $case->case_number }} / {{ $case->loan_number }}
                                                         </option>
                                                     @endforeach
                                                 </select>
@@ -145,7 +145,7 @@
                                 <div class="livemeeting-card h-100">
                                     <h4 class="livemeetingcard-heading text-center justify-content-center"
                                         style="background-color: black;color: white;padding: 5px;border-radius: 8px">
-                                        Daily OrderSheet</h4>
+                                        Daily Orders</h4>
                                     <!-- OrderSheet Display Area -->
                                     <div id="awardsContainer">
 
@@ -179,6 +179,10 @@
 @endsection
 
 @section('js')
+    <!-- Include in your <head> or before </body> -->
+    <link href="{{ asset('assets/plugins/select2/select2.min.css') }}" rel="stylesheet" />
+    <script src="{{ asset('assets/plugins/select2/select2.min.js') }}"></script>
+
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>
     <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
@@ -312,6 +316,13 @@
         }
     </script>
 
+    <script>
+        $('#caseSelector').select2({
+            placeholder: "Select Case / Loan Number",
+            allowClear: true,
+            width: '100%'
+        });
+    </script>
 
     {{-- ####### Fetch the flattened data dynamically #######
          ####### Replace placeholders in the template ####### --}}

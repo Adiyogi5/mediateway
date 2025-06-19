@@ -64,49 +64,49 @@
                                             <label for="file_case_id" class="form-label fw-bold">Select Case</label>
                                             <select class="form-select" id="caseSelector" name="file_case_id"
                                                 style="background-color: #fff2dc !important;">
-                                                <option selected disabled>Select Case Number</option>
+                                                <option selected disabled>Select Case / Loan Number</option>
                                                 @foreach ($caseData as $case)
                                                     <option value="{{ $case->id }}"
                                                         data-case="{{ json_encode($case) }}">
-                                                        {{ $case->case_number }}
+                                                        {{ $case->case_number }} / {{ $case->loan_number }}
                                                     </option>
                                                 @endforeach
                                             </select>
                                         </div>
                                         <!-- Document Type and File Upload -->
                                         {{-- <div class="mb-3">
-                                            <label class="form-label fw-bold">Select Document Type and Attach</label>
-                                            <div class="row g-2">
-                                                <div class="col-xl-6 col-12">
-                                                    <select class="form-select" id="docType" name="docType"
-                                                        style="background-color: #fff2dc !important;">
-                                                        <option selected disabled>Document Type</option>
-                                                        <option value="ordersheet">Case OrderSheet</option>
-                                                        <option value="settlementletter">Settlement Agreement</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-xl-6 col-12">
-                                                    <select class="form-select" id="tempType" name="tempType"
-                                                        style="background-color: #fff2dc !important;">
-                                                        <option selected disabled>Template Type</option>
-                                                    </select>
+                                                <label class="form-label fw-bold">Select Document Type and Attach</label>
+                                                <div class="row g-2">
+                                                    <div class="col-xl-6 col-12">
+                                                        <select class="form-select" id="docType" name="docType"
+                                                            style="background-color: #fff2dc !important;">
+                                                            <option selected disabled>Document Type</option>
+                                                            <option value="ordersheet">Case OrderSheet</option>
+                                                            <option value="settlementletter">Settlement Agreement</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xl-6 col-12">
+                                                        <select class="form-select" id="tempType" name="tempType"
+                                                            style="background-color: #fff2dc !important;">
+                                                            <option selected disabled>Template Type</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div class="form-group">
-                                            <textarea class="form-control" rows="5" id="livemeetingdata" name="livemeetingdata">{{ old('livemeetingdata') }}</textarea>
-                                            @error('livemeetingdata')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                            @enderror
-                                        </div>
+                                            <div class="form-group">
+                                                <textarea class="form-control" rows="5" id="livemeetingdata" name="livemeetingdata">{{ old('livemeetingdata') }}</textarea>
+                                                @error('livemeetingdata')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
 
-                                        <!-- Upload Button -->
-                                        <div class="text-center mt-3">
-                                            <button class="btn btn-secondary w-100" id="uploadBtn" type="submit">UPLOAD /
-                                                SAVE</button>
+                                            <!-- Upload Button -->
+                                            <div class="text-center mt-3">
+                                                <button class="btn btn-secondary w-100" id="uploadBtn" type="submit">UPLOAD /
+                                                    SAVE</button>
                                         </div> --}}
                                     </div>
                                 </form>
@@ -130,7 +130,7 @@
                                 <div class="livemeeting-card h-100">
                                     <h4 class="livemeetingcard-heading text-center justify-content-center"
                                         style="background-color: black;color: white;padding: 5px;border-radius: 8px">
-                                        Daily OrderSheet</h4>
+                                        Daily Orders</h4>
                                     <!-- Notice Display Area -->
                                     <div id="awardsContainer">
 
@@ -148,6 +148,10 @@
 @endsection
 
 @section('js')
+    <!-- Include in your <head> or before </body> -->
+    <link href="{{ asset('assets/plugins/select2/select2.min.css') }}" rel="stylesheet" />
+    <script src="{{ asset('assets/plugins/select2/select2.min.js') }}"></script>
+
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>
     <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
@@ -181,6 +185,14 @@
             alert("Unable to access camera or microphone. Please check your device and browser permissions.");
             console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(e));
         }
+    </script>
+
+    <script>
+        $('#caseSelector').select2({
+            placeholder: "Select Case / Loan Number",
+            allowClear: true,
+            width: '100%'
+        });
     </script>
 
     {{-- ####### Fetch the flattened data dynamically #######

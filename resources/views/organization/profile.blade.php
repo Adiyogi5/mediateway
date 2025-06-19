@@ -217,6 +217,9 @@
                                         <label class="form-label" for="organization_type">Organization Type</label>
                                         <select name="organization_type" class="form-control form-select">
                                             <option value="">Select Organization Type</option>
+                                            @foreach (config('constant.organization_type') as $key => $type)
+                                                <option value="{{ $key }}">{{ $type }}</option>
+                                            @endforeach
                                         </select>
                                         @error('organization_type')
                                             <span class="text-danger">{{ $message }}</span>

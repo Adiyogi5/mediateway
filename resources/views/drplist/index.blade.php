@@ -22,7 +22,7 @@
                                     <th>Mobile</th>
                                     <th>Email</th>
                                     <th>Created Date</th>
-                                    <th>Approve Status</th>
+                                    <th>Status</th>
                                     <th width="100">Action</th>
                                 </tr>
                             </thead>
@@ -64,7 +64,7 @@
             var table = $('.table-datatable').DataTable({
                 ajax: "{{ route('drplist.index') }}",
                 order: [
-                    [3, 'desc']
+                    [4, 'desc']
                 ],
                 columns: [
                     { data: 'drp_type', name: 'drp_type' },

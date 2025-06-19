@@ -624,7 +624,7 @@
                                                                 </thead>
                                                                 <tbody>
                                                                     @if ($case->notices->isNotEmpty())
-                                                                        @foreach ($case->notices->filter(fn($n) => $n->notice_type >= 1 && $n->notice_type <= 10)->sortBy('notice_type') as $notice)
+                                                                        @foreach ($case->notices->filter(fn($n) => $n->notice_type >= 1 && $n->notice_type <= 10 && \Carbon\Carbon::parse($n->notice_date)->greaterThanOrEqualTo(Carbon::today()))->sortBy('notice_type') as $notice)
                                                                             <tr>
                                                                                 <td class="text-start ps-3">
                                                                                     <a class="text-decoration-none text-dark"
@@ -696,6 +696,13 @@
                                                                                         <span
                                                                                             class="{{ $notice->whatsapp_status ? 'text-success' : 'text-danger' }}">
                                                                                             {{ $notice->whatsapp_status ? 'Seen' : 'UnSeen' }}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                     <div>
+                                                                                        SMS:
+                                                                                        <span
+                                                                                            class="{{ $notice->sms_status ? 'text-success' : 'text-danger' }}">
+                                                                                            {{ $notice->sms_status ? 'Sent' : 'Not Sent' }}
                                                                                         </span>
                                                                                     </div>
                                                                                 </td>
