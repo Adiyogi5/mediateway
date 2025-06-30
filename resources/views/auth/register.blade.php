@@ -109,8 +109,23 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-6 mb-4">
+                                            {{-- <div class="col-6 mb-4">
                                                 <label for="mobile">Enter Otp</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                                                    <input type="text" name="otp" id="otp-{{ $guard }}"
+                                                        style="border-left: 1px solid #ffffff00;"
+                                                        class="form-control @error('otp') is-invalid @enderror">
+                                                    @error('otp')
+                                                        <span class="invalid-feedback">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div> --}}
+
+                                            {{-- OTP Field --}}
+                                            <div class="col-6 mb-4 otp-field"
+                                                @if ($guard === 'organization') style="display: none;" @endif>
+                                                <label for="mobile">Enter OTP</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
                                                     <input type="text" name="otp" id="otp-{{ $guard }}"
@@ -122,18 +137,45 @@
                                                 </div>
                                             </div>
 
+                                            {{-- Password + Confirm Password Fields (initially hidden for all except organization) --}}
+                                            <div class="col-md-6 mb-4 password-fields"
+                                                @if ($guard !== 'organization') style="display: none;" @endif>
+                                                <label for="password">Password</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                                                    <input type="password" name="password"
+                                                        style="border-left: 1px solid #ffffff00;"
+                                                        class="form-control @error('password') is-invalid @enderror">
+                                                </div>
+                                                @error('password')
+                                                    <span class="invalid-feedback">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                            <div class="col-md-6 mb-4 password-fields"
+                                                @if ($guard !== 'organization') style="display: none;" @endif>
+                                                <label for="password_confirmation">Confirm Password</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                                                    <input type="password" name="password_confirmation"
+                                                        style="border-left: 1px solid #ffffff00;" class="form-control">
+                                                </div>
+                                            </div>
+
                                             <div class="col-8">
                                                 <div class="mb-3 form-check">
                                                     <input type="checkbox" name="terms" class="form-check-input">
-                                                    <label class="form-check-label">I agree to the <a href="#"> Terms
+                                                    <label class="form-check-label">I agree to the <a href="#">
+                                                            Terms
                                                             of Service and Privacy Policy</a></label>
                                                 </div>
                                             </div>
-                                            <div class="col-4">
+                                            <div class="col-4 send-otp-field"
+                                                @if ($guard == 'organization') style="display: none;" @endif>
                                                 <div class="mb-3 text-end">
                                                     <button type="button" id="sendOtp"
                                                         class="btn btn-send border-0 bg-transparent sendOtp pt-0 mt-0"
-                                                        data-target="otp-{{ $guard }}" data-guard="{{ $guard }}">
+                                                        data-target="otp-{{ $guard }}"
+                                                        data-guard="{{ $guard }}">
                                                         Send OTP <i class="fa fa-refresh ms-2"></i>
                                                     </button>
                                                 </div>
@@ -165,6 +207,7 @@
     </div>
 @endsection
 
+
 @section('js')
     <script>
         $(function() {
@@ -181,6 +224,17 @@
                     $('.drp-type-field').show();
                 } else {
                     $('.drp-type-field').hide();
+                }
+                
+                // Show/hide password vs otp
+                if (targetTab === '#organization') {
+                    $form.find('.otp-field').hide();
+                    $form.find('.send-otp-field').hide();
+                    $form.find('.password-fields').show();
+                } else {
+                    $form.find('.otp-field').show();
+                    $form.find('.send-otp-field').show();
+                    $form.find('.password-fields').hide();
                 }
 
                 if (targetTab === '#organization') {
@@ -227,12 +281,13 @@
                     var mobile = mobileInput.val().trim();
                     var button = $(this);
 
-                    var guard = form.find('input[name="guard"]').val(); // ✅ Correct: Dynamic from the form
+                    var guard = form.find('input[name="guard"]')
+                .val(); // ✅ Correct: Dynamic from the form
 
                     if (!mobile || mobile.length !== 10) {
                         toastr.error(
                             "Please enter a valid 10-digit mobile number before requesting OTP."
-                            );
+                        );
                         return;
                     }
 
@@ -303,9 +358,27 @@
                             exactlength: 10,
                         },
                         otp: {
-                            required: true,
-                            number: true,
-                            exactlength: 6,
+                            required: function () {
+                                // OTP is only required if the guard is NOT organization
+                                return form.find('input[name="guard"]').val() !== 'organization';
+                            },
+                            digits: true,
+                            minlength: 6,
+                            maxlength: 6
+                        },
+                        password: {
+                            required: function () {
+                                // Password only required for organization
+                                return form.find('input[name="guard"]').val() === 'organization';
+                            },
+                            minlength: 6
+                        },
+                        password_confirmation: {
+                            required: function () {
+                                // Password only required for organization
+                                return form.find('input[name="guard"]').val() === 'organization';
+                            },
+                            equalTo: 'input[name="password"]'
                         },
                         drp_type: {
                             required: function() {
@@ -329,6 +402,14 @@
                         },
                         otp: {
                             required: "Please enter OTP Code.",
+                        },
+                        password: {
+                            required: "Password is required",
+                            minlength: "Password must be at least 6 characters"
+                        },
+                        password_confirmation: {
+                            required: "Please confirm password",
+                            equalTo: "Passwords do not match"
                         },
                         drp_type: {
                             required: "Please select DRP type",

@@ -113,8 +113,8 @@ class Bulk2BNoticeSend extends Command
 
                     $noticetemplateData = NoticeTemplate::where('id', 4)->first();
                     $noticeTemplate     = $noticetemplateData->notice_format;
-                    $now = now();
-                    
+                    $now                = now();
+
                     // #########################################################
                     // ################# Send Email using SMTP #################
                     if ($value->email_status == 0) {
@@ -229,7 +229,7 @@ class Bulk2BNoticeSend extends Command
                             if ($notice) {
                                 FileCaseDetail::where('file_case_id', $notice->file_case_id)
                                     ->update([
-                                        'stage_2b_notice_date' => $now->format('d-m-Y'),
+                                        'stage_2b_notice_date' => $now->format('Y-m-d'),
                                     ]);
                             }
                             //Send Email with Notice for Assign Arbitrator
@@ -273,7 +273,7 @@ class Bulk2BNoticeSend extends Command
                                     $subject     = $noticetemplateData->subject;
                                     $description = $noticetemplateData->email_content;
 
-                                    try{
+                                    try {
                                         Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($savedPath, $subject, $email) {
                                             $message->to($email)
                                                 ->subject($subject)
@@ -284,22 +284,21 @@ class Bulk2BNoticeSend extends Command
 
                                         // Success
                                         Notice::where('file_case_id', $value->id)->where('notice_type', 4)
-                                        ->update([
-                                            'notice_send_date' => $now,
-                                            'email_status' => 1,
-                                        ]);
+                                            ->update([
+                                                'notice_send_date' => $now,
+                                                'email_status'     => 1,
+                                            ]);
 
                                     } catch (\Exception $e) {
                                         Log::error("Failed to send email to: $email. Error: " . $e->getMessage());
                                         Notice::where('file_case_id', $value->id)->where('notice_type', 4)
-                                        ->update([
-                                            'email_status' => 2,
-                                        ]);
+                                            ->update([
+                                                'email_status' => 2,
+                                            ]);
                                     }
                                 }
                             }
-                        }
-                        else{
+                        } else {
                             //Send Email with Notice for Assign Arbitrator
                             $data = Setting::where('setting_type', '3')->get()->pluck('filed_value', 'setting_name')->toArray();
 
@@ -319,7 +318,6 @@ class Bulk2BNoticeSend extends Command
                                 'name'    => config('app.name'),
                             ]);
 
-                            
                             // ###################################################################
                             // ################# Send Email using Email Address ##################
                             if (! empty($value->respondent_email)) {
@@ -333,9 +331,9 @@ class Bulk2BNoticeSend extends Command
                                 if ($validator->fails()) {
                                     Log::warning("Invalid email address: $email");
                                     Notice::where('file_case_id', $value->id)->where('notice_type', 4)
-                                            ->update([
-                                                'email_status' => 2,
-                                            ]);
+                                        ->update([
+                                            'email_status' => 2,
+                                        ]);
                                 } else {
 
                                     $subject     = $noticetemplateData->subject;
@@ -350,38 +348,37 @@ class Bulk2BNoticeSend extends Command
                                                 ]);
                                         });
 
-                                            Notice::where('file_case_id', $value->id)->where('notice_type', 4)
+                                        Notice::where('file_case_id', $value->id)->where('notice_type', 4)
                                             ->update([
                                                 'notice_send_date' => $now,
-                                                'email_status' => 1,
+                                                'email_status'     => 1,
                                             ]);
 
-                                        } catch (\Exception $e) {
-                                            Log::error("Failed to send email to: $email. Error: " . $e->getMessage());
-                                            Notice::where('file_case_id', $value->id)->where('notice_type', 4)
+                                    } catch (\Exception $e) {
+                                        Log::error("Failed to send email to: $email. Error: " . $e->getMessage());
+                                        Notice::where('file_case_id', $value->id)->where('notice_type', 4)
                                             ->update([
                                                 'email_status' => 2,
                                             ]);
-                                        }
+                                    }
                                 }
                             }
                         }
                     }
 
-
                     // ###################################################################
                     // ############ Send Whatsapp Message using Mobile Number ############
-                    if ($value->whatsapp_notice_status == 0 && !empty($value->notice)) {
+                    if ($value->whatsapp_notice_status == 0 && ! empty($value->notice)) {
                         try {
-                            $settingdata = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
+                            $settingdata  = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
                             $mobileNumber = $value->respondent_mobile;
 
                             $message = "Dear {$value->respondent_first_name} {$value->respondent_last_name},
                             A case has been registered by {$value->claimant_first_name} {$value->claimant_last_name} against you at MediateWay ADR Centre under Clause {$value->arbitration_clause_no} of your loan agreement for online arbitration as per the Arbitration & Conciliation Act, 1996.
 Case Manager:
-Name: {$casemanagerData->name} 
+Name: {$casemanagerData->name}
 Ph: {$settingdata['phone']} | Email: {$settingdata['email']}
-For details, visit: https://mediateway.com/ 
+For details, visit: https://mediateway.com/
 MediateWay ADR Centre";
 
                             $pdfUrl = public_path(str_replace('\\', '/', 'storage/' . $value->notice));
@@ -398,7 +395,7 @@ MediateWay ADR Centre";
                                     Notice::where('file_case_id', $value->id)->where('notice_type', 4)
                                         ->update([
                                             'whatsapp_dispatch_datetime' => $now,
-                                            'whatsapp_notice_status' => 1,
+                                            'whatsapp_notice_status'     => 1,
                                         ]);
                                     return true;
                                 } else {
@@ -416,49 +413,41 @@ MediateWay ADR Centre";
                         }
                     }
 
-
                     // ###############################################################
                     // ################ Send SMS using Mobile Number #################
-                    if ($value->sms_status == 0){
-                        // if (! empty($value->respondent_mobile)) {
-                        //     $approved_sms_count = SmsCount::where('count', '>', 0)->first();
+                    if ($value->sms_status == 0 && ! empty($value->respondent_mobile)) {
+                        
+                        $mobile        = '91' . preg_replace('/\D/', '', trim($value->respondent_mobile));
+                        $smsmessage = "Subject: Intimation of Case Registration – MediateWay ADR Centre. Dear {$value->respondent_first_name}, A case has been registered by {$value->claimant_first_name} against you at MediateWay ADR Centre under Clause of your loan agreement/credit card facility form for online arbitration as per the A & C Act, 1996. For details, visit: https://mediateway.com Team Mediateway";
 
-                        //     if (! $approved_sms_count) {
-                        //         return response()->json([
-                        //             'status'  => false,
-                        //             'message' => "Message can't be sent because your SMS quota is empty.",
-                        //         ], 422);
-                        //     }
+                        try {
+                            $response = Http::post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+                                "sender"      => "MDTWAY",
+                                "peId"        => "1001292642501782120",
+                                "teId"        => "1007641700544394847",
+                                "message"     => $smsmessage,
+                                "smsReciever" => [["reciever" => $mobile]],
+                            ]);
 
-                        //     $mobile = preg_replace('/\D/', '', trim($value->respondent_mobile));
-                        //     $mobilemessage =  "Hello User Your Login Verification Code is $otp. Thanks AYT";
-                        //     try {
-                        //         $smsResponse = TextLocal::sendSms(['+91' . $mobile], $mobilemessage);
-
-                        //         if ($smsResponse) {
-                        //             $approved_sms_count->decrement('count');
-
-                        //             return response()->json([
-                        //                 'status'  => true,
-                        //                 'message' => 'Message sent successfully to your mobile!',
-                        //                 'data'    => '',
-                        //             ]);
-                        //         } else {
-                        //             return response()->json([
-                        //                 'status'  => false,
-                        //                 'message' => "Message couldn't be sent, please retry later.",
-                        //                 'data'    => '',
-                        //             ], 422);
-                        //         }
-                        //     } catch (\Exception $e) {
-                        //         Log::error('SMS send failed: ' . $e->getMessage());
-
-                        //         return response()->json([
-                        //             'status'  => false,
-                        //             'message' => 'An error occurred while sending SMS.',
-                        //         ], 500);
-                        //     }
-                        // }
+                            if ($response->json('isSuccess')) {
+                                Notice::where('file_case_id', $value->id)->where('notice_type', 4)
+                                    ->update([
+                                        'sms_send_date' => $now,
+                                        'sms_status'    => 1,
+                                    ]);
+                                return true;
+                            } else {
+                                Log::error('SMS API error: ' . $response->body());
+                                Notice::where('file_case_id', $value->id)->where('notice_type', 4)
+                                    ->update([
+                                        'sms_status' => 2,
+                                    ]);
+                                return false;
+                            }
+                        } catch (\Throwable $th) {
+                            Log::error('SMS send failed: ' . $th->getMessage());
+                            return false;
+                        }
                     }
                 }
             } catch (\Throwable $th) {

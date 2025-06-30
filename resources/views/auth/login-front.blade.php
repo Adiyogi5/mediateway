@@ -54,7 +54,8 @@
                                                 @enderror
                                             </div>
 
-                                            <div class="col-md-12 mb-5">
+                                            <div class="col-md-12 mb-5 otp-field"
+                                                @if ($guard === 'organization') style="display: none;" @endif>
                                                 <label for="otp">Enter Otp</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
@@ -67,11 +68,26 @@
                                                 @enderror
                                             </div>
 
+                                            <div class="col-md-12 mb-5 password-fields"
+                                                @if ($guard !== 'organization') style="display: none;" @endif>
+                                                <label for="password">Password</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                                                    <input type="password" name="password"
+                                                        style="border-left: 1px solid #ffffff00;"
+                                                        class="form-control @error('password') is-invalid @enderror">
+                                                </div>
+                                                @error('password')
+                                                    <span class="invalid-feedback">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+
                                             <div class="col-6 mb-3">
                                                 <button class="btn btn-warning-custom px-5" type="submit">Submit</button>
                                             </div>
 
-                                            <div class="col-6 text-end mb-3">
+                                            <div class="col-6 text-end mb-3 send-otp-field"
+                                                @if ($guard == 'organization') style="display: none;" @endif>
                                                 <button type="button" id="sendOtp"
                                                     class="btn btn-send border-0 bg-transparent sendOtp btn-sendOtp"
                                                     data-target="otp-{{ $key }}" data-guard="{{ $key }}">
@@ -164,6 +180,29 @@
                 });
             });
 
+            $(function () {
+                $('#loginTabs a').on('shown.bs.tab', function (e) {
+                    var targetId = $(e.target).attr('href'); // e.g., "#organization-login"
+
+                    $('.tab-pane').each(function () {
+                        var paneId = '#' + $(this).attr('id');
+                        var $pane = $(this);
+
+                        if (paneId === targetId && paneId.includes('organization')) {
+                            $pane.find('.otp-field').hide();
+                            $pane.find('.send-otp-field').hide();
+                            $pane.find('.password-fields').show();
+                        } else {
+                            $pane.find('.otp-field').show();
+                            $pane.find('.send-otp-field').show();
+                            $pane.find('.password-fields').hide();
+                        }
+                    });
+                });
+
+                // Trigger default tab
+                $('#loginTabs a.active').trigger('shown.bs.tab');
+            });
 
             // Form validation
             $("form").each(function() {
@@ -176,11 +215,21 @@
                             maxlength: 15
                         },
                         otp: {
-                            required: true,
+                            required: function () {
+                                // OTP is only required if the guard is NOT organization
+                                return form.find('input[name="guard"]').val() !== 'organization';
+                            },
                             digits: true,
                             minlength: 6,
                             maxlength: 6
-                        }
+                        },
+                        password: {
+                            required: function () {
+                                // Password only required for organization login
+                                return form.find('input[name="guard"]').val() === 'organization';
+                            },
+                            minlength: 6
+                        },
                     },
                     messages: {
                         mobile: {
@@ -194,7 +243,11 @@
                             digits: "Only numbers are allowed.",
                             minlength: "OTP must be 6 digits.",
                             maxlength: "OTP must be 6 digits."
-                        }
+                        },
+                        password: {
+                            required: "Password is required",
+                            minlength: "Password must be at least 6 characters"
+                        },
                     }
                 });
             });

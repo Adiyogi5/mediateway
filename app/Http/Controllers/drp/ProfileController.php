@@ -114,56 +114,59 @@ class ProfileController extends Controller
             Helper::deleteFile($user->image); // Delete old image
             $user->image = Helper::saveFile($request->file('image'), 'drps');
         }
-          if ($request->hasFile('signature_drp')) {
+        if ($request->hasFile('signature_drp')) {
             Helper::deleteFile($user->signature_drp); // Delete old image
             $user->signature_drp = Helper::saveFile($request->file('signature_drp'), 'drps');
         }
 
         $user->save();
 
-        // Update or create DrpDetail
-        $drpDetail = DrpDetail::updateOrCreate(
-            ['drp_id' => $user->id], // Find by this column
-            [
-                'university' => $request->university,
-                'field_of_study' => $request->field_of_study,
-                'degree' => $request->degree,
-                'year' => $request->year,
-                'description' => $request->description,
-                'achievement_od_socities' => $request->achievement_od_socities,
-                'designation' => $request->designation,
-                'organization' => $request->organization,
-                'professional_degree' => $request->professional_degree,
-                'registration_no' => $request->registration_no,
-                'job_description' => $request->job_description,
-                'currently_working_here' => $request->currently_working_here,
-                'years_of_experience' => $request->years_of_experience,
-                'registration_certificate' => $request->registration_certificate,
-                'attach_registration_certificate' => $request->attach_registration_certificate,
-                'experience_in_the_field_of_drp' => $request->experience_in_the_field_of_drp,
-                'areas_of_expertise' => $request->areas_of_expertise,
-                'membership_of_professional_organisation' => $request->membership_of_professional_organisation,
-                'no_of_awards_as_arbitrator' => $request->no_of_awards_as_arbitrator,
-                'total_years_of_working_as_drp' => $request->total_years_of_working_as_drp,
-                'functional_area_of_drp' => $request->functional_area_of_drp,
-            ]
-        );
-        
-        $drpDetail = DrpDetail::where('drp_id', $user->id)->first();
 
-        if (!$drpDetail) {
-            $drpDetail = new DrpDetail();
-            $drpDetail->drp_id = $user->id; // Assign ID if creating a new record
-        }
-        // Handle attach_registration_certificate file upload
+        // Handle file upload first
+        $attachFilePath = null;
         if ($request->hasFile('attach_registration_certificate')) {
-            // Delete old file if exists
-            Helper::deleteFile($drpDetail->attach_registration_certificate);
-            
-            // Save new file
-            $drpDetail->attach_registration_certificate = Helper::saveFile($request->file('attach_registration_certificate'), 'organization/registrationcertificate');
-            $drpDetail->save();
+            $existingDetail = DrpDetail::where('drp_id', $user->id)->first();
+
+            if ($existingDetail && $existingDetail->attach_registration_certificate) {
+                Helper::deleteFile($existingDetail->attach_registration_certificate);
+            }
+
+            $attachFilePath = Helper::saveFile($request->file('attach_registration_certificate'), 'drp/registrationcertificate');
         }
+
+        // Prepare detail data
+        $detailData = [
+            'university' => $request->university,
+            'field_of_study' => $request->field_of_study,
+            'degree' => $request->degree,
+            'year' => $request->year,
+            'description' => $request->description,
+            'achievement_od_socities' => $request->achievement_od_socities,
+            'designation' => $request->designation,
+            'organization' => $request->organization,
+            'professional_degree' => $request->professional_degree,
+            'registration_no' => $request->registration_no,
+            'job_description' => $request->job_description,
+            'currently_working_here' => $request->currently_working_here,
+            'years_of_experience' => $request->years_of_experience,
+            'registration_certificate' => $request->registration_certificate,
+            'experience_in_the_field_of_drp' => $request->experience_in_the_field_of_drp,
+            'areas_of_expertise' => $request->areas_of_expertise,
+            'membership_of_professional_organisation' => $request->membership_of_professional_organisation,
+            'no_of_awards_as_arbitrator' => $request->no_of_awards_as_arbitrator,
+            'total_years_of_working_as_drp' => $request->total_years_of_working_as_drp,
+            'functional_area_of_drp' => $request->functional_area_of_drp,
+        ];
+
+        // Add the file path only if a new file was uploaded
+        if ($attachFilePath) {
+            $detailData['attach_registration_certificate'] = $attachFilePath;
+        }
+
+        DrpDetail::updateOrCreate(
+            ['drp_id' => $user->id],
+            $detailData
+        );
 
         return redirect()->back()->with('success', 'Profile updated successfully.');
     }

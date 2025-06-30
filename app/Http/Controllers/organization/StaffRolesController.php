@@ -62,15 +62,13 @@ class StaffRolesController extends Controller
         // Required fields to check
         $requiredFields = [
             'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image', 
-            'address1', 
+            'address1', 'signature_org'
         ];
-        $requiredDetailFields = ['registration_no', 'registration_certificate', 'attach_registration_certificate'];
 
         // Check if any field is null or empty
         $missingFields = collect($requiredFields)->filter(fn($field) => empty($organizationdata->$field));
-        $missingDetailFields = collect($requiredDetailFields)->filter(fn($field) => empty($organizationdata->organizationDetail?->$field));
 
-        if ($missingFields->isNotEmpty() || $missingDetailFields->isNotEmpty()) {
+        if ($missingFields->isNotEmpty()) {
             return view('organization.staffroles.index', compact(
                 'organizationdata',
                 'title',

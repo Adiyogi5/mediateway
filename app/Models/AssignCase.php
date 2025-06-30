@@ -20,6 +20,7 @@ class AssignCase extends Model
         'conciliator_id',
         'sendto_casemanager',
         'receiveto_casemanager',
+        'is_assigned',
     ];
 
     public function fileCase()

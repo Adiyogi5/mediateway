@@ -97,16 +97,17 @@ class CaseListController extends Controller
                     $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
 
                    // Check if a valid notice exists
-                    $hasNotice = Notice::where('file_case_id', $row->id)
-                        ->where('notice_type', 7)//Notice 3C send for arbitrator accept the case then show approve button
-                        // ->where('email_status', 1)
-                        ->exists();
+                    // $hasNotice = Notice::where('file_case_id', $row->id)
+                    //     ->where('notice_type', 7)//Notice 3C send for arbitrator accept the case then show approve button
+                    //     // ->where('email_status', 1)
+                    //     ->exists();
                     // Check if case is already approved
                     $isApproved = AssignCase::where('case_id', $row->id)
                         ->where('arbitrator_id', auth('drp')->id())
                         ->where('confirm_to_arbitrator', 1)
                         ->exists();
-                    if ($hasNotice && !$isApproved) {
+                    // if ($hasNotice && !$isApproved) {
+                    if (!$isApproved) {
                         $btn .= '<a class="dropdown-item btn-approve-case" href="javascript:void(0)" data-id="' . $row->id . '">Approve Case</a>';
                     }
 

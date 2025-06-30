@@ -116,7 +116,7 @@ class Bulk5ANoticeSend extends Command
                 if ($noticeData) {
                     FileCaseDetail::where('file_case_id', $value->id)
                         ->update([
-                            'stage_5a_notice_date' => $now->format('d-m-Y'),
+                            'stage_5a_notice_date' => $now->format('Y-m-d'),
                         ]);
                 }
 

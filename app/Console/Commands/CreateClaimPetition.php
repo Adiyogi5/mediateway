@@ -8,6 +8,7 @@ use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\FileCaseDetail;
 use App\Models\Notice;
+use App\Models\Organization;
 use App\Models\OrganizationList;
 use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -86,7 +87,7 @@ class CreateClaimPetition extends Command
             )
             ->distinct()
             ->get();
-        
+                
         foreach ($caseData as $key => $value) {
             try {
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();
@@ -96,6 +97,9 @@ class CreateClaimPetition extends Command
                     $arbitratorIds   = explode(',', $assigncaseData->arbitrator_id);
                     $arbitratorsName = Drp::whereIn('id', $arbitratorIds)->pluck('name')->implode(', ');
                     $casemanagerData = Drp::where('id', $assigncaseData->case_manager_id)->first();
+
+                    $organizationManager_signature = Organization::where('id', $value['organization_id'])->select('signature_org')->first();
+
 
                     $claimpetitionData = ClaimPetition::where('product_type', $value->product_type)->first();
                     $claimPetition     = $claimpetitionData->notice_format;
@@ -188,11 +192,10 @@ class CreateClaimPetition extends Command
 
                     $finalNotice = $replaceSummernotePlaceholders($claimPetition, $data);
                   
-                    $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
                     // Append the signature image at the end of the content, aligned right
                     $finalNotice .= '
                         <div style="text-align: right; margin-top: 0px;">
-                            <img src="' . asset('storage/' . $signature['mediateway_signature']) . '" style="height: 80px;" alt="Signature">
+                            <img src="' . asset('storage/' . $organizationManager_signature['signature_org']) . '" style="height: 80px;" alt="Signature">
                         </div>
                     ';
 
@@ -236,7 +239,7 @@ class CreateClaimPetition extends Command
                     );
 
                     // Save the PDF using your helper
-                    $savedPath = Helper::saveFile($uploadedFile, 'casefile');
+                    $savedPath = Helper::saveFile($uploadedFile, 'notices');
                     
                     $now = now();
              
@@ -255,7 +258,7 @@ class CreateClaimPetition extends Command
                     if ($notice) {
                         FileCaseDetail::where('file_case_id', $notice->file_case_id)
                             ->update([
-                                'stage_3d_notice_date' => $now->format('d-m-Y'),
+                                'stage_3d_notice_date' => $now->format('Y-m-d'),
                             ]);
                     }
 

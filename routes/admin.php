@@ -14,6 +14,7 @@ use App\Http\Controllers\CmsController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\ClaimPetitionController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ConciliationCaseAssignController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\DrpListController;
 use App\Http\Controllers\FaqController;
@@ -142,6 +143,14 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::delete('caseassign', 'delete')->name('caseassign.delete')->middleware('isAllow:111,can_delete');
         Route::get('caseassign/{id}/edit', 'edit')->name('caseassign.edit')->middleware('isAllow:111,can_edit');
         Route::put('caseassign/casedetail/{id}', 'updateCaseDetail')->name('caseassign.updatecasedetail')->middleware('isAllow:111,can_edit');
+    });
+
+    // ----------------------- CaseAssign Routes -------------------------------------------------
+    Route::controller(ConciliationCaseAssignController::class)->group(function () {
+        Route::get('conciliation-caseassign', 'index')->name('conciliation_caseassign')->middleware('isAllow:111,can_view');
+        Route::post('conciliation-caseassign/bulkassign', 'bulkAssign')->name('conciliation_caseassign.bulkassign');
+        Route::get('conciliation-caseassign/unassigned-data', 'unassignedCases')->name('conciliation_caseassign.unassigneddata');
+        Route::delete('conciliation-caseassign', 'delete')->name('conciliation_caseassign.delete')->middleware('isAllow:111,can_delete');
     });
 
     // ----------------------- All Case Notices Routes -------------------------------------------

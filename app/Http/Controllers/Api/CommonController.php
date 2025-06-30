@@ -1,15 +1,12 @@
 <?php
 namespace App\Http\Controllers\Api;
 
-use App\Helper\Helper;
 use App\Http\Controllers\Controller;
-use App\Library\TextLocal;
 use App\Models\RegistrationOtp;
 use App\Models\SmsCount;
 use App\Rules\CheckUnique;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class CommonController extends Controller
@@ -62,7 +59,8 @@ class CommonController extends Controller
         if ($old) {
             $otp = $old->otp;
         } else {
-            $otp = $request->mobile == "8741066111" ? 123456 : random_int(100000, 999999);
+            // $otp = $request->mobile == "8741066111" ? 123456 : random_int(100000, 999999);
+            $otp = random_int(100000, 999999);
             RegistrationOtp::where('mobile', $request->mobile)->delete();
             RegistrationOtp::create([
                 'mobile'    => $request->mobile,
@@ -71,8 +69,16 @@ class CommonController extends Controller
             ]);
         }
 
-        $message =  "Hello User Your Login Verification Code is $otp. Thanks AYT";
-        $smsResponse = TextLocal::sendSms(['+91' . $request->mobile], $message);
+        $mobile = '91' . $request->mobile;
+        $message =  "Hello User, Your login verification code is $otp. Do not share it with anyone. Team Mediateway";
+        $smsResponse = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+                                "sender"      => "MDTWAY",
+                                "peId"        => "1001292642501782120",
+                                "teId"        => "1007183533861090202",
+                                "message"     => $message,
+                                "smsReciever" => [["reciever" => $mobile]],
+                            ]);
+        
         if ($smsResponse) {
             $approved_sms_count->decrement('count');
             return response()->json([

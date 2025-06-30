@@ -138,15 +138,13 @@ class FileCaseController extends Controller
         // Required fields to check
         $requiredFields = [
             'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image', 
-            'address1', 
+            'address1', 'signature_org'
         ];
-        $requiredDetailFields = ['registration_no', 'registration_certificate', 'attach_registration_certificate'];
 
         // Check if any field is null or empty
         $missingFields = collect($requiredFields)->filter(fn($field) => empty($organizationdata->$field));
-        $missingDetailFields = collect($requiredDetailFields)->filter(fn($field) => empty($organizationdata->organizationDetail?->$field));
 
-        if ($missingFields->isNotEmpty() || $missingDetailFields->isNotEmpty()) {
+        if ($missingFields->isNotEmpty()) {
             return view('organization.cases.filecaseview', compact(
                 'organizationdata',
                 'organization',
@@ -320,12 +318,16 @@ class FileCaseController extends Controller
         ->first();
    
         // Get notices
-        $existing1 = Notice::where('file_case_id', $id)->where('notice_type', 1)->exists();
-        $existing2 = Notice::where('file_case_id', $id)->where('notice_type', 2)->exists();
-        $existing3 = Notice::where('file_case_id', $id)->where('notice_type', 3)->exists();
+        $existingTypes = Notice::where('file_case_id', $id)
+            ->whereIn('notice_type', [1, 2, 3])
+            ->pluck('notice_type')
+            ->toArray();
 
-        if ($existing1 || $existing2 || $existing3) {
-            return redirect()->back()->with('error', 'Notices already uploaded.');
+        // Example: [1, 3] means notices of type 1 and 3 already exist
+        $allowedTypes = array_diff([1, 2, 3], $existingTypes);
+
+        if (empty($allowedTypes)) {
+            return redirect()->back()->with('error', 'All notices already uploaded.');
         }
 
         $request->validate([

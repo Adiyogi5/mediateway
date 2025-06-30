@@ -169,14 +169,14 @@
                                 class="fa-solid fa-flag faa-profile"></i> All Assigned Case notices</a>
                     </li>
 
-                    {{-- ############################# SEND NOTICES ############################### --}}
+                    {{-- ############################# SEND CONCILIATION NOTICES ############################### --}}
                     <li
-                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.notices.noticelist') ? 'text-white bg-lime' : '' }}">
-                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.notices.noticelist') ? 'text-white bg-lime' : '' }}"
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.conciliationprocess.conciliationnoticelist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.conciliationprocess.conciliationnoticelist') ? 'text-white bg-lime' : '' }}"
                             aria-current="page"
-                            style="{{ request()->routeIs($currentGuard . '.notices.noticelist') ? 'color:white !important;;' : '' }}"
-                            href="{{ route($currentGuard . '.' . 'notices.noticelist') }}"><i
-                                class="fa-solid fa-paper-plane faa-profile"></i> Send Notices</a>
+                            style="{{ request()->routeIs($currentGuard . '.conciliationprocess.conciliationnoticelist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'conciliationprocess.conciliationnoticelist') }}"><i
+                                class="fa-solid fa-paper-plane faa-profile"></i> Conciliation Process</a>
                     </li>
 
                     {{-- ########################### BULK UPDATE CASES ############################ --}}

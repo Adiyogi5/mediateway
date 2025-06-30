@@ -234,26 +234,3 @@
     </script>
 @endsection
 
-{{-- $('#fileCasesNoticeTable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('drp.allnotices.arbitratorcasenoticelist') }}",
-                order: [[4, 'desc']],
-                columns: [
-                    { data: 'case_type', name: 'file_cases.case_type' },
-                    { data: 'case_number', name: 'file_cases.case_number' },
-                    { data: 'loan_number', name: 'file_cases.loan_number' },
-                    { data: 'status', name: 'file_cases.status' },
-                    { data: 'created_at', name: 'file_cases.created_at' },
-                    { data: 'notice_1', name: 'notice_1', orderable: false, searchable: false },
-                    { data: 'notice_1a', name: 'notice_1a', orderable: false, searchable: false },
-                    { data: 'notice_1b', name: 'notice_1b', orderable: false, searchable: false },
-                    { data: 'notice_2b', name: 'notice_2b', orderable: false, searchable: false },
-                    { data: 'notice_3a', name: 'notice_3a', orderable: false, searchable: false },
-                    { data: 'notice_3b', name: 'notice_3b', orderable: false, searchable: false },
-                    { data: 'notice_3c', name: 'notice_3c', orderable: false, searchable: false },
-                    { data: 'notice_3d', name: 'notice_3d', orderable: false, searchable: false },
-                    { data: 'notice_4a', name: 'notice_4a', orderable: false, searchable: false },
-                    { data: 'notice_5a', name: 'notice_5a', orderable: false, searchable: false },
-                ]
-            }); --}}

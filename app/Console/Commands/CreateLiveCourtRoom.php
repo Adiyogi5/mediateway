@@ -136,7 +136,7 @@ class CreateLiveCourtRoom extends Command
                             'case_manager_id'    => $case_manager_id,
                             'advocate_id'        => $advocate_id,
                             'date'               => $date,
-                            'time'               => '10:00:00',
+                            'time'               => '11:00:00',
                             'status'             => 0,
                         ]);
 
@@ -156,7 +156,7 @@ class CreateLiveCourtRoom extends Command
                             $subject = $hearingTypeLabels[$hearingType] ?? 'Hearing Link';
                             $case_id = $case->id;
 
-                            $messageContent = "Your first hearing at Mediateway is scheduled for Date: $courtRoom->date at 10:00 AM. Join using this link. Thank you! Mediateway.";
+                            $messageContent = "Your $subject at Mediateway is scheduled for Date: $courtRoom->date at 11:00 AM. Join using this link. Thank you! Mediateway.";
                             $encodedMessage = urlencode($messageContent);
                             $description    = route('front.guest.livecourtroom', ['room_id' => $room_id]) . "?case_id=$case_id&message=$encodedMessage";
 

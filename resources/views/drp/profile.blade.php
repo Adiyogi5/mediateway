@@ -210,14 +210,14 @@
                                         @error('image')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
-                                    </div>
 
-                                    @if ($drp->image)
-                                        <div class="mb-5">
-                                            <img src="{{ asset('storage/' . $drp->image) }}" class="img-thumbnail"
-                                                width="100" />
-                                        </div>
-                                    @endif
+                                        @if ($drp->image)
+                                            <div class="my-2">
+                                                <img src="{{ asset('storage/' . $drp->image) }}" class="img-thumbnail"
+                                                    width="100" />
+                                            </div>
+                                        @endif
+                                    </div>
 
                                     <div class="col-md-6 col-12 mb-3">
                                         <label class="form-label" for="signature_drp">Signature Image</label>
@@ -225,14 +225,14 @@
                                         @error('signature_drp')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
-                                    </div>
 
-                                    @if ($drp->signature_drp)
-                                        <div class="mb-5">
-                                            <img src="{{ asset('storage/' . $drp->signature_drp) }}" class="img-thumbnail"
-                                                width="100" />
-                                        </div>
-                                    @endif
+                                        @if ($drp->signature_drp)
+                                            <div class="my-2">
+                                                <img src="{{ asset('storage/' . $drp->signature_drp) }}" class="img-thumbnail"
+                                                    width="150" />
+                                            </div>
+                                        @endif
+                                    </div>
 
 
                                     <h4 class="mb-3 d-flex item-align-self">

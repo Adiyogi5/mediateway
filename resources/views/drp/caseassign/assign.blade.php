@@ -373,19 +373,19 @@
         $("#assignCase").validate({
             rules: {
                 arbitrator_id: {
-                    required: true,
+                    required: false,
                 },
                 advocate_id: {
-                    required: true,
+                    required: false,
                 },
                 // case_manager_id: {
                 //     required: true,
                 // },
                 mediator_id: {
-                    required: true,
+                    required: false,
                 },
                 conciliator_id: {
-                    required: true,
+                    required: false,
                 },
             },
             messages: {

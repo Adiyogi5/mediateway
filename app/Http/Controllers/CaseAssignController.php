@@ -181,11 +181,11 @@ class CaseAssignController extends Controller
        
         $assignCase = AssignCase::where('case_id', $id)->first();
         
-        $arbitrators = Drp::where('drp_type', 1)->get();
-        $advocates = Drp::where('drp_type', 2)->get();
-        $casemanagers = Drp::where('drp_type', 3)->get();
-        $mediators = Drp::where('drp_type', 4)->get();
-        $conciliators = Drp::where('drp_type', 5)->get();
+        $arbitrators = Drp::where('drp_type', 1)->where('approve_status', 1)->where('status', 1)->get();
+        $advocates = Drp::where('drp_type', 2)->where('approve_status', 1)->where('status', 1)->get();
+        $casemanagers = Drp::where('drp_type', 3)->where('approve_status', 1)->where('status', 1)->get();
+        $mediators = Drp::where('drp_type', 4)->where('approve_status', 1)->where('status', 1)->get();
+        $conciliators = Drp::where('drp_type', 5)->where('approve_status', 1)->where('status', 1)->get();
 
         if (!$caseData) return to_route('caseassign')->withError('Case Not Found..!!');
 
@@ -208,8 +208,8 @@ class CaseAssignController extends Controller
 
         $data = $request->validate([
             // 'case_id'          => ['required'],
-            'arbitrator_id'    => ['required'],
-            // 'advocate_id'      => ['required'],
+            'arbitrator_id'    => ['nullable'],
+            'advocate_id'      => ['required'],
             'case_manager_id'  => ['required'],
             'mediator_id'      => ['nullable'],
             'conciliator_id'   => ['nullable'],
@@ -220,9 +220,10 @@ class CaseAssignController extends Controller
             array_merge([
                 'case_id'               => $id,
                 'arbitrator_id'         => implode(',', $data['arbitrator_id'] ?? []),
-                'case_manager_id'       => $data['case_manager_id'],
+                'case_manager_id'       => $data['case_manager_id'] ?? null,
                 'conciliator_id'        => $data['conciliator_id'] ?? null,
                 'mediator_id'           => $data['mediator_id'] ?? null,
+                'advocate_id'           => $data['advocate_id'] ?? null,
                 'sendto_casemanager'    => 1,
             ])               
         );

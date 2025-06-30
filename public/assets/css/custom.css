@@ -366,8 +366,11 @@ table.dataTable thead .sorting_desc_disabled::before {
 
 label.error,
 span.error {
-    font-size: small;
-    color: #dc3545;
+    font-family: "Inter";
+    font-size: 12px;
+    font-weight: 400;
+    color: #d43131 !important;
+    width: 100% !important;
 }
 
 .user-details {

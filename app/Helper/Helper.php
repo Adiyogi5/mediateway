@@ -240,6 +240,23 @@ class Helper
     }
 
 
+    
+    public static function loannosaveFile(?UploadedFile $image, string $folder = 'admin', ?string $loanNumber = null): ?string
+    {
+        if ($image) {
+            // Sanitize loan number (only letters, numbers)
+            $sanitizedLoanNumber = preg_replace('/[^a-zA-Z0-9]/', '', $loanNumber);
+
+            // Use loan number as filename
+            $filename = ($sanitizedLoanNumber ?: 'loan') . '.' . $image->getClientOriginalExtension();
+
+            $path = $image->storeAs($folder, $filename, 'public');
+
+            return $path;
+        }
+
+        return null;
+    }
 
 
 

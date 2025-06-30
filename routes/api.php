@@ -104,6 +104,20 @@ Route::get('/bulk_send_5a_notice', function () {
 });
 
 
+Route::get('/bulk_send_email_preconciliation_notice', function () {
+    Artisan::call('bulk:preconciliation-notice-email-send');   
+    return '<h1>update bulk send email preconciliation notice</h1>';
+});
+Route::get('/bulk_send_whatsapp_preconciliation_notice', function () {
+    Artisan::call('bulk:preconciliation-notice-whatsapp-send');   
+    return '<h1>update bulk send whatsapp preconciliation notice</h1>';
+});
+Route::get('/bulk_send_sms_preconciliation_notice', function () {
+    Artisan::call('bulk:preconciliation-notice-sms-send');   
+    return '<h1>update bulk send sms preconciliation notice</h1>';
+});
+
+
 Route::get('clear-all', function () {
     Artisan::call('cache:clear');
     Artisan::call('config:clear');

@@ -248,7 +248,7 @@ class Bulk3ANoticeSend extends Command
                     // if ($notice) {
                     //     FileCaseDetail::where('file_case_id', $notice->file_case_id)
                     //         ->update([
-                    //             'stage_3a_notice_date' => $now->format('d-m-Y'),
+                    //             'stage_3a_notice_date' => $now->format('Y-m-d'),
                     //         ]);
                     // }
 

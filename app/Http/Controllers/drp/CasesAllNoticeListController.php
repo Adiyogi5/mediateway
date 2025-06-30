@@ -44,7 +44,8 @@ class CasesAllNoticeListController extends Controller
                     'n1.notice',
                     'n1.notice_date',
                     'n1.email_status',
-                    'n1.whatsapp_status'
+                    'n1.whatsapp_notice_status',
+                    'n1.sms_status'
                 )
                 ->whereDate('n1.notice_date', '<=', now())
                 ->join(DB::raw('
@@ -86,7 +87,8 @@ class CasesAllNoticeListController extends Controller
                 $selectFields[] = DB::raw("MAX(CASE WHEN n.notice_type = $type THEN n.notice END) as $alias");
                 $selectFields[] = DB::raw("MAX(CASE WHEN n.notice_type = $type THEN n.notice_date END) as {$alias}_date");
                 $selectFields[] = DB::raw("MAX(CASE WHEN n.notice_type = $type THEN n.email_status END) as {$alias}_email_status");
-                $selectFields[] = DB::raw("MAX(CASE WHEN n.notice_type = $type THEN n.whatsapp_status END) as {$alias}_whatsapp_status");
+                $selectFields[] = DB::raw("MAX(CASE WHEN n.notice_type = $type THEN n.whatsapp_notice_status END) as {$alias}_whatsapp_notice_status");
+                $selectFields[] = DB::raw("MAX(CASE WHEN n.notice_type = $type THEN n.sms_status END) as {$alias}_sms_status");
             }
 
             // Execute the main query
@@ -154,22 +156,42 @@ class CasesAllNoticeListController extends Controller
                     // Define specific date, email, and WhatsApp status fields
                     $dateField = $noticeType . '_date';
                     $emailField = $noticeType . '_email_status';
-                    $whatsappField = $noticeType . '_whatsapp_status';
+                    $whatsappField = $noticeType . '_whatsapp_notice_status';
+                    $smsField = $noticeType . '_sms_status';
 
                     // Get the values if they exist, otherwise use '--'
                     $noticeDate = !empty($row->$dateField) ? \Carbon\Carbon::parse($row->$dateField)->format('d M, Y') : '--';
-                    $emailStatus = $row->$emailField == 2
-                        ? '<span class="text-success">Sent</span>'
-                        : '<span class="text-danger">Pending</span>';
-                    $whatsappStatus = $row->$whatsappField == 1
-                        ? '<span class="text-success">Seen</span>'
-                        : '<span class="text-danger">Unseen</span>';
+
+                     if ($row->$emailField == 1) {
+                        $emailStatus = '<span class="text-success">Sent</span>';
+                    } elseif ($row->$emailField == 2) {
+                        $emailStatus = '<span class="text-warning">Failed</span>';
+                    } else {
+                        $emailStatus = '<span class="text-danger">Pending</span>';
+                    }
+
+                    if ($row->$whatsappField == 1) {
+                        $whatsappStatus = '<span class="text-success">Sent</span>';
+                    } elseif ($row->$whatsappField == 2) {
+                        $whatsappStatus = '<span class="text-warning">Failed</span>';
+                    } else {
+                        $whatsappStatus = '<span class="text-danger">Pending</span>';
+                    }
+
+                    if ($row->$smsField == 1) {
+                        $smsStatus = '<span class="text-success">Sent</span>';
+                    } elseif ($row->$smsField == 2) {
+                        $smsStatus = '<span class="text-warning">Failed</span>';
+                    } else {
+                        $smsStatus = '<span class="text-danger">Pending</span>';
+                    }
 
                     // Append the date and status info
                     $html .= '<div class="mt-2">
                                 <small>Notice Date: ' . $noticeDate . '</small><br>
                                 <small>Email Status: ' . $emailStatus . '</small><br>
-                                <small>WhatsApp Status: ' . $whatsappStatus . '</small>
+                                <small>WhatsApp Status: ' . $whatsappStatus . '</small><br>
+                                <small>SMS Status: ' . $smsStatus . '</small>
                             </div>';
 
                     return $html;

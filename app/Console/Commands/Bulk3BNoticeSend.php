@@ -252,7 +252,7 @@ class Bulk3BNoticeSend extends Command
                         if ($notice) {
                             FileCaseDetail::where('file_case_id', $notice->file_case_id)
                                 ->update([
-                                    'stage_3b_notice_date' => $now->format('d-m-Y'),
+                                    'stage_3b_notice_date' => $now->format('Y-m-d'),
                                 ]);
                         }
 

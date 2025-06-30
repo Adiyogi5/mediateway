@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Helper\Helper;
 use App\Models\AssignCase;
 use App\Models\Country;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
+use App\Models\Setting;
 use App\Models\Drp;
 use App\Models\FileCase;
 use Illuminate\View\View;
@@ -212,11 +217,11 @@ class CaseAssignController extends Controller
         $arbitratorIds = $assignCase ? explode(',', $assignCase->arbitrator_id) : [];
 
         // Fetch only saved arbitrators (by their IDs)
-        $arbitrators = Drp::where('drp_type', 1)->whereIn('id', $arbitratorIds)->get();
-        $advocates = Drp::where('drp_type', 2)->get();
-        $casemanagers = Drp::where('drp_type', 3)->get();
-        $mediators = Drp::where('drp_type', 4)->get();
-        $conciliators = Drp::where('drp_type', 5)->get();
+        $arbitrators = Drp::where('drp_type', 1)->where('approve_status', 1)->where('status', 1)->whereIn('id', $arbitratorIds)->get();
+        $advocates = Drp::where('drp_type', 2)->where('approve_status', 1)->where('status', 1)->get();
+        $casemanagers = Drp::where('drp_type', 3)->where('approve_status', 1)->where('status', 1)->get();
+        $mediators = Drp::where('drp_type', 4)->where('approve_status', 1)->where('status', 1)->get();
+        $conciliators = Drp::where('drp_type', 5)->where('approve_status', 1)->where('status', 1)->get();
 
         if (!$caseData) return to_route('drp.caseassign')->withError('Case Not Found..!!');
 
@@ -232,49 +237,92 @@ class CaseAssignController extends Controller
 
         $data = $request->validate([
             // 'case_id'          => ['required'],
-            'arbitrator_id'    => ['required'],
-            'advocate_id'      => ['required'],
+            'arbitrator_id'    => ['nullable'],
+            'advocate_id'      => ['nullable'],
             // 'case_manager_id'  => ['required'],
-            'mediator_id'      => ['required'],
-            'conciliator_id'   => ['required'],
+            'mediator_id'      => ['nullable'],
+            'conciliator_id'   => ['nullable'],
         ]);
 
-        AssignCase::updateOrCreate(    
+        $assignCase = AssignCase::updateOrCreate(    
             ['case_id' => $id],
             array_merge([
                 'case_id'           => $id,
                 'arbitrator_id'     => implode(',', $data['arbitrator_id'] ?? []),
-                'advocate_id'       => $data['advocate_id'],
-                'mediator_id'       => $data['mediator_id'],
-                'conciliator_id'    => $data['conciliator_id'],
+                'advocate_id'       => $data['advocate_id'] ?? null,
+                'mediator_id'       => $data['mediator_id'] ?? null,
+                'conciliator_id'    => $data['conciliator_id'] ?? null,
                 'receiveto_casemanager' => 1,
-            ])            
+            ])
         );
 
-        // Send SMS Invitation using Twilio
+
+        // ###################################################################
+        // ########## Send Email with Notice for Assign Arbitrator ###########
         // try {
-        //     $sid    = env("TWILIO_ACCOUNT_SID");
-        //     $token  = env("TWILIO_AUTH_TOKEN");
-        //     $sender = env("TWILIO_SENDER");
+        //     $assigncaseData  = AssignCase::where('case_id', $id)->first();
+        //     $arbitratorIds   = explode(',', $assigncaseData->arbitrator_id);
+        //     // $arbitratorsdata = Drp::whereIn('id', $arbitratorIds)->implode(',');
 
-        //     $client = new Client($sid, $token);
+        //     $arbitratorsName = Drp::whereIn('id', $arbitratorIds)->pluck('name')->implode(', ');
+        //     $arbitratorsdata = Drp::whereIn('id', $arbitratorIds)->first();
 
-        //     $country_data = Country::where('id', $request->country_id)->where('status', 1)->first();
-        //     $phone_code = $country_data->phone_code ?? '';
+        //     $data = Setting::where('setting_type', '3')->get()->pluck('filed_value', 'setting_name')->toArray();
 
-        //     $message = "{$user->name} has invited you to join Patrimonial, an online testament and wealth management App, to securely manage and access patrimonial information. Accept the invitation here: https://www.name/login";
-
-        //     $client->messages->create($phone_code . $request->mobile, [
-        //         'from' => $sender,
-        //         'body' => $message,
+        //     Config::set("mail.mailers.smtp", [
+        //         'transport'  => 'smtp',
+        //         'host'       => $data['smtp_host'],
+        //         'port'       => $data['smtp_port'],
+        //         'encryption' => in_array((int) $data['smtp_port'], [587, 2525]) ? 'tls' : 'ssl',
+        //         'username'   => $data['smtp_user'],
+        //         'password'   => $data['smtp_pass'],
+        //         'timeout'    => null,
+        //         'auth_mode'  => null,
         //     ]);
+
+        //     Config::set("mail.from", [
+        //         'address' => $data['email_from'],
+        //         'name'    => config('app.name'),
+        //     ]);
+
+        //     // ###################################################################
+        //     // ################# Send Email using Email Address ##################
+        //     if (! empty($arbitratorsdata->email)) {
+
+        //         $email = filter_var($arbitratorsdata->email, FILTER_SANITIZE_EMAIL);
+
+        //         $validator = Validator::make(['email' => $email], [
+        //             'email' => 'required|email:rfc,dns',
+        //         ]);
+
+        //         if ($validator->fails()) {
+        //             Log::warning("Invalid email address: $email");
+        //         } else {
+
+        //             $subject     = "New Case Assignment Alert";
+        //             $description = "A new case has been assigned by MediateWay ADR Centre.";
+
+        //             try {
+        //                 Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($subject, $email) {
+        //                     $message->to($email)
+        //                         ->subject($subject);
+        //                 });
+
+        //             } catch (\Exception $e) {
+        //                 Log::error("Failed to send email to: $email. Error: " . $e->getMessage());
+        //             }
+        //         }
+        //     }
         // } catch (\Throwable $th) {
-        //     // Log SMS error but don't stop execution
-        //     Log::error('SMS sending failed: ' . $th->getMessage());
+        //     // Log the error and update the email status
+        //     Log::error("Error sending email for record ID {$id}: " . $th->getMessage());
+        //     // $value->update(['email_status' => 2]);
         // }
 
         return to_route('drp.caseassign')->withSuccess('Case Assign Successfully..!!');
     }
+
+
 
     public function delete(Request $request): JsonResponse
     {

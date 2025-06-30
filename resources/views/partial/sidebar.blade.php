@@ -141,6 +141,14 @@
                 </div>
             </a>
         </li>
+        <li class="menu @routeis('conciliation_caseassign') active @endrouteis">
+            <a href="{{route('conciliation_caseassign')}}" class="dropdown-toggle">
+                <div class="">
+                    <i class="fa-duotone fa-bookmark"></i>
+                    <span>Conciliation Case Assign</span>
+                </div>
+            </a>
+        </li>
 
         <li class="menu @routeis('allcasenotices.casenoticelist') active @endrouteis">
             <a href="{{route('allcasenotices.casenoticelist')}}" class="dropdown-toggle">

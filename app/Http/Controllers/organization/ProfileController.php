@@ -47,6 +47,9 @@ class ProfileController extends Controller
             'state_id' => 'required|exists:states,id',
             'city_id' => 'required|exists:cities,id',
             'image' => 'nullable|mimes:jpg,jpeg,png|max:2048',
+            'signature_org' => 'nullable|mimes:jpg,jpeg,png|max:2048',
+            'header_letterhead' => 'nullable|mimes:jpg,jpeg,png|max:2048',
+            'footer_letterhead' => 'nullable|mimes:jpg,jpeg,png|max:2048',
             'email_secondary' => 'nullable',
             'mobile_secondary' => 'nullable',
             'pincode' => 'nullable',
@@ -81,35 +84,51 @@ class ProfileController extends Controller
             Helper::deleteFile($user->image); // Delete old image
             $user->image = Helper::saveFile($request->file('image'), 'organizations');
         }
+        if ($request->hasFile('signature_org')) {
+            Helper::deleteFile($user->signature_org); // Delete old image
+            $user->signature_org = Helper::saveFile($request->file('signature_org'), 'organizations');
+        }
+        if ($request->hasFile('header_letterhead')) {
+            Helper::deleteFile($user->header_letterhead); // Delete old image
+            $user->header_letterhead = Helper::saveFile($request->file('header_letterhead'), 'organizations');
+        }
+        if ($request->hasFile('footer_letterhead')) {
+            Helper::deleteFile($user->footer_letterhead); // Delete old image
+            $user->footer_letterhead = Helper::saveFile($request->file('footer_letterhead'), 'organizations');
+        }
 
         $user->save();
         
-        // Update or create OrganizationDetail
-        $organizationDetail = OrganizationDetail::updateOrCreate(
-            ['organization_id' => $user->id], // Find by this column
-            [
-                'organization_type' => $request->organization_type,
-                'description' => $request->description,
-                'registration_no' => $request->registration_no,
-                'registration_certificate' => $request->registration_certificate,
-                'attach_registration_certificate' => $request->attach_registration_certificate,
-            ]
-        );
-        $organizationDetail = OrganizationDetail::where('organization_id', $user->id)->first();
 
-        if (!$organizationDetail) {
-            $organizationDetail = new OrganizationDetail();
-            $organizationDetail->organization_id = $user->id; // Assign ID if creating a new record
-        }
-        // Handle attach_registration_certificate file upload
+        // Prepare file path for attach_registration_certificate if uploaded
+        $attachFilePath = null;
         if ($request->hasFile('attach_registration_certificate')) {
-            // Delete old file if exists
-            Helper::deleteFile($organizationDetail->attach_registration_certificate);
-            
-            // Save new file
-            $organizationDetail->attach_registration_certificate = Helper::saveFile($request->file('attach_registration_certificate'), 'organization/registrationcertificate');
-            $organizationDetail->save();
+            $existingDetail = OrganizationDetail::where('organization_id', $user->id)->first();
+
+            if ($existingDetail && $existingDetail->attach_registration_certificate) {
+                Helper::deleteFile($existingDetail->attach_registration_certificate);
+            }
+
+            $attachFilePath = Helper::saveFile($request->file('attach_registration_certificate'), 'organization/registrationcertificate');
         }
+
+        // Prepare data for organization details
+        $data = [
+            'organization_type' => $request->organization_type,
+            'description' => $request->description,
+            'registration_no' => $request->registration_no,
+            'registration_certificate' => $request->registration_certificate,
+        ];
+
+        if ($attachFilePath) {
+            $data['attach_registration_certificate'] = $attachFilePath;
+        }
+
+        // Update or create the organization detail
+        OrganizationDetail::updateOrCreate(
+            ['organization_id' => $user->id],
+            $data
+        );
 
         return redirect()->back()->with('success', 'Organization Profile updated successfully.');
     }

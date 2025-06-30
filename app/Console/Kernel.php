@@ -15,25 +15,29 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->command('db:backup')->twiceDaily(6, 18, 3);
         
-        $schedule->command('bulk:create-live-court-room')->everyOneMinutes();
-        $schedule->command('bulk:status-live-court-room')->everyOneMinutes();
+        // $schedule->command('bulk:create-live-court-room')->everyTenMinutes();
+        // $schedule->command('bulk:status-live-court-room')->everyTenMinutes();
 
-        $schedule->command('bulk:create-live-conciliator-meeting-room')->everyOneMinutes();
-        $schedule->command('bulk:status-live-conciliator-meeting-room')->everyOneMinutes();
+        // $schedule->command('bulk:create-live-conciliator-meeting-room')->everyTenMinutes();
+        // $schedule->command('bulk:status-live-conciliator-meeting-room')->everyTenMinutes();
 
-        $schedule->command('bulk:create-live-mediator-meeting-room')->everyOneMinutes();
-        $schedule->command('bulk:status-live-mediator-meeting-room')->everyOneMinutes();
+        // $schedule->command('bulk:create-live-mediator-meeting-room')->everyTenMinutes();
+        // $schedule->command('bulk:status-live-mediator-meeting-room')->everyTenMinutes();
 
-        $schedule->command('bulk:create-claim-petition')->everyOneMinutes();
+        // $schedule->command('bulk:create-claim-petition')->everyTenMinutes();
 
-        $schedule->command('bulk:send-1-notice')->everyOneMinutes();
-        $schedule->command('bulk:send-1b-notice')->everyOneMinutes();
-        $schedule->command('bulk:send-2b-notice')->everyOneMinutes();
-        $schedule->command('bulk:send-3a-notice')->everyOneMinutes();
-        $schedule->command('bulk:send-3b-notice')->everyOneMinutes();
-        $schedule->command('bulk:send-3c-notice')->everyOneMinutes();
-        $schedule->command('bulk:send-4a-notice')->everyOneMinutes();
-        $schedule->command('bulk:send-5a-notice')->everyOneMinutes();
+        // $schedule->command('bulk:send-1-notice')->everyTenMinutes();
+        // $schedule->command('bulk:send-1b-notice')->everyTenMinutes();
+        // $schedule->command('bulk:send-2b-notice')->everyTenMinutes();
+        // $schedule->command('bulk:send-3a-notice')->everyTenMinutes();
+        // $schedule->command('bulk:send-3b-notice')->everyTenMinutes();
+        // $schedule->command('bulk:send-3c-notice')->everyTenMinutes();
+        // $schedule->command('bulk:send-4a-notice')->everyTenMinutes();
+        // $schedule->command('bulk:send-5a-notice')->everyTenMinutes();
+
+        $schedule->command('bulk:preconciliation-notice-email-send')->everyTenMinutes();
+        $schedule->command('bulk:preconciliation-notice-whatsapp-send')->everyTenMinutes();
+        $schedule->command('bulk:preconciliation-notice-sms-send')->everyTenMinutes();
     }
 
     /**

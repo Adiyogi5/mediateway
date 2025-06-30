@@ -1326,7 +1326,11 @@ div.dataTables_wrapper div.dataTables_info {
     border: none !important;
 }
 .error {
+    font-family: "Inter";
+    font-size: 12px;
+    font-weight: 400;
     color: #d43131 !important;
+    width: 100% !important;
 }
 .error-text {
     font-family: "Inter";

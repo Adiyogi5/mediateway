@@ -155,14 +155,61 @@
                                         @error('image')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
-                                    </div>
 
-                                    @if ($organization->image)
-                                        <div class="mb-5">
+                                        @if ($organization->image)
+                                        <div class="my-2">
                                             <img src="{{ asset('storage/' . $organization->image) }}"
                                                 class="img-thumbnail" width="100" />
                                         </div>
-                                    @endif
+                                        @endif
+                                    </div>
+                                   
+
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <label class="form-label" for="signature_org">Signature Image</label>
+                                        <input class="form-control" id="signature_org" name="signature_org" type="file" />
+                                        @error('signature_org')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+
+                                        @if ($organization->signature_org)
+                                            <div class="my-2">
+                                                <img src="{{ asset('storage/' . $organization->signature_org) }}" class="img-thumbnail"
+                                                    width="160" />
+                                            </div>
+                                        @endif
+                                    </div>
+
+
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <label class="form-label" for="header_letterhead">LetterHead - Header Image</label>
+                                        <input class="form-control" id="header_letterhead" name="header_letterhead" type="file" />
+                                        @error('header_letterhead')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+
+                                        @if ($organization->header_letterhead)
+                                            <div class="my-2">
+                                                <img src="{{ asset('storage/' . $organization->header_letterhead) }}" class="img-thumbnail"
+                                                    height="60" />
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <label class="form-label" for="footer_letterhead">LetterHead - Footer Image</label>
+                                        <input class="form-control" id="footer_letterhead" name="footer_letterhead" type="file" />
+                                        @error('footer_letterhead')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+
+                                        @if ($organization->footer_letterhead)
+                                            <div class="my-2">
+                                                <img src="{{ asset('storage/' . $organization->footer_letterhead) }}" class="img-thumbnail"
+                                                    height="60" />
+                                            </div>
+                                        @endif
+                                    </div>
 
 
                                     <div class="col-12">
@@ -218,7 +265,7 @@
                                         <select name="organization_type" class="form-control form-select">
                                             <option value="">Select Organization Type</option>
                                             @foreach (config('constant.organization_type') as $key => $type)
-                                                <option value="{{ $key }}">{{ $type }}</option>
+                                                <option value="{{ $key }}" @selected(old('organization_type') ?? ($organizationDetail->organization_type ?? '') == $key)>{{ $type }}</option>
                                             @endforeach
                                         </select>
                                         @error('organization_type')
@@ -363,6 +410,18 @@
                     extension: "jpg|jpeg|png",
                     filesize: 2
                 },
+                signature_org: {
+                    extension: "jpg|jpeg|png",
+                    filesize: 2
+                },
+                header_letterhead: {
+                    extension: "jpg|jpeg|png",
+                    filesize: 2
+                },
+                footer_letterhead: {
+                    extension: "jpg|jpeg|png",
+                    filesize: 2
+                },
                 email_secondary: {
                     required: false,
                 },
@@ -393,6 +452,15 @@
                     required: "Please enter Mobile number",
                 },
                 image: {
+                    extension: "Supported Format Only : jpg, jpeg, png"
+                },
+                signature_org: {
+                    extension: "Supported Format Only : jpg, jpeg, png"
+                },
+                header_letterhead: {
+                    extension: "Supported Format Only : jpg, jpeg, png"
+                },
+                footer_letterhead: {
                     extension: "Supported Format Only : jpg, jpeg, png"
                 },
                 termsandconditions: {

@@ -7,6 +7,6 @@
 </head>
 <body>
     <h3>{{ $subject  }}</h3>
-    <p>{!! $description !!}</p>
+    <p>{!! nl2br(e($description)) !!}</p>
 </body>
 </html>
