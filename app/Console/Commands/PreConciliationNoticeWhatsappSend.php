@@ -53,16 +53,18 @@ class PreConciliationNoticeWhatsappSend extends Command
             ->select(
                 'file_cases.*', 'conciliation_notices.file_case_id', 'conciliation_notices.conciliation_notice_type', 'conciliation_notices.notice_copy', 'conciliation_notices.email_status',
             )
-            ->limit(30)
+            ->limit(10)
             ->get();
-         
-
+        
         foreach ($caseData as $key => $value) {
             try {
 
                 $now    = now();
+                $fileCaseId = $value->id;
 
-                // ###################################################################
+                Log::info("Processing Whatsapp for FileCase ID: {$fileCaseId}");
+
+                    // ###################################################################
                     // ############ Send Whatsapp Message using Mobile Number ############
                     if (!empty($value->notice_copy)) {
                         try {
@@ -103,9 +105,10 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                             'whatsapp_dispatch_datetime' => $now,
                                             'whatsapp_notice_status'     => 1,
                                         ]);
+                                        Log::info("Whatsapp sent successfully for FileCase ID: {$fileCaseId}");
                                     return true;
                                 } else {
-                                    Log::error('WhatsApp API error: ' . $response->body());
+                                    Log::warning("Whatsapp failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
                                     ConciliationNotice::where('file_case_id', $value->id)
                                         ->update([
                                             'whatsapp_notice_status' => 2,
@@ -114,14 +117,14 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                 }
                             }
                         } catch (\Throwable $th) {
-                            Log::error('WhatsApp sending failed: ' . $th->getMessage());
+                            Log::error("Whatsapp API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
                             // $notice->update(['whatsapp_notice_status' => 2]);
                         }
                     }
 
             } catch (\Throwable $th) {
                 // Log the error and update the email status
-                Log::error("Error sending Whatsapp for record ID {$value->id}: " . $th->getMessage());
+                Log::error("Error processing Whatsapp FileCase ID: {$value->id}. Exception: " . $th->getMessage());
                 // $value->update(['email_status' => 2]);
             }
         }

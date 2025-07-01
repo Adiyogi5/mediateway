@@ -79,11 +79,16 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::get('getsettlementletterVariables', 'getsettlementletterVariables')->name('getsettlementletterVariables');
     });
 
-    // ----------------------- Case Manager - Send Notices Routes ---------------------------------
+    // ----------------------- Case Manager - Send Notices (Pre-Conciliation and Conciliation) Routes ---------------------------------
     Route::controller(SendNoticeController::class)->group(function () {
         Route::get('conciliationnoticelist', 'conciliationnoticelist')->name('conciliationprocess.conciliationnoticelist');
+        
         Route::get('/conciliation-process/case-list', 'caseList')->name('conciliationprocess.caseList');
-        Route::post('/conciliation-process/send-notices', 'sendNotices')->name('conciliationprocess.sendNotices');
+        Route::post('/conciliation-process/send-notices', 'sendpreconciliationNotices')->name('conciliationprocess.sendpreconciliationNotices');
+
+        Route::get('/conciliation-process/conciliation-case-list', 'conciliationcaselist')->name('conciliationprocess.conciliationcaselist');
+        Route::post('/conciliation-process/send-conciliation-notices', 'sendconciliationNotices')->name('conciliationprocess.sendconciliationNotices');
+
         Route::get('/conciliation-notice/{id}', 'getConciliationNotice')->name('conciliationprocess.viewdetail');
     });
 

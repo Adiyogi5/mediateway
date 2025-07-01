@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Drp;
 
 use App\Http\Controllers\Controller;
+use App\Models\AssignCase;
 use App\Models\FileCase;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ use Illuminate\View\View;
 use \Yajra\Datatables\Datatables;
 use Illuminate\Http\JsonResponse;
 use App\Models\ConciliationNotice;
+use App\Models\ConciliatorMeetingRoom;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -113,7 +115,8 @@ class SendNoticeController extends Controller
     }
 
 
-    // ########### Show case list according to assigned mediator #############
+    // ############################################################################################
+    // ########### Show Pre Conciliation Case list according to assigned Case Manager #############
     public function caseList(Request $request)
     {
         $drp = auth('drp')->user();
@@ -187,8 +190,7 @@ class SendNoticeController extends Controller
     }
 
 
-
-    public function sendNotices(Request $request)
+    public function sendpreconciliationNotices(Request $request)
     {
         $drp = auth('drp')->user();
         if (!$drp) {
@@ -219,6 +221,160 @@ class SendNoticeController extends Controller
     }
 
 
+    // ########################################################################################
+    // ########### Show Conciliation Case list according to Conciliation Meeting #############
+    public function conciliationcaselist(Request $request)
+    {
+        $drp = auth('drp')->user();
+        if (!$drp) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        if ($request->ajax()) {
+            $data = ConciliationNotice::select(
+                    'conciliation_notices.id',
+                    'conciliation_notices.conciliation_notice_type',
+                    'conciliation_notices.notice_copy',
+                    'conciliation_notices.file_case_id',
+                    'file_cases.case_type',
+                    'file_cases.product_type',
+                    'file_cases.case_number',
+                    'file_cases.loan_number',
+                    'file_cases.status',
+                    'file_cases.created_at',
+                    'assign_cases.case_manager_id'
+                )
+                ->join('file_cases', 'file_cases.id', '=', 'conciliation_notices.file_case_id')
+                ->join('assign_cases', 'assign_cases.case_id', '=', 'conciliation_notices.file_case_id')
+                ->whereDate('conciliation_notices.notice_date', '>=', Carbon::now()->subDays(7)->toDateString())
+                ->whereRaw("
+                    NOT EXISTS (
+                        SELECT 1 FROM conciliator_meeting_rooms
+                        WHERE FIND_IN_SET(conciliation_notices.file_case_id, conciliator_meeting_rooms.meeting_room_case_id)
+                    )
+                ")
+                ->where('conciliation_notices.conciliation_notice_type', 1)
+                ->where('assign_cases.case_manager_id', $drp->id);
+
+            // Filters
+            if ($request->filled('case_type')) {
+                $data->where('file_cases.case_type', $request->case_type);
+            }
+            if ($request->filled('product_type')) {
+                $data->where('file_cases.product_type', $request->product_type);
+            }
+            if ($request->filled('case_number')) {
+                $data->where('file_cases.case_number', 'like', '%' . $request->case_number . '%');
+            }
+            if ($request->filled('loan_number')) {
+                $data->where('file_cases.loan_number', 'like', '%' . $request->loan_number . '%');
+            }
+            if ($request->filled('status')) {
+                $data->where('file_cases.status', $request->status);
+            }
+            if ($request->filled('date_from') && $request->filled('date_to')) {
+                $data->whereBetween('file_cases.created_at', [
+                    $request->date_from . ' 00:00:00',
+                    $request->date_to . ' 23:59:59'
+                ]);
+            }
+
+            return DataTables::of($data)
+                ->addColumn('file_case_id', function ($row) {
+                    return $row->file_case_id; // ✅ explicitly output this
+                })
+                ->editColumn('case_type', fn($row) => config('constant.case_type')[$row->case_type] ?? 'Unknown')
+                ->editColumn('product_type', fn($row) => config('constant.product_type')[$row->product_type] ?? 'Unknown')
+                ->editColumn('conciliation_notice_type', function ($row) {
+                    return $row->conciliation_notice_type == 1
+                        ? '<span class="badge bg-warning">Pre-Conciliation</span>'
+                        : '<span class="badge bg-secondary">Conciliation</span>';
+                })
+                ->editColumn('notice_copy', function ($row) {
+                    if ($row->notice_copy) {
+                        $url = asset('storage/' . $row->notice_copy); // adjust if notice_copy is full URL
+                        return '<a href="' . $url . '" target="_blank"><img src="' . asset('public/assets/img/pdf.png') . '" height="30" alt="PDF File" /></a>';
+                    }
+                    return '<span class="text-muted">N/A</span>';
+                })
+                ->editColumn('status', function ($row) {
+                    return $row->status == 1
+                        ? '<small class="badge fw-semi-bold rounded-pill status badge-light-success"> Active</small>'
+                        : '<small class="badge fw-semi-bold rounded-pill status badge-light-danger"> Inactive</small>';
+                })
+                ->editColumn('created_at', fn($row) => $row->created_at->format('d M, Y'))
+                ->orderColumn('created_at', function ($query, $order) {
+                    $query->orderBy('file_cases.created_at', $order);
+                })
+                ->rawColumns(['case_type', 'product_type', 'conciliation_notice_type', 'notice_copy', 'status'])
+                ->make(true);
+        }
+    }
+
+
+    public function sendconciliationNotices(Request $request)
+    {
+        $drp = auth('drp')->user();
+        if (!$drp) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $caseIds = $request->input('file_case_ids');
+        if (empty($caseIds) || !is_array($caseIds)) {
+            return response()->json(['error' => 'No case IDs provided.'], 422);
+        }
+
+        $request->validate([
+            'file_case_ids' => 'required|array|min:1',
+            'date' => 'required|date|after_or_equal:today',
+            'time' => ['required', function ($attribute, $value, $fail) use ($request) {
+                if ($request->date === now()->format('Y-m-d') && $value < now()->format('H:i')) {
+                    $fail('The time must not be in the past.');
+                }
+            }],
+        ]);
+
+        // Step 1: Group case_ids by their conciliator_id
+        $assignments = AssignCase::whereIn('case_id', $caseIds)
+            ->select('case_id', 'conciliator_id')
+            ->get()
+            ->groupBy('conciliator_id');
+
+        // Step 2: Get the last room number
+        $room_id_prefix = 'ORG-MEETING';
+        $lastRoom = ConciliatorMeetingRoom::where('room_id', 'like', $room_id_prefix . '-%')
+            ->orderBy('id', 'desc')->first();
+
+        $lastNumber = $lastRoom
+            ? (int) str_replace($room_id_prefix . '-', '', $lastRoom->room_id)
+            : 0;
+
+        $meetingRooms = [];
+
+        // Step 3: Create a new room for each conciliator with their assigned cases
+        foreach ($assignments as $conciliatorId => $cases) {
+            $lastNumber++;
+            $room_id = $room_id_prefix . '-' . str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+
+            $caseIdsForConciliator = $cases->pluck('case_id')->toArray();
+
+            $meetingRooms[] = [
+                'room_id' => $room_id,
+                'meeting_room_case_id' => implode(',', $caseIdsForConciliator),
+                'conciliator_id' => $conciliatorId,
+                'date' => $request->date,
+                'time' => $request->time,
+                'status' => 0
+            ];
+        }
+
+        ConciliatorMeetingRoom::insert($meetingRooms);
+
+        return response()->json(['success' => true, 'message' => 'Conciliator Meeting rooms created successfully.']);
+    }
+
+
+    // ########### Modal - Show Case Details #############
     public function getConciliationNotice($id)
     {
         $notice = ConciliationNotice::with('fileCase')

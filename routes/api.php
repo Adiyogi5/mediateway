@@ -22,6 +22,12 @@ Route::get('/', function () {
     ]);
 });
 
+
+Route::controller(CommonController::class)->group(function () {
+    Route::post('send-otp', 'sendOtp');
+});
+
+
 //Create Live Court Rooms - Arbitrator
 Route::get('/create_live_court_room', function () {
     Artisan::call('bulk:create-live-court-room');   
@@ -31,30 +37,6 @@ Route::get('/create_live_court_room', function () {
 Route::get('/status_live_court_room', function () {
     Artisan::call('bulk:status-live-court-room');   
     return '<h1>status live court room</h1>';
-});
-
-
-//Create Live Meeting Rooms - Conciliator
-Route::get('/create_live_conciliator_meeting_room', function () {
-    Artisan::call('bulk:create-live-conciliator-meeting-room');   
-    return '<h1>create live conciliator meeting room</h1>';
-});
-//Status Live Meeting Rooms - Conciliator
-Route::get('/status_live_conciliator_meeting_room', function () {
-    Artisan::call('bulk:status-live-conciliator-meeting-room');   
-    return '<h1>status live conciliator meeting room</h1>';
-});
-
-
-//Create Live Meeting Rooms - Mediator
-Route::get('/create_live_mediator_meeting_room', function () {
-    Artisan::call('bulk:create-live-mediator-meeting-room');   
-    return '<h1>create live mediator meeting room</h1>';
-});
-//Status Live Meeting Rooms - Mediator
-Route::get('/status_live_mediator_meeting_room', function () {
-    Artisan::call('bulk:status-live-mediator-meeting-room');   
-    return '<h1>status live mediator meeting room</h1>';
 });
 
 
@@ -104,6 +86,9 @@ Route::get('/bulk_send_5a_notice', function () {
 });
 
 
+
+// #############################
+// Pre-Conciliation Notice Crone
 Route::get('/bulk_send_email_preconciliation_notice', function () {
     Artisan::call('bulk:preconciliation-notice-email-send');   
     return '<h1>update bulk send email preconciliation notice</h1>';
@@ -116,6 +101,43 @@ Route::get('/bulk_send_sms_preconciliation_notice', function () {
     Artisan::call('bulk:preconciliation-notice-sms-send');   
     return '<h1>update bulk send sms preconciliation notice</h1>';
 });
+//Create Live Meeting Rooms - Conciliator
+Route::get('/create_live_conciliator_meeting_room', function () {
+    Artisan::call('bulk:create-live-conciliator-meeting-room');   
+    return '<h1>create live conciliator meeting room</h1>';
+});
+//Status Live Meeting Rooms - Conciliator
+Route::get('/status_live_conciliator_meeting_room', function () {
+    Artisan::call('bulk:status-live-conciliator-meeting-room');   
+    return '<h1>status live conciliator meeting room</h1>';
+});
+
+
+
+// ##########################
+// Pre-Mediation Notice Crone
+// Route::get('/bulk_send_email_premediation_notice', function () {
+//     Artisan::call('bulk:premediation-notice-email-send');   
+//     return '<h1>update bulk send email premediation notice</h1>';
+// });
+// Route::get('/bulk_send_whatsapp_premediation_notice', function () {
+//     Artisan::call('bulk:premediation-notice-whatsapp-send');   
+//     return '<h1>update bulk send whatsapp premediation notice</h1>';
+// });
+// Route::get('/bulk_send_sms_premediation_notice', function () {
+//     Artisan::call('bulk:premediation-notice-sms-send');   
+//     return '<h1>update bulk send sms premediation notice</h1>';
+// });
+//Create Live Meeting Rooms - Mediator
+Route::get('/create_live_mediator_meeting_room', function () {
+    Artisan::call('bulk:create-live-mediator-meeting-room');   
+    return '<h1>create live mediator meeting room</h1>';
+});
+//Status Live Meeting Rooms - Mediator
+Route::get('/status_live_mediator_meeting_room', function () {
+    Artisan::call('bulk:status-live-mediator-meeting-room');   
+    return '<h1>status live mediator meeting room</h1>';
+});
 
 
 Route::get('clear-all', function () {
@@ -127,9 +149,6 @@ Route::get('clear-all', function () {
     return '<h1>Clear All</h1>';
 });
 
-Route::controller(CommonController::class)->group(function () {
-    Route::post('send-otp', 'sendOtp');
-});
 
 Route::any('{path}', function () {
     return response()->json([

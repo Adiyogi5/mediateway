@@ -52,14 +52,16 @@ class PreConciliationNoticeSmsSend extends Command
             ->select(
                 'file_cases.*', 'conciliation_notices.file_case_id', 'conciliation_notices.conciliation_notice_type', 'conciliation_notices.notice_copy', 'conciliation_notices.email_status',
             )
-            ->limit(30)
+            ->limit(10)
             ->get();
-
 
         foreach ($caseData as $key => $value) {
             try {
 
                 $now    = now();
+                $fileCaseId = $value->id;
+
+                Log::info("Processing SMS for FileCase ID: {$fileCaseId}");
 
                     // ###############################################################
                     // ################ Send SMS using Mobile Number #################
@@ -88,9 +90,10 @@ Team MediateWay.";
                                         'sms_send_date' => $now,
                                         'sms_status'    => 1,
                                     ]);
+                                    Log::info("SMS sent successfully for FileCase ID: {$fileCaseId}");
                                 return true;
                             } else {
-                                Log::error('SMS API error: ' . $response->body());
+                                Log::warning("SMS failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
                                 ConciliationNotice::where('file_case_id', $value->id)
                                     ->update([
                                         'sms_status' => 2,
@@ -98,7 +101,7 @@ Team MediateWay.";
                                 return false;
                             }
                         } catch (\Throwable $th) {
-                            Log::error('SMS send failed: ' . $th->getMessage());
+                            Log::error("SMS API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
                             return false;
                         }
                         
@@ -106,7 +109,7 @@ Team MediateWay.";
 
             } catch (\Throwable $th) {
                 // Log the error and update the email status
-                Log::error("Error sending SMS for record ID {$value->id}: " . $th->getMessage());
+                Log::error("Error processing SMS FileCase ID: {$value->id}. Exception: " . $th->getMessage());
                 // $value->update(['email_status' => 2]);
             }
         }
