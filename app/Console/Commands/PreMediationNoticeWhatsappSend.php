@@ -2,21 +2,21 @@
 namespace App\Console\Commands;
 
 use App\Helper\Helper;
-use App\Models\ConciliationNotice;
+use App\Models\MediationNotice;
 use App\Models\FileCase;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class PreConciliationNoticeWhatsappSend extends Command
+class PreMediationNoticeWhatsappSend extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'bulk:preconciliation-notice-whatsapp-send';
+    protected $signature = 'bulk:premediation-notice-whatsapp-send';
 
     /**
      * The console command description.
@@ -43,20 +43,20 @@ class PreConciliationNoticeWhatsappSend extends Command
     public function handle()
     {
         // ###########################################################
-        // Pre-Conciliation Notice Send Via Whatsapp - By Case Manager
+        // Pre-Mediation Notice Send Via Whatsapp - By Case Manager
         // ###########################################################
         $caseData = FileCase::with('file_case_details')
-            ->leftJoin('conciliation_notices', 'conciliation_notices.file_case_id', '=', 'file_cases.id')
-            ->where('conciliation_notices.conciliation_notice_type', 1)
+            ->leftJoin('mediation_notices', 'mediation_notices.file_case_id', '=', 'file_cases.id')
+            ->where('mediation_notices.mediation_notice_type', 1)
             ->whereNotNull('file_cases.respondent_mobile')
-            ->whereNotNull('conciliation_notices.notice_copy')
-            ->where('conciliation_notices.whatsapp_notice_status', 0)
+            ->whereNotNull('mediation_notices.notice_copy')
+            ->where('mediation_notices.whatsapp_notice_status', 0)
             ->select(
                 'file_cases.*',
-                'conciliation_notices.file_case_id',
-                'conciliation_notices.conciliation_notice_type',
-                'conciliation_notices.notice_copy',
-                'conciliation_notices.email_status',
+                'mediation_notices.file_case_id',
+                'mediation_notices.mediation_notice_type',
+                'mediation_notices.notice_copy',
+                'mediation_notices.email_status',
             )
             ->limit(10)
             ->get();
@@ -67,7 +67,7 @@ class PreConciliationNoticeWhatsappSend extends Command
                 $now    = now();
                 $fileCaseId = $value->id;
 
-                Log::info("Processing Conciliation Whatsapp for FileCase ID: {$fileCaseId}");
+                Log::info("Processing Mediation Whatsapp for FileCase ID: {$fileCaseId}");
 
                     // ###################################################################
                     // ############ Send Whatsapp Message using Mobile Number ############
@@ -105,16 +105,16 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                 ]);
 
                                 if ($response->successful()) {
-                                    ConciliationNotice::where('file_case_id', $value->id)
+                                    MediationNotice::where('file_case_id', $value->id)
                                         ->update([
                                             'whatsapp_dispatch_datetime' => $now,
                                             'whatsapp_notice_status'     => 1,
                                         ]);
-                                        Log::info("Conciliation Whatsapp sent successfully for FileCase ID: {$fileCaseId}");
+                                        Log::info("Mediation Whatsapp sent successfully for FileCase ID: {$fileCaseId}");
                                     return true;
                                 } else {
-                                    Log::warning("Conciliation Whatsapp failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
-                                    ConciliationNotice::where('file_case_id', $value->id)
+                                    Log::warning("Mediation Whatsapp failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
+                                    MediationNotice::where('file_case_id', $value->id)
                                         ->update([
                                             'whatsapp_notice_status' => 2,
                                         ]);
@@ -122,14 +122,14 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                 }
                             }
                         } catch (\Throwable $th) {
-                            Log::error("Conciliation Whatsapp API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
+                            Log::error("Mediation Whatsapp API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
                             // $notice->update(['whatsapp_notice_status' => 2]);
                         }
                     }
 
             } catch (\Throwable $th) {
                 // Log the error and update the email status
-                Log::error("Error processing Conciliation Whatsapp FileCase ID: {$value->id}. Exception: " . $th->getMessage());
+                Log::error("Error processing Mediation Whatsapp FileCase ID: {$value->id}. Exception: " . $th->getMessage());
                 // $value->update(['email_status' => 2]);
             }
         }

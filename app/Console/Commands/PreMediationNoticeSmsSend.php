@@ -2,21 +2,21 @@
 namespace App\Console\Commands;
 
 use App\Helper\Helper;
-use App\Models\ConciliationNotice;
+use App\Models\MediationNotice;
 use App\Models\FileCase;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class PreConciliationNoticeSmsSend extends Command
+class PreMediationNoticeSmsSend extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'bulk:preconciliation-notice-sms-send';
+    protected $signature = 'bulk:premediation-notice-sms-send';
 
     /**
      * The console command description.
@@ -43,19 +43,19 @@ class PreConciliationNoticeSmsSend extends Command
     public function handle()
     {
         // ######################################################
-        // Pre-Conciliation Notice Send Via SMS - By Case Manager
+        // Pre-Mediation Notice Send Via SMS - By Case Manager
         // ######################################################
         $caseData = FileCase::with('file_case_details')
-            ->leftJoin('conciliation_notices', 'conciliation_notices.file_case_id', '=', 'file_cases.id')
-            ->where('conciliation_notices.conciliation_notice_type', 1)
+            ->leftJoin('mediation_notices', 'mediation_notices.file_case_id', '=', 'file_cases.id')
+            ->where('mediation_notices.mediation_notice_type', 1)
             ->whereNotNull('file_cases.respondent_mobile')
-            ->where('conciliation_notices.sms_status', 0)
+            ->where('mediation_notices.sms_status', 0)
             ->select(
                 'file_cases.*',
-                'conciliation_notices.file_case_id',
-                'conciliation_notices.conciliation_notice_type',
-                'conciliation_notices.notice_copy',
-                'conciliation_notices.email_status',
+                'mediation_notices.file_case_id',
+                'mediation_notices.mediation_notice_type',
+                'mediation_notices.notice_copy',
+                'mediation_notices.email_status',
             )
             ->limit(10)
             ->get();
@@ -66,7 +66,7 @@ class PreConciliationNoticeSmsSend extends Command
                 $now    = now();
                 $fileCaseId = $value->id;
 
-                Log::info("Conciliation Processing SMS for FileCase ID: {$fileCaseId}");
+                Log::info("Mediation Processing SMS for FileCase ID: {$fileCaseId}");
 
                     // ###############################################################
                     // ################ Send SMS using Mobile Number #################
@@ -90,23 +90,23 @@ Team MediateWay.";
                             ]);
  
                             if ($response->json('isSuccess')) {
-                                ConciliationNotice::where('file_case_id', $value->id)
+                                MediationNotice::where('file_case_id', $value->id)
                                     ->update([
                                         'sms_send_date' => $now,
                                         'sms_status'    => 1,
                                     ]);
-                                    Log::info("Conciliation SMS sent successfully for FileCase ID: {$fileCaseId}");
+                                    Log::info("Mediation SMS sent successfully for FileCase ID: {$fileCaseId}");
                                 return true;
                             } else {
-                                Log::warning("Conciliation SMS failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
-                                ConciliationNotice::where('file_case_id', $value->id)
+                                Log::warning("Mediation SMS failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
+                                MediationNotice::where('file_case_id', $value->id)
                                     ->update([
                                         'sms_status' => 2,
                                     ]);
                                 return false;
                             }
                         } catch (\Throwable $th) {
-                            Log::error("Conciliation SMS API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
+                            Log::error("Mediation SMS API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
                             return false;
                         }
                         
@@ -114,7 +114,7 @@ Team MediateWay.";
 
             } catch (\Throwable $th) {
                 // Log the error and update the email status
-                Log::error("Error processing Conciliation SMS FileCase ID: {$value->id}. Exception: " . $th->getMessage());
+                Log::error("Error processing Mediation SMS FileCase ID: {$value->id}. Exception: " . $th->getMessage());
                 // $value->update(['email_status' => 2]);
             }
         }

@@ -87,8 +87,8 @@ Route::get('/bulk_send_5a_notice', function () {
 
 
 
-// #############################
-// Pre-Conciliation Notice Crone
+// ################################################################
+// ############### Pre-Conciliation Notice Crone ##################
 Route::get('/bulk_send_email_preconciliation_notice', function () {
     Artisan::call('bulk:preconciliation-notice-email-send');   
     return '<h1>update bulk send email preconciliation notice</h1>';
@@ -114,20 +114,20 @@ Route::get('/status_live_conciliator_meeting_room', function () {
 
 
 
-// ##########################
-// Pre-Mediation Notice Crone
-// Route::get('/bulk_send_email_premediation_notice', function () {
-//     Artisan::call('bulk:premediation-notice-email-send');   
-//     return '<h1>update bulk send email premediation notice</h1>';
-// });
-// Route::get('/bulk_send_whatsapp_premediation_notice', function () {
-//     Artisan::call('bulk:premediation-notice-whatsapp-send');   
-//     return '<h1>update bulk send whatsapp premediation notice</h1>';
-// });
-// Route::get('/bulk_send_sms_premediation_notice', function () {
-//     Artisan::call('bulk:premediation-notice-sms-send');   
-//     return '<h1>update bulk send sms premediation notice</h1>';
-// });
+// #############################################################
+// ################ Pre-Mediation Notice Crone #################
+Route::get('/bulk_send_email_premediation_notice', function () {
+    Artisan::call('bulk:premediation-notice-email-send');   
+    return '<h1>update bulk send email premediation notice</h1>';
+});
+Route::get('/bulk_send_whatsapp_premediation_notice', function () {
+    Artisan::call('bulk:premediation-notice-whatsapp-send');   
+    return '<h1>update bulk send whatsapp premediation notice</h1>';
+});
+Route::get('/bulk_send_sms_premediation_notice', function () {
+    Artisan::call('bulk:premediation-notice-sms-send');   
+    return '<h1>update bulk send sms premediation notice</h1>';
+});
 //Create Live Meeting Rooms - Mediator
 Route::get('/create_live_mediator_meeting_room', function () {
     Artisan::call('bulk:create-live-mediator-meeting-room');   

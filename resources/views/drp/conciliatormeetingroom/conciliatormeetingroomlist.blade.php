@@ -27,13 +27,13 @@
                             <div class="col-auto align-self-center">
                                 <h5 class="mb-0" data-anchor="data-anchor">Conciliator Meeting Lists</h5>
                             </div>
-                            <div class="col-auto ms-auto">
+                            {{-- <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon">
                                     <a href="javascript:void(0)" class="btn btn-outline-secondary create-meeting-room-btn">
                                         <i class="fa fa-plus me-1"></i> Create Meeting Room
                                     </a>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                     <div class="card-body px-0 pb-0 table-meetinglist">

@@ -10,21 +10,22 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use \Yajra\Datatables\Datatables;
 use Illuminate\Http\JsonResponse;
-use App\Models\ConciliationNotice;
-use App\Models\ConciliatorMeetingRoom;
+use App\Models\MediationNotice;
+use App\Models\MediatorMeetingRoom;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class SendNoticeController extends Controller
+class SendMediationNoticeController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth:drp');
     }
 
-    public function conciliationnoticelist(Request $request): View | JsonResponse | RedirectResponse
+
+    public function mediationnoticelist(Request $request): View | JsonResponse | RedirectResponse
     {
-        $title = 'Conciliation Notice List';
+        $title = 'Mediation Notice List';
         $drp = auth('drp')->user();
 
         // Ensure the user is authenticated and has drp_type == 1
@@ -37,11 +38,11 @@ class SendNoticeController extends Controller
         }
 
         if ($request->ajax()) {
-            $data = ConciliationNotice::select(
-                    'conciliation_notices.id',
-                    'conciliation_notices.conciliation_notice_type',
-                    'conciliation_notices.notice_copy',
-                    'conciliation_notices.file_case_id',
+            $data = MediationNotice::select(
+                    'mediation_notices.id',
+                    'mediation_notices.mediation_notice_type',
+                    'mediation_notices.notice_copy',
+                    'mediation_notices.file_case_id',
                     'file_cases.case_type',
                     'file_cases.product_type',
                     'file_cases.case_number',
@@ -50,8 +51,8 @@ class SendNoticeController extends Controller
                     'file_cases.created_at',
                     'assign_cases.case_manager_id'
                 )
-                ->join('file_cases', 'file_cases.id', '=', 'conciliation_notices.file_case_id')
-                ->join('assign_cases', 'assign_cases.case_id', '=', 'conciliation_notices.file_case_id')
+                ->join('file_cases', 'file_cases.id', '=', 'mediation_notices.file_case_id')
+                ->join('assign_cases', 'assign_cases.case_id', '=', 'mediation_notices.file_case_id')
                 ->where('assign_cases.case_manager_id', $drp->id);
 
             // Filters
@@ -80,10 +81,10 @@ class SendNoticeController extends Controller
             return DataTables::of($data)
                 ->editColumn('case_type', fn($row) => config('constant.case_type')[$row->case_type] ?? 'Unknown')
                 ->editColumn('product_type', fn($row) => config('constant.product_type')[$row->product_type] ?? 'Unknown')
-                ->editColumn('conciliation_notice_type', function ($row) {
-                    return $row->conciliation_notice_type == 1
-                        ? '<span class="badge bg-warning">Pre-Conciliation</span>'
-                        : '<span class="badge bg-secondary">Conciliation</span>';
+                ->editColumn('mediation_notice_type', function ($row) {
+                    return $row->mediation_notice_type == 1
+                        ? '<span class="badge bg-warning">Pre-Mediation</span>'
+                        : '<span class="badge bg-secondary">Mediation</span>';
                 })
                 ->editColumn('notice_copy', function ($row) {
                     if ($row->notice_copy) {
@@ -107,16 +108,16 @@ class SendNoticeController extends Controller
                 ->orderColumn('created_at', function ($query, $order) {
                     $query->orderBy('file_cases.created_at', $order);
                 })
-                ->rawColumns(['case_type', 'product_type', 'conciliation_notice_type', 'notice_copy', 'status', 'action'])
+                ->rawColumns(['case_type', 'product_type', 'mediation_notice_type', 'notice_copy', 'status', 'action'])
                 ->make(true);
         }
 
-        return view('drp.conciliationprocess.conciliationnoticelist', compact('drp','title'));
+        return view('drp.mediationprocess.mediationnoticelist', compact('drp','title'));
     }
 
 
-    // ############################################################################################
-    // ########### Show Pre Conciliation Case list according to assigned Case Manager #############
+    // #########################################################################################
+    // ########### Show Pre Mediation Case list according to assigned Case Manager #############
     public function caseList(Request $request)
     {
         $drp = auth('drp')->user();
@@ -137,10 +138,10 @@ class SendNoticeController extends Controller
                 )
                 ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
                 ->where('assign_cases.case_manager_id', $drp->id)
-                ->where('file_cases.case_type', 3)
+                ->where('file_cases.case_type', 2)
                 ->whereNotIn('file_cases.id', function($subquery) {
                     $subquery->select('file_case_id')
-                            ->from('conciliation_notices')
+                            ->from('mediation_notices')
                             ->whereNull('deleted_at');
                 });
 
@@ -190,7 +191,7 @@ class SendNoticeController extends Controller
     }
 
 
-    public function sendpreconciliationNotices(Request $request)
+    public function sendpremediationNotices(Request $request)
     {
         $drp = auth('drp')->user();
         if (!$drp) {
@@ -208,22 +209,22 @@ class SendNoticeController extends Controller
         foreach ($caseIds as $caseId) {
             $notices[] = [
                 'file_case_id' => $caseId,
-                'conciliation_notice_type' => 1,
+                'mediation_notice_type' => 1,
                 'notice_date' => now(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ];
         }
 
-        ConciliationNotice::insert($notices);
+        MediationNotice::insert($notices);
 
         return response()->json(['message' => 'Notices created successfully.']);
     }
 
 
-    // ########################################################################################
-    // ########### Show Conciliation Case list according to Conciliation Meeting #############
-    public function conciliationcaselist(Request $request)
+    // #################################################################################
+    // ########### Show Mediation Case list according to Mediation Meeting #############
+    public function mediationcaselist(Request $request)
     {
         $drp = auth('drp')->user();
         if (!$drp) {
@@ -231,11 +232,11 @@ class SendNoticeController extends Controller
         }
 
         if ($request->ajax()) {
-            $data = ConciliationNotice::select(
-                    'conciliation_notices.id',
-                    'conciliation_notices.conciliation_notice_type',
-                    'conciliation_notices.notice_copy',
-                    'conciliation_notices.file_case_id',
+            $data = MediationNotice::select(
+                    'mediation_notices.id',
+                    'mediation_notices.mediation_notice_type',
+                    'mediation_notices.notice_copy',
+                    'mediation_notices.file_case_id',
                     'file_cases.case_type',
                     'file_cases.product_type',
                     'file_cases.case_number',
@@ -244,16 +245,16 @@ class SendNoticeController extends Controller
                     'file_cases.created_at',
                     'assign_cases.case_manager_id'
                 )
-                ->join('file_cases', 'file_cases.id', '=', 'conciliation_notices.file_case_id')
-                ->join('assign_cases', 'assign_cases.case_id', '=', 'conciliation_notices.file_case_id')
-                ->whereDate('conciliation_notices.notice_date', '>=', Carbon::now()->subDays(7)->toDateString())
+                ->join('file_cases', 'file_cases.id', '=', 'mediation_notices.file_case_id')
+                ->join('assign_cases', 'assign_cases.case_id', '=', 'mediation_notices.file_case_id')
+                ->whereDate('mediation_notices.notice_date', '>=', Carbon::now()->subDays(7)->toDateString())
                 ->whereRaw("
                     NOT EXISTS (
-                        SELECT 1 FROM conciliator_meeting_rooms
-                        WHERE FIND_IN_SET(conciliation_notices.file_case_id, conciliator_meeting_rooms.meeting_room_case_id)
+                        SELECT 1 FROM mediator_meeting_rooms
+                        WHERE FIND_IN_SET(mediation_notices.file_case_id, mediator_meeting_rooms.meeting_room_case_id)
                     )
                 ")
-                ->where('conciliation_notices.conciliation_notice_type', 1)
+                ->where('mediation_notices.mediation_notice_type', 1)
                 ->where('assign_cases.case_manager_id', $drp->id);
 
             // Filters
@@ -285,10 +286,10 @@ class SendNoticeController extends Controller
                 })
                 ->editColumn('case_type', fn($row) => config('constant.case_type')[$row->case_type] ?? 'Unknown')
                 ->editColumn('product_type', fn($row) => config('constant.product_type')[$row->product_type] ?? 'Unknown')
-                ->editColumn('conciliation_notice_type', function ($row) {
-                    return $row->conciliation_notice_type == 1
-                        ? '<span class="badge bg-warning">Pre-Conciliation</span>'
-                        : '<span class="badge bg-secondary">Conciliation</span>';
+                ->editColumn('mediation_notice_type', function ($row) {
+                    return $row->mediation_notice_type == 1
+                        ? '<span class="badge bg-warning">Pre-Mediation</span>'
+                        : '<span class="badge bg-secondary">Mediation</span>';
                 })
                 ->editColumn('notice_copy', function ($row) {
                     if ($row->notice_copy) {
@@ -306,13 +307,13 @@ class SendNoticeController extends Controller
                 ->orderColumn('created_at', function ($query, $order) {
                     $query->orderBy('file_cases.created_at', $order);
                 })
-                ->rawColumns(['case_type', 'product_type', 'conciliation_notice_type', 'notice_copy', 'status'])
+                ->rawColumns(['case_type', 'product_type', 'mediation_notice_type', 'notice_copy', 'status'])
                 ->make(true);
         }
     }
 
 
-    public function sendconciliationNotices(Request $request)
+    public function sendmediationNotices(Request $request)
     {
         $drp = auth('drp')->user();
         if (!$drp) {
@@ -334,15 +335,15 @@ class SendNoticeController extends Controller
             }],
         ]);
 
-        // Step 1: Group case_ids by their conciliator_id
+        // Step 1: Group case_ids by their mediator_id
         $assignments = AssignCase::whereIn('case_id', $caseIds)
-            ->select('case_id', 'conciliator_id')
+            ->select('case_id', 'mediator_id')
             ->get()
-            ->groupBy('conciliator_id');
+            ->groupBy('mediator_id');
 
         // Step 2: Get the last room number
-        $room_id_prefix = 'ORG-MEETING';
-        $lastRoom = ConciliatorMeetingRoom::where('room_id', 'like', $room_id_prefix . '-%')
+        $room_id_prefix = 'ORG-MED-MEETING';
+        $lastRoom = MediatorMeetingRoom::where('room_id', 'like', $room_id_prefix . '-%')
             ->orderBy('id', 'desc')->first();
 
         $lastNumber = $lastRoom
@@ -351,33 +352,33 @@ class SendNoticeController extends Controller
 
         $meetingRooms = [];
 
-        // Step 3: Create a new room for each conciliator with their assigned cases
-        foreach ($assignments as $conciliatorId => $cases) {
+        // Step 3: Create a new room for each mediator with their assigned cases
+        foreach ($assignments as $mediatorId => $cases) {
             $lastNumber++;
             $room_id = $room_id_prefix . '-' . str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
 
-            $caseIdsForConciliator = $cases->pluck('case_id')->toArray();
+            $caseIdsForMediator = $cases->pluck('case_id')->toArray();
 
             $meetingRooms[] = [
                 'room_id' => $room_id,
-                'meeting_room_case_id' => implode(',', $caseIdsForConciliator),
-                'conciliator_id' => $conciliatorId,
+                'meeting_room_case_id' => implode(',', $caseIdsForMediator),
+                'mediator_id' => $mediatorId,
                 'date' => $request->date,
                 'time' => $request->time,
                 'status' => 0
             ];
         }
 
-        ConciliatorMeetingRoom::insert($meetingRooms);
+        MediatorMeetingRoom::insert($meetingRooms);
 
-        return response()->json(['success' => true, 'message' => 'Conciliator Meeting rooms created successfully.']);
+        return response()->json(['success' => true, 'message' => 'Mediator Meeting rooms created successfully.']);
     }
 
 
     // ########### Modal - Show Case Details #############
-    public function getConciliationNotice($id)
+    public function getMediationNotice($id)
     {
-        $notice = ConciliationNotice::with('fileCase')
+        $notice = MediationNotice::with('fileCase')
             ->where('id', $id)
             ->first();
        
@@ -397,7 +398,7 @@ class SendNoticeController extends Controller
             'case_type' => config('constant.case_type')[$notice->fileCase->case_type] ?? 'Unknown',
             'product_type' => config('constant.product_type')[$notice->fileCase->product_type] ?? 'Unknown',
 
-            'conciliation_notice_type' => $notice->conciliation_notice_type == 1 ? 'Pre-Conciliation' : 'Conciliation',
+            'mediation_notice_type' => $notice->mediation_notice_type == 1 ? 'Pre-Mediation' : 'Mediation',
             'notice_date' => $notice->notice_date ? \Carbon\Carbon::parse($notice->notice_date)->format('d M, Y') : '-',
             'notice_copy' => asset('storage/' . $notice->notice_copy) ?? '-',
             'email_status' => match ($notice->email_status) {

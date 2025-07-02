@@ -15,7 +15,8 @@ use App\Http\Controllers\Drp\ProfileController;
 use App\Http\Controllers\Drp\HomeController;
 use App\Http\Controllers\Drp\MediatorMeetingRoomController;
 use App\Http\Controllers\Drp\OrderSheetController;
-use App\Http\Controllers\Drp\SendNoticeController;
+use App\Http\Controllers\Drp\SendConciliationNoticeController;
+use App\Http\Controllers\Drp\SendMediationNoticeController;
 use App\Http\Controllers\Drp\SettlementLetterController;
 use App\Routes\Profile;
 use Illuminate\Support\Facades\Route;
@@ -79,10 +80,10 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::get('getsettlementletterVariables', 'getsettlementletterVariables')->name('getsettlementletterVariables');
     });
 
-    // ----------------------- Case Manager - Send Notices (Pre-Conciliation and Conciliation) Routes ---------------------------------
-    Route::controller(SendNoticeController::class)->group(function () {
+    // ----------------------- Case Manager - Send Notices (Pre-Conciliation and Conciliation) Routes ---------------------------
+    Route::controller(SendConciliationNoticeController::class)->group(function () {
         Route::get('conciliationnoticelist', 'conciliationnoticelist')->name('conciliationprocess.conciliationnoticelist');
-        
+
         Route::get('/conciliation-process/case-list', 'caseList')->name('conciliationprocess.caseList');
         Route::post('/conciliation-process/send-notices', 'sendpreconciliationNotices')->name('conciliationprocess.sendpreconciliationNotices');
 
@@ -92,7 +93,22 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::get('/conciliation-notice/{id}', 'getConciliationNotice')->name('conciliationprocess.viewdetail');
     });
 
-     // ----------------------- CaseAssign Routes ----------------------------------------------------
+
+    // ----------------------- Case Manager - Send Notices (Pre-Mediation and Mediation) Routes ---------------------------
+    Route::controller(SendMediationNoticeController::class)->group(function () {
+        Route::get('mediationnoticelist', 'mediationnoticelist')->name('mediationprocess.mediationnoticelist');
+
+        Route::get('/mediation-process/case-list', 'caseList')->name('mediationprocess.caseList');
+        Route::post('/mediation-process/send-notices', 'sendpremediationNotices')->name('mediationprocess.sendpremediationNotices');
+
+        Route::get('/mediation-process/mediation-case-list', 'mediationcaselist')->name('mediationprocess.mediationcaselist');
+        Route::post('/mediation-process/send-mediation-notices', 'sendmediationNotices')->name('mediationprocess.sendmediationNotices');
+
+        Route::get('/mediation-notice/{id}', 'getMediationNotice')->name('mediationprocess.viewdetail');
+    });
+
+
+    // ----------------------- CaseAssign Routes ----------------------------------------------------
     Route::controller(CaseAssignController::class)->group(function () {
         Route::get('caseassign', 'index')->name('caseassign');
         Route::get('caseassign/{id}', 'assign')->name('caseassign.assign');

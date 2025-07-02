@@ -2,8 +2,8 @@
 namespace App\Console\Commands;
 
 use App\Helper\Helper;
-use App\Models\ConciliationNotice;
 use App\Models\FileCase;
+use App\Models\MediationNotice;
 use App\Models\NoticeTemplate;
 use App\Models\Organization;
 use App\Models\Setting;
@@ -15,14 +15,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
-class PreConciliationNoticeEmailSend extends Command
+class PreMediationNoticeEmailSend extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'bulk:preconciliation-notice-email-send';
+    protected $signature = 'bulk:premediation-notice-email-send';
 
     /**
      * The console command description.
@@ -48,26 +48,26 @@ class PreConciliationNoticeEmailSend extends Command
      */
     public function handle()
     {
-        // ########################################################
-        // Pre-Conciliation Notice Send Via Email - By Case Manager
-        // ########################################################
+        // #####################################################
+        // Pre-Mediation Notice Send Via Email - By Case Manager
+        // #####################################################
         $caseData = FileCase::with('file_case_details','guarantors')
-            ->leftJoin('conciliation_notices', 'conciliation_notices.file_case_id', '=', 'file_cases.id')
-            ->where('conciliation_notices.conciliation_notice_type', 1)
+            ->leftJoin('mediation_notices', 'mediation_notices.file_case_id', '=', 'file_cases.id')
+            ->where('mediation_notices.mediation_notice_type', 1)
             ->whereNotNull('file_cases.respondent_email')
             ->where(function ($query) {
-                $query->where('conciliation_notices.email_status', 0)
+                $query->where('mediation_notices.email_status', 0)
                     ->orWhere(function ($subQuery) {
-                        $subQuery->whereNull('conciliation_notices.notice_copy')
-                                ->where('conciliation_notices.email_status', 0);
+                        $subQuery->whereNull('mediation_notices.notice_copy')
+                                ->where('mediation_notices.email_status', 0);
                     });
             })
             ->select(
                 'file_cases.*',
-                'conciliation_notices.file_case_id',
-                'conciliation_notices.conciliation_notice_type',
-                'conciliation_notices.notice_copy',
-                'conciliation_notices.email_status'
+                'mediation_notices.file_case_id',
+                'mediation_notices.mediation_notice_type',
+                'mediation_notices.notice_copy',
+                'mediation_notices.email_status'
             )
             ->limit(20)
             ->get();
@@ -84,7 +84,7 @@ class PreConciliationNoticeEmailSend extends Command
                 $now                           = now();
                 
                 $fileCaseId = $value->id;
-                Log::info("Processing Conciliation Email for FileCase ID: {$fileCaseId}");
+                Log::info("Processing Mediation Email for FileCase ID: {$fileCaseId}");
 
                 // #########################################################
                 // ################# Send Email using SMTP #################
@@ -252,14 +252,14 @@ class PreConciliationNoticeEmailSend extends Command
                     );
 
                     // Save the PDF using your helper
-                    $savedPath = Helper::loannosaveFile($uploadedFile, 'preconciliationnotices', $value->loan_number);
+                    $savedPath = Helper::loannosaveFile($uploadedFile, 'premediationnotices', $value->loan_number);
 
-                    $notice = ConciliationNotice::where('file_case_id', $value->id)->update([
+                    $notice = MediationNotice::where('file_case_id', $value->id)->update([
                         'notice_copy'   => $savedPath,
                         // 'notice_date'   => now(),
                     ]);
 
-                    //Send Email with Notice for Pre Conciliation Notice
+                    //Send Email with Notice for Pre Mediation Notice
                     $data = Setting::where('setting_type', '3')->get()->pluck('filed_value', 'setting_name')->toArray();
 
                     Config::set("mail.mailers.smtp", [
@@ -291,7 +291,7 @@ class PreConciliationNoticeEmailSend extends Command
                         if ($validator->fails()) {
 
                             Log::warning("Invalid email address: $email");
-                            ConciliationNotice::where('file_case_id', $value->id)
+                            MediationNotice::where('file_case_id', $value->id)
                                 ->update([
                                     'email_status' => 2,
                                 ]);
@@ -329,15 +329,15 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                 });
 
                                 // Success
-                                ConciliationNotice::where('file_case_id', $value->id)
+                                MediationNotice::where('file_case_id', $value->id)
                                     ->update([
                                         'notice_send_date' => $now,
                                         'email_status'     => 1,
                                     ]);
-                                Log::info("Conciliation Email sent successfully for FileCase ID: {$fileCaseId}");
+                                Log::info("Mediation Email sent successfully for FileCase ID: {$fileCaseId}");
                             } catch (\Exception $e) {
-                                Log::warning("Conciliation Email failed for FileCase ID: {$fileCaseId}. Response: " . $e->getMessage());
-                                ConciliationNotice::where('file_case_id', $value->id)
+                                Log::warning("Mediation Email failed for FileCase ID: {$fileCaseId}. Response: " . $e->getMessage());
+                                MediationNotice::where('file_case_id', $value->id)
                                     ->update([
                                         'email_status' => 2,
                                     ]);
@@ -377,7 +377,7 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
 
                         if ($validator->fails()) {
                             Log::warning("Invalid email address: $email");
-                            ConciliationNotice::where('file_case_id', $value->id)
+                            MediationNotice::where('file_case_id', $value->id)
                                 ->update([
                                     'email_status' => 2,
                                 ]);
@@ -413,15 +413,15 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                         ]);
                                 });
 
-                                ConciliationNotice::where('file_case_id', $value->id)
+                                MediationNotice::where('file_case_id', $value->id)
                                     ->update([
                                         'notice_send_date' => $now,
                                         'email_status'     => 1,
                                     ]);
-                                Log::info("Conciliation Email sent successfully for FileCase ID: {$fileCaseId}");
+                                Log::info("Mediation Email sent successfully for FileCase ID: {$fileCaseId}");
                             } catch (\Exception $e) {
-                                Log::warning("Conciliation Email failed for FileCase ID: {$fileCaseId}. Response: " . $e->getMessage());
-                                ConciliationNotice::where('file_case_id', $value->id)
+                                Log::warning("Mediation Email failed for FileCase ID: {$fileCaseId}. Response: " . $e->getMessage());
+                                MediationNotice::where('file_case_id', $value->id)
                                     ->update([
                                         'email_status' => 2,
                                     ]);
@@ -432,7 +432,7 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
 
             } catch (\Throwable $th) {
                 // Log the error and update the email status
-                Log::error("Error sending Conciliation email for record ID {$value->id}: " . $th->getMessage());
+                Log::error("Error sending Mediation email for record ID {$value->id}: " . $th->getMessage());
                 // $value->update(['email_status' => 2]);
             }
         }
