@@ -54,7 +54,10 @@ class PreMediationNoticeEmailSend extends Command
         $caseData = FileCase::with('file_case_details','guarantors')
             ->leftJoin('mediation_notices', 'mediation_notices.file_case_id', '=', 'file_cases.id')
             ->where('mediation_notices.mediation_notice_type', 1)
-            ->whereNotNull('file_cases.respondent_email')
+            ->where(function ($query) {
+                $query->whereNotNull('file_cases.respondent_email')
+                    ->where('file_cases.respondent_email', '!=', '');
+            })
             ->where(function ($query) {
                 $query->where('mediation_notices.email_status', 0)
                     ->orWhere(function ($subQuery) {
@@ -69,7 +72,7 @@ class PreMediationNoticeEmailSend extends Command
                 'mediation_notices.notice_copy',
                 'mediation_notices.email_status'
             )
-            ->limit(20)
+            ->limit(3)
             ->get();
         
         foreach ($caseData as $key => $value) {

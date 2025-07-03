@@ -181,6 +181,13 @@
                                         <tbody></tbody>
                                     </table>
                                 </div>
+                                <div class="mt-2 row">
+                                    <div class="col-md-6 col-12">
+                                        <label>Pre-Mediation Notice Date</label>
+                                        <input type="date" name="send_notice_date" id="send_notice_date" class="form-control"
+                                            required>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="modal-footer">
@@ -522,12 +529,21 @@
                 return;
             }
 
+            // Get the notice date
+            let noticeDate = $('#send_notice_date').val();
+
+            if (!noticeDate) {
+                $('#error-msg').text('Please select a notice date.');
+                return;
+            }
+
             $.ajax({
                 url: "{{ route('drp.mediationprocess.sendpremediationNotices') }}",
                 method: "POST",
                 data: {
                     _token: $('input[name="_token"]').val(),
-                    file_case_ids: allCaseIds
+                    file_case_ids: allCaseIds,
+                    send_notice_date: noticeDate
                 },
                 success: function(response) {
                     $('#error-msg').text('');

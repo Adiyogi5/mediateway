@@ -66,7 +66,7 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_RECAPTCHA_KEY') }}"></div>
+                        <div class="g-recaptcha" data-sitekey="{{ $data['GOOGLE_RECAPTCHA_KEY'] }}"></div>
                         @if ($errors->has('g-recaptcha-response'))
                             <span class="text-danger">{{ $errors->first('g-recaptcha-response') }}</span>
                         @endif

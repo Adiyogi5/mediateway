@@ -48,7 +48,10 @@ class PreConciliationNoticeWhatsappSend extends Command
         $caseData = FileCase::with('file_case_details')
             ->leftJoin('conciliation_notices', 'conciliation_notices.file_case_id', '=', 'file_cases.id')
             ->where('conciliation_notices.conciliation_notice_type', 1)
-            ->whereNotNull('file_cases.respondent_mobile')
+            ->where(function ($query) {
+                $query->whereNotNull('file_cases.respondent_mobile')
+                    ->where('file_cases.respondent_mobile', '!=', '');
+            })
             ->whereNotNull('conciliation_notices.notice_copy')
             ->where('conciliation_notices.whatsapp_notice_status', 0)
             ->select(
@@ -58,7 +61,7 @@ class PreConciliationNoticeWhatsappSend extends Command
                 'conciliation_notices.notice_copy',
                 'conciliation_notices.email_status',
             )
-            ->limit(10)
+            ->limit(5)
             ->get();
         
         foreach ($caseData as $key => $value) {

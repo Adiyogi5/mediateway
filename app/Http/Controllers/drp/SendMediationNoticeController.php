@@ -199,6 +199,7 @@ class SendMediationNoticeController extends Controller
         }
 
         $caseIds = $request->input('file_case_ids');
+        $noticeDate = $request->input('send_notice_date');
 
         if (empty($caseIds) || !is_array($caseIds)) {
             return response()->json(['error' => 'No case IDs received.'], 422);
@@ -210,7 +211,7 @@ class SendMediationNoticeController extends Controller
             $notices[] = [
                 'file_case_id' => $caseId,
                 'mediation_notice_type' => 1,
-                'notice_date' => now(),
+                'notice_date' => $noticeDate,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ];

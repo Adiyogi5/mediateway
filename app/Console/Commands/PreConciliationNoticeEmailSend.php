@@ -54,7 +54,10 @@ class PreConciliationNoticeEmailSend extends Command
         $caseData = FileCase::with('file_case_details','guarantors')
             ->leftJoin('conciliation_notices', 'conciliation_notices.file_case_id', '=', 'file_cases.id')
             ->where('conciliation_notices.conciliation_notice_type', 1)
-            ->whereNotNull('file_cases.respondent_email')
+            ->where(function ($query) {
+                $query->whereNotNull('file_cases.respondent_email')
+                    ->where('file_cases.respondent_email', '!=', '');
+            })
             ->where(function ($query) {
                 $query->where('conciliation_notices.email_status', 0)
                     ->orWhere(function ($subQuery) {
@@ -69,9 +72,9 @@ class PreConciliationNoticeEmailSend extends Command
                 'conciliation_notices.notice_copy',
                 'conciliation_notices.email_status'
             )
-            ->limit(20)
+            ->limit(3)
             ->get();
-        
+       
         foreach ($caseData as $key => $value) {
             try {
 
@@ -89,6 +92,7 @@ class PreConciliationNoticeEmailSend extends Command
                 // #########################################################
                 // ################# Send Email using SMTP #################
                 if (empty($value->notice_copy)) {
+                    
                     // Define your replacement values
                     $data = [
                         'BANK/ORGANISATION/CLAIMANT NAME'               => ($value->claimant_first_name ?? '') . '&nbsp;' . ($value->claimant_last_name ?? ''),

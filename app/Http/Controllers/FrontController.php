@@ -16,6 +16,7 @@ use App\Rules\ReCaptcha;
 use App\Models\Testimonial;
 use Illuminate\Http\Request;
 use App\Models\FileCase;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Firebase\JWT\JWT;
 
@@ -259,7 +260,14 @@ class FrontController extends Controller
     {
         $title = 'Contact Us';
 
-        return view('front.contactus',compact('title'));
+        $data = Setting::where('setting_type', '8')
+            ->get()
+            ->pluck('filed_value', 'setting_name')
+            ->toArray();
+
+        $data['GOOGLE_RECAPTCHA_KEY'] = $data['GOOGLE_RECAPTCHA_KEY'] ?? env('GOOGLE_RECAPTCHA_KEY');
+
+        return view('front.contactus',compact('title','data'));
     }
 
     public function submitcontactus(Request $request)

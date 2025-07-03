@@ -35,13 +35,13 @@ class Kernel extends ConsoleKernel
         // $schedule->command('bulk:send-4a-notice')->everyTenMinutes();
         // $schedule->command('bulk:send-5a-notice')->everyTenMinutes();
 
-        $schedule->command('bulk:preconciliation-notice-email-send')->everyTenMinutes();
+        $schedule->command('bulk:preconciliation-notice-email-send')->everyMinute();
         $schedule->command('bulk:preconciliation-notice-whatsapp-send')->everyMinute();
         $schedule->command('bulk:preconciliation-notice-sms-send')->everyMinute();
 
-        $schedule->command('bulk:premediation-notice-email-send')->everyTenMinutes();
-        $schedule->command('bulk:premediation-notice-whatsapp-send')->everyMinute();
-        $schedule->command('bulk:premediation-notice-sms-send')->everyMinute();
+        // $schedule->command('bulk:premediation-notice-email-send')->everyMinute();
+        // $schedule->command('bulk:premediation-notice-whatsapp-send')->everyMinute();
+        // $schedule->command('bulk:premediation-notice-sms-send')->everyMinute();
     }
 
     /**
