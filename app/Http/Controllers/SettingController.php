@@ -47,6 +47,7 @@ class SettingController extends Controller
                     'phone'             => 'required|max:100',
                     'favicon'           => 'image|mimes:jpg,png,jpeg,gif,svg|max:240',
                     'logo'              => 'image|mimes:jpg,png,jpeg,gif,svg|max:1024',
+                    'mediateway_letterhead'             => 'image|mimes:jpg,png,jpeg,gif,svg|max:1024',
                     'mediateway_signature'              => 'image|mimes:jpg,png,jpeg,gif,svg|max:1024',
                 ]);
             }
@@ -135,6 +136,11 @@ class SettingController extends Controller
             if ($request->file('logo')) {
                 Helper::deleteFile($request->site_settings['logo']);
                 $data['logo'] = Helper::saveFile($request->file('logo'), 'application');
+            }
+
+            if ($request->file('mediateway_letterhead')) {
+                Helper::deleteFile($request->site_settings['mediateway_letterhead']);
+                $data['mediateway_letterhead'] = Helper::saveFile($request->file('mediateway_letterhead'), 'application');
             }
 
             if ($request->file('mediateway_signature')) {

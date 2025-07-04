@@ -89,8 +89,11 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
 
         Route::get('/conciliation-process/conciliation-case-list', 'conciliationcaselist')->name('conciliationprocess.conciliationcaselist');
         Route::post('/conciliation-process/send-conciliation-notices', 'sendconciliationNotices')->name('conciliationprocess.sendconciliationNotices');
+        Route::get('/conciliation-process/all-conciliation-case-ids', 'getAllFilteredConciliationCaseIds')->name('conciliationprocess.allcaseids');
 
         Route::get('/conciliation-notice/{id}', 'getConciliationNotice')->name('conciliationprocess.viewdetail');
+
+        Route::get('export-conciliation-notices', 'exportconciliationNotice')->name('conciliation.export');
     });
 
 
@@ -103,8 +106,11 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
 
         Route::get('/mediation-process/mediation-case-list', 'mediationcaselist')->name('mediationprocess.mediationcaselist');
         Route::post('/mediation-process/send-mediation-notices', 'sendmediationNotices')->name('mediationprocess.sendmediationNotices');
+        Route::get('/mediation-process/all-mediation-case-ids', 'getAllFilteredMediationCaseIds')->name('mediationprocess.allcaseids');
 
         Route::get('/mediation-notice/{id}', 'getMediationNotice')->name('mediationprocess.viewdetail');
+
+        Route::get('export-mediation-notices', 'exportmediationNotice')->name('mediation.export');
     });
 
 

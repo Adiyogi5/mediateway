@@ -22,11 +22,11 @@
             <div class="col-md-9 col-12">
                 <div class="card mb-3 card-inner">
                     <div class="card-header">
-                        <div class="row flex-between-end">
-                            <div class="col-auto align-self-center">
+                        <div class="row">
+                            <div class="col-12 align-self-center">
                                 <h5 class="mb-0" data-anchor="data-anchor">Conciliation Notices :: Send Notice List </h5>
                             </div>
-                            <div class="col-auto ms-auto">
+                            <div class="col-12 d-flex justify-content-between">
                                 <div class="nav nav-pills nav-pills-falcon">
                                     <a href="javascript:void(0)"
                                         class="btn btn-outline-secondary send-pre-conciliation-notice-btn py-1 my-1">
@@ -41,6 +41,11 @@
                                         Send Conciliation Notice
                                     </a>
                                 </div>
+                                <div class="nav nav-pills nav-pills-falcon">
+                                    <a href="javascript:void(0)" id="btn-export" class="btn btn-success py-1 my-1">
+                                        <i class="fa fa-file-excel"></i> Export to Excel
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -52,6 +57,13 @@
                                 @foreach (config('constant.product_type') as $key => $value)
                                     <option value="{{ $key }}">{{ $value }}</option>
                                 @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control form-select py-1" id="filter_conciliation_notice_type">
+                                <option value="">Conciliation Notice Types</option>
+                                <option value="1">Pre Conciliation</option>
+                                <option value="2">Conciliation</option>
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -89,12 +101,14 @@
                                     <tr>
                                         <th>Case Number</th>
                                         <th>Loan Number</th>
+                                        <th>Organization Name</th>
                                         <th>Case Type</th>
                                         <th>Product Type</th>
                                         <th>Notice Type</th>
                                         <th>Notice</th>
                                         <th>Status</th>
                                         <th>Case File Date</th>
+                                        <th>Notice Date</th>
                                         <th width="100px">Action</th>
                                     </tr>
                                 </thead>
@@ -184,8 +198,8 @@
                                 <div class="mt-2 row">
                                     <div class="col-md-6 col-12">
                                         <label>Pre-Concilation Notice Date</label>
-                                        <input type="date" name="send_notice_date" id="send_notice_date" class="form-control"
-                                            required>
+                                        <input type="date" name="send_notice_date" id="send_notice_date"
+                                            class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -202,7 +216,7 @@
                 </div>
             </div>
 
-            
+
 
             <!-- Modal for Sending Conciliation Notices -->
             <div class="modal fade" id="conciliationNoticeModal" tabindex="-1">
@@ -373,6 +387,7 @@
                     data: function(d) {
                         d.case_type = $('#filter_case_type').val();
                         d.product_type = $('#filter_product_type').val();
+                        d.conciliation_notice_type = $('#filter_conciliation_notice_type').val();
                         d.case_number = $('#filter_case_number').val();
                         d.loan_number = $('#filter_loan_number').val();
                         d.status = $('#filter_status').val();
@@ -381,7 +396,7 @@
                     }
                 },
                 order: [
-                    [7, 'desc']
+                    [9, 'desc']
                 ], // order by created_at
                 columns: [{
                         data: 'case_number'
@@ -389,6 +404,7 @@
                     {
                         data: 'loan_number'
                     },
+                    { data: 'claimant_first_name' },
                     {
                         data: 'case_type'
                     },
@@ -413,6 +429,7 @@
                     {
                         data: 'created_at'
                     },
+                    { data: 'notice_date' },
                     {
                         data: 'action',
                         orderable: false,
@@ -430,6 +447,7 @@
             $('#btn-reset').click(function() {
                 $('#filter_case_type').val('');
                 $('#filter_product_type').val('');
+                $('#filter_conciliation_notice_type').val('');
                 $('#filter_case_number').val('');
                 $('#filter_loan_number').val('');
                 $('#filter_status').val('');
@@ -440,6 +458,24 @@
         });
     </script>
 
+    {{-- ############# Export Filters ############### --}}
+    <script>
+        $('#btn-export').on('click', function() {
+            let params = {
+                case_type: $('#filter_case_type').val(),
+                product_type: $('#filter_product_type').val(),
+                conciliation_notice_type: $('#filter_conciliation_notice_type').val(),
+                case_number: $('#filter_case_number').val(),
+                loan_number: $('#filter_loan_number').val(),
+                status: $('#filter_status').val(),
+                date_from: $('#filter_date_from').val(),
+                date_to: $('#filter_date_to').val()
+            };
+
+            let query = $.param(params);
+            window.location.href = "{{ route('drp.conciliation.export') }}?" + query;
+        });
+    </script>
 
     {{-- #################################################################### --}}
     {{-- ############## Data Table for Pre Conciliation Modal ############### --}}
@@ -528,7 +564,7 @@
                 $('#error-msg').text('No cases found to send notice.');
                 return;
             }
-            
+
             // Get the notice date
             let noticeDate = $('#send_notice_date').val();
 
@@ -589,20 +625,29 @@
                 order: [
                     [5, 'desc']
                 ],
-                columns: [
-                    { data: 'case_type' },
-                    { data: 'product_type' },
-                    { data: 'case_number' },
-                    { data: 'loan_number' },
+                columns: [{
+                        data: 'case_type'
+                    },
+                    {
+                        data: 'product_type'
+                    },
+                    {
+                        data: 'case_number'
+                    },
+                    {
+                        data: 'loan_number'
+                    },
                     {
                         data: 'status',
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'created_at' },
                     {
-                        data: 'file_case_id', 
-                        visible: false,      
+                        data: 'created_at'
+                    },
+                    {
+                        data: 'file_case_id',
+                        visible: false,
                         searchable: false
                     }
                 ]
@@ -622,43 +667,61 @@
             $('#sendConciliationNoticeForm').on('submit', function(e) {
                 e.preventDefault();
 
-                let data = conciliationListTable.rows({
-                    search: 'applied'
-                }).data();
-                let allCaseIds = [];
+                let filters = {
+                    product_type: $('#filter2_product_type').val(),
+                    case_number: $('#filter2_case_number').val(),
+                    loan_number: $('#filter2_loan_number').val(),
+                    status: $('#filter2_status').val(),
+                    date_from: $('#filter2_date_from').val(),
+                    date_to: $('#filter2_date_to').val()
+                };
 
-                for (let i = 0; i < data.length; i++) {
-                    allCaseIds.push(data[i].file_case_id);
-                }
-
-                if (allCaseIds.length === 0) {
-                    $('#error-msg2').text('No eligible cases to send Conciliation notice.');
-                    return;
-                }
-
-                // For Creating Conciliation Meeting Room 
+                // Fetch ALL filtered case_ids via AJAX
                 $.ajax({
-                    url: "{{ route('drp.conciliationprocess.sendconciliationNotices') }}",
-                    method: "POST",
-                    data: {
-                        _token: $('input[name="_token"]').val(),
-                        file_case_ids: allCaseIds,
-                        date: $('#meeting_date').val(),
-                        time: $('#meeting_time').val()
-                    },
+                    url: "{{ route('drp.conciliationprocess.allcaseids') }}",
+                    method: "GET",
+                    data: filters,
                     success: function(response) {
-                        $('#error-msg2').text('');
-                        toastr.success('Conciliation Meeting Rooms Created Successfully!');
-                        $('#conciliationNoticeModal').modal('hide');
-                        conciliationListTable.ajax.reload();
+                        let allCaseIds = response.case_ids;
+
+                        if (allCaseIds.length === 0) {
+                            $('#error-msg2').text(
+                                'No eligible cases to send Conciliation notice.');
+                            return;
+                        }
+
+                        // Send to conciliation notice API
+                        $.ajax({
+                            url: "{{ route('drp.conciliationprocess.sendconciliationNotices') }}",
+                            method: "POST",
+                            data: {
+                                _token: $('input[name="_token"]').val(),
+                                file_case_ids: allCaseIds,
+                                date: $('#meeting_date').val(),
+                                time: $('#meeting_time').val()
+                            },
+                            success: function(response) {
+                                $('#error-msg2').text('');
+                                toastr.success(
+                                    'Conciliation Meeting Rooms Created Successfully!'
+                                    );
+                                $('#conciliationNoticeModal').modal('hide');
+                                conciliationListTable.ajax.reload();
+                            },
+                            error: function(xhr) {
+                                let errors = xhr.responseJSON.errors;
+                                let message = xhr.responseJSON.message ||
+                                    'Failed to send Conciliation Notices.';
+                                if (errors) {
+                                    message = Object.values(errors).flat().join(
+                                        '<br>');
+                                }
+                                $('#error-msg2').html(message);
+                            }
+                        });
                     },
                     error: function(xhr) {
-                        let errors = xhr.responseJSON.errors;
-                        let message = xhr.responseJSON.message || 'Failed to send Conciliation Notices.';
-                        if (errors) {
-                            message = Object.values(errors).flat().join('<br>');
-                        }
-                        $('#error-msg2').html(message);
+                        $('#error-msg2').text('Failed to fetch all filtered case IDs.');
                     }
                 });
             });

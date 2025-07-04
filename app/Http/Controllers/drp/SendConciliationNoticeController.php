@@ -14,6 +14,8 @@ use App\Models\ConciliationNotice;
 use App\Models\ConciliatorMeetingRoom;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Exports\ConciliationNoticeExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SendConciliationNoticeController extends Controller
 {
@@ -41,11 +43,13 @@ class SendConciliationNoticeController extends Controller
                     'conciliation_notices.id',
                     'conciliation_notices.conciliation_notice_type',
                     'conciliation_notices.notice_copy',
+                    'conciliation_notices.notice_date',
                     'conciliation_notices.file_case_id',
                     'file_cases.case_type',
                     'file_cases.product_type',
                     'file_cases.case_number',
                     'file_cases.loan_number',
+                    'file_cases.claimant_first_name',
                     'file_cases.status',
                     'file_cases.created_at',
                     'assign_cases.case_manager_id'
@@ -61,6 +65,9 @@ class SendConciliationNoticeController extends Controller
             if ($request->filled('product_type')) {
                 $data->where('file_cases.product_type', $request->product_type);
             }
+            if ($request->filled('conciliation_notice_type')) {
+                $data->where('conciliation_notices.conciliation_notice_type', $request->conciliation_notice_type);
+            }
             if ($request->filled('case_number')) {
                 $data->where('file_cases.case_number', 'like', '%' . $request->case_number . '%');
             }
@@ -71,7 +78,7 @@ class SendConciliationNoticeController extends Controller
                 $data->where('file_cases.status', $request->status);
             }
             if ($request->filled('date_from') && $request->filled('date_to')) {
-                $data->whereBetween('file_cases.created_at', [
+                $data->whereBetween('conciliation_notices.notice_date', [
                     $request->date_from . ' 00:00:00',
                     $request->date_to . ' 23:59:59'
                 ]);
@@ -98,9 +105,10 @@ class SendConciliationNoticeController extends Controller
                         : '<small class="badge fw-semi-bold rounded-pill status badge-light-danger"> Inactive</small>';
                 })
                 ->editColumn('created_at', fn($row) => $row->created_at->format('d M, Y'))
+                ->editColumn('notice_date', fn($row) => \Carbon\Carbon::parse($row->notice_date)->format('d M, Y'))
                 ->addColumn('action', function ($row) {
                     $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
-                    $btn = '<button class="dropdown-item btn btn-sm btn-info view-details-btn" data-id="' . $row->id . '">View Details</button>';
+                    $btn = '<button class="dropdown-item btn btn-sm btn-info bg-info view-details-btn" data-id="' . $row->id . '">View Details</button>';
                     $btn .= '</div>';
                     return $btn;
                 })
@@ -215,7 +223,6 @@ class SendConciliationNoticeController extends Controller
                 'updated_at' => Carbon::now(),
             ];
         }
-
         ConciliationNotice::insert($notices);
 
         return response()->json(['message' => 'Notices created successfully.']);
@@ -368,10 +375,70 @@ class SendConciliationNoticeController extends Controller
                 'status' => 0
             ];
         }
-
         ConciliatorMeetingRoom::insert($meetingRooms);
 
+
+        //Send Conciliation Notice Data
+        $notices = [];
+
+        foreach ($caseIds as $caseId) {
+            $notices[] = [
+                'file_case_id' => $caseId,
+                'conciliation_notice_type' => 2,
+                'notice_date' => Carbon::now(),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
+        }
+        ConciliationNotice::insert($notices);
+
         return response()->json(['success' => true, 'message' => 'Conciliator Meeting rooms created successfully.']);
+    }
+
+    
+    public function getAllFilteredConciliationCaseIds(Request $request)
+    {
+        $drp = auth('drp')->user();
+        if (!$drp) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $data = ConciliationNotice::select('file_cases.id as file_case_id')
+            ->join('file_cases', 'file_cases.id', '=', 'conciliation_notices.file_case_id')
+            ->join('assign_cases', 'assign_cases.case_id', '=', 'conciliation_notices.file_case_id')
+            ->whereDate('conciliation_notices.notice_date', '>=', Carbon::now()->subDays(7)->toDateString())
+            ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM conciliator_meeting_rooms
+                    WHERE FIND_IN_SET(conciliation_notices.file_case_id, conciliator_meeting_rooms.meeting_room_case_id)
+                )
+            ")
+            ->where('conciliation_notices.conciliation_notice_type', 1)
+            ->where('assign_cases.case_manager_id', $drp->id);
+
+        // Apply filters (same as in conciliationcaselist)
+        if ($request->filled('product_type')) {
+            $data->where('file_cases.product_type', $request->product_type);
+        }
+        if ($request->filled('case_number')) {
+            $data->where('file_cases.case_number', 'like', '%' . $request->case_number . '%');
+        }
+        if ($request->filled('loan_number')) {
+            $data->where('file_cases.loan_number', 'like', '%' . $request->loan_number . '%');
+        }
+        if ($request->filled('status')) {
+            $data->where('file_cases.status', $request->status);
+        }
+        if ($request->filled('date_from') && $request->filled('date_to')) {
+            $data->whereBetween('file_cases.created_at', [
+                $request->date_from . ' 00:00:00',
+                $request->date_to . ' 23:59:59'
+            ]);
+        }
+
+        return response()->json([
+            'case_ids' => $data->pluck('file_case_id')->unique()->values()
+        ]);
     }
 
 
@@ -425,6 +492,16 @@ class SendConciliationNoticeController extends Controller
             },
             'sms_send_date' => $notice->sms_send_date ? \Carbon\Carbon::parse($notice->sms_send_date)->format('d M, Y h:i A') : '-',
         ]);
+    }
+
+
+    // ########### Export Notice with Send Details #############
+    public function exportconciliationNotice(Request $request)
+    {
+        $date = date('d-m-Y_h:i:sA');
+        $filename = 'conciliation_notice_list_' . $date . '.xlsx';
+
+        return Excel::download(new ConciliationNoticeExport($request), $filename);
     }
 
 }

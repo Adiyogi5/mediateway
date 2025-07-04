@@ -14,6 +14,8 @@ use App\Models\MediationNotice;
 use App\Models\MediatorMeetingRoom;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Exports\MediationNoticeExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SendMediationNoticeController extends Controller
 {
@@ -42,11 +44,13 @@ class SendMediationNoticeController extends Controller
                     'mediation_notices.id',
                     'mediation_notices.mediation_notice_type',
                     'mediation_notices.notice_copy',
+                    'mediation_notices.notice_date',
                     'mediation_notices.file_case_id',
                     'file_cases.case_type',
                     'file_cases.product_type',
                     'file_cases.case_number',
                     'file_cases.loan_number',
+                    'file_cases.claimant_first_name',
                     'file_cases.status',
                     'file_cases.created_at',
                     'assign_cases.case_manager_id'
@@ -62,6 +66,9 @@ class SendMediationNoticeController extends Controller
             if ($request->filled('product_type')) {
                 $data->where('file_cases.product_type', $request->product_type);
             }
+            if ($request->filled('mediation_notice_type')) {
+                $data->where('mediation_notices.mediation_notice_type', $request->mediation_notice_type);
+            }
             if ($request->filled('case_number')) {
                 $data->where('file_cases.case_number', 'like', '%' . $request->case_number . '%');
             }
@@ -72,7 +79,7 @@ class SendMediationNoticeController extends Controller
                 $data->where('file_cases.status', $request->status);
             }
             if ($request->filled('date_from') && $request->filled('date_to')) {
-                $data->whereBetween('file_cases.created_at', [
+                $data->whereBetween('mediation_notices.notice_date', [
                     $request->date_from . ' 00:00:00',
                     $request->date_to . ' 23:59:59'
                 ]);
@@ -99,9 +106,10 @@ class SendMediationNoticeController extends Controller
                         : '<small class="badge fw-semi-bold rounded-pill status badge-light-danger"> Inactive</small>';
                 })
                 ->editColumn('created_at', fn($row) => $row->created_at->format('d M, Y'))
+                ->editColumn('notice_date', fn($row) => \Carbon\Carbon::parse($row->notice_date)->format('d M, Y'))
                 ->addColumn('action', function ($row) {
                     $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
-                    $btn = '<button class="dropdown-item btn btn-sm btn-info view-details-btn" data-id="' . $row->id . '">View Details</button>';
+                    $btn = '<button class="dropdown-item btn btn-sm btn-info bg-info view-details-btn" data-id="' . $row->id . '">View Details</button>';
                     $btn .= '</div>';
                     return $btn;
                 })
@@ -369,10 +377,70 @@ class SendMediationNoticeController extends Controller
                 'status' => 0
             ];
         }
-
         MediatorMeetingRoom::insert($meetingRooms);
 
+
+        //Send mediation Notice Data
+        $notices = [];
+
+        foreach ($caseIds as $caseId) {
+            $notices[] = [
+                'file_case_id' => $caseId,
+                'mediation_notice_type' => 2,
+                'notice_date' => Carbon::now(),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
+        }
+        MediationNotice::insert($notices);
+
         return response()->json(['success' => true, 'message' => 'Mediator Meeting rooms created successfully.']);
+    }
+
+
+    public function getAllFilteredMediationCaseIds(Request $request)
+    {
+        $drp = auth('drp')->user();
+        if (!$drp) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $data = MediationNotice::select('file_cases.id as file_case_id')
+            ->join('file_cases', 'file_cases.id', '=', 'mediation_notices.file_case_id')
+            ->join('assign_cases', 'assign_cases.case_id', '=', 'mediation_notices.file_case_id')
+            ->whereDate('mediation_notices.notice_date', '>=', Carbon::now()->subDays(7)->toDateString())
+            ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM conciliator_meeting_rooms
+                    WHERE FIND_IN_SET(mediation_notices.file_case_id, conciliator_meeting_rooms.meeting_room_case_id)
+                )
+            ")
+            ->where('mediation_notices.mediation_notice_type', 1)
+            ->where('assign_cases.case_manager_id', $drp->id);
+
+        // Apply filters (same as in mediationcaselist)
+        if ($request->filled('product_type')) {
+            $data->where('file_cases.product_type', $request->product_type);
+        }
+        if ($request->filled('case_number')) {
+            $data->where('file_cases.case_number', 'like', '%' . $request->case_number . '%');
+        }
+        if ($request->filled('loan_number')) {
+            $data->where('file_cases.loan_number', 'like', '%' . $request->loan_number . '%');
+        }
+        if ($request->filled('status')) {
+            $data->where('file_cases.status', $request->status);
+        }
+        if ($request->filled('date_from') && $request->filled('date_to')) {
+            $data->whereBetween('file_cases.created_at', [
+                $request->date_from . ' 00:00:00',
+                $request->date_to . ' 23:59:59'
+            ]);
+        }
+
+        return response()->json([
+            'case_ids' => $data->pluck('file_case_id')->unique()->values()
+        ]);
     }
 
 
@@ -426,6 +494,16 @@ class SendMediationNoticeController extends Controller
             },
             'sms_send_date' => $notice->sms_send_date ? \Carbon\Carbon::parse($notice->sms_send_date)->format('d M, Y h:i A') : '-',
         ]);
+    }
+
+
+    // ########### Export Notice with Send Details #############
+    public function exportmediationNotice(Request $request)
+    {
+        $date = date('d-m-Y_h:i:sA');
+        $filename = 'mediation_notice_list_' . $date . '.xlsx';
+
+        return Excel::download(new MediationNoticeExport($request), $filename);
     }
 
 }
