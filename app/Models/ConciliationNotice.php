@@ -18,9 +18,13 @@ class ConciliationNotice extends Model
         'notice_date',
         'notice_send_date',
         'email_status',
+        'email_bounce_datetime',
         'whatsapp_status',
         'whatsapp_notice_status',
         'whatsapp_dispatch_datetime',
+        'whatsapp_bounce_datetime',
+        'sms_status',
+        'sms_send_date'
     ];
 
 

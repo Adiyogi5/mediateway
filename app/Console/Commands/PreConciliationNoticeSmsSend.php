@@ -60,7 +60,7 @@ class PreConciliationNoticeSmsSend extends Command
                 'conciliation_notices.notice_copy',
                 'conciliation_notices.email_status',
             )
-            ->limit(5)
+            ->limit(9)
             ->get();
 
         foreach ($caseData as $key => $value) {
@@ -69,7 +69,7 @@ class PreConciliationNoticeSmsSend extends Command
                 $now    = now();
                 $fileCaseId = $value->id;
 
-                Log::info("Conciliation Processing SMS for FileCase ID: {$fileCaseId}");
+                Log::info("Pre-Conciliation Processing SMS for FileCase ID: {$fileCaseId}");
 
                     // ###############################################################
                     // ################ Send SMS using Mobile Number #################
@@ -99,14 +99,12 @@ Team MediateWay.";
                                         'sms_status'    => 1,
                                     ]);
                                     Log::info("Conciliation SMS sent successfully for FileCase ID: {$fileCaseId}");
-                                return true;
                             } else {
                                 Log::warning("Conciliation SMS failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
                                 ConciliationNotice::where('file_case_id', $value->id)
                                     ->update([
                                         'sms_status' => 2,
                                     ]);
-                                return false;
                             }
                         } catch (\Throwable $th) {
                             Log::error("Conciliation SMS API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());

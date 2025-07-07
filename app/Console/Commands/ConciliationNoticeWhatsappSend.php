@@ -9,14 +9,14 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class PreConciliationNoticeWhatsappSend extends Command
+class ConciliationNoticeWhatsappSend extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'bulk:preconciliation-notice-whatsapp-send';
+    protected $signature = 'bulk:conciliation-notice-whatsapp-send';
 
     /**
      * The console command description.
@@ -43,11 +43,11 @@ class PreConciliationNoticeWhatsappSend extends Command
     public function handle()
     {
         // ###########################################################
-        // Pre-Conciliation Notice Send Via Whatsapp - By Case Manager
+        // Conciliation Notice Send Via Whatsapp - By Case Manager
         // ###########################################################
         $caseData = FileCase::with('file_case_details')
             ->leftJoin('conciliation_notices', 'conciliation_notices.file_case_id', '=', 'file_cases.id')
-            ->where('conciliation_notices.conciliation_notice_type', 1)
+            ->where('conciliation_notices.conciliation_notice_type', 2)
             ->where(function ($query) {
                 $query->whereNotNull('file_cases.respondent_mobile')
                     ->where('file_cases.respondent_mobile', '!=', '');
@@ -70,7 +70,7 @@ class PreConciliationNoticeWhatsappSend extends Command
                 $now    = now();
                 $fileCaseId = $value->id;
 
-                Log::info("Processing Conciliation Whatsapp for FileCase ID: {$fileCaseId}");
+                Log::info("Processing Conciliation Notice For Meeting - Whatsapp for FileCase ID: {$fileCaseId}");
 
                     // ###################################################################
                     // ############ Send Whatsapp Message using Mobile Number ############
@@ -78,24 +78,17 @@ class PreConciliationNoticeWhatsappSend extends Command
                         try {
                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
-                            $message = "Dear {$value->respondent_first_name} {$value->respondent_last_name},
-[ {$value->loan_number} (Co-branded with Bajaj Finserv)]
+                            $message = "Sub.: Invitation for Online Conciliation
+Dear Sir/Ma’am,
+As per Section 62 of the Arbitration and Conciliation Act, 1996, you are invited to participate in an Online Conciliation Meeting regarding the dispute with {$value->claimant_first_name} {$value->claimant_last_name} concerning your CC / Loan Account No. {$value->loan_number}.
+The Conciliation will be conducted via the MediateWay Online Platform. All relevant details—including the date, time, meeting link, and name of the Conciliator—have been shared with you on your registered WhatsApp number and email address for your convenience.
 
-Please be informed that a RECALL NOTICE/ DEMAND NOTICE dated 24-06-2025 has been issued to you on behalf of our client, RBL Bank Ltd., concerning non-payment of dues against your Credit Card account.
+This is your final opportunity to settle the matter amicably before legal action is initiated. Your cooperation is requested to resolve the dispute in a fair and efficient manner.
+For any queries or support, you may reach us via the contact details mentioned below.
+We look forward to your participation.
 
-A copy of the said notice is being sent to you via this WhatsApp message for your urgent attention and necessary action.
-
-Kindly treat this matter with priority. This communication is issued without prejudice to any legal rights and remedies available to our client, all of which are expressly reserved.
-
-Regards,
-
-Anil  Kumar  Sharma  And  Associates
-
-Advocates And Legal Consultants
-LITIGATION | ADVISORY | COMPLIANCE
-(M) +91-9414295841/7852891583
-EMAIL: advocatejdr@gmail.com
-Services Provided by MediateWay ADR Centre LLP, Online Platform";
+MediateWay ADR Centre
+Contact Information: [ 9461165841/mediatewayinfo@gmail.com]";
 
                             $pdfUrl = url(str_replace('\\', '/', 'public/storage/' . $value->notice_copy));
 
@@ -108,7 +101,7 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                 ]);
 
                                 if ($response->successful()) {
-                                    ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
+                                    ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 2)
                                         ->update([
                                             'whatsapp_dispatch_datetime' => $now,
                                             'whatsapp_notice_status'     => 1,
@@ -116,7 +109,7 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                         Log::info("Conciliation Whatsapp sent successfully for FileCase ID: {$fileCaseId}");
                                 } else {
                                     Log::warning("Conciliation Whatsapp failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
-                                    ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
+                                    ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 2)
                                         ->update([
                                             'whatsapp_notice_status' => 2,
                                             'whatsapp_bounce_datetime' => $now,

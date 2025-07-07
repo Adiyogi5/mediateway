@@ -101,6 +101,19 @@ Route::get('/bulk_send_sms_preconciliation_notice', function () {
     Artisan::call('bulk:preconciliation-notice-sms-send');   
     return '<h1>update bulk send sms preconciliation notice</h1>';
 });
+// ############### Conciliation Notice Crone ##################
+Route::get('/bulk_send_email_conciliation_notice', function () {
+    Artisan::call('bulk:conciliation-notice-email-send');   
+    return '<h1>update bulk send email conciliation notice</h1>';
+});
+Route::get('/bulk_send_whatsapp_conciliation_notice', function () {
+    Artisan::call('bulk:conciliation-notice-whatsapp-send');   
+    return '<h1>update bulk send whatsapp conciliation notice</h1>';
+});
+Route::get('/bulk_send_sms_conciliation_notice', function () {
+    Artisan::call('bulk:conciliation-notice-sms-send');   
+    return '<h1>update bulk send sms conciliation notice</h1>';
+});
 //Create Live Meeting Rooms - Conciliator
 Route::get('/create_live_conciliator_meeting_room', function () {
     Artisan::call('bulk:create-live-conciliator-meeting-room');   
@@ -127,6 +140,19 @@ Route::get('/bulk_send_whatsapp_premediation_notice', function () {
 Route::get('/bulk_send_sms_premediation_notice', function () {
     Artisan::call('bulk:premediation-notice-sms-send');   
     return '<h1>update bulk send sms premediation notice</h1>';
+});
+// ################ Mediation Notice Crone #################
+Route::get('/bulk_send_email_mediation_notice', function () {
+    Artisan::call('bulk:mediation-notice-email-send');   
+    return '<h1>update bulk send email mediation notice</h1>';
+});
+Route::get('/bulk_send_whatsapp_mediation_notice', function () {
+    Artisan::call('bulk:mediation-notice-whatsapp-send');   
+    return '<h1>update bulk send whatsapp mediation notice</h1>';
+});
+Route::get('/bulk_send_sms_mediation_notice', function () {
+    Artisan::call('bulk:mediation-notice-sms-send');   
+    return '<h1>update bulk send sms mediation notice</h1>';
 });
 //Create Live Meeting Rooms - Mediator
 Route::get('/create_live_mediator_meeting_room', function () {

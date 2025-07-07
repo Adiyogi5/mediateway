@@ -39,9 +39,17 @@ class Kernel extends ConsoleKernel
         $schedule->command('bulk:preconciliation-notice-whatsapp-send')->everyMinute();
         $schedule->command('bulk:preconciliation-notice-sms-send')->everyMinute();
 
+        $schedule->command('bulk:conciliation-notice-email-send')->everyMinute();
+        $schedule->command('bulk:conciliation-notice-whatsapp-send')->everyMinute();
+        $schedule->command('bulk:conciliation-notice-sms-send')->everyMinute();
+
         // $schedule->command('bulk:premediation-notice-email-send')->everyMinute();
         // $schedule->command('bulk:premediation-notice-whatsapp-send')->everyMinute();
         // $schedule->command('bulk:premediation-notice-sms-send')->everyMinute();
+
+        // $schedule->command('bulk:mediation-notice-email-send')->everyMinute();
+        // $schedule->command('bulk:mediation-notice-whatsapp-send')->everyMinute();
+        // $schedule->command('bulk:mediation-notice-sms-send')->everyMinute();
     }
 
     /**

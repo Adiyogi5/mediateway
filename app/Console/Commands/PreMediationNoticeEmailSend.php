@@ -137,50 +137,6 @@ class PreMediationNoticeEmailSend extends Command
                         return $html;
                     };
 
-                    // $finalNotice = $replaceSummernotePlaceholders($noticeTemplate, $data);
-
-                    // // $headerPath = asset('storage/' . $organizationLetterHead_header['header_letterhead']);
-                    // $headerPath .= '
-                    //     <div style="text-align: right; margin-top: 0px;">
-                    //         <img src="' . asset('storage/' . $organizationLetterHead_header['header_letterhead']) . '" style="height: 80px;" alt="Signature">
-                    //     </div>
-                    // ';
-                    // // $footerPath = asset('storage/' . $organizationLetterHead_footer['footer_letterhead']);
-                    // $footerPath .= '
-                    //     <div style="text-align: right; margin-top: 0px;">
-                    //         <img src="' . asset('storage/' . $organizationLetterHead_footer['footer_letterhead']) . '" style="height: 80px;" alt="Signature">
-                    //     </div>
-                    // ';
-                    // // Append the signature image at the end of the content, aligned right
-                    // $finalNotice .= '
-                    //     <div style="text-align: right; margin-top: 0px;">
-                    //         <img src="' . asset('storage/' . $organizationManager_signature['signature_org']) . '" style="height: 80px;" alt="Signature">
-                    //     </div>
-                    // ';
-
-                    // // 1. Prepare your HTML with custom styles
-                    // $html = '
-                    //         <style>
-                    //             @page {
-                    //                 size: A4;
-                    //                 margin: 12mm;
-                    //             }
-                    //             body {
-                    //                 font-family: DejaVu Sans, sans-serif;
-                    //                 font-size: 12px;
-                    //                 line-height: 1.4;
-                    //             }
-                    //             p {
-                    //                 margin: 0px 0;
-                    //                 padding: 0;
-                    //             }
-                    //             img {
-                    //                 max-width: 100%;
-                    //                 height: auto;
-                    //             }
-                    //         </style>
-                    //         ' . $finalNotice;
-
                     $finalNotice = $replaceSummernotePlaceholders($noticeTemplate, $data);
 
                     // Use full URLs
@@ -257,7 +213,7 @@ class PreMediationNoticeEmailSend extends Command
                     // Save the PDF using your helper
                     $savedPath = Helper::loannosaveFile($uploadedFile, 'premediationnotices', $value->loan_number);
 
-                    $notice = MediationNotice::where('file_case_id', $value->id)->update([
+                    $notice = MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)->update([
                         'notice_copy'   => $savedPath,
                         // 'notice_date'   => now(),
                     ]);
@@ -294,9 +250,10 @@ class PreMediationNoticeEmailSend extends Command
                         if ($validator->fails()) {
 
                             Log::warning("Invalid email address: $email");
-                            MediationNotice::where('file_case_id', $value->id)
+                            MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)
                                 ->update([
                                     'email_status' => 2,
+                                    'email_bounce_datetime' => $now,
                                 ]);
 
                         } else {
@@ -332,7 +289,7 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                 });
 
                                 // Success
-                                MediationNotice::where('file_case_id', $value->id)
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)
                                     ->update([
                                         'notice_send_date' => $now,
                                         'email_status'     => 1,
@@ -340,9 +297,10 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                 Log::info("Mediation Email sent successfully for FileCase ID: {$fileCaseId}");
                             } catch (\Exception $e) {
                                 Log::warning("Mediation Email failed for FileCase ID: {$fileCaseId}. Response: " . $e->getMessage());
-                                MediationNotice::where('file_case_id', $value->id)
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)
                                     ->update([
                                         'email_status' => 2,
+                                        'email_bounce_datetime' => $now,
                                     ]);
                             }
                         }
@@ -380,9 +338,10 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
 
                         if ($validator->fails()) {
                             Log::warning("Invalid email address: $email");
-                            MediationNotice::where('file_case_id', $value->id)
+                            MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)
                                 ->update([
                                     'email_status' => 2,
+                                    'email_bounce_datetime' => $now,
                                 ]);
                         } else {
 
@@ -416,7 +375,7 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                         ]);
                                 });
 
-                                MediationNotice::where('file_case_id', $value->id)
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)
                                     ->update([
                                         'notice_send_date' => $now,
                                         'email_status'     => 1,
@@ -424,9 +383,10 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                 Log::info("Mediation Email sent successfully for FileCase ID: {$fileCaseId}");
                             } catch (\Exception $e) {
                                 Log::warning("Mediation Email failed for FileCase ID: {$fileCaseId}. Response: " . $e->getMessage());
-                                MediationNotice::where('file_case_id', $value->id)
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)
                                     ->update([
                                         'email_status' => 2,
+                                        'email_bounce_datetime' => $now,
                                     ]);
                             }
                         }

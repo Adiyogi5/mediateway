@@ -2,7 +2,10 @@
 namespace App\Console\Commands;
 
 use App\Helper\Helper;
-use App\Models\ConciliationNotice;
+use App\Models\AssignCase;
+use App\Models\MediationNotice;
+use App\Models\MediatorMeetingRoom;
+use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\NoticeTemplate;
 use App\Models\Organization;
@@ -15,14 +18,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
-class PreConciliationNoticeEmailSend extends Command
+class MediationNoticeEmailSend extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'bulk:preconciliation-notice-email-send';
+    protected $signature = 'bulk:mediation-notice-email-send';
 
     /**
      * The console command description.
@@ -49,28 +52,28 @@ class PreConciliationNoticeEmailSend extends Command
     public function handle()
     {
         // ########################################################
-        // Pre-Conciliation Notice Send Via Email - By Case Manager
+        // Mediation Notice Send Via Email - By Case Manager
         // ########################################################
         $caseData = FileCase::with('file_case_details','guarantors')
-            ->leftJoin('conciliation_notices', 'conciliation_notices.file_case_id', '=', 'file_cases.id')
-            ->where('conciliation_notices.conciliation_notice_type', 1)
+            ->leftJoin('mediation_notices', 'mediation_notices.file_case_id', '=', 'file_cases.id')
+            ->where('mediation_notices.mediation_notice_type', 2)
             ->where(function ($query) {
                 $query->whereNotNull('file_cases.respondent_email')
                     ->where('file_cases.respondent_email', '!=', '');
             })
             ->where(function ($query) {
-                $query->where('conciliation_notices.email_status', 0)
+                $query->where('mediation_notices.email_status', 0)
                     ->orWhere(function ($subQuery) {
-                        $subQuery->whereNull('conciliation_notices.notice_copy')
-                                ->where('conciliation_notices.email_status', 0);
+                        $subQuery->whereNull('mediation_notices.notice_copy')
+                                ->where('mediation_notices.email_status', 0);
                     });
             })
             ->select(
                 'file_cases.*',
-                'conciliation_notices.file_case_id',
-                'conciliation_notices.conciliation_notice_type',
-                'conciliation_notices.notice_copy',
-                'conciliation_notices.email_status'
+                'mediation_notices.file_case_id',
+                'mediation_notices.mediation_notice_type',
+                'mediation_notices.notice_copy',
+                'mediation_notices.email_status'
             )
             ->limit(3)
             ->get();
@@ -78,16 +81,37 @@ class PreConciliationNoticeEmailSend extends Command
         foreach ($caseData as $key => $value) {
             try {
 
-                $noticetemplateData = NoticeTemplate::where('id', 11)->first();
+                $noticetemplateData = NoticeTemplate::where('id', 12)->first();
                 $noticeTemplate     = $noticetemplateData->notice_format;
 
-                $organizationManager_signature = Organization::where('id', $value['organization_id'])->select('signature_org')->first();
-                $organizationLetterHead_header = Organization::where('id', $value['organization_id'])->select('header_letterhead')->first();
-                $organizationLetterHead_footer = Organization::where('id', $value['organization_id'])->select('footer_letterhead')->first();
-                $now                           = now();
+                $assigncaseData = AssignCase::where('case_id', $value->id)->first();
+
+                $mediatorName = '';
+                $caseManagerName = '';
+                $meettingData    = null;
+
+                if ($assigncaseData) {
+                    $mediatorName       = Drp::where('id', $assigncaseData->mediator_id)->value('name');
+                    $caseManagerName    = Drp::where('id', $assigncaseData->case_manager_id)->value('name');
+                    $caseManagerMobile  = Drp::where('id', $assigncaseData->case_manager_id)->value('mobile');
+                    $caseManagerEmail   = Drp::where('id', $assigncaseData->case_manager_id)->value('email');
+                    $caseManagerSpecialization   = Drp::where('id', $assigncaseData->case_manager_id)->value('specialization');
+
+                    $meettingData = MediatorMeetingRoom::where('mediator_id', $assigncaseData->mediator_id)
+                                        ->whereRaw('FIND_IN_SET(?, meeting_room_case_id)', [$value->id])
+                                        ->first();
+
+                    $room_id = optional($meettingData)->room_id;
+                    $meetingLink = $room_id
+                            ? route('front.guest.livemediatormeetingroom', ['room_id' => $room_id])
+                            : 'Meeting link not available';
+                }
+
+                $settingdata        = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
+                $now                = now();
                 
                 $fileCaseId = $value->id;
-                Log::info("Processing Conciliation Email for FileCase ID: {$fileCaseId}");
+                Log::info("Processing Mediation Notice For Meeting - Email for FileCase ID: {$fileCaseId}");
 
                 // #########################################################
                 // ################# Send Email using SMTP #################
@@ -114,8 +138,24 @@ class PreConciliationNoticeEmailSend extends Command
                         'LOAN NO'                                       => $value->loan_number ?? '',
                         'FORECLOSURE AMOUNT'                            => $value->file_case_details->foreclosure_amount ?? '',
 
-                        'DATE'                                          => '23-06-2025',
-                        // 'DATE'                                          => now()->format('d-m-Y'),
+                        'PRODUCT'                                       => $value->file_case_details->product ?? '',
+
+                        'MEDIATORS NAME'                                => $mediatorName ?? '',
+                        'CASEMANAGERS NAME'                             => $caseManagerName ?? '',
+                        'DESIGNATION'                                   => $caseManagerSpecialization ?? '',
+
+                        'CONTACT INFORMATION'                           => $settingdata['mediateway_letterhead'] . '/' . $settingdata['mediateway_letterhead'] ?? '',
+                        'MODE OF MEETING'                               => 'Digital Room Platform - Mediateway ADR Centre',
+                        'MEETING LINK'                                  => $meetingLink ?? '',
+
+                        'BRIEF OF CASE'                                 => $meetingLink ?? '',
+
+                        'ONLINE MEETING DATE'                           => $meettingData->date ?? '',
+                        'ONLINE MEETING TIME'                           => $meettingData->time ?? '',
+
+                        'MEDIATEWAY MOBILE NUMBER'                      => $settingdata['phone'],
+                        'MEDIATEWAY EMAIL'                              => $settingdata['email'],
+                        'DATE'                                          => now()->format('d-m-Y'),
                     ];
 
                     $replaceSummernotePlaceholders = function ($html, $replacements) {
@@ -138,56 +178,11 @@ class PreConciliationNoticeEmailSend extends Command
                         return $html;
                     };
 
-                    // $finalNotice = $replaceSummernotePlaceholders($noticeTemplate, $data);
-
-                    // // $headerPath = asset('storage/' . $organizationLetterHead_header['header_letterhead']);
-                    // $headerPath .= '
-                    //     <div style="text-align: right; margin-top: 0px;">
-                    //         <img src="' . asset('storage/' . $organizationLetterHead_header['header_letterhead']) . '" style="height: 80px;" alt="Signature">
-                    //     </div>
-                    // ';
-                    // // $footerPath = asset('storage/' . $organizationLetterHead_footer['footer_letterhead']);
-                    // $footerPath .= '
-                    //     <div style="text-align: right; margin-top: 0px;">
-                    //         <img src="' . asset('storage/' . $organizationLetterHead_footer['footer_letterhead']) . '" style="height: 80px;" alt="Signature">
-                    //     </div>
-                    // ';
-                    // // Append the signature image at the end of the content, aligned right
-                    // $finalNotice .= '
-                    //     <div style="text-align: right; margin-top: 0px;">
-                    //         <img src="' . asset('storage/' . $organizationManager_signature['signature_org']) . '" style="height: 80px;" alt="Signature">
-                    //     </div>
-                    // ';
-
-                    // // 1. Prepare your HTML with custom styles
-                    // $html = '
-                    //         <style>
-                    //             @page {
-                    //                 size: A4;
-                    //                 margin: 12mm;
-                    //             }
-                    //             body {
-                    //                 font-family: DejaVu Sans, sans-serif;
-                    //                 font-size: 12px;
-                    //                 line-height: 1.4;
-                    //             }
-                    //             p {
-                    //                 margin: 0px 0;
-                    //                 padding: 0;
-                    //             }
-                    //             img {
-                    //                 max-width: 100%;
-                    //                 height: auto;
-                    //             }
-                    //         </style>
-                    //         ' . $finalNotice;
-
                     $finalNotice = $replaceSummernotePlaceholders($noticeTemplate, $data);
 
                     // Use full URLs
-                    $headerImg    = url('storage/' . $organizationLetterHead_header['header_letterhead']);
-                    $footerImg    = url('storage/' . $organizationLetterHead_footer['footer_letterhead']);
-                    $signatureImg = url('storage/' . $organizationManager_signature['signature_org']);
+                    $headerImg    = url('storage/' . $settingdata['mediateway_letterhead']);
+                    $signatureImg = url('storage/' . $settingdata['mediateway_signature']);
 
                     // Append signature at the end of the notice
                     $finalNotice .= '
@@ -231,12 +226,6 @@ class PreConciliationNoticeEmailSend extends Command
                     ' . $finalNotice . '
 
                     </body>
-
-                    <!-- Define actual footer -->
-                    <htmlpagefooter name="myFooter">
-                        <img src="' . $footerImg . '" alt="Footer Image" />
-                    </htmlpagefooter>
-
                     </html>';
 
                     // 2. Generate PDF with A4 paper size
@@ -256,14 +245,14 @@ class PreConciliationNoticeEmailSend extends Command
                     );
 
                     // Save the PDF using your helper
-                    $savedPath = Helper::loannosaveFile($uploadedFile, 'preconciliationnotices', $value->loan_number);
+                    $savedPath = Helper::loannosaveFile($uploadedFile, 'mediationnotices', $value->loan_number);
 
-                    $notice = ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)->update([
+                    $notice = MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 2)->update([
                         'notice_copy'   => $savedPath,
                         // 'notice_date'   => now(),
                     ]);
 
-                    //Send Email with Notice for Pre Conciliation Notice
+                    //Send Email with Notice for Pre Mediation Notice
                     $data = Setting::where('setting_type', '3')->get()->pluck('filed_value', 'setting_name')->toArray();
 
                     Config::set("mail.mailers.smtp", [
@@ -295,7 +284,7 @@ class PreConciliationNoticeEmailSend extends Command
                         if ($validator->fails()) {
 
                             Log::warning("Invalid email address: $email");
-                            ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
+                            MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 2)
                                 ->update([
                                     'email_status' => 2,
                                     'email_bounce_datetime' => $now,
@@ -303,25 +292,31 @@ class PreConciliationNoticeEmailSend extends Command
 
                         } else {
 
-                            $subject     = "Subject: Service of Legal Notice--- {$value->loan_number} (Co-branded with Bajaj Finserv)";
+                            $subject     = "Urgent: Invitation for Online Mediation Meeting – [Loan Account No. {$value->loan_number}]";
                             $description = "Dear {$value->respondent_first_name} {$value->respondent_last_name},
 
-Please find attached a RECALL NOTICE/ DEMAND NOTICE  addressed to you on behalf of our client, RBL Bank Ltd.
+We are writing to formally invite you to participate in an Online Mediation Meeting under Clause 6 of the Mediation Bill, 2021, regarding the dispute between you and {$value->claimant_first_name} {$value->claimant_last_name} related to your CC / Loan Account No. {$value->loan_number}.
+Case Details:
+• Case Reference Number: {$value->case_number}
+• Date: {$meettingData->date}
+• Time: {$meettingData->time}
+• Mode: Online via Digital Room Platform - Mediateway ADR Centre
+• Meeting Link: {$meetingLink}
+• Mediator(s): {$mediatorName}
 
-You are requested to peruse the same carefully and take appropriate steps as advised therein.
+You have availed a financial facility from {$value->respondent_first_name} {$value->respondent_last_name} under the {$value->file_case_details->product} loan agreement, but as per the records, you have defaulted on your payment obligations. The outstanding amount as of today is Rs. {$value->file_case_details->foreclosure_amount}, which includes overdue charges and penalties.
 
-This email and the attached legal notice are being sent without prejudice to our client’s rights and remedies available in law, all of which are expressly reserved.
+Despite this, {$value->respondent_first_name} {$value->respondent_last_name} is providing you with this final opportunity to resolve the matter amicably before initiating legal action in a competent court.
 
-Attachment: Legal Notice.pdf
-Regards,
+We encourage your active participation in this mediation meeting to reach a mutually agreeable and fair resolution.
 
-Anil  Kumar  Sharma  And  Associates
+If you have any questions or require assistance, please contact your Case Manager, Mr. {$caseManagerName}, at {$caseManagerMobile}/{$caseManagerEmail}.
 
-Advocates And Legal Consultants
-LITIGATION | ADVISORY | COMPLIANCE
-(M) +91-9414295841/7852891583
-EMAIL: advocatejdr@gmail.com
-Services Provided by MediateWay ADR Centre LLP, Online Platform";
+We look forward to your cooperation.
+
+Yours sincerely,
+MediateWay ADR Centre
+Contact Information: [{$settingdata['phone']}/{$settingdata['email']}]";
 
                             try {
                                 Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($savedPath, $subject, $email) {
@@ -334,15 +329,15 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                 });
 
                                 // Success
-                                ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 2)
                                     ->update([
                                         'notice_send_date' => $now,
                                         'email_status'     => 1,
                                     ]);
-                                Log::info("Conciliation Email sent successfully for FileCase ID: {$fileCaseId}");
+                                Log::info("Mediation Email sent successfully for FileCase ID: {$fileCaseId}");
                             } catch (\Exception $e) {
-                                Log::warning("Conciliation Email failed for FileCase ID: {$fileCaseId}. Response: " . $e->getMessage());
-                                ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
+                                Log::warning("Mediation Email failed for FileCase ID: {$fileCaseId}. Response: " . $e->getMessage());
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 2)
                                     ->update([
                                         'email_status' => 2,
                                         'email_bounce_datetime' => $now,
@@ -383,32 +378,38 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
 
                         if ($validator->fails()) {
                             Log::warning("Invalid email address: $email");
-                            ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
+                            MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 2)
                                 ->update([
                                     'email_status' => 2,
                                     'email_bounce_datetime' => $now,
                                 ]);
                         } else {
 
-                            $subject     = "Subject: Service of Legal Notice--- {$value->loan_number} (Co-branded with Bajaj Finserv)";
+                            $subject     = "Urgent: Invitation for Online Mediation Meeting – [Loan Account No. {$value->loan_number}]";
                             $description = "Dear {$value->respondent_first_name} {$value->respondent_last_name},
 
-Please find attached a RECALL NOTICE/ DEMAND NOTICE  addressed to you on behalf of our client, RBL Bank Ltd.
+We are writing to formally invite you to participate in an Online Mediation Meeting under Clause 6 of the Mediation Bill, 2021, regarding the dispute between you and {$value->claimant_first_name} {$value->claimant_last_name} related to your CC / Loan Account No. {$value->loan_number}.
+Case Details:
+• Case Reference Number: {$value->case_number}
+• Date: {$meettingData->date}
+• Time: {$meettingData->time}
+• Mode: Online via Digital Room Platform - Mediateway ADR Centre
+• Meeting Link: {$meetingLink}
+• Mediator(s): {$mediatorName}
 
-You are requested to peruse the same carefully and take appropriate steps as advised therein.
+You have availed a financial facility from {$value->respondent_first_name} {$value->respondent_last_name} under the {$value->file_case_details->product} loan agreement, but as per the records, you have defaulted on your payment obligations. The outstanding amount as of today is Rs. {$value->file_case_details->foreclosure_amount}, which includes overdue charges and penalties.
 
-This email and the attached legal notice are being sent without prejudice to our client’s rights and remedies available in law, all of which are expressly reserved.
+Despite this, {$value->respondent_first_name} {$value->respondent_last_name} is providing you with this final opportunity to resolve the matter amicably before initiating legal action in a competent court.
 
-Attachment: Legal Notice.pdf
-Regards,
+We encourage your active participation in this mediation meeting to reach a mutually agreeable and fair resolution.
 
-Anil  Kumar  Sharma  And  Associates
+If you have any questions or require assistance, please contact your Case Manager, Mr. {$caseManagerName}, at {$caseManagerMobile}/{$caseManagerEmail}.
 
-Advocates And Legal Consultants
-LITIGATION | ADVISORY | COMPLIANCE
-(M) +91-9414295841/7852891583
-EMAIL: advocatejdr@gmail.com
-Services Provided by MediateWay ADR Centre LLP, Online Platform";
+We look forward to your cooperation.
+
+Yours sincerely,
+MediateWay ADR Centre
+Contact Information: [{$settingdata['phone']}/{$settingdata['email']}]";
 
                             try {
                                 Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($value, $subject, $email) {
@@ -420,15 +421,15 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                                         ]);
                                 });
 
-                                ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 2)
                                     ->update([
                                         'notice_send_date' => $now,
                                         'email_status'     => 1,
                                     ]);
-                                Log::info("Conciliation Email sent successfully for FileCase ID: {$fileCaseId}");
+                                Log::info("Mediation Email sent successfully for FileCase ID: {$fileCaseId}");
                             } catch (\Exception $e) {
-                                Log::warning("Conciliation Email failed for FileCase ID: {$fileCaseId}. Response: " . $e->getMessage());
-                                ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
+                                Log::warning("Mediation Email failed for FileCase ID: {$fileCaseId}. Response: " . $e->getMessage());
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 2)
                                     ->update([
                                         'email_status' => 2,
                                         'email_bounce_datetime' => $now,
@@ -440,7 +441,7 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
 
             } catch (\Throwable $th) {
                 // Log the error and update the email status
-                Log::error("Error sending Conciliation email for record ID {$value->id}: " . $th->getMessage());
+                Log::error("Error sending Mediation email for record ID {$value->id}: " . $th->getMessage());
                 // $value->update(['email_status' => 2]);
             }
         }
