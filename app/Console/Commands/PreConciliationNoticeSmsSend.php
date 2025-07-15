@@ -60,7 +60,7 @@ class PreConciliationNoticeSmsSend extends Command
                 'conciliation_notices.notice_copy',
                 'conciliation_notices.email_status',
             )
-            ->limit(9)
+            ->limit(4)
             ->get();
 
         foreach ($caseData as $key => $value) {
@@ -77,17 +77,15 @@ class PreConciliationNoticeSmsSend extends Command
                     
                         // $mobile     = '91' . preg_replace('/\D/', '', trim($value->respondent_mobile));
                         $mobile     = preg_replace('/\D/', '', trim($value->respondent_mobile));
-                        $smsmessage = "SUB: Recall/Demand Notice – Credit Card No. {$value->loan_number} (Co-branded with Bajaj Finserv)
-DearSir/Maam,
-Rs {$value->file_case_details->foreclosure_amount} is overdue on your RBL Bajaj Finserv Credit Card. Despite reminders, payment is still pending. Non-payment may lead to CIBIL reporting, legal action under BNS, and recovery steps including informing your employer. A copy of the notice has also been sent to your registered WhatsApp & Email ID for your urgent attention. Ignore if already paid.
-Anil Kumar Sharma, Advocate On Behalf of RBL BANK LTD.
-Team MediateWay.";
+
+                        $smsmessage = "Subject: Loan Recall /Demand Notice - Account No. {$value->loan_number} Overdue of Rs. {$value->file_case_details->foreclosure_amount} on your RBL Bank Ltd. Loan Account. Visit branch within 7 days for payment. Ignore if already paid. Anil Kumar Sharma, Advocate Services provided by MediateWay.
+";
                       
                         try {
                             $response = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
                                 "sender"      => "MDTWAY",
                                 "peId"        => "1001292642501782120",
-                                "teId"        => "1007501649871179908",
+                                "teId"        => "1007583803626279168",
                                 "message"     => $smsmessage,
                                 "smsReciever" => [["reciever" => $mobile]],
                             ]);

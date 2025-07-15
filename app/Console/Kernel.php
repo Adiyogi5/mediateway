@@ -28,12 +28,31 @@ class Kernel extends ConsoleKernel
 
         // $schedule->command('bulk:send-1-notice')->everyTenMinutes();
         // $schedule->command('bulk:send-1b-notice')->everyTenMinutes();
-        // $schedule->command('bulk:send-2b-notice')->everyTenMinutes();
-        // $schedule->command('bulk:send-3a-notice')->everyTenMinutes();
-        // $schedule->command('bulk:send-3b-notice')->everyTenMinutes();
-        // $schedule->command('bulk:send-3c-notice')->everyTenMinutes();
-        // $schedule->command('bulk:send-4a-notice')->everyTenMinutes();
-        // $schedule->command('bulk:send-5a-notice')->everyTenMinutes();
+
+        $schedule->command('bulk:send-email-2b-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-whatsapp-2b-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-sms-2b-notice')->everyTenMinutes();
+
+        $schedule->command('bulk:send-email-3a-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-whatsapp-3a-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-sms-3a-notice')->everyTenMinutes();
+
+        $schedule->command('bulk:send-email-3b-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-whatsapp-3b-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-sms-3b-notice')->everyTenMinutes();
+        
+        $schedule->command('bulk:send-email-3c-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-whatsapp-3c-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-sms-3c-notice')->everyTenMinutes();
+
+        $schedule->command('bulk:send-email-4a-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-whatsapp-4a-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-sms-4a-notice')->everyTenMinutes();
+
+        $schedule->command('bulk:send-email-5a-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-whatsapp-5a-notice')->everyTenMinutes();
+        $schedule->command('bulk:send-sms-5a-notice')->everyTenMinutes();
+
 
         $schedule->command('bulk:preconciliation-notice-email-send')->everyMinute();
         $schedule->command('bulk:preconciliation-notice-whatsapp-send')->everyMinute();
@@ -43,6 +62,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('bulk:conciliation-notice-whatsapp-send')->everyMinute();
         $schedule->command('bulk:conciliation-notice-sms-send')->everyMinute();
 
+        
         // $schedule->command('bulk:premediation-notice-email-send')->everyMinute();
         // $schedule->command('bulk:premediation-notice-whatsapp-send')->everyMinute();
         // $schedule->command('bulk:premediation-notice-sms-send')->everyMinute();

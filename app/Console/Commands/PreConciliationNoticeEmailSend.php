@@ -72,7 +72,7 @@ class PreConciliationNoticeEmailSend extends Command
                 'conciliation_notices.notice_copy',
                 'conciliation_notices.email_status'
             )
-            ->limit(3)
+            ->limit(4)
             ->get();
        
         foreach ($caseData as $key => $value) {
@@ -109,10 +109,15 @@ class PreConciliationNoticeEmailSend extends Command
 
                         'CLAIM SIGNATORY/AUTHORISED OFFICER NAME'       => $value->file_case_details->claim_signatory_authorised_officer_name ?? '',
                         'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'  => $value->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
+                        "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"  => $value->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
 
                         'CASE REGISTRATION NUMBER'                      => $value->case_number ?? '',
                         'LOAN NO'                                       => $value->loan_number ?? '',
                         'FORECLOSURE AMOUNT'                            => $value->file_case_details->foreclosure_amount ?? '',
+                        'FORECLOSURE DATE'                              => $value->file_case_details->foreclosure_amount_date ?? '',
+                        'AGREEMENT DATE'                                => $value->agreement_date ?? '',
+                        'FINANCE AMOUNT'                                => $value->file_case_details->finance_amount ?? '',
+                        'TENURE'                                        => $value->file_case_details->tenure ?? '',
 
                         'DATE'                                          => '23-06-2025',
                         // 'DATE'                                          => now()->format('d-m-Y'),
@@ -303,16 +308,17 @@ class PreConciliationNoticeEmailSend extends Command
 
                         } else {
 
-                            $subject     = "Subject: Service of Legal Notice--- {$value->loan_number} (Co-branded with Bajaj Finserv)";
+                            $subject     = "Subject: Service of Legal Notice--- {$value->loan_number}";
                             $description = "Dear {$value->respondent_first_name} {$value->respondent_last_name},
 
-Please find attached a RECALL NOTICE/ DEMAND NOTICE  addressed to you on behalf of our client, RBL Bank Ltd.
+Please find attached a Legal Notice addressed to you on behalf of our client, RBL Bank Ltd.
 
 You are requested to peruse the same carefully and take appropriate steps as advised therein.
 
-This email and the attached legal notice are being sent without prejudice to our client’s rights and remedies available in law, all of which are expressly reserved.
+Attachment: Legal Notice (PDF)
 
-Attachment: Legal Notice.pdf
+Kindly treat this matter with priority. This communication is issued without prejudice to any legal rights and remedies available to our client, all of which are expressly reserved.
+
 Regards,
 
 Anil  Kumar  Sharma  And  Associates
@@ -321,7 +327,7 @@ Advocates And Legal Consultants
 LITIGATION | ADVISORY | COMPLIANCE
 (M) +91-9414295841/7852891583
 EMAIL: advocatejdr@gmail.com
-Services Provided by MediateWay ADR Centre LLP, Online Platform";
+Email Services Provided by MediateWay ADR Centre LLP, Online Platform.";
 
                             try {
                                 Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($savedPath, $subject, $email) {

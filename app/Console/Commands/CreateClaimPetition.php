@@ -117,7 +117,7 @@ class CreateClaimPetition extends Command
 
                         'CLAIM SIGNATORY/AUTHORISED OFFICER NAME'                         => $value->file_case_details->claim_signatory_authorised_officer_name ?? '',
                         'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'                    => $value->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
-                        "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $casvalueeData->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
+                        "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $value->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
 
                         'ASSET DESCRIPTION'                                               => $value->file_case_details->asset_description ?? '',
                         'REGISTRATION NO'                                                 => $value->file_case_details->registration_no ?? '',

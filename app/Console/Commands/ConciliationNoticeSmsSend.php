@@ -60,7 +60,7 @@ class ConciliationNoticeSmsSend extends Command
                 'conciliation_notices.notice_copy',
                 'conciliation_notices.email_status',
             )
-            ->limit(3)
+            ->limit(4)
             ->get();
 
         foreach ($caseData as $key => $value) {
@@ -118,9 +118,7 @@ Contact Information: [ 9461165841/mediatewayinfo@gmail.com]";
                     }
 
             } catch (\Throwable $th) {
-                // Log the error and update the email status
                 Log::error("Error processing Conciliation SMS FileCase ID: {$value->id}. Exception: " . $th->getMessage());
-                // $value->update(['email_status' => 2]);
             }
         }
     }

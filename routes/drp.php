@@ -82,7 +82,8 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
 
     // ----------------------- Case Manager - Send Notices (Pre-Conciliation and Conciliation) Routes ---------------------------
     Route::controller(SendConciliationNoticeController::class)->group(function () {
-        Route::get('conciliationnoticelist', 'conciliationnoticelist')->name('conciliationprocess.conciliationnoticelist');
+        Route::get('conciliationnoticemasterlist', 'conciliationnoticemasterlist')->name('conciliationprocess.conciliationnoticemasterlist');
+        Route::get('conciliationnoticelist/{master_id}', 'conciliationnoticelist')->name('conciliationprocess.conciliationnoticelist');
 
         Route::get('/conciliation-process/case-list', 'caseList')->name('conciliationprocess.caseList');
         Route::post('/conciliation-process/send-notices', 'sendpreconciliationNotices')->name('conciliationprocess.sendpreconciliationNotices');
@@ -94,6 +95,8 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::get('/conciliation-notice/{id}', 'getConciliationNotice')->name('conciliationprocess.viewdetail');
 
         Route::get('export-conciliation-notices', 'exportconciliationNotice')->name('conciliation.export');
+
+       Route::delete('/drp/conciliation-notice-master/delete/{id}', 'deleteConciliationMaster')->name('conciliationprocess.conciliationnoticemaster.delete');
     });
 
 

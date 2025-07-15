@@ -34,7 +34,8 @@
     </thead>
     <tbody>
         @php
-            $statusText = ['Pending', 'Send', 'Failed'];
+            $emailstatusText  = ['Pending', 'Send', 'Invalid-Email'];
+            $mobilestatusText  = ['Pending', 'Send', 'Invalid-Mobile'];
         @endphp
         @foreach ($data as $row)
             <tr>
@@ -59,7 +60,7 @@
                 {{-- Email Section --}}
                 <td>Email</td>
                 <td>{{ $row->respondent_email }}</td>
-                <td>{{ $statusText[$row->email_status ?? 0] }}</td>
+                <td>{{ $emailstatusText[$row->email_status ?? 0] }}</td>
                 <td>
                     {{ $row->notice_send_date ? \Carbon\Carbon::parse($row->notice_send_date)->format('d M Y h:i A') : '' }}
                 </td>
@@ -69,7 +70,7 @@
                 {{-- WhatsApp Section --}}
                 <td>WhatsApp</td>
                 <td>{{ $row->respondent_mobile }}</td>
-                <td>{{ $statusText[$row->whatsapp_notice_status ?? 0] }}</td>
+                <td>{{ $mobilestatusText[$row->whatsapp_notice_status ?? 0] }}</td>
                 <td>
                     {{ $row->whatsapp_dispatch_datetime ? \Carbon\Carbon::parse($row->whatsapp_dispatch_datetime)->format('d M Y h:i A') : '' }}
                 </td>
@@ -79,7 +80,7 @@
                 {{-- SMS Section --}}
                 <td>SMS</td>
                 <td>{{ $row->respondent_mobile }}</td>
-                <td>{{ $statusText[$row->sms_status ?? 0] }}</td>
+                <td>{{ $mobilestatusText[$row->sms_status ?? 0] }}</td>
                 <td>
                     {{ $row->sms_send_date ? \Carbon\Carbon::parse($row->sms_send_date)->format('d M Y h:i A') : '' }}
                 </td>

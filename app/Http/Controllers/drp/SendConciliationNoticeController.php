@@ -14,7 +14,11 @@ use App\Models\ConciliationNotice;
 use App\Models\ConciliatorMeetingRoom;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use App\Exports\ConciliationNoticeExport;
+use App\Models\ConciliationNoticeMaster;
 use Maatwebsite\Excel\Facades\Excel;
 
 class SendConciliationNoticeController extends Controller
@@ -24,7 +28,89 @@ class SendConciliationNoticeController extends Controller
         $this->middleware('auth:drp');
     }
 
-    public function conciliationnoticelist(Request $request): View | JsonResponse | RedirectResponse
+    public function conciliationnoticemasterlist(Request $request): View | JsonResponse | RedirectResponse
+    {
+        $title = 'Conciliation Notice Master List';
+        $drp = auth('drp')->user();
+
+        // Ensure the user is authenticated and has drp_type == 1
+        if (!auth('drp')->check() || auth('drp')->user()->drp_type != 3) {
+            return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
+        }
+        
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+        }
+
+        if ($request->ajax()) {
+            $data = ConciliationNoticeMaster::select(
+                    'conciliation_notice_masters.id',
+                    'conciliation_notice_masters.conciliation_notice_type',
+                    'conciliation_notice_masters.file_name',
+                    'conciliation_notice_masters.date',
+                    'conciliation_notice_masters.case_manager_id',
+                    'organizations.name as organization_name',
+                )
+                ->leftJoin('organizations', 'organizations.id', '=', 'conciliation_notice_masters.uploaded_by')
+                ->where('conciliation_notice_masters.case_manager_id', $drp->id);
+
+            // Filters
+            if ($request->filled('conciliation_notice_type')) {
+                $data->where('conciliation_notice_masters.conciliation_notice_type', $request->conciliation_notice_type);
+            }
+            if ($request->filled('date_from') && $request->filled('date_to')) {
+                $data->whereBetween('conciliation_notice_masters.date', [
+                    $request->date_from . ' 00:00:00',
+                    $request->date_to . ' 23:59:59'
+                ]);
+            }
+       
+            return DataTables::of($data)
+                ->addColumn('email_count', function ($row) {
+                    $total = ConciliationNotice::where('conciliation_master_id', $row->id)->count();
+                    $sent = ConciliationNotice::where('conciliation_master_id', $row->id)
+                        ->where('email_status', 1)
+                        ->count();
+                    return '<span class="badge bg-secondary text-white py-1 px-2">' . $sent . '/' . $total . '</span>';
+                })
+                ->addColumn('whatsapp_count', function ($row) {
+                    $total = ConciliationNotice::where('conciliation_master_id', $row->id)->count();
+                    $sent = ConciliationNotice::where('conciliation_master_id', $row->id)
+                        ->where('whatsapp_notice_status', 1)
+                        ->count();
+                    return '<span class="badge bg-secondary text-white py-1 px-2">' . $sent . '/' . $total . '</span>';
+                })
+                ->addColumn('sms_count', function ($row) {
+                    $total = ConciliationNotice::where('conciliation_master_id', $row->id)->count();
+                    $sent = ConciliationNotice::where('conciliation_master_id', $row->id)
+                        ->where('sms_status', 1)
+                        ->count();
+                    return '<span class="badge bg-secondary text-white py-1 px-2">' . $sent . '/' . $total . '</span>';
+                })
+                ->editColumn('conciliation_notice_type', function ($row) {
+                    return $row->conciliation_notice_type == 1
+                        ? '<span class="badge bg-warning">Pre-Conciliation</span>'
+                        : '<span class="badge bg-secondary">Conciliation</span>';
+                })
+                ->editColumn('date', fn($row) => \Carbon\Carbon::parse($row->date)->format('d M, Y'))
+                ->addColumn('action', function ($row) {
+                    $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
+                    $btn .= '<a class="dropdown-item" href="' . route('drp.conciliationprocess.conciliationnoticelist', ['master_id' => $row->id]) . '">View Details</a>';
+                    $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
+                    return $btn;
+                })
+                ->orderColumn('date', function ($query, $order) {
+                    $query->orderBy('conciliation_notice_masters.date', $order);
+                })
+                ->rawColumns(['conciliation_notice_type', 'action', 'email_count', 'whatsapp_count', 'sms_count'])
+                ->make(true);
+        }
+
+        return view('drp.conciliationprocess.conciliationnoticemasterlist', compact('drp','title'));
+    }
+
+
+    public function conciliationnoticelist(Request $request, $master_id): View | JsonResponse | RedirectResponse
     {
         $title = 'Conciliation Notice List';
         $drp = auth('drp')->user();
@@ -56,6 +142,7 @@ class SendConciliationNoticeController extends Controller
                 )
                 ->join('file_cases', 'file_cases.id', '=', 'conciliation_notices.file_case_id')
                 ->join('assign_cases', 'assign_cases.case_id', '=', 'conciliation_notices.file_case_id')
+                ->where('conciliation_notices.conciliation_master_id', $master_id)
                 ->where('assign_cases.case_manager_id', $drp->id);
 
             // Filters
@@ -119,7 +206,7 @@ class SendConciliationNoticeController extends Controller
                 ->make(true);
         }
 
-        return view('drp.conciliationprocess.conciliationnoticelist', compact('drp','title'));
+        return view('drp.conciliationprocess.conciliationnoticelist', compact('drp', 'title', 'master_id'));
     }
 
 
@@ -197,7 +284,7 @@ class SendConciliationNoticeController extends Controller
         return response()->json(['data' => $cases]);
     }
 
-
+    
     public function sendpreconciliationNotices(Request $request)
     {
         $drp = auth('drp')->user();
@@ -205,27 +292,72 @@ class SendConciliationNoticeController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $caseIds = $request->input('file_case_ids');
-        $noticeDate = $request->input('send_notice_date');
+        $data = $request->json()->all(); 
+
+        $caseIds = $data['file_case_ids'] ?? [];
+        $noticeDate = $data['send_notice_date'] ?? null;
 
         if (empty($caseIds) || !is_array($caseIds)) {
             return response()->json(['error' => 'No case IDs received.'], 422);
         }
 
-        $notices = [];
-
-        foreach ($caseIds as $caseId) {
-            $notices[] = [
-                'file_case_id' => $caseId,
-                'conciliation_notice_type' => 1,
-                'notice_date' => $noticeDate,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ];
+        if (empty($noticeDate)) {
+            return response()->json(['error' => 'Notice date is required.'], 422);
         }
-        ConciliationNotice::insert($notices);
 
-        return response()->json(['message' => 'Notices created successfully.']);
+        $chunkSize = 2000;
+        $now = now();
+        $successCount = 0;
+
+        collect($caseIds)->chunk($chunkSize)->each(function ($caseIdChunk) use ($drp, $noticeDate, $now, &$successCount) {
+            $groupedCases = FileCase::whereIn('id', $caseIdChunk)
+                ->select('id', 'organization_id')
+                ->get()
+                ->groupBy('organization_id');
+
+            foreach ($groupedCases as $organizationId => $cases) {
+                DB::beginTransaction();
+                try {
+                    // ✅ 1. Create Master Record
+                    $master = new ConciliationNoticeMaster();
+                    $master->case_manager_id = $drp->id;
+                    $master->conciliation_notice_type = 1;
+                    $master->uploaded_by = $organizationId;
+                    $master->file_name = 'Pre-Conciliation-Notice-' . strtoupper($now->format('d-m-Y_h:ia'));
+                    $master->date = $now;
+                    $master->save();
+
+                    // ✅ 2. Prepare and Chunk Child Records
+                    $notices = $cases->map(function ($case) use ($master, $noticeDate, $now) {
+                        return [
+                            'conciliation_master_id' => $master->id,
+                            'file_case_id' => $case->id,
+                            'conciliation_notice_type' => 1,
+                            'notice_date' => $noticeDate,
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ];
+                    });
+
+                    $chunkSize = 2000;
+                    $notices->chunk($chunkSize)->each(function ($chunked) {
+                        ConciliationNotice::insert($chunked->toArray());
+                    });
+
+                    DB::commit();
+                    $successCount++;
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    Log::error("Error creating Pre-Conciliation notices for Org ID {$organizationId}: " . $e->getMessage());
+                    continue;
+                }
+            }
+        });
+
+        return response()->json([
+            'message' => 'Notices created successfully.',
+            'processed_batches' => $successCount
+        ]);
     }
 
 
@@ -243,6 +375,7 @@ class SendConciliationNoticeController extends Controller
                     'conciliation_notices.id',
                     'conciliation_notices.conciliation_notice_type',
                     'conciliation_notices.notice_copy',
+                    'conciliation_notices.notice_date',
                     'conciliation_notices.file_case_id',
                     'file_cases.case_type',
                     'file_cases.product_type',
@@ -254,7 +387,7 @@ class SendConciliationNoticeController extends Controller
                 )
                 ->join('file_cases', 'file_cases.id', '=', 'conciliation_notices.file_case_id')
                 ->join('assign_cases', 'assign_cases.case_id', '=', 'conciliation_notices.file_case_id')
-                ->whereDate('conciliation_notices.notice_date', '>=', Carbon::now()->subDays(7)->toDateString())
+                ->whereDate('conciliation_notices.notice_date', '<', Carbon::now()->subDays(7)->toDateString())
                 ->whereRaw("
                     NOT EXISTS (
                         SELECT 1 FROM conciliator_meeting_rooms
@@ -327,28 +460,35 @@ class SendConciliationNoticeController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $caseIds = $request->input('file_case_ids');
-        if (empty($caseIds) || !is_array($caseIds)) {
-            return response()->json(['error' => 'No case IDs provided.'], 422);
-        }
+        // ✅ Parse raw JSON input
+        $data = $request->json()->all();
 
-        $request->validate([
+        $caseIds = $data['file_case_ids'] ?? [];
+        $date = $data['date'] ?? null;
+        $time = $data['time'] ?? null;
+
+        // ✅ Validate input manually
+        $validator = Validator::make($data, [
             'file_case_ids' => 'required|array|min:1',
             'date' => 'required|date|after_or_equal:today',
-            'time' => ['required', function ($attribute, $value, $fail) use ($request) {
-                if ($request->date === now()->format('Y-m-d') && $value < now()->format('H:i')) {
+            'time' => ['required', function ($attribute, $value, $fail) use ($date) {
+                if ($date === Carbon::now()->format('Y-m-d') && $value < Carbon::now()->format('H:i')) {
                     $fail('The time must not be in the past.');
                 }
             }],
         ]);
 
-        // Step 1: Group case_ids by their conciliator_id
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // ✅ Step 1: Group cases by conciliator_id
         $assignments = AssignCase::whereIn('case_id', $caseIds)
             ->select('case_id', 'conciliator_id')
             ->get()
             ->groupBy('conciliator_id');
 
-        // Step 2: Get the last room number
+        // ✅ Step 2: Get last room number
         $room_id_prefix = 'ORG-CON-MEETING';
         $lastRoom = ConciliatorMeetingRoom::where('room_id', 'like', $room_id_prefix . '-%')
             ->orderBy('id', 'desc')->first();
@@ -359,7 +499,7 @@ class SendConciliationNoticeController extends Controller
 
         $meetingRooms = [];
 
-        // Step 3: Create a new room for each conciliator with their assigned cases
+        // ✅ Step 3: Create rooms
         foreach ($assignments as $conciliatorId => $cases) {
             $lastNumber++;
             $room_id = $room_id_prefix . '-' . str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
@@ -370,32 +510,65 @@ class SendConciliationNoticeController extends Controller
                 'room_id' => $room_id,
                 'meeting_room_case_id' => implode(',', $caseIdsForConciliator),
                 'conciliator_id' => $conciliatorId,
-                'date' => $request->date,
-                'time' => $request->time,
-                'status' => 0
+                'date' => $date,
+                'time' => $time,
+                'status' => 0,
             ];
         }
+
         ConciliatorMeetingRoom::insert($meetingRooms);
 
+        // ✅ Step 4: Create notices in chunks
+        $chunkSize = 2000;
 
-        //Send Conciliation Notice Data
-        $notices = [];
+        collect($caseIds)->chunk($chunkSize)->each(function ($caseIdChunk) use ($drp) {
+            $groupedCases = FileCase::whereIn('id', $caseIdChunk)
+                ->select('id', 'organization_id')
+                ->get()
+                ->groupBy('organization_id');
 
-        foreach ($caseIds as $caseId) {
-            $notices[] = [
-                'file_case_id' => $caseId,
-                'conciliation_notice_type' => 2,
-                'notice_date' => Carbon::now(),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ];
-        }
-        ConciliationNotice::insert($notices);
+            foreach ($groupedCases as $orgId => $cases) {
+                DB::beginTransaction();
+                try {
+                    $master = new ConciliationNoticeMaster();
+                    $master->case_manager_id = $drp->id;
+                    $master->conciliation_notice_type = 2;
+                    $master->uploaded_by = $orgId;
+                    $master->file_name = 'Conciliation-Notice-' . strtoupper(now()->format('d-m-Y_h:ia'));
+                    $master->date = now();
+                    $master->save();
 
-        return response()->json(['success' => true, 'message' => 'Conciliator Meeting rooms created successfully.']);
+                    $notices = $cases->map(function ($case) use ($master) {
+                        return [
+                            'conciliation_master_id' => $master->id,
+                            'file_case_id' => $case->id,
+                            'conciliation_notice_type' => 2,
+                            'notice_date' => now(),
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    });
+
+                    $notices->chunk(2000)->each(function ($chunked) {
+                        ConciliationNotice::insert($chunked->toArray());
+                    });
+
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    Log::error("Error processing org ID {$orgId}: " . $e->getMessage());
+                    continue;
+                }
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Conciliator Meeting rooms created successfully.'
+        ]);
     }
-
     
+    // ########## Get all ids for conciliation notice send ############
     public function getAllFilteredConciliationCaseIds(Request $request)
     {
         $drp = auth('drp')->user();
@@ -406,13 +579,13 @@ class SendConciliationNoticeController extends Controller
         $data = ConciliationNotice::select('file_cases.id as file_case_id')
             ->join('file_cases', 'file_cases.id', '=', 'conciliation_notices.file_case_id')
             ->join('assign_cases', 'assign_cases.case_id', '=', 'conciliation_notices.file_case_id')
-            ->whereDate('conciliation_notices.notice_date', '>=', Carbon::now()->subDays(7)->toDateString())
-            ->whereRaw("
-                NOT EXISTS (
-                    SELECT 1 FROM conciliator_meeting_rooms
-                    WHERE FIND_IN_SET(conciliation_notices.file_case_id, conciliator_meeting_rooms.meeting_room_case_id)
-                )
-            ")
+            ->whereDate('conciliation_notices.notice_date', '<', Carbon::now()->subDays(7)->toDateString())
+                ->whereRaw("
+                    NOT EXISTS (
+                        SELECT 1 FROM conciliator_meeting_rooms
+                        WHERE FIND_IN_SET(conciliation_notices.file_case_id, conciliator_meeting_rooms.meeting_room_case_id)
+                    )
+                ")
             ->where('conciliation_notices.conciliation_notice_type', 1)
             ->where('assign_cases.case_manager_id', $drp->id);
 
@@ -501,7 +674,30 @@ class SendConciliationNoticeController extends Controller
         $date = date('d-m-Y_h:i:sA');
         $filename = 'conciliation_notice_list_' . $date . '.xlsx';
 
-        return Excel::download(new ConciliationNoticeExport($request), $filename);
+        return Excel::download(new ConciliationNoticeExport($request, $request->master_id), $filename);
     }
+
+    
+    public function deleteConciliationMaster($id)
+    {
+        $drp = auth('drp')->user();
+        if (!$drp) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            ConciliationNotice::where('conciliation_master_id', $id)->delete();
+            ConciliationNoticeMaster::where('id', $id)->delete();
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Master record and related notices deleted successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Failed to delete.']);
+        }
+    }
+
 
 }

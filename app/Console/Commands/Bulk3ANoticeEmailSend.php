@@ -1,32 +1,27 @@
 <?php
 namespace App\Console\Commands;
 
-use App\Library\TextLocal;
 use App\Models\AssignCase;
-use App\Models\Country;
 use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\Notice;
 use App\Models\NoticeTemplate;
 use App\Models\Setting;
-use App\Models\SmsCount;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use Twilio\Rest\Client;
 
-class Bulk3ANoticeSend extends Command
+class Bulk3ANoticeEmailSend extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'bulk:send-3a-notice';
+    protected $signature = 'bulk:send-email-3a-notice';
 
     /**
      * The console command description.
@@ -55,6 +50,53 @@ class Bulk3ANoticeSend extends Command
         // ##################################################
         // Appointment Of Multiple Arbitrator - 3A - Notice Send
         // ##################################################
+        // $caseData = FileCase::with('file_case_details')
+        //     ->join(DB::raw("(
+        //         SELECT
+        //             id AS org_id,
+        //             name AS org_name,
+        //             IF(parent_id = 0, id, parent_id) AS effective_parent_id,
+        //             IF(parent_id = 0, name,
+        //                 (SELECT name FROM organizations AS parent_org WHERE parent_org.id = organizations.parent_id)
+        //             ) AS effective_parent_name
+        //         FROM organizations
+        //     ) AS org_with_parent"), 'org_with_parent.org_id', '=', 'file_cases.organization_id')
+        //     ->join('organization_lists', 'org_with_parent.effective_parent_name', '=', 'organization_lists.name')
+        //     ->join('organization_notice_timelines', 'organization_notice_timelines.organization_list_id', '=', 'organization_lists.id')
+        //     ->join('notices', 'notices.file_case_id', '=', 'file_cases.id')
+        //     ->whereHas('notices', function ($query) {
+        //         $query->where('notice_type', 1)
+        //             ->whereRaw('DATEDIFF(CURDATE(), DATE(CONVERT_TZ(notices.notice_date, "+00:00", "-06:00"))) >= organization_notice_timelines.notice_3a');
+        //     })
+        //     ->where(function ($query) {
+        //         $query->whereDoesntHave('notices', function ($q) {
+        //             $q->where('notice_type', 5);
+        //         })->orWhereHas('notices', function ($q) {
+        //             $q->where('notice_type', 5)
+        //                 ->where(function ($inner) {
+        //                     $inner->where('email_status', 0)
+        //                         ->orWhere('whatsapp_notice_status', 0)
+        //                         ->orWhere('sms_status', 0);
+        //                 });
+        //         });
+        //     })
+        //     ->whereIn('organization_notice_timelines.notice_3a', function ($query) {
+        //         $query->select('notice_3a')
+        //             ->from('organization_notice_timelines')
+        //             ->whereNull('deleted_at')
+        //             ->whereRaw('organization_notice_timelines.organization_list_id = organization_lists.id');
+        //     })
+        //     ->where('notices.notice_type', 5)
+        //     ->select(
+        //         'file_cases.*', 'notices.notice', 'notices.email_status', 'notices.whatsapp_notice_status', 'notices.sms_status',
+        //         'organization_notice_timelines.notice_3a',
+        //         DB::raw('org_with_parent.effective_parent_id as parent_id'),
+        //         DB::raw('org_with_parent.effective_parent_name as parent_name')
+        //     )
+        //     ->distinct()
+        //     ->limit(20)
+        //     ->get();
+
         $caseData = FileCase::with('file_case_details')
             ->join(DB::raw("(
                 SELECT
@@ -68,38 +110,49 @@ class Bulk3ANoticeSend extends Command
             ) AS org_with_parent"), 'org_with_parent.org_id', '=', 'file_cases.organization_id')
             ->join('organization_lists', 'org_with_parent.effective_parent_name', '=', 'organization_lists.name')
             ->join('organization_notice_timelines', 'organization_notice_timelines.organization_list_id', '=', 'organization_lists.id')
-            ->join('notices', 'notices.file_case_id', '=', 'file_cases.id')
+
+        // Join only the 5-type notices to get their details (leftJoin to include cases even when 5-type doesn't exist)
+            ->leftJoin('notices as notice5', function ($join) {
+                $join->on('notice5.file_case_id', '=', 'file_cases.id')
+                    ->where('notice5.notice_type', 5);
+            })
+
+        // Do NOT join type 1 notices directly; use whereHas for filter
             ->whereHas('notices', function ($query) {
                 $query->where('notice_type', 1)
                     ->whereRaw('DATEDIFF(CURDATE(), DATE(CONVERT_TZ(notices.notice_date, "+00:00", "-06:00"))) >= organization_notice_timelines.notice_3a');
             })
+
+        // Apply condition for type 5 notices (existing and statuses are not fully sent OR doesn't exist)
             ->where(function ($query) {
                 $query->whereDoesntHave('notices', function ($q) {
                     $q->where('notice_type', 5);
                 })->orWhereHas('notices', function ($q) {
                     $q->where('notice_type', 5)
                         ->where(function ($inner) {
-                            $inner->where('email_status', 0)
-                                ->orWhere('whatsapp_notice_status', 0)
-                                ->orWhere('sms_status', 0);
+                            $inner->where('email_status', 0);
                         });
                 });
             })
+
+        // Filter by timeline values
             ->whereIn('organization_notice_timelines.notice_3a', function ($query) {
                 $query->select('notice_3a')
                     ->from('organization_notice_timelines')
                     ->whereNull('deleted_at')
                     ->whereRaw('organization_notice_timelines.organization_list_id = organization_lists.id');
             })
-            ->where('notices.notice_type', 5)
+
             ->select(
-                'file_cases.*', 'notices.notice', 'notices.email_status', 'notices.whatsapp_notice_status', 'notices.sms_status',
+                'file_cases.*',
+                'notice5.notice as notice5',
+                'notice5.email_status as email_status5',
                 'organization_notice_timelines.notice_3a',
                 DB::raw('org_with_parent.effective_parent_id as parent_id'),
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(20)
+            ->limit(5)
             ->get();
 
         foreach ($caseData as $key => $value) {
@@ -121,6 +174,9 @@ class Bulk3ANoticeSend extends Command
 
                     $now = now();
 
+                    $fileCaseId = $value->id;
+                    Log::info("Processing Stage 3A Notice - Email for FileCase ID: {$fileCaseId}");
+
                     //##### This pdf creation in case assign controller - in updateassigndetail function for appoint 3 arbitrators
                     //############################################################################################################
                     // // Define your replacement values
@@ -134,8 +190,9 @@ class Bulk3ANoticeSend extends Command
                     //     'BANK/ORGANISATION/CLAIMANT NAME'                                 => ($value->claimant_first_name ?? '') . '&nbsp;' . ($value->claimant_last_name ?? ''),
                     //     'BANK/ORGANISATION/CLAIMANT REGISTERED ADDRESS'                   => ($value->claimant_address1 ?? '') . '&nbsp;' . ($value->claimant_address2 ?? ''),
 
+                    //     'CLAIM SIGNATORY/AUTHORISED OFFICER NAME'                         => $value->file_case_details->claim_signatory_authorised_officer_name ?? '',
                     //     'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'                    => $value->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
-                    //     "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $casvalueeData->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
+                    //     "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $value->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
 
                     //     'LOAN NO'                                                         => $value->loan_number ?? '',
                     //     'AGREEMENT DATE'                                                  => $value->agreement_date ?? '',
@@ -252,7 +309,7 @@ class Bulk3ANoticeSend extends Command
                     //         ]);
                     // }
 
-                    if ($value->email_status == 0) {
+                    if ($value->email_status5 == 0) {
                         //Send Notice for Assign Arbitrator
                         $data = Setting::where('setting_type', '3')->get()->pluck('filed_value', 'setting_name')->toArray();
 
@@ -273,17 +330,15 @@ class Bulk3ANoticeSend extends Command
                         ]);
 
                         if (! empty($value->respondent_email)) {
-                            $email = filter_var($value->respondent_email, FILTER_SANITIZE_EMAIL);
+                            $email = strtolower(filter_var(trim($value->respondent_email), FILTER_SANITIZE_EMAIL));
 
                             $validator = Validator::make(['email' => $email], [
                                 'email' => 'required|email:rfc,dns',
                             ]);
 
                             if ($validator->fails()) {
-
                                 Log::warning("Invalid email address: $email");
                                 $noticeData->update(['email_status' => 2]);
-
                             } else {
 
                                 $subject     = $noticetemplateData->subject;
@@ -293,125 +348,32 @@ class Bulk3ANoticeSend extends Command
                                     Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($value, $subject, $email) {
                                         $message->to($email)
                                             ->subject($subject)
-                                            ->attach(public_path(str_replace('\\', '/', $value->notice)), [
+                                        // ->attach(public_path(str_replace('\\', '/', $value->notice)), [
+                                        //     'mime' => 'application/pdf',
+                                        // ]);
+                                            ->attach(public_path(str_replace('\\', '/', 'storage/' . $value->notice5)), [
                                                 'mime' => 'application/pdf',
                                             ]);
                                     });
-                                        Notice::where('file_case_id', $value->id)->where('notice_type', 5)
-                                            ->update([
-                                                'notice_send_date' => $now,
-                                                'email_status' => 1,
-                                            ]);
-
-                                        } catch (\Exception $e) {
-                                            Log::error("Failed to send email to: $email. Error: " . $e->getMessage());
-                                            Notice::where('file_case_id', $value->id)->where('notice_type', 5)
-                                            ->update([
-                                                'email_status' => 2,
-                                            ]);
-                                        }
-                            }
-                        }
-                    }
-
-
-                    // ###################################################################
-                    // ############ Send Whatsapp Message using Mobile Number ############
-                    if ($value->whatsapp_notice_status == 0 && !empty($value->notice)) {
-                        try {
-                            $mobileNumber = $value->respondent_mobile;
-
-                            $message = "Subject: Proposal for Appointment of Arbitrator
-Dear {$value->respondent_first_name} {$value->respondent_last_name},
-A case has been filed by {$value->claimant_first_name} {$value->claimant_last_name} under Loan A/c No. {$value->loan_number} at MediateWay ADR Centre for online arbitration.
-We propose the following as Sole Arbitrator:
-    1. {$arbitratorsData->name}
-    2. {$arbitratorsData->name}
-    3. {$arbitratorsData->name}
-Please confirm your consent to any one within 7 days. No response will be treated as no objection. Arbitration will be held online. Objections to the venue must also be raised within 7 days.
-MediateWay ADR Centre";
-
-                            $pdfUrl = public_path(str_replace('\\', '/', 'storage/' . $value->notice));
-
-                            if (! empty($value->respondent_mobile)) {
-                                $response = Http::get(config('services.whatsapp.url'), [
-                                    'apikey' => config('services.whatsapp.api_key'),
-                                    'mobile' => $mobileNumber,
-                                    'msg'    => $message,
-                                    'pdf'    => $pdfUrl,
-                                ]);
-
-                                if ($response->successful()) {
                                     Notice::where('file_case_id', $value->id)->where('notice_type', 5)
                                         ->update([
-                                            'whatsapp_dispatch_datetime' => $now,
-                                            'whatsapp_notice_status' => 1,
+                                            'notice_send_date' => $now,
+                                            'email_status'     => 1,
                                         ]);
-                                    return true;
-                                } else {
-                                    Log::error('WhatsApp API error: ' . $response->body());
+                                    Log::info("Stage 3A Email sent successfully for FileCase ID: {$fileCaseId}");
+                                } catch (\Exception $e) {
+                                    Log::error("Notice 3A Failed to send email to: $email. FileCase ID: {$fileCaseId}. Error: " . $e->getMessage());
                                     Notice::where('file_case_id', $value->id)->where('notice_type', 5)
                                         ->update([
-                                            'whatsapp_notice_status' => 2,
+                                            'email_status' => 2,
                                         ]);
-                                    return false;
                                 }
-                            }
-                        } catch (\Throwable $th) {
-                            Log::error('WhatsApp sending failed: ' . $th->getMessage());
-                            // $notice->update(['whatsapp_notice_status' => 2]);
-                        }
-                    }
-
-
-                    // ###############################################################
-                    // ################ Send SMS using Mobile Number #################
-                    if ($value->sms_status == 0){
-                        if (! empty($value->respondent_mobile)) {
-                            $approved_sms_count = SmsCount::where('count', '>', 0)->first();
-
-                            if (! $approved_sms_count) {
-                                return response()->json([
-                                    'status'  => false,
-                                    'message' => "Message can't be sent because your SMS quota is empty.",
-                                ], 422);
-                            }
-
-                            $mobile = preg_replace('/\D/', '', trim($value->respondent_mobile));
-                            $mobilemessage =  "Hello User Your Login Verification Code is $otp. Thanks AYT";
-                            try {
-                                $smsResponse = TextLocal::sendSms(['+91' . $mobile], $mobilemessage);
-
-                                if ($smsResponse) {
-                                    $approved_sms_count->decrement('count');
-
-                                    return response()->json([
-                                        'status'  => true,
-                                        'message' => 'Message sent successfully to your mobile!',
-                                        'data'    => '',
-                                    ]);
-                                } else {
-                                    return response()->json([
-                                        'status'  => false,
-                                        'message' => "Message couldn't be sent, please retry later.",
-                                        'data'    => '',
-                                    ], 422);
-                                }
-                            } catch (\Exception $e) {
-                                Log::error('SMS send failed: ' . $e->getMessage());
-
-                                return response()->json([
-                                    'status'  => false,
-                                    'message' => 'An error occurred while sending SMS.',
-                                ], 500);
                             }
                         }
                     }
                 }
             } catch (\Throwable $th) {
-                // Log the error and update the email status
-                Log::error("Error sending email for record ID {$value->id}: " . $th->getMessage());
-                // $noticeData->update(['email_status' => 2]);
+                Log::error("Error sending Notice 3A email for record ID {$value->id}: " . $th->getMessage());
             }
         }
     }

@@ -295,14 +295,16 @@ class CaseAssignController extends Controller
                         'BANK/ORGANISATION/CLAIMANT NAME'                                 => ($value->claimant_first_name ?? '') . '&nbsp;' . ($value->claimant_last_name ?? ''),
                         'BANK/ORGANISATION/CLAIMANT REGISTERED ADDRESS'                   => ($value->claimant_address1 ?? '') . '&nbsp;' . ($value->claimant_address2 ?? ''),
 
+                        'CLAIM SIGNATORY/AUTHORISED OFFICER NAME'                         => $value->file_case_details->claim_signatory_authorised_officer_name ?? '',
                         'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'                    => $value->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
-                        "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $casvalueeData->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
+                        "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $value->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
 
                         'LOAN NO'                                                         => $value->loan_number ?? '',
                         'AGREEMENT DATE'                                                  => $value->agreement_date ?? '',
                         'FINANCE AMOUNT'                                                  => $value->file_case_details->finance_amount ?? '',
                         'TENURE'                                                          => $value->file_case_details->tenure ?? '',
                         'FORECLOSURE AMOUNT'                                              => $value->file_case_details->foreclosure_amount ?? '',
+                        'FORECLOSURE DATE'                                                => $value->file_case_details->foreclosure_amount_date ?? '',
 
                         "FIRST ARBITRATOR'S NAME"                                         => $firstArb->name ?? '',
                         "FIRST ARBITRATOR'S SPECIALIZATION"                               => $firstArb->specialization ?? '',

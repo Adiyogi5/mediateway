@@ -12,6 +12,7 @@ class ConciliationNotice extends Model
     use HasFactory, SoftDeletes, CustomScopes;
 
     protected $fillable = [
+        'conciliation_master_id',
         'file_case_id',
         'conciliation_notice_type',
         'notice_copy',

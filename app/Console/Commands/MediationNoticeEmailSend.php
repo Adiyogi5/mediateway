@@ -75,7 +75,7 @@ class MediationNoticeEmailSend extends Command
                 'mediation_notices.notice_copy',
                 'mediation_notices.email_status'
             )
-            ->limit(3)
+            ->limit(4)
             ->get();
        
         foreach ($caseData as $key => $value) {
@@ -133,10 +133,15 @@ class MediationNoticeEmailSend extends Command
 
                         'CLAIM SIGNATORY/AUTHORISED OFFICER NAME'       => $value->file_case_details->claim_signatory_authorised_officer_name ?? '',
                         'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'  => $value->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
+                        "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"  => $value->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
 
                         'CASE REGISTRATION NUMBER'                      => $value->case_number ?? '',
                         'LOAN NO'                                       => $value->loan_number ?? '',
                         'FORECLOSURE AMOUNT'                            => $value->file_case_details->foreclosure_amount ?? '',
+                        'FORECLOSURE DATE'                              => $value->file_case_details->foreclosure_amount_date ?? '',
+                        'AGREEMENT DATE'                                => $value->agreement_date ?? '',
+                        'FINANCE AMOUNT'                                => $value->file_case_details->finance_amount ?? '',
+                        'TENURE'                                        => $value->file_case_details->tenure ?? '',
 
                         'PRODUCT'                                       => $value->file_case_details->product ?? '',
 

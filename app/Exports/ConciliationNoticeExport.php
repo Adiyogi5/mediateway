@@ -9,10 +9,12 @@ use Maatwebsite\Excel\Concerns\FromView;
 class ConciliationNoticeExport implements FromView
 {
     protected $request;
+    protected $master_id;
 
-    public function __construct($request)
+    public function __construct($request, $master_id)
     {
         $this->request = $request;
+        $this->master_id = $master_id;
     }
 
     public function view(): View
@@ -34,6 +36,7 @@ class ConciliationNoticeExport implements FromView
             )
             ->join('file_cases', 'file_cases.id', '=', 'conciliation_notices.file_case_id')
             ->join('assign_cases', 'assign_cases.case_id', '=', 'conciliation_notices.file_case_id')
+            ->where('conciliation_notices.conciliation_master_id', $this->master_id)
             ->where('assign_cases.case_manager_id', $drp->id);
 
         // Apply filters
