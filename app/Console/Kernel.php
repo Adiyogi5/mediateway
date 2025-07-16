@@ -54,6 +54,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('bulk:send-sms-5a-notice')->everyTenMinutes();
 
 
+        $schedule->command('bulk:preconciliation-notice-pdf-save')->everyMinute();
         $schedule->command('bulk:preconciliation-notice-email-send')->everyMinute();
         $schedule->command('bulk:preconciliation-notice-whatsapp-send')->everyMinute();
         $schedule->command('bulk:preconciliation-notice-sms-send')->everyMinute();

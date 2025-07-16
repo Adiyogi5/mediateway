@@ -25,10 +25,10 @@ class FileCaseImport implements ToModel, WithHeadingRow
         'respondent_address_type', 'respondent_address1', 'respondent_state', 'respondent_city', 'respondent_pincode',
         'amount_in_dispute', 'case_type', 'brief_of_case', 'product_type', 'product', 'asset_description', 'sanction_letter_date',
         'rate_of_interest', 'registration_no', 'chassis_no', 'engin_no', 'finance_amount', 'finance_amount_in_words', 'emi_amt',
-        'emi_due_date', 'tenure', 'foreclosure_amount_date', 'foreclosure_amount', 'foreclosure_amount_in_words', 
-        'claim_signatory_authorised_officer_name', 'claim_signatory_authorised_officer_father_name', 
-        'claim_signatory_authorised_officer_designation', 'claim_signatory_authorised_officer_mobile_no', 
-        'claim_signatory_authorised_officer_mail_id', 'receiver_name', 'receiver_designation', 'auction_date', 
+        'emi_due_date', 'tenure', 'foreclosure_amount_date', 'foreclosure_amount', 'foreclosure_amount_in_words',
+        'claim_signatory_authorised_officer_name', 'claim_signatory_authorised_officer_father_name',
+        'claim_signatory_authorised_officer_designation', 'claim_signatory_authorised_officer_mobile_no',
+        'claim_signatory_authorised_officer_mail_id', 'receiver_name', 'receiver_designation', 'auction_date',
         'auction_amount', 'auction_amount_in_words',
         'guarantor_1_name', 'guarantor_1_mobile_no', 'guarantor_1_email_id', 'guarantor_1_father_name', 'guarantor_1_address',
         'guarantor_2_name', 'guarantor_2_mobile_no', 'guarantor_2_email_id', 'guarantor_2_father_name', 'guarantor_2_address',
@@ -223,10 +223,119 @@ class FileCaseImport implements ToModel, WithHeadingRow
                 ]);
 
             } else {
-                Log::info('Loan No Already Exist.');
+
+                // UPDATE existing FileCase
+               $fileCaseData = [
+                    'agreement_date'          => ! empty($row['agreement_date']) ? Carbon::parse($row['agreement_date'])->format('Y-m-d') : null,
+                    'loan_application_date'   => ! empty($row['loan_application_date']) ? Carbon::parse($row['loan_application_date'])->format('Y-m-d') : null,
+                    'arbitration_date'        => ! empty($row['arbitration_date']) ? Carbon::parse($row['arbitration_date'])->format('Y-m-d') : null,
+                    'arbitration_clause_no'   => $row['arbitration_clause_no'] ?? null,
+                    'claimant_middle_name'    => $row['claimant_middle_name'] ?? null,
+                    'claimant_last_name'      => $row['claimant_last_name'] ?? null,
+                    'respondent_first_name'   => $row['respondent_first_name'] ?? null,
+                    'respondent_middle_name'  => $row['respondent_middle_name'] ?? null,
+                    'respondent_last_name'    => $row['respondent_last_name'] ?? null,
+                    'respondent_mobile'       => $row['respondent_mobile'] ?? null,
+                    'respondent_email'        => $row['respondent_email'] ?? null,
+                    'respondent_address_type' => $row['respondent_address_type'] ?? null,
+                    'respondent_address1'     => $row['respondent_address1'] ?? null,
+                    'respondent_state_id'     => $respondentState,
+                    'respondent_city_id'      => $respondentCity,
+                    'respondent_pincode'      => $row['respondent_pincode'] ?? null,
+                    'amount_in_dispute'       => $row['amount_in_dispute'] ?? null,
+                    'case_type'               => $row['case_type'] ?? null,
+                    'product_type'            => $row['product_type'] ?? null,
+                    'brief_of_case'           => $row['brief_of_case'] ?? null,
+                ];
+                $existingCase->update($this->keepExistingIfBlank($fileCaseData, $existingCase));
+
+                // UPDATE or CREATE FileCaseDetail
+                $detailData = [
+                        'product'                                        => $row['product'] ?? null,
+                        'asset_description'                              => $row['asset_description'] ?? null,
+                        'sanction_letter_date'                           => ! empty($row['sanction_letter_date']) ? Carbon::parse($row['sanction_letter_date'])->format('Y-m-d') : null,
+                        'rate_of_interest'                               => $row['rate_of_interest'] ?? null,
+                        'registration_no'                                => $row['registration_no'] ?? null,
+                        'chassis_no'                                     => $row['chassis_no'] ?? null,
+                        'engin_no'                                       => $row['engin_no'] ?? null,
+                        'finance_amount'                                 => $row['finance_amount'] ?? null,
+                        'finance_amount_in_words'                        => $row['finance_amount_in_words'] ?? null,
+                        'emi_amt'                                        => $row['emi_amt'] ?? null,
+                        'emi_due_date'                                   => $row['emi_due_date'] ?? null,
+                        'tenure'                                         => $row['tenure'] ?? null,
+                        'foreclosure_amount_date'                        => ! empty($row['foreclosure_amount_date']) ? Carbon::parse($row['foreclosure_amount_date'])->format('Y-m-d') : null,
+                        'foreclosure_amount'                             => $row['foreclosure_amount'] ?? null,
+                        'foreclosure_amount_in_words'                    => $row['foreclosure_amount_in_words'] ?? null,
+                        'claim_signatory_authorised_officer_name'        => $row['claim_signatory_authorised_officer_name'] ?? null,
+                        'claim_signatory_authorised_officer_father_name' => $row['claim_signatory_authorised_officer_father_name'] ?? null,
+                        'claim_signatory_authorised_officer_designation' => $row['claim_signatory_authorised_officer_designation'] ?? null,
+                        'claim_signatory_authorised_officer_mobile_no'   => $row['claim_signatory_authorised_officer_mobile_no'] ?? null,
+                        'claim_signatory_authorised_officer_mail_id'     => $row['claim_signatory_authorised_officer_mail_id'] ?? null,
+                        'receiver_name'                                  => $row['receiver_name'] ?? null,
+                        'receiver_designation'                           => $row['receiver_designation'] ?? null,
+                        'auction_date'                                   => ! empty($row['auction_date']) ? Carbon::parse($row['auction_date'])->format('Y-m-d') : null,
+                        'auction_amount'                                 => $row['auction_amount'] ?? null,
+                        'auction_amount_in_words'                        => $row['auction_amount_in_words'] ?? null,
+                ];
+
+                $detail = FileCaseDetail::firstOrNew(['file_case_id' => $existingCase->id]);
+                $detail->fill($this->keepExistingIfBlank($detailData, $detail))->save();
+
+                // UPDATE or CREATE Guarantor
+                $guarantorData = [
+                        'guarantor_1_name'        => $row['guarantor_1_name'] ?? null,
+                        'guarantor_1_mobile_no'   => $row['guarantor_1_mobile_no'] ?? null,
+                        'guarantor_1_email_id'    => $row['guarantor_1_email_id'] ?? null,
+                        'guarantor_1_father_name' => $row['guarantor_1_father_name'] ?? null,
+                        'guarantor_1_address'     => $row['guarantor_1_address'] ?? null,
+                        'guarantor_2_name'        => $row['guarantor_2_name'] ?? null,
+                        'guarantor_2_mobile_no'   => $row['guarantor_2_mobile_no'] ?? null,
+                        'guarantor_2_email_id'    => $row['guarantor_2_email_id'] ?? null,
+                        'guarantor_2_father_name' => $row['guarantor_2_father_name'] ?? null,
+                        'guarantor_2_address'     => $row['guarantor_2_address'] ?? null,
+                        'guarantor_3_name'        => $row['guarantor_3_name'] ?? null,
+                        'guarantor_3_mobile_no'   => $row['guarantor_3_mobile_no'] ?? null,
+                        'guarantor_3_email_id'    => $row['guarantor_3_email_id'] ?? null,
+                        'guarantor_3_father_name' => $row['guarantor_3_father_name'] ?? null,
+                        'guarantor_3_address'     => $row['guarantor_3_address'] ?? null,
+                        'guarantor_4_name'        => $row['guarantor_4_name'] ?? null,
+                        'guarantor_4_mobile_no'   => $row['guarantor_4_mobile_no'] ?? null,
+                        'guarantor_4_email_id'    => $row['guarantor_4_email_id'] ?? null,
+                        'guarantor_4_father_name' => $row['guarantor_4_father_name'] ?? null,
+                        'guarantor_4_address'     => $row['guarantor_4_address'] ?? null,
+                        'guarantor_5_name'        => $row['guarantor_5_name'] ?? null,
+                        'guarantor_5_mobile_no'   => $row['guarantor_5_mobile_no'] ?? null,
+                        'guarantor_5_email_id'    => $row['guarantor_5_email_id'] ?? null,
+                        'guarantor_5_father_name' => $row['guarantor_5_father_name'] ?? null,
+                        'guarantor_5_address'     => $row['guarantor_5_address'] ?? null,
+                        'guarantor_6_name'        => $row['guarantor_6_name'] ?? null,
+                        'guarantor_6_mobile_no'   => $row['guarantor_6_mobile_no'] ?? null,
+                        'guarantor_6_email_id'    => $row['guarantor_6_email_id'] ?? null,
+                        'guarantor_6_father_name' => $row['guarantor_6_father_name'] ?? null,
+                        'guarantor_6_address'     => $row['guarantor_6_address'] ?? null,
+                        'guarantor_7_name'        => $row['guarantor_7_name'] ?? null,
+                        'guarantor_7_mobile_no'   => $row['guarantor_7_mobile_no'] ?? null,
+                        'guarantor_7_email_id'    => $row['guarantor_7_email_id'] ?? null,
+                        'guarantor_7_father_name' => $row['guarantor_7_father_name'] ?? null,
+                        'guarantor_7_address'     => $row['guarantor_7_address'] ?? null,
+                   ];
+
+                    $guarantor = Guarantor::firstOrNew(['file_case_id' => $existingCase->id]);
+                    $guarantor->fill($this->keepExistingIfBlank($guarantorData, $guarantor))->save();
+
+                Log::info("Loan number {$row['loan_number']} updated.");
             }
         }
         return null;
+    }
+
+    private function keepExistingIfBlank($newData, $existingModel)
+    {
+        $finalData = [];
+        foreach ($newData as $key => $value) {
+            $finalData[$key] = ($value !== null && $value !== '') ? $value : $existingModel->{$key};
+        }
+        return $finalData;
     }
 
 }

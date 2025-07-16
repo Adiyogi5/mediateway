@@ -158,6 +158,10 @@ Route::get('/bulk_send_sms_5a_notice', function () {
 
 // ################################################################
 // ############### Pre-Conciliation Notice Crone ##################
+Route::get('/bulk_save_pdf_preconciliation_notice', function () {
+    Artisan::call('bulk:preconciliation-notice-pdf-save');   
+    return '<h1>update bulk save pdf preconciliation notice</h1>';
+});
 Route::get('/bulk_send_email_preconciliation_notice', function () {
     Artisan::call('bulk:preconciliation-notice-email-send');   
     return '<h1>update bulk send email preconciliation notice</h1>';

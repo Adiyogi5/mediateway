@@ -87,7 +87,7 @@
             </div>
 
             
-            <!-- Modal for Send Notices -->
+            <!-- Modal for Send Pre-Conciliation Notices -->
             <div class="modal fade" id="preconciliationProcessModal" tabindex="-1">
                 <div class="modal-dialog modal-xl">
                     <form id="sendconciliationNoticeForm">
@@ -186,7 +186,7 @@
 
 
 
-            <!-- Modal for Sending Conciliation Notices -->
+            <!-- Modal for Send Conciliation Notices -->
             <div class="modal fade" id="conciliationNoticeModal" tabindex="-1">
                 <div class="modal-dialog modal-xl">
                     <form id="sendConciliationNoticeForm">
@@ -271,14 +271,34 @@
 
                             <div class="modal-footer">
                                 <span class="text-danger" id="error-msg2"></span>
-                                <button type="submit" class="btn btn-sm btn-primary px-3">Send Conciliation
-                                    Notice</button>
+                                <!-- Send button -->
+                                <button type="submit" class="btn btn-sm btn-success px-3"
+                                    name="action" value="send">Send Conciliation Notice</button>
+
+                                <!-- Decline button -->
+                                <button type="submit" class="btn btn-sm btn-danger px-3"
+                                    name="action" value="decline">Decline Conciliation Notice</button>
                                 <button type="button" class="btn btn-sm btn-secondary px-3"
                                     data-bs-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </form>
                 </div>
+            </div>
+
+            <div id="loader-overlay" style="
+                display: none;
+                position: fixed;
+                z-index: 1055;
+                top: 0; left: 0;
+                width: 100%; height: 100%;
+                background-color: rgba(255,255,255,0.7);
+                text-align: center;
+            ">
+                <div class="spinner-border text-primary mt-5" role="status">
+                    <span class="visually-hidden">Processing...</span>
+                </div>
+                <p class="mt-2 fw-bold">Processing... Please wait</p>
             </div>
 
         </div>
@@ -456,11 +476,13 @@
             }
 
             let noticeDate = $('#send_notice_date').val();
-
             if (!noticeDate) {
                 $('#error-msg').text('Please select a notice date.');
                 return;
             }
+
+            // ✅ Show loader
+            $('#loader-overlay').fadeIn();
 
             $.ajax({
                 url: "{{ route('drp.conciliationprocess.sendpreconciliationNotices') }}",
@@ -483,11 +505,14 @@
                     let msg = 'Failed to send notices.';
                     if (xhr.responseJSON?.error) msg = xhr.responseJSON.error;
                     $('#error-msg').text(msg);
+                },
+                complete: function() {
+                    // ✅ Hide loader always (whether success or error)
+                    $('#loader-overlay').fadeOut();
                 }
             });
         });
     </script>
-
 
 
     {{-- ############################################################################ --}}
@@ -562,6 +587,9 @@
             $('#sendConciliationNoticeForm').on('submit', function(e) {
                 e.preventDefault();
 
+                let clickedButton = $(document.activeElement); // find the button that triggered submit
+                let action = clickedButton.val(); // 'send' or 'decline'
+
                 let filters = {
                     product_type: $('#filter2_product_type').val(),
                     case_number: $('#filter2_case_number').val(),
@@ -571,7 +599,6 @@
                     date_to: $('#filter2_date_to').val()
                 };
 
-                // Fetch ALL filtered case_ids via AJAX
                 $.ajax({
                     url: "{{ route('drp.conciliationprocess.allcaseids') }}",
                     method: "GET",
@@ -580,27 +607,30 @@
                         let allCaseIds = response.case_ids;
 
                         if (allCaseIds.length === 0) {
-                            $('#error-msg2').text(
-                                'No eligible cases to send Conciliation notice.');
+                            $('#error-msg2').text('No eligible cases to send Conciliation notice.');
                             return;
                         }
+                        
+                        // ✅ Show loader
+                        $('#loader-overlay').fadeIn();
 
-                        // Send to conciliation notice API
+                        // Send final request with 'action'
                         $.ajax({
                             url: "{{ route('drp.conciliationprocess.sendconciliationNotices') }}",
                             method: "POST",
-                            contentType: "application/json", // critical!
+                            contentType: "application/json",
                             data: JSON.stringify({
                                 file_case_ids: allCaseIds,
                                 date: $('#meeting_date').val(),
-                                time: $('#meeting_time').val()
+                                time: $('#meeting_time').val(),
+                                action: action // either 'send' or 'decline'
                             }),
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
                             success: function(response) {
                                 $('#error-msg2').text('');
-                                toastr.success('Conciliation Meeting Rooms Created Successfully!');
+                                toastr.success(response.message);
                                 $('#conciliationNoticeModal').modal('hide');
                                 conciliationListTable.ajax.reload();
                             },
@@ -611,6 +641,10 @@
                                     message = Object.values(errors).flat().join('<br>');
                                 }
                                 $('#error-msg2').html(message);
+                            },
+                            complete: function() {
+                                // ✅ Hide loader always (whether success or error)
+                                $('#loader-overlay').fadeOut();
                             }
                         });
                     },
@@ -621,6 +655,7 @@
             });
         });
     </script>
+
 
     {{-- ################# DELETE ##################  --}}
     <script>

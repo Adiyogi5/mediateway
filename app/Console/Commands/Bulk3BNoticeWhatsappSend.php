@@ -1,22 +1,14 @@
 <?php
 namespace App\Console\Commands;
 
-use App\Helper\Helper;
 use App\Models\AssignCase;
 use App\Models\Drp;
 use App\Models\FileCase;
-use App\Models\FileCaseDetail;
 use App\Models\Notice;
-use App\Models\NoticeTemplate;
-use App\Models\Setting;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 
 class Bulk3BNoticeWhatsappSend extends Command
 {

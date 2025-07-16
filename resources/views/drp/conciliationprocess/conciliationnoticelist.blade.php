@@ -282,7 +282,7 @@
     <script>
         $(document).on('click', '.view-details-btn', function() {
             const id = $(this).data('id');
-            const pdfIconUrl = "{{ asset('public/assets/img/pdf.png') }}";
+            const pdfIconUrl = "{{ asset('assets/img/pdf.png') }}";
             $.ajax({
                 url: `{{ url('drp/conciliation-notice') }}/${id}`,
                 method: 'GET',

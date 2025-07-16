@@ -1,22 +1,14 @@
 <?php
 namespace App\Console\Commands;
 
-use App\Helper\Helper;
 use App\Models\AssignCase;
 use App\Models\Drp;
 use App\Models\FileCase;
-use App\Models\FileCaseDetail;
 use App\Models\Notice;
-use App\Models\NoticeTemplate;
-use App\Models\Setting;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 
 class Bulk3BNoticeSmsSend extends Command
 {
@@ -54,53 +46,7 @@ class Bulk3BNoticeSmsSend extends Command
         // ##################################################
         // Final Appointment Of Arbitrator - 3B - Notice Send
         // ##################################################
-        // $caseData = FileCase::with('file_case_details')
-        //     ->join(DB::raw("(
-        //         SELECT
-        //             id AS org_id,
-        //             name AS org_name,
-        //             IF(parent_id = 0, id, parent_id) AS effective_parent_id,
-        //             IF(parent_id = 0, name,
-        //                 (SELECT name FROM organizations AS parent_org WHERE parent_org.id = organizations.parent_id)
-        //             ) AS effective_parent_name
-        //         FROM organizations
-        //     ) AS org_with_parent"), 'org_with_parent.org_id', '=', 'file_cases.organization_id')
-        //     ->join('organization_lists', 'org_with_parent.effective_parent_name', '=', 'organization_lists.name')
-        //     ->join('organization_notice_timelines', 'organization_notice_timelines.organization_list_id', '=', 'organization_lists.id')
-        //     ->join('notices', 'notices.file_case_id', '=', 'file_cases.id')
-        //     ->whereHas('notices', function ($query) {
-        //         $query->where('notice_type', 1)
-        //             ->whereRaw('DATEDIFF(CURDATE(), DATE(CONVERT_TZ(notices.notice_date, "+00:00", "-06:00"))) >= organization_notice_timelines.notice_3b');
-        //     })
-        //     ->where(function ($query) {
-        //         $query->whereDoesntHave('notices', function ($q) {
-        //             $q->where('notice_type', 6);
-        //         })->orWhereHas('notices', function ($q) {
-        //             $q->where('notice_type', 6)
-        //                 ->where(function ($inner) {
-        //                     $inner->where('email_status', 0)
-        //                         ->orWhere('whatsapp_notice_status', 0)
-        //                         ->orWhere('sms_status', 0);
-        //                 });
-        //         });
-        //     })
-        //     ->whereIn('organization_notice_timelines.notice_3b', function ($query) {
-        //         $query->select('notice_3b')
-        //             ->from('organization_notice_timelines')
-        //             ->whereNull('deleted_at')
-        //             ->whereRaw('organization_notice_timelines.organization_list_id = organization_lists.id');
-        //     })
-        //     ->where('notices.notice_type', 6)
-        //     ->select(
-        //         'file_cases.*', 'notices.notice', 'notices.email_status', 'notices.whatsapp_notice_status', 'notices.sms_status',
-        //         'organization_notice_timelines.notice_3b',
-        //         DB::raw('org_with_parent.effective_parent_id as parent_id'),
-        //         DB::raw('org_with_parent.effective_parent_name as parent_name')
-        //     )
-        //     ->distinct()
-        //     ->limit(20)
-        //     ->get();
-
+        
         $caseData = FileCase::with('file_case_details')
             ->join(DB::raw("(
                 SELECT
