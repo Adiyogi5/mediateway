@@ -97,7 +97,7 @@
                                                                     @if($notice->notice)
                                                                         <a class="text-decoration-none text-secondary" style="font-size: 13px"
                                                                            href="{{ asset('storage/' . $notice->notice) }}" target="_blank">
-                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
+                                                                            <img src="{{ asset('assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
                                                                         </a>
                                                                     @else
                                                                         <span class="text-muted" style="font-size: 13px">No PDF Available</span>
@@ -151,7 +151,7 @@
                                                                     @if($ordersheet->notice)
                                                                         <a class="text-decoration-none text-secondary" style="font-size: 13px"
                                                                            href="{{ asset('storage/' . $ordersheet->notice) }}" target="_blank">
-                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
+                                                                            <img src="{{ asset('assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
                                                                         </a>
                                                                     @else
                                                                         <span class="text-muted" style="font-size: 13px">No PDF Available</span>

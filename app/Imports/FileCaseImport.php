@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class FileCaseImport implements ToModel, WithHeadingRow
 {
@@ -82,153 +83,24 @@ class FileCaseImport implements ToModel, WithHeadingRow
         $respondentCity  = City::whereRaw('LOWER(name) = ?', [strtolower(trim($row['respondent_city'] ?? ''))])->value('id');
 
         if (! empty($row['loan_number'])) {
-            $existingCase = FileCase::where('loan_number', $row['loan_number'])->first();
+            $loanNumber = $row['loan_number'];
+            $caseType   = $row['case_type'];
 
-            if (! $existingCase) {
-                // Step 1: Get organization code
-                $orgCode = OrganizationList::where('name', $organizationData->name)->value('code');
+            // 1. Try to find a record with exact loan_number, case_type, AND organization_id
+            $existingCase = FileCase::where('loan_number', $loanNumber)
+                ->where('case_type', $caseType)
+                ->where('organization_id', $this->organizationId)
+                ->first();
 
-                // Step 2: Get today's date
-                $datePart = Carbon::now()->format('d-m-Y');
-
-                // Step 3: Count existing cases today for that org
-                $prefix = $orgCode . '-' . $datePart;
-
-                $lastCase = FileCase::where('case_number', 'like', "$orgCode-%-$datePart")
-                    ->orderBy('case_number', 'desc')
-                    ->first();
-
-                // Step 4: Extract last increment and increase
-                if ($lastCase && preg_match('/' . $orgCode . '-(\d+)-' . $datePart . '/', $lastCase->case_number, $matches)) {
-                    $increment = (int) $matches[1] + 1;
-                } else {
-                    $increment = 1;
-                }
-
-                // Step 5: Build full case number
-                $caseNumber = sprintf('%s-%06d-%s', $orgCode, $increment, $datePart);
-
-                // Create FileCase
-                $fileCase = new FileCase([
-                    'user_type'               => 2,
-                    'organization_id'         => $this->organizationId,
-                    'case_number'             => $caseNumber ?? null,
-                    'loan_number'             => $row['loan_number'] ?? null,
-                    'agreement_date'          => ! empty($row['agreement_date']) ? Carbon::parse($row['agreement_date'])->format('Y-m-d') : null,
-                    'loan_application_date'   => ! empty($row['loan_application_date']) ? Carbon::parse($row['loan_application_date'])->format('Y-m-d') : null,
-                    'arbitration_date'        => ! empty($row['arbitration_date']) ? Carbon::parse($row['arbitration_date'])->format('Y-m-d') : null,
-                    'arbitration_clause_no'   => $row['arbitration_clause_no'] ?? null,
-                    'claimant_first_name'     => $organizationData->name ?? null,
-                    'claimant_middle_name'    => $row['claimant_middle_name'] ?? null,
-                    'claimant_last_name'      => $row['claimant_last_name'] ?? null,
-                    'claimant_mobile'         => $organizationData->mobile ?? null,
-                    'claimant_email'          => $organizationData->email ?? null,
-                    'claimant_address_type'   => 2 ?? null,
-                    'claimant_address1'       => $organizationData->address1 ?? null,
-                    'claimant_state_id'       => $claimantState,
-                    'claimant_city_id'        => $claimantCity,
-                    'claimant_pincode'        => $organizationData->pincode ?? null,
-                    'respondent_first_name'   => $row['respondent_first_name'] ?? null,
-                    'respondent_middle_name'  => $row['respondent_middle_name'] ?? null,
-                    'respondent_last_name'    => $row['respondent_last_name'] ?? null,
-                    'respondent_mobile'       => $row['respondent_mobile'] ?? null,
-                    'respondent_email'        => $row['respondent_email'] ?? null,
-                    'respondent_address_type' => $row['respondent_address_type'] ?? null,
-                    'respondent_address1'     => $row['respondent_address1'] ?? null,
-                    'respondent_state_id'     => $respondentState,
-                    'respondent_city_id'      => $respondentCity,
-                    'respondent_pincode'      => $row['respondent_pincode'] ?? null,
-                    'amount_in_dispute'       => $row['amount_in_dispute'] ?? null,
-                    'case_type'               => $row['case_type'] ?? null,
-                    'product_type'            => $row['product_type'] ?? null,
-                    'brief_of_case'           => $row['brief_of_case'] ?? null,
-                ]);
-
-                $fileCase->save();
-
-                // FileCaseDetail
-                FileCaseDetail::create([
-                    'file_case_id'                                   => $fileCase->id,
-                    'product'                                        => $row['product'] ?? null,
-                    'asset_description'                              => $row['asset_description'] ?? null,
-                    'sanction_letter_date'                           => ! empty($row['sanction_letter_date']) ? Carbon::parse($row['sanction_letter_date'])->format('Y-m-d') : null,
-                    'rate_of_interest'                               => $row['rate_of_interest'] ?? null,
-                    'registration_no'                                => $row['registration_no'] ?? null,
-                    'chassis_no'                                     => $row['chassis_no'] ?? null,
-                    'engin_no'                                       => $row['engin_no'] ?? null,
-                    'finance_amount'                                 => $row['finance_amount'] ?? null,
-                    'finance_amount_in_words'                        => $row['finance_amount_in_words'] ?? null,
-                    'emi_amt'                                        => $row['emi_amt'] ?? null,
-                    'emi_due_date'                                   => $row['emi_due_date'] ?? null,
-                    'tenure'                                         => $row['tenure'] ?? null,
-                    'foreclosure_amount_date'                        => ! empty($row['foreclosure_amount_date']) ? Carbon::parse($row['foreclosure_amount_date'])->format('Y-m-d') : null,
-                    'foreclosure_amount'                             => $row['foreclosure_amount'] ?? null,
-                    'foreclosure_amount_in_words'                    => $row['foreclosure_amount_in_words'] ?? null,
-                    'claim_signatory_authorised_officer_name'        => $row['claim_signatory_authorised_officer_name'] ?? null,
-                    'claim_signatory_authorised_officer_father_name' => $row['claim_signatory_authorised_officer_father_name'] ?? null,
-                    'claim_signatory_authorised_officer_designation' => $row['claim_signatory_authorised_officer_designation'] ?? null,
-                    'claim_signatory_authorised_officer_mobile_no'   => $row['claim_signatory_authorised_officer_mobile_no'] ?? null,
-                    'claim_signatory_authorised_officer_mail_id'     => $row['claim_signatory_authorised_officer_mail_id'] ?? null,
-                    'receiver_name'                                  => $row['receiver_name'] ?? null,
-                    'receiver_designation'                           => $row['receiver_designation'] ?? null,
-                    'auction_date'                                   => ! empty($row['auction_date']) ? Carbon::parse($row['auction_date'])->format('Y-m-d') : null,
-                    'auction_amount'                                 => $row['auction_amount'] ?? null,
-                    'auction_amount_in_words'                        => $row['auction_amount_in_words'] ?? null,
-                ]);
-
-                // Guarantor
-                Guarantor::create([
-                    'file_case_id'            => $fileCase->id,
-                    'guarantor_1_name'        => $row['guarantor_1_name'] ?? null,
-                    'guarantor_1_mobile_no'   => $row['guarantor_1_mobile_no'] ?? null,
-                    'guarantor_1_email_id'    => $row['guarantor_1_email_id'] ?? null,
-                    'guarantor_1_father_name' => $row['guarantor_1_father_name'] ?? null,
-                    'guarantor_1_address'     => $row['guarantor_1_address'] ?? null,
-
-                    'guarantor_2_name'        => $row['guarantor_2_name'] ?? null,
-                    'guarantor_2_mobile_no'   => $row['guarantor_2_mobile_no'] ?? null,
-                    'guarantor_2_email_id'    => $row['guarantor_2_email_id'] ?? null,
-                    'guarantor_2_father_name' => $row['guarantor_2_father_name'] ?? null,
-                    'guarantor_2_address'     => $row['guarantor_2_address'] ?? null,
-
-                    'guarantor_3_name'        => $row['guarantor_3_name'] ?? null,
-                    'guarantor_3_mobile_no'   => $row['guarantor_3_mobile_no'] ?? null,
-                    'guarantor_3_email_id'    => $row['guarantor_3_email_id'] ?? null,
-                    'guarantor_3_father_name' => $row['guarantor_3_father_name'] ?? null,
-                    'guarantor_3_address'     => $row['guarantor_3_address'] ?? null,
-
-                    'guarantor_4_name'        => $row['guarantor_4_name'] ?? null,
-                    'guarantor_4_mobile_no'   => $row['guarantor_4_mobile_no'] ?? null,
-                    'guarantor_4_email_id'    => $row['guarantor_4_email_id'] ?? null,
-                    'guarantor_4_father_name' => $row['guarantor_4_father_name'] ?? null,
-                    'guarantor_4_address'     => $row['guarantor_4_address'] ?? null,
-
-                    'guarantor_5_name'        => $row['guarantor_5_name'] ?? null,
-                    'guarantor_5_mobile_no'   => $row['guarantor_5_mobile_no'] ?? null,
-                    'guarantor_5_email_id'    => $row['guarantor_5_email_id'] ?? null,
-                    'guarantor_5_father_name' => $row['guarantor_5_father_name'] ?? null,
-                    'guarantor_5_address'     => $row['guarantor_5_address'] ?? null,
-
-                    'guarantor_6_name'        => $row['guarantor_6_name'] ?? null,
-                    'guarantor_6_mobile_no'   => $row['guarantor_6_mobile_no'] ?? null,
-                    'guarantor_6_email_id'    => $row['guarantor_6_email_id'] ?? null,
-                    'guarantor_6_father_name' => $row['guarantor_6_father_name'] ?? null,
-                    'guarantor_6_address'     => $row['guarantor_6_address'] ?? null,
-
-                    'guarantor_7_name'        => $row['guarantor_7_name'] ?? null,
-                    'guarantor_7_mobile_no'   => $row['guarantor_7_mobile_no'] ?? null,
-                    'guarantor_7_email_id'    => $row['guarantor_7_email_id'] ?? null,
-                    'guarantor_7_father_name' => $row['guarantor_7_father_name'] ?? null,
-                    'guarantor_7_address'     => $row['guarantor_7_address'] ?? null,
-                ]);
-
-            } else {
+            if ($existingCase) {
+                // Both loan_number and case_type match — Update
+                Log::info("Updating: Found exact match for loan_number = $loanNumber and case_type = $caseType");
 
                 // UPDATE existing FileCase
-               $fileCaseData = [
-                    'agreement_date'          => ! empty($row['agreement_date']) ? Carbon::parse($row['agreement_date'])->format('Y-m-d') : null,
-                    'loan_application_date'   => ! empty($row['loan_application_date']) ? Carbon::parse($row['loan_application_date'])->format('Y-m-d') : null,
-                    'arbitration_date'        => ! empty($row['arbitration_date']) ? Carbon::parse($row['arbitration_date'])->format('Y-m-d') : null,
+                $fileCaseData = [
+                    'agreement_date'          => $this->parseExcelDate($row['agreement_date'] ?? null),
+                    'loan_application_date'   => $this->parseExcelDate($row['loan_application_date'] ?? null),
+                    'arbitration_date'        => $this->parseExcelDate($row['arbitration_date'] ?? null),
                     'arbitration_clause_no'   => $row['arbitration_clause_no'] ?? null,
                     'claimant_middle_name'    => $row['claimant_middle_name'] ?? null,
                     'claimant_last_name'      => $row['claimant_last_name'] ?? null,
@@ -251,9 +123,168 @@ class FileCaseImport implements ToModel, WithHeadingRow
 
                 // UPDATE or CREATE FileCaseDetail
                 $detailData = [
+                    'product'                                        => $row['product'] ?? null,
+                    'asset_description'                              => $row['asset_description'] ?? null,
+                    'sanction_letter_date'                           => $this->parseExcelDate($row['sanction_letter_date'] ?? null),
+                    'rate_of_interest'                               => $row['rate_of_interest'] ?? null,
+                    'registration_no'                                => $row['registration_no'] ?? null,
+                    'chassis_no'                                     => $row['chassis_no'] ?? null,
+                    'engin_no'                                       => $row['engin_no'] ?? null,
+                    'finance_amount'                                 => $row['finance_amount'] ?? null,
+                    'finance_amount_in_words'                        => $row['finance_amount_in_words'] ?? null,
+                    'emi_amt'                                        => $row['emi_amt'] ?? null,
+                    'emi_due_date'                                   => $this->parseExcelDate($row['emi_due_date'] ?? null),
+                    'tenure'                                         => $row['tenure'] ?? null,
+                    'foreclosure_amount_date'                        => $this->parseExcelDate($row['foreclosure_amount_date'] ?? null),
+                    'foreclosure_amount'                             => $row['foreclosure_amount'] ?? null,
+                    'foreclosure_amount_in_words'                    => $row['foreclosure_amount_in_words'] ?? null,
+                    'claim_signatory_authorised_officer_name'        => $row['claim_signatory_authorised_officer_name'] ?? null,
+                    'claim_signatory_authorised_officer_father_name' => $row['claim_signatory_authorised_officer_father_name'] ?? null,
+                    'claim_signatory_authorised_officer_designation' => $row['claim_signatory_authorised_officer_designation'] ?? null,
+                    'claim_signatory_authorised_officer_mobile_no'   => $row['claim_signatory_authorised_officer_mobile_no'] ?? null,
+                    'claim_signatory_authorised_officer_mail_id'     => $row['claim_signatory_authorised_officer_mail_id'] ?? null,
+                    'receiver_name'                                  => $row['receiver_name'] ?? null,
+                    'receiver_designation'                           => $row['receiver_designation'] ?? null,
+                    'auction_date'                                   => $this->parseExcelDate($row['auction_date'] ?? null),
+                    'auction_amount'                                 => $row['auction_amount'] ?? null,
+                    'auction_amount_in_words'                        => $row['auction_amount_in_words'] ?? null,
+                ];
+
+                $detail = FileCaseDetail::firstOrNew(['file_case_id' => $existingCase->id]);
+                $detail->fill($this->keepExistingIfBlank($detailData, $detail))->save();
+
+                // UPDATE or CREATE Guarantor
+                $guarantorData = [
+                    'guarantor_1_name'        => $row['guarantor_1_name'] ?? null,
+                    'guarantor_1_mobile_no'   => $row['guarantor_1_mobile_no'] ?? null,
+                    'guarantor_1_email_id'    => $row['guarantor_1_email_id'] ?? null,
+                    'guarantor_1_father_name' => $row['guarantor_1_father_name'] ?? null,
+                    'guarantor_1_address'     => $row['guarantor_1_address'] ?? null,
+                    'guarantor_2_name'        => $row['guarantor_2_name'] ?? null,
+                    'guarantor_2_mobile_no'   => $row['guarantor_2_mobile_no'] ?? null,
+                    'guarantor_2_email_id'    => $row['guarantor_2_email_id'] ?? null,
+                    'guarantor_2_father_name' => $row['guarantor_2_father_name'] ?? null,
+                    'guarantor_2_address'     => $row['guarantor_2_address'] ?? null,
+                    'guarantor_3_name'        => $row['guarantor_3_name'] ?? null,
+                    'guarantor_3_mobile_no'   => $row['guarantor_3_mobile_no'] ?? null,
+                    'guarantor_3_email_id'    => $row['guarantor_3_email_id'] ?? null,
+                    'guarantor_3_father_name' => $row['guarantor_3_father_name'] ?? null,
+                    'guarantor_3_address'     => $row['guarantor_3_address'] ?? null,
+                    'guarantor_4_name'        => $row['guarantor_4_name'] ?? null,
+                    'guarantor_4_mobile_no'   => $row['guarantor_4_mobile_no'] ?? null,
+                    'guarantor_4_email_id'    => $row['guarantor_4_email_id'] ?? null,
+                    'guarantor_4_father_name' => $row['guarantor_4_father_name'] ?? null,
+                    'guarantor_4_address'     => $row['guarantor_4_address'] ?? null,
+                    'guarantor_5_name'        => $row['guarantor_5_name'] ?? null,
+                    'guarantor_5_mobile_no'   => $row['guarantor_5_mobile_no'] ?? null,
+                    'guarantor_5_email_id'    => $row['guarantor_5_email_id'] ?? null,
+                    'guarantor_5_father_name' => $row['guarantor_5_father_name'] ?? null,
+                    'guarantor_5_address'     => $row['guarantor_5_address'] ?? null,
+                    'guarantor_6_name'        => $row['guarantor_6_name'] ?? null,
+                    'guarantor_6_mobile_no'   => $row['guarantor_6_mobile_no'] ?? null,
+                    'guarantor_6_email_id'    => $row['guarantor_6_email_id'] ?? null,
+                    'guarantor_6_father_name' => $row['guarantor_6_father_name'] ?? null,
+                    'guarantor_6_address'     => $row['guarantor_6_address'] ?? null,
+                    'guarantor_7_name'        => $row['guarantor_7_name'] ?? null,
+                    'guarantor_7_mobile_no'   => $row['guarantor_7_mobile_no'] ?? null,
+                    'guarantor_7_email_id'    => $row['guarantor_7_email_id'] ?? null,
+                    'guarantor_7_father_name' => $row['guarantor_7_father_name'] ?? null,
+                    'guarantor_7_address'     => $row['guarantor_7_address'] ?? null,
+                ];
+
+                $guarantor = Guarantor::firstOrNew(['file_case_id' => $existingCase->id]);
+                $guarantor->fill($this->keepExistingIfBlank($guarantorData, $guarantor))->save();
+
+                Log::info("Loan number {$row['loan_number']} updated.");
+
+            } else {
+
+                // 2. Check if loan_number + case_type exist with another organization_id
+                $caseWithDifferentOrg = FileCase::where('loan_number', $loanNumber)
+                    ->where('case_type', $caseType)
+                    ->where('organization_id', '!=', $this->organizationId)
+                    ->exists();
+
+                if ($caseWithDifferentOrg) {
+                     // 🚫 Log and skip unauthorized update
+                    Log::warning("Unauthorized import attempt for loan_number={$loanNumber}, case_type={$caseType}");
+                    return null;
+                }
+
+                // No exact match → check if loan_number exists with different case_type
+                $loanExists = FileCase::where('loan_number', $loanNumber)->exists();
+
+                if ($loanExists) {
+                    // ✅ Loan exists but case_type differs → Create new
+                    Log::info("Creating new: loan_number = $loanNumber exists with different case_type = $caseType");
+
+                    // Step 1: Get organization code
+                    $orgCode = OrganizationList::where('name', $organizationData->name)->value('code');
+
+                    // Step 2: Get today's date
+                    $datePart = Carbon::now()->format('d-m-Y');
+
+                    // Step 3: Count existing cases today for that org
+                    $prefix = $orgCode . '-' . $datePart;
+
+                    $lastCase = FileCase::where('case_number', 'like', "$orgCode-%-$datePart")
+                        ->orderBy('case_number', 'desc')
+                        ->first();
+
+                    // Step 4: Extract last increment and increase
+                    if ($lastCase && preg_match('/' . $orgCode . '-(\d+)-' . $datePart . '/', $lastCase->case_number, $matches)) {
+                        $increment = (int) $matches[1] + 1;
+                    } else {
+                        $increment = 1;
+                    }
+
+                    // Step 5: Build full case number
+                    $caseNumber = sprintf('%s-%06d-%s', $orgCode, $increment, $datePart);
+
+                    // Create FileCase
+                    $fileCase = new FileCase([
+                        'user_type'               => 2,
+                        'organization_id'         => $this->organizationId,
+                        'case_number'             => $caseNumber ?? null,
+                        'loan_number'             => $row['loan_number'] ?? null,
+                        'agreement_date'          => $this->parseExcelDate($row['agreement_date'] ?? null),
+                        'loan_application_date'   => $this->parseExcelDate($row['loan_application_date'] ?? null),
+                        'arbitration_date'        => $this->parseExcelDate($row['arbitration_date'] ?? null),
+                        'arbitration_clause_no'   => $row['arbitration_clause_no'] ?? null,
+                        'claimant_first_name'     => $organizationData->name ?? null,
+                        'claimant_middle_name'    => $row['claimant_middle_name'] ?? null,
+                        'claimant_last_name'      => $row['claimant_last_name'] ?? null,
+                        'claimant_mobile'         => $organizationData->mobile ?? null,
+                        'claimant_email'          => $organizationData->email ?? null,
+                        'claimant_address_type'   => 2 ?? null,
+                        'claimant_address1'       => $organizationData->address1 ?? null,
+                        'claimant_state_id'       => $claimantState,
+                        'claimant_city_id'        => $claimantCity,
+                        'claimant_pincode'        => $organizationData->pincode ?? null,
+                        'respondent_first_name'   => $row['respondent_first_name'] ?? null,
+                        'respondent_middle_name'  => $row['respondent_middle_name'] ?? null,
+                        'respondent_last_name'    => $row['respondent_last_name'] ?? null,
+                        'respondent_mobile'       => $row['respondent_mobile'] ?? null,
+                        'respondent_email'        => $row['respondent_email'] ?? null,
+                        'respondent_address_type' => $row['respondent_address_type'] ?? null,
+                        'respondent_address1'     => $row['respondent_address1'] ?? null,
+                        'respondent_state_id'     => $respondentState,
+                        'respondent_city_id'      => $respondentCity,
+                        'respondent_pincode'      => $row['respondent_pincode'] ?? null,
+                        'amount_in_dispute'       => $row['amount_in_dispute'] ?? null,
+                        'case_type'               => $row['case_type'] ?? null,
+                        'product_type'            => $row['product_type'] ?? null,
+                        'brief_of_case'           => $row['brief_of_case'] ?? null,
+                    ]);
+
+                    $fileCase->save();
+
+                    // FileCaseDetail
+                    FileCaseDetail::create([
+                        'file_case_id'                                   => $fileCase->id,
                         'product'                                        => $row['product'] ?? null,
                         'asset_description'                              => $row['asset_description'] ?? null,
-                        'sanction_letter_date'                           => ! empty($row['sanction_letter_date']) ? Carbon::parse($row['sanction_letter_date'])->format('Y-m-d') : null,
+                        'sanction_letter_date'                           => $this->parseExcelDate($row['sanction_letter_date'] ?? null),
                         'rate_of_interest'                               => $row['rate_of_interest'] ?? null,
                         'registration_no'                                => $row['registration_no'] ?? null,
                         'chassis_no'                                     => $row['chassis_no'] ?? null,
@@ -261,9 +292,9 @@ class FileCaseImport implements ToModel, WithHeadingRow
                         'finance_amount'                                 => $row['finance_amount'] ?? null,
                         'finance_amount_in_words'                        => $row['finance_amount_in_words'] ?? null,
                         'emi_amt'                                        => $row['emi_amt'] ?? null,
-                        'emi_due_date'                                   => $row['emi_due_date'] ?? null,
+                        'emi_due_date'                                   => $this->parseExcelDate($row['emi_due_date'] ?? null),
                         'tenure'                                         => $row['tenure'] ?? null,
-                        'foreclosure_amount_date'                        => ! empty($row['foreclosure_amount_date']) ? Carbon::parse($row['foreclosure_amount_date'])->format('Y-m-d') : null,
+                        'foreclosure_amount_date'                        => $this->parseExcelDate($row['foreclosure_amount_date'] ?? null),
                         'foreclosure_amount'                             => $row['foreclosure_amount'] ?? null,
                         'foreclosure_amount_in_words'                    => $row['foreclosure_amount_in_words'] ?? null,
                         'claim_signatory_authorised_officer_name'        => $row['claim_signatory_authorised_officer_name'] ?? null,
@@ -273,57 +304,199 @@ class FileCaseImport implements ToModel, WithHeadingRow
                         'claim_signatory_authorised_officer_mail_id'     => $row['claim_signatory_authorised_officer_mail_id'] ?? null,
                         'receiver_name'                                  => $row['receiver_name'] ?? null,
                         'receiver_designation'                           => $row['receiver_designation'] ?? null,
-                        'auction_date'                                   => ! empty($row['auction_date']) ? Carbon::parse($row['auction_date'])->format('Y-m-d') : null,
+                        'auction_date'                                   => $this->parseExcelDate($row['auction_date'] ?? null),
                         'auction_amount'                                 => $row['auction_amount'] ?? null,
                         'auction_amount_in_words'                        => $row['auction_amount_in_words'] ?? null,
-                ];
+                    ]);
 
-                $detail = FileCaseDetail::firstOrNew(['file_case_id' => $existingCase->id]);
-                $detail->fill($this->keepExistingIfBlank($detailData, $detail))->save();
-
-                // UPDATE or CREATE Guarantor
-                $guarantorData = [
+                    // Guarantor
+                    Guarantor::create([
+                        'file_case_id'            => $fileCase->id,
                         'guarantor_1_name'        => $row['guarantor_1_name'] ?? null,
                         'guarantor_1_mobile_no'   => $row['guarantor_1_mobile_no'] ?? null,
                         'guarantor_1_email_id'    => $row['guarantor_1_email_id'] ?? null,
                         'guarantor_1_father_name' => $row['guarantor_1_father_name'] ?? null,
                         'guarantor_1_address'     => $row['guarantor_1_address'] ?? null,
+
                         'guarantor_2_name'        => $row['guarantor_2_name'] ?? null,
                         'guarantor_2_mobile_no'   => $row['guarantor_2_mobile_no'] ?? null,
                         'guarantor_2_email_id'    => $row['guarantor_2_email_id'] ?? null,
                         'guarantor_2_father_name' => $row['guarantor_2_father_name'] ?? null,
                         'guarantor_2_address'     => $row['guarantor_2_address'] ?? null,
+
                         'guarantor_3_name'        => $row['guarantor_3_name'] ?? null,
                         'guarantor_3_mobile_no'   => $row['guarantor_3_mobile_no'] ?? null,
                         'guarantor_3_email_id'    => $row['guarantor_3_email_id'] ?? null,
                         'guarantor_3_father_name' => $row['guarantor_3_father_name'] ?? null,
                         'guarantor_3_address'     => $row['guarantor_3_address'] ?? null,
+
                         'guarantor_4_name'        => $row['guarantor_4_name'] ?? null,
                         'guarantor_4_mobile_no'   => $row['guarantor_4_mobile_no'] ?? null,
                         'guarantor_4_email_id'    => $row['guarantor_4_email_id'] ?? null,
                         'guarantor_4_father_name' => $row['guarantor_4_father_name'] ?? null,
                         'guarantor_4_address'     => $row['guarantor_4_address'] ?? null,
+
                         'guarantor_5_name'        => $row['guarantor_5_name'] ?? null,
                         'guarantor_5_mobile_no'   => $row['guarantor_5_mobile_no'] ?? null,
                         'guarantor_5_email_id'    => $row['guarantor_5_email_id'] ?? null,
                         'guarantor_5_father_name' => $row['guarantor_5_father_name'] ?? null,
                         'guarantor_5_address'     => $row['guarantor_5_address'] ?? null,
+
                         'guarantor_6_name'        => $row['guarantor_6_name'] ?? null,
                         'guarantor_6_mobile_no'   => $row['guarantor_6_mobile_no'] ?? null,
                         'guarantor_6_email_id'    => $row['guarantor_6_email_id'] ?? null,
                         'guarantor_6_father_name' => $row['guarantor_6_father_name'] ?? null,
                         'guarantor_6_address'     => $row['guarantor_6_address'] ?? null,
+
                         'guarantor_7_name'        => $row['guarantor_7_name'] ?? null,
                         'guarantor_7_mobile_no'   => $row['guarantor_7_mobile_no'] ?? null,
                         'guarantor_7_email_id'    => $row['guarantor_7_email_id'] ?? null,
                         'guarantor_7_father_name' => $row['guarantor_7_father_name'] ?? null,
                         'guarantor_7_address'     => $row['guarantor_7_address'] ?? null,
-                   ];
+                    ]);
 
-                    $guarantor = Guarantor::firstOrNew(['file_case_id' => $existingCase->id]);
-                    $guarantor->fill($this->keepExistingIfBlank($guarantorData, $guarantor))->save();
+                } else {
+                    
+                    // ✅ Loan and case_type both don't exist → Create new
+                    Log::info("Creating new: loan_number = $loanNumber and case_type = $caseType do not exist");
 
-                Log::info("Loan number {$row['loan_number']} updated.");
+                    // Step 1: Get organization code
+                    $orgCode = OrganizationList::where('name', $organizationData->name)->value('code');
+
+                    // Step 2: Get today's date
+                    $datePart = Carbon::now()->format('d-m-Y');
+
+                    // Step 3: Count existing cases today for that org
+                    $prefix = $orgCode . '-' . $datePart;
+
+                    $lastCase = FileCase::where('case_number', 'like', "$orgCode-%-$datePart")
+                        ->orderBy('case_number', 'desc')
+                        ->first();
+
+                    // Step 4: Extract last increment and increase
+                    if ($lastCase && preg_match('/' . $orgCode . '-(\d+)-' . $datePart . '/', $lastCase->case_number, $matches)) {
+                        $increment = (int) $matches[1] + 1;
+                    } else {
+                        $increment = 1;
+                    }
+
+                    // Step 5: Build full case number
+                    $caseNumber = sprintf('%s-%06d-%s', $orgCode, $increment, $datePart);
+
+                    // Create FileCase
+                    $fileCase = new FileCase([
+                        'user_type'               => 2,
+                        'organization_id'         => $this->organizationId,
+                        'case_number'             => $caseNumber ?? null,
+                        'loan_number'             => $row['loan_number'] ?? null,
+                        'agreement_date'          => $this->parseExcelDate($row['agreement_date'] ?? null),
+                        'loan_application_date'   => $this->parseExcelDate($row['loan_application_date'] ?? null),
+                        'arbitration_date'        => $this->parseExcelDate($row['arbitration_date'] ?? null),
+                        'arbitration_clause_no'   => $row['arbitration_clause_no'] ?? null,
+                        'claimant_first_name'     => $organizationData->name ?? null,
+                        'claimant_middle_name'    => $row['claimant_middle_name'] ?? null,
+                        'claimant_last_name'      => $row['claimant_last_name'] ?? null,
+                        'claimant_mobile'         => $organizationData->mobile ?? null,
+                        'claimant_email'          => $organizationData->email ?? null,
+                        'claimant_address_type'   => 2 ?? null,
+                        'claimant_address1'       => $organizationData->address1 ?? null,
+                        'claimant_state_id'       => $claimantState,
+                        'claimant_city_id'        => $claimantCity,
+                        'claimant_pincode'        => $organizationData->pincode ?? null,
+                        'respondent_first_name'   => $row['respondent_first_name'] ?? null,
+                        'respondent_middle_name'  => $row['respondent_middle_name'] ?? null,
+                        'respondent_last_name'    => $row['respondent_last_name'] ?? null,
+                        'respondent_mobile'       => $row['respondent_mobile'] ?? null,
+                        'respondent_email'        => $row['respondent_email'] ?? null,
+                        'respondent_address_type' => $row['respondent_address_type'] ?? null,
+                        'respondent_address1'     => $row['respondent_address1'] ?? null,
+                        'respondent_state_id'     => $respondentState,
+                        'respondent_city_id'      => $respondentCity,
+                        'respondent_pincode'      => $row['respondent_pincode'] ?? null,
+                        'amount_in_dispute'       => $row['amount_in_dispute'] ?? null,
+                        'case_type'               => $row['case_type'] ?? null,
+                        'product_type'            => $row['product_type'] ?? null,
+                        'brief_of_case'           => $row['brief_of_case'] ?? null,
+                    ]);
+
+                    $fileCase->save();
+
+                    // FileCaseDetail
+                    FileCaseDetail::create([
+                        'file_case_id'                                   => $fileCase->id,
+                        'product'                                        => $row['product'] ?? null,
+                        'asset_description'                              => $row['asset_description'] ?? null,
+                        'sanction_letter_date'                           => $this->parseExcelDate($row['sanction_letter_date'] ?? null),
+                        'rate_of_interest'                               => $row['rate_of_interest'] ?? null,
+                        'registration_no'                                => $row['registration_no'] ?? null,
+                        'chassis_no'                                     => $row['chassis_no'] ?? null,
+                        'engin_no'                                       => $row['engin_no'] ?? null,
+                        'finance_amount'                                 => $row['finance_amount'] ?? null,
+                        'finance_amount_in_words'                        => $row['finance_amount_in_words'] ?? null,
+                        'emi_amt'                                        => $row['emi_amt'] ?? null,
+                        'emi_due_date'                                   => $this->parseExcelDate($row['emi_due_date'] ?? null),
+                        'tenure'                                         => $row['tenure'] ?? null,
+                        'foreclosure_amount_date'                        => $this->parseExcelDate($row['foreclosure_amount_date'] ?? null),
+                        'foreclosure_amount'                             => $row['foreclosure_amount'] ?? null,
+                        'foreclosure_amount_in_words'                    => $row['foreclosure_amount_in_words'] ?? null,
+                        'claim_signatory_authorised_officer_name'        => $row['claim_signatory_authorised_officer_name'] ?? null,
+                        'claim_signatory_authorised_officer_father_name' => $row['claim_signatory_authorised_officer_father_name'] ?? null,
+                        'claim_signatory_authorised_officer_designation' => $row['claim_signatory_authorised_officer_designation'] ?? null,
+                        'claim_signatory_authorised_officer_mobile_no'   => $row['claim_signatory_authorised_officer_mobile_no'] ?? null,
+                        'claim_signatory_authorised_officer_mail_id'     => $row['claim_signatory_authorised_officer_mail_id'] ?? null,
+                        'receiver_name'                                  => $row['receiver_name'] ?? null,
+                        'receiver_designation'                           => $row['receiver_designation'] ?? null,
+                        'auction_date'                                   => $this->parseExcelDate($row['auction_date'] ?? null),
+                        'auction_amount'                                 => $row['auction_amount'] ?? null,
+                        'auction_amount_in_words'                        => $row['auction_amount_in_words'] ?? null,
+                    ]);
+
+                    // Guarantor
+                    Guarantor::create([
+                        'file_case_id'            => $fileCase->id,
+                        'guarantor_1_name'        => $row['guarantor_1_name'] ?? null,
+                        'guarantor_1_mobile_no'   => $row['guarantor_1_mobile_no'] ?? null,
+                        'guarantor_1_email_id'    => $row['guarantor_1_email_id'] ?? null,
+                        'guarantor_1_father_name' => $row['guarantor_1_father_name'] ?? null,
+                        'guarantor_1_address'     => $row['guarantor_1_address'] ?? null,
+
+                        'guarantor_2_name'        => $row['guarantor_2_name'] ?? null,
+                        'guarantor_2_mobile_no'   => $row['guarantor_2_mobile_no'] ?? null,
+                        'guarantor_2_email_id'    => $row['guarantor_2_email_id'] ?? null,
+                        'guarantor_2_father_name' => $row['guarantor_2_father_name'] ?? null,
+                        'guarantor_2_address'     => $row['guarantor_2_address'] ?? null,
+
+                        'guarantor_3_name'        => $row['guarantor_3_name'] ?? null,
+                        'guarantor_3_mobile_no'   => $row['guarantor_3_mobile_no'] ?? null,
+                        'guarantor_3_email_id'    => $row['guarantor_3_email_id'] ?? null,
+                        'guarantor_3_father_name' => $row['guarantor_3_father_name'] ?? null,
+                        'guarantor_3_address'     => $row['guarantor_3_address'] ?? null,
+
+                        'guarantor_4_name'        => $row['guarantor_4_name'] ?? null,
+                        'guarantor_4_mobile_no'   => $row['guarantor_4_mobile_no'] ?? null,
+                        'guarantor_4_email_id'    => $row['guarantor_4_email_id'] ?? null,
+                        'guarantor_4_father_name' => $row['guarantor_4_father_name'] ?? null,
+                        'guarantor_4_address'     => $row['guarantor_4_address'] ?? null,
+
+                        'guarantor_5_name'        => $row['guarantor_5_name'] ?? null,
+                        'guarantor_5_mobile_no'   => $row['guarantor_5_mobile_no'] ?? null,
+                        'guarantor_5_email_id'    => $row['guarantor_5_email_id'] ?? null,
+                        'guarantor_5_father_name' => $row['guarantor_5_father_name'] ?? null,
+                        'guarantor_5_address'     => $row['guarantor_5_address'] ?? null,
+
+                        'guarantor_6_name'        => $row['guarantor_6_name'] ?? null,
+                        'guarantor_6_mobile_no'   => $row['guarantor_6_mobile_no'] ?? null,
+                        'guarantor_6_email_id'    => $row['guarantor_6_email_id'] ?? null,
+                        'guarantor_6_father_name' => $row['guarantor_6_father_name'] ?? null,
+                        'guarantor_6_address'     => $row['guarantor_6_address'] ?? null,
+
+                        'guarantor_7_name'        => $row['guarantor_7_name'] ?? null,
+                        'guarantor_7_mobile_no'   => $row['guarantor_7_mobile_no'] ?? null,
+                        'guarantor_7_email_id'    => $row['guarantor_7_email_id'] ?? null,
+                        'guarantor_7_father_name' => $row['guarantor_7_father_name'] ?? null,
+                        'guarantor_7_address'     => $row['guarantor_7_address'] ?? null,
+                    ]);
+                }
             }
         }
         return null;
@@ -336,6 +509,24 @@ class FileCaseImport implements ToModel, WithHeadingRow
             $finalData[$key] = ($value !== null && $value !== '') ? $value : $existingModel->{$key};
         }
         return $finalData;
+    }
+
+    private function parseExcelDate($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        try {
+            if (is_numeric($value)) {
+                return Date::excelToDateTimeObject($value)->format('Y-m-d');
+            } else {
+                return Carbon::parse(trim($value))->format('Y-m-d');
+            }
+        } catch (\Exception $e) {
+            Log::error('Date parsing failed for value: ' . $value . ' | ' . $e->getMessage());
+            return null;
+        }
     }
 
 }

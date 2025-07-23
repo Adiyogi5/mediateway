@@ -28,15 +28,43 @@
                 </div>
                 <div class="col-md-2">
                     <select class="form-select py-1" id="filter_status">
-                        <option value="">All Status</option>
+                        <option value="">Case Status</option>
                         <option value="1">Active</option>
                         <option value="0">Inactive</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
+                    <select id="filter_send_status" class="form-select py-1">
+                        <option value="">Send Status</option>
+                        <option value="0">Not Sent</option>
+                        <option value="1">Sent</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="filter_receive_status" class="form-select py-1">
+                        <option value="">Receive Status</option>
+                        <option value="0">Not Received</option>
+                        <option value="1">Received</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="filter_arbitrator_status" class="form-select py-1">
+                        <option value="">Arbitrator Status</option>
+                        <option value="0">Pending</option>
+                        <option value="1">Confirmed</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="filter_assigned_status" class="form-select py-1">
+                        <option value="">Assigned Status</option>
+                        <option value="0">Not Assigned</option>
+                        <option value="1">Assigned</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
                     <input type="date" id="filter_date_from" class="form-control py-1" placeholder="From Date">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input type="date" id="filter_date_to" class="form-control py-1" placeholder="To Date">
                 </div>
                 <div class="col-md-2">
@@ -84,6 +112,10 @@
                         d.user_type = $('#filter_user_type').val();
                         d.case_type = $('#filter_case_type').val();
                         d.status = $('#filter_status').val();
+                        d.send_status = $('#filter_send_status').val();
+                        d.receive_status = $('#filter_receive_status').val();
+                        d.arbitrator_status = $('#filter_arbitrator_status').val();
+                        d.assigned_status = $('#filter_assigned_status').val();
                         d.date_from = $('#filter_date_from').val();
                         d.date_to = $('#filter_date_to').val();
                     }
@@ -168,6 +200,10 @@
                 $('#filter_user_type').val('');
                 $('#filter_case_type').val('');
                 $('#filter_status').val('');
+                $('#filter_send_status').val('');
+                $('#filter_receive_status').val('');
+                $('#filter_arbitrator_status').val('');
+                $('#filter_assigned_status').val('');
                 $('#filter_date_from').val('');
                 $('#filter_date_to').val('');
                 table.ajax.reload();

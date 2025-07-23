@@ -46,6 +46,15 @@
                                     @endforeach
                                 </select>
                             </div>
+                            
+                            <div class="col-md-3">
+                                <input type="text" id="filter_case_number" class="form-control py-1"
+                                    placeholder="Enter Case Number">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" id="filter_loan_number" class="form-control py-1"
+                                    placeholder="Enter Loan Number">
+                            </div>
                             <div class="col-md-3">
                                 <select class="form-control form-select py-1" id="filter_status">
                                     <option value="">All Status</option>
@@ -60,11 +69,15 @@
                             <div class="col-md-3">
                                 <input type="date" id="filter_date_to" class="form-control py-1" placeholder="To Date">
                             </div>
-                            <div class="col-md-2">
-                                <button id="filterBtn" class="btn btn-primary me-2 py-1 w-100">Filter</button>
+                            <div class="col-md-3 d-flex justify-content-between gap-1">
+                                <button id="filterBtn" class="btn btn-primary py-1 w-100">Filter</button>
+                                <button id="clearFilterBtn" class="btn btn-secondary py-1 w-100">Clear</button>
                             </div>
                             <div class="col-md-2">
-                                <button id="clearFilterBtn" class="btn btn-secondary py-1 w-100">Clear</button>
+                                
+                            </div>
+                            <div class="col-md-2">
+                                
                             </div>
                         </div>
                         <div class="table-responsive scrollbar">
@@ -115,11 +128,16 @@
                     data: function(d) {
                         d.user_type = $('#filter_user_type').val();
                         d.case_type = $('#filter_case_type').val();
+                        d.case_number = $('#filter_case_number').val();
+                        d.loan_number = $('#filter_loan_number').val();
                         d.status = $('#filter_status').val();
                         d.date_from = $('#filter_date_from').val();
                         d.date_to = $('#filter_date_to').val();
                     }
                 },
+                order: [
+                    [10, 'desc']
+                ],
                 columns: [{
                         data: 'id',
                         name: 'id'
@@ -192,6 +210,8 @@
             $('#clearFilterBtn').on('click', function() {
                 $('#filter_user_type').val('');
                 $('#filter_case_type').val('');
+                $('#filter_case_number').val('');
+                $('#filter_loan_number').val('');
                 $('#filter_status').val('');
                 $('#filter_date_from').val('');
                 $('#filter_date_to').val('');

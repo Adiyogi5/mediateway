@@ -111,12 +111,13 @@ class Bulk4ANoticeSmsSend extends Command
 
                     $first_hearingDate = $value->first_hearing_date;
 
-                    $mobile = '91' . preg_replace('/\D/', '', trim($value->respondent_mobile));
+                    $mobile = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
-                    $smsmessage = "Ref: Arbitration Hearing – A/c {$value->loan_number}Dear Sir/Ma’am,Your first virtual hearing is on {$first_hearingDate} at 11.30 AM Digital Room details have been sent to your registered email and WhatsApp.Submit your reply/documents via the MediateWay portal before the hearing.Non-appearance may result in ex-parte proceedings (Sec. 25, A&C Act). (Sole Arbitrator)";
+                    $smsmessage = "Ref: Arbitration Hearing – A/c {$value->loan_number} Dear Sir/Ma’am, Your first virtual hearing is on {$first_hearingDate} at 11.30 AM Digital Room details have been sent to your registered email and WhatsApp. Submit your reply/documents via the MediateWay portal before the hearing. Non-appearance may result in ex-parte proceedings (Sec. 25, A&C Act). (Sole Arbitrator)
+";
 
                     try {
-                        $response = Http::post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+                        $response = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
                             "sender"      => "MDTWAY",
                             "peId"        => "1001292642501782120",
                             "teId"        => "1007875445521607304",

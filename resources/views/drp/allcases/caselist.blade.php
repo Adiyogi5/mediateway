@@ -48,11 +48,11 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <input type="text" id="filter_case_number py-1" class="form-control"
+                                <input type="text" id="filter_case_number" class="form-control py-1"
                                     placeholder="Enter Case Number">
                             </div>
                             <div class="col-md-3">
-                                <input type="text" id="filter_loan_number py-1" class="form-control"
+                                <input type="text" id="filter_loan_number" class="form-control py-1"
                                     placeholder="Enter Loan Number">
                             </div>
                             <div class="col-md-3">

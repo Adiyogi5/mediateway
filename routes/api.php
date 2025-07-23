@@ -40,12 +40,6 @@ Route::get('/status_live_court_room', function () {
 });
 
 
-//Create Claim Petition
-Route::get('/create_claim_petition', function () {
-    Artisan::call('bulk:create-claim-petition');   
-    return '<h1>create claim petition</h1>';
-});
-
 
 // Send All Types of Notices 
 // Route::get('/bulk_send_1_notice', function () {
@@ -122,6 +116,11 @@ Route::get('/bulk_send_sms_3c_notice', function () {
 Route::get('/bulk_send_3d_notice', function () {
     Artisan::call('bulk:send-3d-notice');   
     return '<h1>update bulk send 3d notice</h1>';
+});
+//Create Claim Petition
+Route::get('/create_claim_petition', function () {
+    Artisan::call('bulk:create-claim-petition');   
+    return '<h1>create claim petition</h1>';
 });
 
 // ########################################################
@@ -202,6 +201,10 @@ Route::get('/status_live_conciliator_meeting_room', function () {
 
 // #############################################################
 // ################ Pre-Mediation Notice Crone #################
+Route::get('/bulk_save_pdf_premediation_notice', function () {
+    Artisan::call('bulk:premediation-notice-pdf-save');   
+    return '<h1>update bulk save pdf premediation notice</h1>';
+});
 Route::get('/bulk_send_email_premediation_notice', function () {
     Artisan::call('bulk:premediation-notice-email-send');   
     return '<h1>update bulk send email premediation notice</h1>';

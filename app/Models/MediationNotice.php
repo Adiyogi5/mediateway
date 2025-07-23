@@ -12,6 +12,7 @@ class MediationNotice extends Model
     use HasFactory, SoftDeletes, CustomScopes;
 
     protected $fillable = [
+        'mediation_master_id',
         'file_case_id',
         'mediation_notice_type',
         'notice_copy',

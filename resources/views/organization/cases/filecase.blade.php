@@ -50,7 +50,8 @@
                         </div>
 
                         <div>
-                            <a href="{{ route('organization.cases.filecase.sample') }}" class="btn btn-warning py-1">Download</a>
+                            <a href="{{ route('organization.cases.filecase.sample') }}"
+                                class="btn btn-warning py-1">Download</a>
                         </div>
                     </div>
 
@@ -60,7 +61,8 @@
                             <span style="border-radius: 50px; background-color:#ffb53f; padding:5px 10px;">2.</span>
                             If You Want to File Multiple Cases Using Excel File (Allowed Type .xlsx Only)
                         </div>
-                        <form id="submitfileCases" action="{{ route('organization.cases.filecases.import') }}" method="POST" enctype="multipart/form-data">
+                        <form id="submitfileCases" action="{{ route('organization.cases.filecases.import') }}"
+                            method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="d-flex justify-content-around align-items-center mt-3">
                                 <input type="file" name="file" id="fileInput">
@@ -68,6 +70,33 @@
                             </div>
                         </form>
                     </div>
+
+                    <!-- Loader Overlay -->
+                    <div id="loader-overlay">
+                        <div class="spinner-border text-light" role="status" style="width: 4rem; height: 4rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <div class="text-center mt-2 fw-bold">Importing... Please wait</div>
+                    </div>
+
+                    <style>
+                        #loader-overlay {
+                            display: none;
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background-color: rgba(0, 0, 0, 0.6); /* semi-transparent black */
+                            z-index: 9999;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 1.2rem;
+                            color: #fff; /* white text */
+                            flex-direction: column;
+                        }
+                    </style>
+
 
                 </div>
             </div>
@@ -78,44 +107,50 @@
 @section('js')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script>
-        document.getElementById('submitBtn').addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent immediate form submission
+        $(document).ready(function() {
+            $('#submitBtn').on('click', function(e) {
+                e.preventDefault();
 
-            let fileInput = document.getElementById('fileInput');
-            let filePath = fileInput.value;
-            let allowedExtensions = /(\.xls|\.xlsx)$/i;
+                let fileInput = document.getElementById('fileInput');
+                let filePath = fileInput.value;
+                let allowedExtensions = /(\.xls|\.xlsx)$/i;
 
-            if (!filePath) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'No file selected!',
-                    text: 'Please select an Excel file before submitting.',
-                });
-                return;
-            }
-
-            if (!allowedExtensions.exec(filePath)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid File Type!',
-                    text: 'Only .xls and .xlsx files are allowed.',
-                });
-                fileInput.value = ''; // Clear the input
-                return;
-            }
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to submit the cases?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Submit!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('submitfileCases').submit();
+                if (!filePath) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No file selected!',
+                        text: 'Please select an Excel file before submitting.',
+                    });
+                    return;
                 }
+
+                if (!allowedExtensions.exec(filePath)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File Type!',
+                        text: 'Only .xls and .xlsx files are allowed.',
+                    });
+                    fileInput.value = ''; // Clear the input
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to submit the cases?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Submit!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#loader-overlay').css('display', 'flex');
+                        // ✅ Submit the form after showing loader
+                        $('#submitfileCases').off(
+                        'submit'); // Remove any previous handler to avoid duplicate call
+                        $('#submitfileCases').submit();
+                    }
+                });
             });
         });
 

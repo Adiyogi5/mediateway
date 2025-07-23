@@ -121,7 +121,6 @@
                                             $loanNoVariable = "{{LOAN NO}}";
                                             $agreementDateVariable = "{{AGREEMENT DATE}}";
                                             $financeAmountVariable = "{{FINANCE AMOUNT}}";
-                                            $tenureVariable = "{{TENURE}}";
                                             $foreclosureVariable = "{{FORECLOSURE AMOUNT}}";
                                             $foreclosuredateVariable = "{{FORECLOSURE DATE}}";
 
@@ -141,10 +140,57 @@
                                             $thirdarbitratorsSpecializationVariable = "{{THIRD ARBITRATOR'S SPECIALIZATION}}";
                                             $thirdarbitratorsAddressVariable = "{{THIRD ARBITRATOR'S ADDRESS}}";
 
+                                            $productVariable = "{{PRODUCT}}";
+                                            $tenureVariable = "{{TENURE}}";
                                             $arbitrationClauseNoVariable = "{{ARBITRATION CLAUSE NO}}";
+                                            $arbitrationDateVariable = "{{ARBITRATION DATE}}";
+
+                                            $guarantor1nameVariable = "{{GUARANTOR 1 NAME}}";
+                                            $guarantor1mobilenoVariable = "{{GUARANTOR 1 MOBILE NO}}";
+                                            $guarantor1emailidVariable = "{{GUARANTOR 1 EMAIL ID}}";
+                                            $guarantor1addressVariable = "{{GUARANTOR 1 ADDRESS}}";
+                                            $guarantor1fathernameVariable = "{{GUARANTOR 1 FATHER NAME}}";
+
+                                            $guarantor2nameVariable = "{{GUARANTOR 2 NAME}}";
+                                            $guarantor2mobilenoVariable = "{{GUARANTOR 2 MOBILE NO}}";
+                                            $guarantor2emailidVariable = "{{GUARANTOR 2 EMAIL ID}}";
+                                            $guarantor2addressVariable = "{{GUARANTOR 2 ADDRESS}}";
+                                            $guarantor2fathernameVariable = "{{GUARANTOR 2 FATHER NAME}}";
+
+                                            $guarantor3nameVariable = "{{GUARANTOR 3 NAME}}";
+                                            $guarantor3mobilenoVariable = "{{GUARANTOR 3 MOBILE NO}}";
+                                            $guarantor3emailidVariable = "{{GUARANTOR 3 EMAIL ID}}";
+                                            $guarantor3addressVariable = "{{GUARANTOR 3 ADDRESS}}";
+                                            $guarantor3fathernameVariable = "{{GUARANTOR 3 FATHER NAME}}";
+
+                                            $guarantor4nameVariable = "{{GUARANTOR 4 NAME}}";
+                                            $guarantor4mobilenoVariable = "{{GUARANTOR 4 MOBILE NO}}";
+                                            $guarantor4emailidVariable = "{{GUARANTOR 4 EMAIL ID}}";
+                                            $guarantor4addressVariable = "{{GUARANTOR 4 ADDRESS}}";
+                                            $guarantor4fathernameVariable = "{{GUARANTOR 4 FATHER NAME}}";
+
+                                            $guarantor5nameVariable = "{{GUARANTOR 5 NAME}}";
+                                            $guarantor5mobilenoVariable = "{{GUARANTOR 5 MOBILE NO}}";
+                                            $guarantor5emailidVariable = "{{GUARANTOR 5 EMAIL ID}}";
+                                            $guarantor5addressVariable = "{{GUARANTOR 5 ADDRESS}}";
+                                            $guarantor5fathernameVariable = "{{GUARANTOR 5 FATHER NAME}}";
+
+                                            $guarantor6nameVariable = "{{GUARANTOR 6 NAME}}";
+                                            $guarantor6mobilenoVariable = "{{GUARANTOR 6 MOBILE NO}}";
+                                            $guarantor6emailidVariable = "{{GUARANTOR 6 EMAIL ID}}";
+                                            $guarantor6addressVariable = "{{GUARANTOR 6 ADDRESS}}";
+                                            $guarantor6fathernameVariable = "{{GUARANTOR 6 FATHER NAME}}";
+
+                                            $guarantor7nameVariable = "{{GUARANTOR 7 NAME}}";
+                                            $guarantor7mobilenoVariable = "{{GUARANTOR 7 MOBILE NO}}";
+                                            $guarantor7emailidVariable = "{{GUARANTOR 7 EMAIL ID}}";
+                                            $guarantor7addressVariable = "{{GUARANTOR 7 ADDRESS}}";
+                                            $guarantor7fathernameVariable = "{{GUARANTOR 7 FATHER NAME}}";
 
                                             $todayDateVariable = "{{DATE}}";
                                             $loanRecallVariable = "{{STAGE 1 NOTICE DATE}}";
+                                            $stage1ANoticeDateVariable = "{{STAGE 1A NOTICE DATE}}";
+                                            $stage1BNoticeDateVariable = "{{STAGE 1B NOTICE DATE}}";
                                             $stage2bNoticeVariable = "{{STAGE 2B NOTICE DATE}}";
                                             $appointmentofArbitratorVariable = "{{STAGE 3A NOTICE DATE}}";
                                             $stage3bNoticeVariable = "{{STAGE 3B NOTICE DATE}}";
@@ -171,6 +217,10 @@
                                         <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
                                             <span class="variable-text">{{ $financeAmountVariable }}</span>
                                             <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $financeAmountVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $productVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $productVariable }}">Copy</button>
                                         </div>
                                         <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
                                             <span class="variable-text">{{ $tenureVariable }}</span>
@@ -220,10 +270,195 @@
                                             <span class="variable-text">{{ $customerEmailVariable }}</span>
                                             <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $customerEmailVariable }}">Copy</button>
                                         </div>
+                                        
+                                        <hr class="mt-2">
+
                                         <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
                                             <span class="variable-text">{{ $todayDateVariable }}</span>
                                             <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $todayDateVariable }}">Copy</button>
                                         </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $arbitrationClauseNoVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $arbitrationClauseNoVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $arbitrationDateVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $arbitrationDateVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $loanRecallVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $loanRecallVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $stage1ANoticeDateVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $stage1ANoticeDateVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $stage1BNoticeDateVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $stage1BNoticeDateVariable }}">Copy</button>
+                                        </div>
+                                        
+                                        <hr class="mt-2">
+                                        
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor1nameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor1nameVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor1mobilenoVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor1mobilenoVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor1emailidVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor1emailidVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor1addressVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor1addressVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor1fathernameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor1fathernameVariable }}">Copy</button>
+                                        </div>
+                                        
+                                        <hr class="mt-2">
+
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor2nameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor2nameVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor2mobilenoVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor2mobilenoVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor2emailidVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor2emailidVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor2addressVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor2addressVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor2fathernameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor2fathernameVariable }}">Copy</button>
+                                        </div>
+                                        
+                                        <hr class="mt-2">
+
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor3nameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor3nameVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor3mobilenoVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor3mobilenoVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor3emailidVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor3emailidVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor3addressVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor3addressVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor3fathernameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor3fathernameVariable }}">Copy</button>
+                                        </div>
+                                        
+                                        <hr class="mt-2">
+
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor4nameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor4nameVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor4mobilenoVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor4mobilenoVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor4emailidVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor4emailidVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor4addressVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor4addressVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor4fathernameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor4fathernameVariable }}">Copy</button>
+                                        </div>
+                                        
+                                        <hr class="mt-2">
+
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor5nameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor5nameVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor5mobilenoVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor5mobilenoVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor5emailidVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor5emailidVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor5addressVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor5addressVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor5fathernameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor5fathernameVariable }}">Copy</button>
+                                        </div>
+                                        
+                                        <hr class="mt-2">
+
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor6nameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor6nameVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor6mobilenoVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor6mobilenoVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor6emailidVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor6emailidVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor6addressVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor6addressVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor6fathernameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor6fathernameVariable }}">Copy</button>
+                                        </div>
+
+                                        <hr class="mt-2">
+
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor7nameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor7nameVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor7mobilenoVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor7mobilenoVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor7emailidVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor7emailidVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor7addressVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor7addressVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $guarantor7fathernameVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $guarantor7fathernameVariable }}">Copy</button>
+                                        </div>
+
 
                                         <hr class="mt-2">
 
@@ -247,10 +482,6 @@
                                             <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $EmailVariable }}">Copy</button>
                                         </div>
                                         <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
-                                            <span class="variable-text">{{ $arbitrationClauseNoVariable }}</span>
-                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $arbitrationClauseNoVariable }}">Copy</button>
-                                        </div>
-                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
                                             <span class="variable-text">{{ $stage2bNoticeVariable }}</span>
                                             <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $stage2bNoticeVariable }}">Copy</button>
                                         </div>
@@ -259,10 +490,6 @@
 
                                         <div class="col-12 text-center justify-content-center">
                                             <h6><b><span class="text-success">Notice Type : 3A </span>- Final Appointment Of Arbitrator</b></h6>
-                                        </div>
-                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
-                                            <span class="variable-text">{{ $loanRecallVariable }}</span>
-                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $loanRecallVariable }}">Copy</button>
                                         </div>
                                         <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
                                             <span class="variable-text">{{ $firstarbitratorsNameVariable }}</span>
@@ -312,10 +539,6 @@
 
                                         <div class="col-12 text-center justify-content-center">
                                             <h6><b><span class="text-success">Notice Type : 3B </span>- NOTICE Appointment of an Arbitrator doc</b></h6>
-                                        </div>
-                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
-                                            <span class="variable-text">{{ $loanRecallVariable }}</span>
-                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $loanRecallVariable }}">Copy</button>
                                         </div>
                                         <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
                                             <span class="variable-text">{{ $arbitratorsNameVariable }}</span>

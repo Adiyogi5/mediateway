@@ -23,27 +23,18 @@
                 <div class="card mb-3 card-inner">
                     <div class="card-header">
                         <div class="row">
-                            <div class="col-12 align-self-center">
-                                <h5 class="mb-0" data-anchor="data-anchor">Mediation Notices :: Send Notice List </h5>
-                            </div>
-                            <div class="col-12 d-flex justify-content-between">
-                                <div class="nav nav-pills nav-pills-falcon">
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-outline-secondary send-pre-mediation-notice-btn py-1 my-1">
-                                        <i class="fa fa-paper-plane me-1"></i>
-                                        Send Pre Mediation Notice
-                                    </a>
-                                </div>
-                                <div class="nav nav-pills nav-pills-falcon">
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-outline-primary send-mediation-notice-btn py-1 my-1">
-                                        <i class="fa fa-paper-plane me-1"></i>
-                                        Send Mediation Notice
-                                    </a>
-                                </div>
+                            <div class="col-12 d-flex justify-content-between align-self-center">
+                                <h5 class="mb-0" data-anchor="data-anchor">Mediation Notices :: Notice List </h5>
                                 <div class="nav nav-pills nav-pills-falcon">
                                     <a href="javascript:void(0)" id="btn-export" class="btn btn-success py-1 my-1">
                                         <i class="fa fa-file-excel"></i> Export to Excel
+                                    </a>
+                                </div>
+                                <div class="nav nav-pills nav-pills-falcon">
+                                    <a href="{{ route('drp.mediationprocess.mediationnoticemasterlist') }}"
+                                        class="btn btn-warning py-1 my-1">
+                                        <i class="fa fa-list me-1"></i>
+                                        Notice List
                                     </a>
                                 </div>
                             </div>
@@ -61,7 +52,7 @@
                         </div>
                         <div class="col-md-3">
                             <select class="form-control form-select py-1" id="filter_mediation_notice_type">
-                                <option value="">Mediation Notice Types</option>
+                                <option value="">All Notice Types</option>
                                 <option value="1">Pre Mediation</option>
                                 <option value="2">Mediation</option>
                             </select>
@@ -118,201 +109,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Modal for Send Notices -->
-            <div class="modal fade" id="premediationProcessModal" tabindex="-1">
-                <div class="modal-dialog modal-xl">
-                    <form id="sendmediationNoticeForm">
-                        @csrf
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Send Pre-Mediation Notices</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="px-2">
-                                <div class="row my-2 gy-2 border-bottom border-1 pb-3">
-                                    <div class="col-md-3">
-                                        <select class="form-control form-select py-1" id="filter_product_type">
-                                            <option value="">All Product Types</option>
-                                            @foreach (config('constant.product_type') as $key => $value)
-                                                <option value="{{ $key }}">{{ $value }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="text" id="filter_case_number" class="form-control py-1"
-                                            placeholder="Enter Case Number">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="text" id="filter_loan_number" class="form-control py-1"
-                                            placeholder="Enter Loan Number">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select class="form-control form-select py-1" id="filter_arbitrator_status">
-                                            <option value="">All Confirmations</option>
-                                            <option value="0">Pending</option>
-                                            <option value="1">Approved</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <select class="form-control form-select py-1" id="filter_status">
-                                            <option value="">All Status</option>
-                                            <option value="1">Active</option>
-                                            <option value="0">Inactive</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <input type="date" id="filter_date_from" class="form-control py-1"
-                                            placeholder="From Date">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <input type="date" id="filter_date_to" class="form-control py-1"
-                                            placeholder="To Date">
-                                    </div>
-                                    <div class="col-md-3 d-flex justify-content-between gap-1">
-                                        <button type="button" class="btn btn-primary w-100 py-1"
-                                            id="btn-filter">Search</button>
-                                        <button type="button" class="btn btn-secondary w-100 py-1"
-                                            id="btn-reset">Reset</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-body">
-                                <div class="table-responsive">
-                                    <table
-                                        class="table custom-table table-striped dt-table-hover fs--1 mb-0 table-mediation-process"
-                                        style="width:100%">
-                                        <thead class="bg-200 text-900">
-                                            <tr>
-                                                <th>Case Type</th>
-                                                <th>Product Type</th>
-                                                <th>Case Number</th>
-                                                <th>Loan Number</th>
-                                                <th>Status</th>
-                                                <th>Case File Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                                <div class="mt-2 row">
-                                    <div class="col-md-6 col-12">
-                                        <label>Pre-Mediation Notice Date</label>
-                                        <input type="date" name="send_notice_date" id="send_notice_date"
-                                            class="form-control" required>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="modal-footer">
-                                <span class="text-danger" id="error-msg"></span>
-                                <button type="submit" class="btn btn-sm px-3 btn-primary">Send Pre Mediation
-                                    Notice</button>
-                                <button type="button" class="btn btn-sm px-3 btn-secondary"
-                                    data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-
-
-            <!-- Modal for Sending Mediation Notices -->
-            <div class="modal fade" id="mediationNoticeModal" tabindex="-1">
-                <div class="modal-dialog modal-xl">
-                    <form id="sendMediationNoticeForm">
-                        @csrf
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Send Mediation Notices</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-
-                            <div class="px-3">
-                                <div class="row my-2 gy-2 border-bottom border-1 pb-3">
-                                    <div class="col-md-3">
-                                        <select class="form-control form-select py-1" id="filter2_product_type">
-                                            <option value="">All Product Types</option>
-                                            @foreach (config('constant.product_type') as $key => $value)
-                                                <option value="{{ $key }}">{{ $value }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="text" id="filter2_case_number" class="form-control py-1"
-                                            placeholder="Enter Case Number">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="text" id="filter2_loan_number" class="form-control py-1"
-                                            placeholder="Enter Loan Number">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select class="form-control form-select py-1" id="filter2_status">
-                                            <option value="">All Status</option>
-                                            <option value="1">Active</option>
-                                            <option value="0">Inactive</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <input type="date" id="filter2_date_from" class="form-control py-1">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <input type="date" id="filter2_date_to" class="form-control py-1">
-                                    </div>
-                                    <div class="col-md-3 d-flex gap-2">
-                                        <button type="button" class="btn btn-primary w-100 py-1"
-                                            id="btn2-filter">Search</button>
-                                        <button type="button" class="btn btn-secondary w-100 py-1"
-                                            id="btn2-reset">Reset</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="modal-body">
-                                <div class="table-responsive">
-                                    <table
-                                        class="table table-mediation-list custom-table table-striped dt-table-hover fs--1 mb-0"
-                                        style="width:100%">
-                                        <thead class="bg-200 text-900">
-                                            <tr>
-                                                <th>Case Type</th>
-                                                <th>Product Type</th>
-                                                <th>Case Number</th>
-                                                <th>Loan Number</th>
-                                                <th>Status</th>
-                                                <th>Case File Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                                <div class="mt-2 row">
-                                    <div class="col-md-6 col-12">
-                                        <label>Date</label>
-                                        <input type="date" name="date" id="meeting_date" class="form-control"
-                                            required>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <label class="mt-md-0 mt-2">Time</label>
-                                        <input type="time" name="time" id="meeting_time" class="form-control"
-                                            required>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="modal-footer">
-                                <span class="text-danger" id="error-msg2"></span>
-                                <button type="submit" class="btn btn-sm btn-primary px-3">Send Mediation
-                                    Notice</button>
-                                <button type="button" class="btn btn-sm btn-secondary px-3"
-                                    data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
 
 
             <!-- Modal for View Detail -->
@@ -376,6 +172,7 @@
         });
     </script>
 
+
     {{-- ############# Main Datatable ############### --}}
     <script>
         $(document).ready(function() {
@@ -383,7 +180,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('drp.mediationprocess.mediationnoticelist') }}",
+                    url: "{{ route('drp.mediationprocess.mediationnoticelist', $master_id) }}",
                     data: function(d) {
                         d.case_type = $('#filter_case_type').val();
                         d.product_type = $('#filter_product_type').val();
@@ -458,10 +255,12 @@
         });
     </script>
 
+
     {{-- ############# Export Filters ############### --}}
     <script>
         $('#btn-export').on('click', function() {
             let params = {
+                master_id: "{{ $master_id }}",
                 case_type: $('#filter_case_type').val(),
                 product_type: $('#filter_product_type').val(),
                 mediation_notice_type: $('#filter_mediation_notice_type').val(),
@@ -477,269 +276,13 @@
         });
     </script>
 
-    {{-- #################################################################### --}}
-    {{-- ############## Data Table for Pre Mediation Modal ############### --}}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('.send-pre-mediation-notice-btn').click(function() {
-                $('#premediationProcessModal').modal('show');
-            });
-
-            let table = $('.table-mediation-process').DataTable({
-                processing: true,
-                serverSide: false,
-                ajax: {
-                    url: "{{ route('drp.mediationprocess.caseList') }}",
-                    data: function(d) {
-                        d.case_type = $('#filter_case_type').val();
-                        d.product_type = $('#filter_product_type').val();
-                        d.case_number = $('#filter_case_number').val();
-                        d.loan_number = $('#filter_loan_number').val();
-                        d.status = $('#filter_status').val();
-                        d.date_from = $('#filter_date_from').val();
-                        d.date_to = $('#filter_date_to').val();
-                    }
-                },
-                order: [
-                    [5, 'desc']
-                ],
-                columns: [{
-                        data: 'case_type'
-                    },
-                    {
-                        data: 'product_type'
-                    },
-                    {
-                        data: 'case_number'
-                    },
-                    {
-                        data: 'loan_number'
-                    },
-                    {
-                        data: 'status',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'created_at'
-                    }
-                ]
-            });
-
-            $('#btn-filter').on('click', function() {
-                table.ajax.reload();
-            });
-
-            $('#btn-reset').on('click', function() {
-                $('#filter_case_type').val('');
-                $('#filter_product_type').val('');
-                $('#filter_case_number').val('');
-                $('#filter_loan_number').val('');
-                $('#filter_status').val('');
-                $('#filter_date_from').val('');
-                $('#filter_date_to').val('');
-                table.ajax.reload();
-            });
-        });
-    </script>
-
-
-    {{-- ######################################################################## --}}
-    {{-- #################### Send Pre Mediation Notice ###################### --}}
-    <script>
-        $('#sendmediationNoticeForm').on('submit', function(e) {
-            e.preventDefault();
-
-            // Fetch all visible rows from DataTable
-            let allCaseIds = [];
-            let data = $('.table-mediation-process').DataTable().rows({
-                search: 'applied'
-            }).data();
-
-            for (let i = 0; i < data.length; i++) {
-                allCaseIds.push(data[i].id); // use 'id' if 'case_id' is not mapped
-            }
-
-            if (allCaseIds.length === 0) {
-                $('#error-msg').text('No cases found to send notice.');
-                return;
-            }
-
-            // Get the notice date
-            let noticeDate = $('#send_notice_date').val();
-
-            if (!noticeDate) {
-                $('#error-msg').text('Please select a notice date.');
-                return;
-            }
-
-            $.ajax({
-                url: "{{ route('drp.mediationprocess.sendpremediationNotices') }}",
-                method: "POST",
-                data: {
-                    _token: $('input[name="_token"]').val(),
-                    file_case_ids: allCaseIds,
-                    send_notice_date: noticeDate
-                },
-                success: function(response) {
-                    $('#error-msg').text('');
-                    toastr.success('Pre-Mediation Notices sent successfully!');
-                    $('#premediationProcessModal').modal('hide');
-                    $('.table-mediation-process').DataTable().ajax.reload();
-                },
-                error: function(xhr) {
-                    $('#error-msg').text('Failed to send notices.');
-                }
-            });
-        });
-    </script>
-
-
-    {{-- ############################################################################ --}}
-    {{-- ############# Send Mediation Notice and Create Meeting Room ############# --}}
-    <script>
-        $(document).ready(function() {
-            // Open modal
-            $('.send-mediation-notice-btn').click(function() {
-                $('#mediationNoticeModal').modal('show');
-                mediationListTable.ajax.reload();
-            });
-
-            // Datatable
-            let mediationListTable = $('.table-mediation-list').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ route('drp.mediationprocess.mediationcaselist') }}",
-                    data: function(d) {
-                        d.case_type = ''; // if needed
-                        d.product_type = $('#filter2_product_type').val();
-                        d.case_number = $('#filter2_case_number').val();
-                        d.loan_number = $('#filter2_loan_number').val();
-                        d.status = $('#filter2_status').val();
-                        d.date_from = $('#filter2_date_from').val();
-                        d.date_to = $('#filter2_date_to').val();
-                        d.is_mediation = true;
-                    }
-                },
-                order: [
-                    [5, 'desc']
-                ],
-                columns: [{
-                        data: 'case_type'
-                    },
-                    {
-                        data: 'product_type'
-                    },
-                    {
-                        data: 'case_number'
-                    },
-                    {
-                        data: 'loan_number'
-                    },
-                    {
-                        data: 'status',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'created_at'
-                    },
-                    {
-                        data: 'file_case_id',
-                        visible: false,
-                        searchable: false
-                    }
-                ]
-            });
-
-            // Filters
-            $('#btn2-filter').on('click', function() {
-                mediationListTable.ajax.reload();
-            });
-            $('#btn2-reset').on('click', function() {
-                $('#filter2_product_type, #filter2_case_number, #filter2_loan_number, #filter2_status, #filter2_date_from, #filter2_date_to')
-                    .val('');
-                mediationListTable.ajax.reload();
-            });
-
-            // Submit form
-            $('#sendMediationNoticeForm').on('submit', function(e) {
-                e.preventDefault();
-
-                let data = mediationListTable.rows({
-                    search: 'applied'
-                }).data();
-                let allCaseIds = [];
-
-                for (let i = 0; i < data.length; i++) {
-                    allCaseIds.push(data[i].file_case_id);
-                }
-
-                if (allCaseIds.length === 0) {
-                    $('#error-msg2').text('No eligible cases to send Mediation notice.');
-                    return;
-                }
-
-                // Fetch ALL filtered case_ids via AJAX
-                $.ajax({
-                    url: "{{ route('drp.mediationprocess.allcaseids') }}",
-                    method: "GET",
-                    data: filters,
-                    success: function(response) {
-                        let allCaseIds = response.case_ids;
-
-                        if (allCaseIds.length === 0) {
-                            $('#error-msg2').text(
-                            'No eligible cases to send Mediation notice.');
-                            return;
-                        }
-
-                        // Send to mediation notice API
-                        $.ajax({
-                            url: "{{ route('drp.mediationprocess.sendmediationNotices') }}",
-                            method: "POST",
-                            data: {
-                                _token: $('input[name="_token"]').val(),
-                                file_case_ids: allCaseIds,
-                                date: $('#meeting_date').val(),
-                                time: $('#meeting_time').val()
-                            },
-                            success: function(response) {
-                                $('#error-msg2').text('');
-                                toastr.success(
-                                    'Mediation Meeting Rooms Created Successfully!'
-                                    );
-                                $('#mediationNoticeModal').modal('hide');
-                                mediationListTable.ajax.reload();
-                            },
-                            error: function(xhr) {
-                                let errors = xhr.responseJSON.errors;
-                                let message = xhr.responseJSON.message ||
-                                    'Failed to send Mediation Notices.';
-                                if (errors) {
-                                    message = Object.values(errors).flat().join(
-                                        '<br>');
-                                }
-                                $('#error-msg2').html(message);
-                            }
-                        });
-                    },
-                    error: function(xhr) {
-                        $('#error-msg2').text('Failed to fetch all filtered case IDs.');
-                    }
-                });
-            });
-        });
-    </script>
-
 
     {{-- ########################################### --}}
     {{-- ############## View Details ############### --}}
     <script>
         $(document).on('click', '.view-details-btn', function() {
             const id = $(this).data('id');
-            const pdfIconUrl = "{{ asset('public/assets/img/pdf.png') }}";
+            const pdfIconUrl = "{{ asset('assets/img/pdf.png') }}";
             $.ajax({
                 url: `{{ url('drp/mediation-notice') }}/${id}`,
                 method: 'GET',

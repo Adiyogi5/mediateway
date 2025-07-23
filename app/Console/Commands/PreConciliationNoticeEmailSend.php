@@ -56,12 +56,15 @@ class PreConciliationNoticeEmailSend extends Command
             })
             ->whereNotNull('conciliation_notices.notice_copy')
             ->where('conciliation_notices.email_status', 0)
+            ->whereNull('conciliation_notices.deleted_at')
             ->select(
                 'file_cases.*',
                 'conciliation_notices.file_case_id',
                 'conciliation_notices.conciliation_notice_type',
                 'conciliation_notices.notice_copy',
-                'conciliation_notices.email_status'
+                'conciliation_notices.email_status',
+                'conciliation_notices.whatsapp_notice_status',
+                'conciliation_notices.sms_status',
             )
             ->limit(4)
             ->get();
@@ -115,7 +118,7 @@ class PreConciliationNoticeEmailSend extends Command
                                 ]);
                         } else {
 
-                            $subject     = "Subject: Service of Legal Notice--- {$value->loan_number} (Co-branded with Bajaj Finserv)";
+                            $subject     = "Subject: Service of Legal Notice--- {$value->loan_number}";
                             $description = "Dear {$value->respondent_first_name} {$value->respondent_last_name},
 
 Please find attached a RECALL NOTICE/ DEMAND NOTICE  addressed to you on behalf of our client, RBL Bank Ltd.
@@ -138,7 +141,7 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
                             try {
                                 Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($value, $subject, $email) {
                                     $message->to($email)
-                                        ->cc('legaldesk@rblbank.com')
+                                        // ->cc('legaldesk@rblbank.com')
                                         ->subject($subject)
                                         ->attach(public_path(str_replace('\\', '/', 'storage/' . $value->notice_copy)), [
                                             'mime' => 'application/pdf',

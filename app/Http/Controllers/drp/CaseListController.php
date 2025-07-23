@@ -43,6 +43,7 @@ class CaseListController extends Controller
             $data = FileCase::select('file_cases.id', 'file_cases.case_type', 'file_cases.product_type', 'file_cases.case_number', 'file_cases.loan_number', 'file_cases.status', 'file_cases.created_at','assign_cases.arbitrator_id','assign_cases.confirm_to_arbitrator')
                 ->join('assign_cases','assign_cases.case_id','=','file_cases.id')
                 ->where('assign_cases.arbitrator_id',$drp->id)
+                ->where('file_cases.case_type', 1)
                 ->where('file_cases.status', 1);
                 
                 if ($request->filled('case_type')) {

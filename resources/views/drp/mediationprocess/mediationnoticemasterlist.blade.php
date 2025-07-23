@@ -24,19 +24,19 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col-12 d-flex justify-content-between align-self-center gap-2">
-                                <h5 class="mb-0" data-anchor="data-anchor">Conciliation Notices :: Send Notice List </h5>
+                                <h5 class="mb-0" data-anchor="data-anchor">Mediation Notices :: Send Notice List </h5>
                                 <div class="nav nav-pills nav-pills-falcon">
                                     <a href="javascript:void(0)"
-                                        class="btn btn-outline-secondary send-pre-conciliation-notice-btn py-1 my-1">
+                                        class="btn btn-outline-secondary send-pre-mediation-notice-btn py-1 my-1">
                                         <i class="fa fa-paper-plane me-1"></i>
-                                        Send Pre Conciliation Notice
+                                        Send Pre Mediation Notice
                                     </a>
                                 </div>
                                 <div class="nav nav-pills nav-pills-falcon">
                                     <a href="javascript:void(0)"
-                                        class="btn btn-outline-primary send-conciliation-notice-btn py-1 my-1">
+                                        class="btn btn-outline-primary send-mediation-notice-btn py-1 my-1">
                                         <i class="fa fa-paper-plane me-1"></i>
-                                        Send Conciliation Notice
+                                        Send Mediation Notice
                                     </a>
                                 </div>
                             </div>
@@ -45,10 +45,10 @@
 
                     <div class="row my-2 g-2">
                         <div class="col-md-3">
-                            <select class="form-control form-select py-1" id="filter_conciliation_notice_type">
+                            <select class="form-control form-select py-1" id="filter_mediation_notice_type">
                                 <option value="">All Notice Types</option>
-                                <option value="1">Pre Conciliation</option>
-                                <option value="2">Conciliation</option>
+                                <option value="1">Pre Mediation</option>
+                                <option value="2">Mediation</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -87,14 +87,14 @@
             </div>
 
             
-            <!-- Modal for Send Pre-Conciliation Notices -->
-            <div class="modal fade" id="preconciliationProcessModal" tabindex="-1">
+            <!-- Modal for Send Pre-Mediation Notices -->
+            <div class="modal fade" id="premediationProcessModal" tabindex="-1">
                 <div class="modal-dialog modal-xl">
-                    <form id="sendconciliationNoticeForm">
+                    <form id="sendmediationNoticeForm">
                         @csrf
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Send Pre-Conciliation Notices</h5>
+                                <h5 class="modal-title">Send Pre-Mediation Notices</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="px-2">
@@ -141,7 +141,7 @@
                             <div class="modal-body">
                                 <div class="table-responsive">
                                     <table
-                                        class="table custom-table table-striped dt-table-hover fs--1 mb-0 table-conciliation-process"
+                                        class="table custom-table table-striped dt-table-hover fs--1 mb-0 table-mediation-process"
                                         style="width:100%">
                                         <thead class="bg-200 text-900">
                                             <tr>
@@ -167,7 +167,7 @@
 
                             <div class="modal-footer">
                                 <span class="text-danger" id="error-msg"></span>
-                                <button type="submit" class="btn btn-sm px-3 btn-primary">Send Pre Conciliation
+                                <button type="submit" class="btn btn-sm px-3 btn-primary">Send Pre Mediation
                                     Notice</button>
                                 <button type="button" class="btn btn-sm px-3 btn-secondary"
                                     data-bs-dismiss="modal">Close</button>
@@ -179,14 +179,14 @@
 
 
 
-            <!-- Modal for Send Conciliation Notices -->
-            <div class="modal fade" id="conciliationNoticeModal" tabindex="-1">
+            <!-- Modal for Send Mediation Notices -->
+            <div class="modal fade" id="mediationNoticeModal" tabindex="-1">
                 <div class="modal-dialog modal-xl">
-                    <form id="sendConciliationNoticeForm">
+                    <form id="sendMediationNoticeForm">
                         @csrf
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Send Conciliation Notices</h5>
+                                <h5 class="modal-title">Send Mediation Notices</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
 
@@ -233,7 +233,7 @@
                             <div class="modal-body">
                                 <div class="table-responsive">
                                     <table
-                                        class="table table-conciliation-list custom-table table-striped dt-table-hover fs--1 mb-0"
+                                        class="table table-mediation-list custom-table table-striped dt-table-hover fs--1 mb-0"
                                         style="width:100%">
                                         <thead class="bg-200 text-900">
                                             <tr>
@@ -266,11 +266,11 @@
                                 <span class="text-danger" id="error-msg2"></span>
                                 <!-- Send button -->
                                 <button type="submit" class="btn btn-sm btn-success px-3"
-                                    name="action" value="send">Send Conciliation Notice</button>
+                                    name="action" value="send">Send Mediation Notice</button>
 
                                 <!-- Decline button -->
                                 <button type="submit" class="btn btn-sm btn-danger px-3"
-                                    name="action" value="decline">Decline Conciliation Notice</button>
+                                    name="action" value="decline">Decline Mediation Notice</button>
                                 <button type="button" class="btn btn-sm btn-secondary px-3"
                                     data-bs-dismiss="modal">Close</button>
                             </div>
@@ -348,16 +348,16 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('drp.conciliationprocess.conciliationnoticemasterlist') }}",
+                    url: "{{ route('drp.mediationprocess.mediationnoticemasterlist') }}",
                     data: function(d) {
-                        d.conciliation_notice_type = $('#filter_conciliation_notice_type').val();
+                        d.mediation_notice_type = $('#filter_mediation_notice_type').val();
                         d.date_from = $('#filter_date_from').val();
                         d.date_to = $('#filter_date_to').val();
                     }
                 },
                 columns: [
                     { data: 'organization_name' },
-                    { data: 'conciliation_notice_type', orderable: false, searchable: false },
+                    { data: 'mediation_notice_type', orderable: false, searchable: false },
                     { data: 'file_name' },
                     { data: 'date' },
                     { data: 'email_count', orderable: false, searchable: false },
@@ -377,7 +377,7 @@
 
             // Reset button
             $('#btn-maintable-reset').click(function() {
-                $('#filter_conciliation_notice_type').val('');
+                $('#filter_mediation_notice_type').val('');
                 $('#filter_date_from').val('');
                 $('#filter_date_to').val('');
                 table.ajax.reload();
@@ -387,18 +387,18 @@
 
 
     {{-- #################################################################### --}}
-    {{-- ############## Data Table for Pre Conciliation Modal ############### --}}
+    {{-- ############## Data Table for Pre Mediation Modal ############### --}}
     <script type="text/javascript">
         $(document).ready(function() {
-            $('.send-pre-conciliation-notice-btn').click(function() {
-                $('#preconciliationProcessModal').modal('show');
+            $('.send-pre-mediation-notice-btn').click(function() {
+                $('#premediationProcessModal').modal('show');
             });
 
-            let table = $('.table-conciliation-process').DataTable({
+            let table = $('.table-mediation-process').DataTable({
                 processing: true,
                 serverSide: false,
                 ajax: {
-                    url: "{{ route('drp.conciliationprocess.caseList') }}",
+                    url: "{{ route('drp.mediationprocess.caseList') }}",
                     data: function(d) {
                         d.product_type = $('#filter_product_type').val();
                         d.case_number = $('#filter_case_number').val();
@@ -452,13 +452,13 @@
 
 
     {{-- ######################################################################## --}}
-    {{-- #################### Send Pre Conciliation Notice ###################### --}}
+    {{-- #################### Send Pre Mediation Notice ###################### --}}
     <script>
-        $('#sendconciliationNoticeForm').on('submit', function(e) {
+        $('#sendmediationNoticeForm').on('submit', function(e) {
             e.preventDefault();
 
             let allCaseIds = [];
-            let data = $('.table-conciliation-process').DataTable().rows({ search: 'applied' }).data();
+            let data = $('.table-mediation-process').DataTable().rows({ search: 'applied' }).data();
 
             for (let i = 0; i < data.length; i++) {
                 allCaseIds.push(data[i].id); // Ensure `id` matches your backend
@@ -479,7 +479,7 @@
             $('#loader-overlay').fadeIn();
 
             $.ajax({
-                url: "{{ route('drp.conciliationprocess.sendpreconciliationNotices') }}",
+                url: "{{ route('drp.mediationprocess.sendpremediationNotices') }}",
                 method: "POST",
                 contentType: "application/json",  // Important!
                 data: JSON.stringify({
@@ -491,9 +491,9 @@
                 },
                 success: function(response) {
                     $('#error-msg').text('');
-                    toastr.success('Pre-Conciliation Notices sent successfully!');
-                    $('#preconciliationProcessModal').modal('hide');
-                    $('.table-conciliation-process').DataTable().ajax.reload();
+                    toastr.success('Pre-Mediation Notices sent successfully!');
+                    $('#premediationProcessModal').modal('hide');
+                    $('.table-mediation-process').DataTable().ajax.reload();
                 },
                 error: function(xhr) {
                     let msg = 'Failed to send notices.';
@@ -510,21 +510,21 @@
 
 
     {{-- ############################################################################ --}}
-    {{-- ############# Send Conciliation Notice and Create Meeting Room ############# --}}
+    {{-- ############# Send Mediation Notice and Create Meeting Room ############# --}}
     <script>
         $(document).ready(function() {
             // Open modal
-            $('.send-conciliation-notice-btn').click(function() {
-                $('#conciliationNoticeModal').modal('show');
-                conciliationListTable.ajax.reload();
+            $('.send-mediation-notice-btn').click(function() {
+                $('#mediationNoticeModal').modal('show');
+                mediationListTable.ajax.reload();
             });
 
             // Datatable
-            let conciliationListTable = $('.table-conciliation-list').DataTable({
+            let mediationListTable = $('.table-mediation-list').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('drp.conciliationprocess.conciliationcaselist') }}",
+                    url: "{{ route('drp.mediationprocess.mediationcaselist') }}",
                     data: function(d) {
                         d.case_type = ''; // if needed
                         d.product_type = $('#filter2_product_type').val();
@@ -533,7 +533,7 @@
                         d.status = $('#filter2_status').val();
                         d.date_from = $('#filter2_date_from').val();
                         d.date_to = $('#filter2_date_to').val();
-                        d.is_conciliation = true;
+                        d.is_mediation = true;
                     }
                 },
                 order: [
@@ -569,16 +569,16 @@
 
             // Filters
             $('#btn2-filter').on('click', function() {
-                conciliationListTable.ajax.reload();
+                mediationListTable.ajax.reload();
             });
             $('#btn2-reset').on('click', function() {
                 $('#filter2_product_type, #filter2_case_number, #filter2_loan_number, #filter2_status, #filter2_date_from, #filter2_date_to')
                     .val('');
-                conciliationListTable.ajax.reload();
+                mediationListTable.ajax.reload();
             });
 
             // Submit form
-            $('#sendConciliationNoticeForm').on('submit', function(e) {
+            $('#sendMediationNoticeForm').on('submit', function(e) {
                 e.preventDefault();
 
                 let clickedButton = $(document.activeElement); // find the button that triggered submit
@@ -594,14 +594,14 @@
                 };
 
                 $.ajax({
-                    url: "{{ route('drp.conciliationprocess.allcaseids') }}",
+                    url: "{{ route('drp.mediationprocess.allcaseids') }}",
                     method: "GET",
                     data: filters,
                     success: function(response) {
                         let allCaseIds = response.case_ids;
 
                         if (allCaseIds.length === 0) {
-                            $('#error-msg2').text('No eligible cases to send Conciliation notice.');
+                            $('#error-msg2').text('No eligible cases to send Mediation notice.');
                             return;
                         }
                         
@@ -610,7 +610,7 @@
 
                         // Send final request with 'action'
                         $.ajax({
-                            url: "{{ route('drp.conciliationprocess.sendconciliationNotices') }}",
+                            url: "{{ route('drp.mediationprocess.sendmediationNotices') }}",
                             method: "POST",
                             contentType: "application/json",
                             data: JSON.stringify({
@@ -625,12 +625,12 @@
                             success: function(response) {
                                 $('#error-msg2').text('');
                                 toastr.success(response.message);
-                                $('#conciliationNoticeModal').modal('hide');
-                                conciliationListTable.ajax.reload();
+                                $('#mediationNoticeModal').modal('hide');
+                                mediationListTable.ajax.reload();
                             },
                             error: function(xhr) {
                                 let errors = xhr.responseJSON.errors;
-                                let message = xhr.responseJSON.message || 'Failed to send Conciliation Notices.';
+                                let message = xhr.responseJSON.message || 'Failed to send Mediation Notices.';
                                 if (errors) {
                                     message = Object.values(errors).flat().join('<br>');
                                 }
@@ -658,7 +658,7 @@
 
             Swal.fire({
                 title: 'Are you sure?',
-                text: "This will delete the master record and all associated conciliation notices.",
+                text: "This will delete the master record and all associated mediation notices.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -668,7 +668,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{{ route('drp.conciliationprocess.conciliationnoticemaster.delete', ['id' => 'ID_PLACEHOLDER']) }}".replace('ID_PLACEHOLDER', id),
+                        url: "{{ route('drp.mediationprocess.mediationnoticemaster.delete', ['id' => 'ID_PLACEHOLDER']) }}".replace('ID_PLACEHOLDER', id),
                         type: 'DELETE',
                         data: {
                             _token: '{{ csrf_token() }}'

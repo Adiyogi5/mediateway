@@ -52,7 +52,8 @@ class SendConciliationNoticeController extends Controller
                     'organizations.name as organization_name',
                 )
                 ->leftJoin('organizations', 'organizations.id', '=', 'conciliation_notice_masters.uploaded_by')
-                ->where('conciliation_notice_masters.case_manager_id', $drp->id);
+                ->where('conciliation_notice_masters.case_manager_id', $drp->id)
+                ->whereNull('conciliation_notice_masters.deleted_at');
 
             // Filters
             if ($request->filled('conciliation_notice_type')) {
@@ -143,7 +144,9 @@ class SendConciliationNoticeController extends Controller
                 ->join('file_cases', 'file_cases.id', '=', 'conciliation_notices.file_case_id')
                 ->join('assign_cases', 'assign_cases.case_id', '=', 'conciliation_notices.file_case_id')
                 ->where('conciliation_notices.conciliation_master_id', $master_id)
-                ->where('assign_cases.case_manager_id', $drp->id);
+                ->where('assign_cases.case_manager_id', $drp->id)
+                ->whereNull('conciliation_notices.deleted_at')
+                ->whereNull('file_cases.deleted_at');
 
             // Filters
             if ($request->filled('case_type')) {
@@ -237,7 +240,7 @@ class SendConciliationNoticeController extends Controller
                     $subquery->select('file_case_id')
                             ->from('conciliation_notices')
                             ->whereNull('deleted_at');
-                });
+                })->distinct();
 
         // Apply filters
         if ($request->filled('case_type')) {
@@ -395,7 +398,9 @@ class SendConciliationNoticeController extends Controller
                     )
                 ")
                 ->where('conciliation_notices.conciliation_notice_type', 1)
-                ->where('assign_cases.case_manager_id', $drp->id);
+                ->where('assign_cases.case_manager_id', $drp->id)
+                ->whereNull('conciliation_notices.deleted_at')
+                ->whereNull('file_cases.deleted_at')->distinct();
 
             // Filters
             if ($request->filled('case_type')) {
@@ -434,7 +439,7 @@ class SendConciliationNoticeController extends Controller
                 ->editColumn('notice_copy', function ($row) {
                     if ($row->notice_copy) {
                         $url = asset('storage/' . $row->notice_copy); // adjust if notice_copy is full URL
-                        return '<a href="' . $url . '" target="_blank"><img src="' . asset('public/assets/img/pdf.png') . '" height="30" alt="PDF File" /></a>';
+                        return '<a href="' . $url . '" target="_blank"><img src="' . asset('assets/img/pdf.png') . '" height="30" alt="PDF File" /></a>';
                     }
                     return '<span class="text-muted">N/A</span>';
                 })
@@ -592,7 +597,9 @@ class SendConciliationNoticeController extends Controller
                     )
                 ")
             ->where('conciliation_notices.conciliation_notice_type', 1)
-            ->where('assign_cases.case_manager_id', $drp->id);
+            ->where('assign_cases.case_manager_id', $drp->id)
+            ->whereNull('conciliation_notices.deleted_at')
+            ->whereNull('file_cases.deleted_at')->distinct();
 
         // Apply filters (same as in conciliationcaselist)
         if ($request->filled('product_type')) {

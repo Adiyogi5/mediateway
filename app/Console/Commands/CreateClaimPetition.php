@@ -99,6 +99,8 @@ class CreateClaimPetition extends Command
                     $casemanagerData = Drp::where('id', $assigncaseData->case_manager_id)->first();
 
                     $organizationManager_signature = Organization::where('id', $value['organization_id'])->select('signature_org')->first();
+                    $organizationLetterHead_header = Organization::where('id', $value['organization_id'])->select('header_letterhead')->first();
+                    $organizationLetterHead_footer = Organization::where('id', $value['organization_id'])->select('footer_letterhead')->first();
 
 
                     $claimpetitionData = ClaimPetition::where('product_type', $value->product_type)->first();
@@ -145,24 +147,56 @@ class CreateClaimPetition extends Command
                         'CUSTOMER MAIL ID'                                                => $value->respondent_email ?? '',
 
                         'ARBITRATION CLAUSE NO'                                           => $value->arbitration_clause_no ?? '',
+                        'ARBITRATION DATE'                                                => $value->arbitration_date ?? '',
+                        'PRODUCT'                                                         => $value->file_case_details->product ?? '',
 
                         'GUARANTOR 1 NAME'                                                => $value->guarantors->guarantor_1_name ?? '',
-                        'GUARANTOR 1 ADDRESS'                                             => $value->guarantors->guarantor_1_address ?? '',
                         'GUARANTOR 1 MOBILE NO'                                           => $value->guarantors->guarantor_1_mobile_no ?? '',
-                        'GUARANTOR 1 MAIL ID'                                             => $value->guarantors->guarantor_1_email_id ?? '',
-
+                        'GUARANTOR 1 EMAIL ID'                                            => $value->guarantors->guarantor_1_email_id ?? '',
+                        'GUARANTOR 1 ADDRESS'                                             => $value->guarantors->guarantor_1_address ?? '',
+                        'GUARANTOR 1 FATHER NAME'                                         => $value->guarantors->guarantor_1_father_name ?? '',
+                           
                         'GUARANTOR 2 NAME'                                                => $value->guarantors->guarantor_2_name ?? '',
-                        'GUARANTOR 2 ADDRESS'                                             => $value->guarantors->guarantor_2_address ?? '',
                         'GUARANTOR 2 MOBILE NO'                                           => $value->guarantors->guarantor_2_mobile_no ?? '',
-                        'GUARANTOR 2 MAIL ID'                                             => $value->guarantors->guarantor_2_email_id ?? '',
+                        'GUARANTOR 2 EMAIL ID'                                            => $value->guarantors->guarantor_2_email_id ?? '',
+                        'GUARANTOR 2 ADDRESS'                                             => $value->guarantors->guarantor_2_address ?? '',
+                        'GUARANTOR 2 FATHER NAME'                                         => $value->guarantors->guarantor_2_father_name ?? '',
 
                         'GUARANTOR 3 NAME'                                                => $value->guarantors->guarantor_3_name ?? '',
-                        'GUARANTOR 3 ADDRESS'                                             => $value->guarantors->guarantor_3_address ?? '',
                         'GUARANTOR 3 MOBILE NO'                                           => $value->guarantors->guarantor_3_mobile_no ?? '',
-                        'GUARANTOR 3 MAIL ID'                                             => $value->guarantors->guarantor_3_email_id ?? '',
+                        'GUARANTOR 3 EMAIL ID'                                            => $value->guarantors->guarantor_3_email_id ?? '',
+                        'GUARANTOR 3 ADDRESS'                                             => $value->guarantors->guarantor_3_address ?? '',
+                        'GUARANTOR 3 FATHER NAME'                                         => $value->guarantors->guarantor_3_father_name ?? '',
+                            
+                        'GUARANTOR 4 NAME'                                                => $value->guarantors->guarantor_4_name ?? '',
+                        'GUARANTOR 4 MOBILE NO'                                           => $value->guarantors->guarantor_4_mobile_no ?? '',
+                        'GUARANTOR 4 EMAIL ID'                                            => $value->guarantors->guarantor_4_email_id ?? '',
+                        'GUARANTOR 4 ADDRESS'                                             => $value->guarantors->guarantor_4_address ?? '',
+                        'GUARANTOR 4 FATHER NAME'                                         => $value->guarantors->guarantor_4_father_name ?? '',
+                            
+                        'GUARANTOR 5 NAME'                                                => $value->guarantors->guarantor_5_name ?? '',
+                        'GUARANTOR 5 MOBILE NO'                                           => $value->guarantors->guarantor_5_mobile_no ?? '',
+                        'GUARANTOR 5 EMAIL ID'                                            => $value->guarantors->guarantor_5_email_id ?? '',
+                        'GUARANTOR 5 ADDRESS'                                             => $value->guarantors->guarantor_5_address ?? '',
+                        'GUARANTOR 5 FATHER NAME'                                         => $value->guarantors->guarantor_5_father_name ?? '',
+                            
+                        'GUARANTOR 6 NAME'                                                => $value->guarantors->guarantor_6_name ?? '',
+                        'GUARANTOR 6 MOBILE NO'                                           => $value->guarantors->guarantor_6_mobile_no ?? '',
+                        'GUARANTOR 6 EMAIL ID'                                            => $value->guarantors->guarantor_6_email_id ?? '',
+                        'GUARANTOR 6 ADDRESS'                                             => $value->guarantors->guarantor_6_address ?? '',
+                        'GUARANTOR 6 FATHER NAME'                                         => $value->guarantors->guarantor_6_father_name ?? '',
+                            
+                        'GUARANTOR 7 NAME'                                                => $value->guarantors->guarantor_7_name ?? '',
+                        'GUARANTOR 7 MOBILE NO'                                           => $value->guarantors->guarantor_7_mobile_no ?? '',
+                        'GUARANTOR 7 EMAIL ID'                                            => $value->guarantors->guarantor_7_email_id ?? '',
+                        'GUARANTOR 7 ADDRESS'                                             => $value->guarantors->guarantor_7_address ?? '',
+                        'GUARANTOR 7 FATHER NAME'                                         => $value->guarantors->guarantor_7_father_name ?? '',
 
                         'DATE'                                                            => now()->format('d-m-Y'),
+
                         'STAGE 1 NOTICE DATE'                                             => $value->file_case_details->stage_1_notice_date ?? '',
+                        'STAGE 1A NOTICE DATE'                                            => $value->file_case_details->stage_1a_notice_date ?? '',
+                        'STAGE 1B NOTICE DATE'                                            => $value->file_case_details->stage_1b_notice_date ?? '',
                         'STAGE 2B NOTICE DATE'                                            => $value->file_case_details->stage_2b_notice_date ?? '',
                         'STAGE 3A NOTICE DATE'                                            => $value->file_case_details->stage_3a_notice_date ?? '',
                         'STAGE 3B NOTICE DATE'                                            => $value->file_case_details->stage_3b_notice_date ?? '',
@@ -191,36 +225,61 @@ class CreateClaimPetition extends Command
                     };
 
                     $finalNotice = $replaceSummernotePlaceholders($claimPetition, $data);
-                  
-                    // Append the signature image at the end of the content, aligned right
+
+                    // Use full URLs
+                    $headerImg    = url('storage/' . $organizationLetterHead_header['header_letterhead']);
+                    $footerImg    = url('storage/' . $organizationLetterHead_footer['footer_letterhead']);
+                    $signatureImg = url('storage/' . $organizationManager_signature['signature_org']);
+
+                    // Append signature at the end of the notice
                     $finalNotice .= '
-                        <div style="text-align: right; margin-top: 0px;">
-                            <img src="' . asset('storage/' . $organizationManager_signature['signature_org']) . '" style="height: 80px;" alt="Signature">
+                        <div style="text-align: left; margin-top: 10px;">
+                            <img src="' . $signatureImg . '" style="height: 80px;" alt="Signature">
                         </div>
                     ';
 
-                    // 1. Prepare your HTML with custom styles
+                    // Now wrap everything in proper HTML with real headers/footers
                     $html = '
-                    <style>
-                        @page {
-                            size: A4;
-                            margin: 12mm;
-                        }
-                        body {
-                            font-family: DejaVu Sans, sans-serif;
-                            font-size: 12px;
-                            line-height: 1.4;
-                        }
-                        p {
-                            margin: 0px 0;
-                            padding: 0;
-                        }
-                        img {
-                            max-width: 100%;
-                            height: auto;
-                        }
-                    </style>
-                    ' . $finalNotice;
+                    <html>
+                    <head>
+                        <style>
+                            @page {
+                                size: A4;
+                                margin: 6mm 12mm 12mm 12mm; /* top, right, bottom, left */
+                                header: html_myHeader;
+                                footer: html_myFooter;
+                            }
+
+                            body {
+                                font-family: DejaVu Sans, sans-serif;
+                                font-size: 12px;
+                                line-height: 1.4;
+                            }
+
+                            img {
+                                max-width: 100%;
+                                height: auto;
+                            }
+                        </style>
+                    </head>
+
+                    <!-- Define actual header -->
+                    <htmlpageheader name="myHeader">
+                        <img src="' . $headerImg . '" alt="Header Image" />
+                    </htmlpageheader>
+
+                    <body>
+
+                    ' . $finalNotice . '
+
+                    </body>
+
+                    <!-- Define actual footer -->
+                    <htmlpagefooter name="myFooter">
+                        <img src="' . $footerImg . '" alt="Footer Image" />
+                    </htmlpagefooter>
+
+                    </html>';
 
                     // 2. Generate PDF with A4 paper size
                     $pdf = PDF::loadHTML($html)->setPaper('A4', 'portrait')->setOptions(['isRemoteEnabled' => true]);
@@ -264,9 +323,9 @@ class CreateClaimPetition extends Command
 
                     // First Hearing Date-- And -- Second Hearing Date--
                     $casefirstnotice = Notice::where('file_case_id',$value->id)->where('notice_type',1)->first();
-                    $secondhearingtimeleine = OrganizationList::with('noticeTimeline')->where('name',$value->parent_name)->first();
-                    $firsthearingdate = Carbon::parse($casefirstnotice->notice_date)->addDays($secondhearingtimeleine->noticeTimeline->notice_5a);
-                    $secondhearingdate = Carbon::parse($casefirstnotice->notice_date)->addDays($secondhearingtimeleine->noticeTimeline->notice_second_hearing);
+                    $secondhearingtimeline = OrganizationList::with('noticeTimeline')->where('name',$value->parent_name)->first();
+                    $firsthearingdate = Carbon::parse($casefirstnotice->notice_date)->addDays($secondhearingtimeline->noticeTimeline->notice_5a);
+                    $secondhearingdate = Carbon::parse($casefirstnotice->notice_date)->addDays($secondhearingtimeline->noticeTimeline->notice_second_hearing);
         
                     // Update the existing Notice record with the claim petition path
                     FileCase::where('id', $value->id)->update([

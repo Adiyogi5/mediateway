@@ -2,7 +2,7 @@
 namespace App\Console\Commands;
 
 use App\Helper\Helper;
-use App\Models\ConciliationNotice;
+use App\Models\MediationNotice;
 use App\Models\FileCase;
 use App\Models\NoticeTemplate;
 use App\Models\Organization;
@@ -10,14 +10,14 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class PreConciliationNoticePdfSave extends Command
+class PreMediationNoticePdfSave extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'bulk:preconciliation-notice-pdf-save';
+    protected $signature = 'bulk:premediation-notice-pdf-save';
 
     /**
      * The console command description.
@@ -44,22 +44,22 @@ class PreConciliationNoticePdfSave extends Command
     public function handle()
     {
         // ########################################################
-        // Pre-Conciliation Notice PDF Save - By Case Manager
+        // Pre-Mediation Notice PDF Save - By Case Manager
         // ########################################################
         $caseData = FileCase::with('file_case_details','guarantors')
-            ->leftJoin('conciliation_notices', 'conciliation_notices.file_case_id', '=', 'file_cases.id')
-            ->where('conciliation_notices.conciliation_notice_type', 1)
-            ->whereNull('conciliation_notices.notice_copy')
-            ->whereNull('conciliation_notices.deleted_at')
+            ->leftJoin('mediation_notices', 'mediation_notices.file_case_id', '=', 'file_cases.id')
+            ->where('mediation_notices.mediation_notice_type', 1)
+            ->whereNull('mediation_notices.notice_copy')
+            ->whereNull('mediation_notices.deleted_at')
             ->select(
                 'file_cases.*',
-                'conciliation_notices.file_case_id',
-                'conciliation_notices.conciliation_notice_type',
-                'conciliation_notices.notice_copy',
-                'conciliation_notices.notice_date',
-                'conciliation_notices.email_status',
-                'conciliation_notices.whatsapp_notice_status',
-                'conciliation_notices.sms_status',
+                'mediation_notices.file_case_id',
+                'mediation_notices.mediation_notice_type',
+                'mediation_notices.notice_copy',
+                'mediation_notices.notice_date',
+                'mediation_notices.email_status',
+                'mediation_notices.whatsapp_notice_status',
+                'mediation_notices.sms_status',
             )
             ->limit(4)
             ->get();
@@ -76,7 +76,7 @@ class PreConciliationNoticePdfSave extends Command
                 $now                           = now();
                 
                 $fileCaseId = $value->id;
-                Log::info("Processing Pre-Conciliation Pdf Save for FileCase ID: {$fileCaseId}");
+                Log::info("Processing Pre-Mediation Pdf Save for FileCase ID: {$fileCaseId}");
 
                 // #########################################################
                 // ################# Send Email using SMTP #################
@@ -253,16 +253,16 @@ class PreConciliationNoticePdfSave extends Command
                     );
 
                     // Save the PDF using your helper
-                    $savedPath = Helper::loannosaveFile($uploadedFile, 'preconciliationnotices', $value->loan_number);
+                    $savedPath = Helper::loannosaveFile($uploadedFile, 'premediationnotices', $value->loan_number);
 
-                    ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)->update([
+                    MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)->update([
                         'notice_copy'   => $savedPath,
                     ]);
-                    Log::info("Pre-Conciliation Pdf saved successfully for FileCase ID: {$fileCaseId}");
+                    Log::info("Pre-Mediation Pdf saved successfully for FileCase ID: {$fileCaseId}");
                 }
 
             } catch (\Throwable $th) {
-                Log::error("Error Saving Pre-Conciliation Pdf for record ID {$value->id}: " . $th->getMessage());
+                Log::error("Error Saving Pre-Mediation Pdf for record ID {$value->id}: " . $th->getMessage());
             }
         }
     }

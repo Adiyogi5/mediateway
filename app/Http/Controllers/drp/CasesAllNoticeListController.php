@@ -149,7 +149,7 @@ class CasesAllNoticeListController extends Controller
                     // Generate the PDF link if the file exists
                     $html = $row->$noticeType
                         ? '<a href="' . asset('storage/' . $row->$noticeType) . '" target="_blank">
-                                <img src="' . asset('public/assets/img/pdf.png') . '" height="30" alt="PDF File" />
+                                <img src="' . asset('assets/img/pdf.png') . '" height="30" alt="PDF File" />
                         </a>'
                         : '--';
 
@@ -162,7 +162,7 @@ class CasesAllNoticeListController extends Controller
                     // Get the values if they exist, otherwise use '--'
                     $noticeDate = !empty($row->$dateField) ? \Carbon\Carbon::parse($row->$dateField)->format('d M, Y') : '--';
 
-                     if ($row->$emailField == 1) {
+                    if ($row->$emailField == 1) {
                         $emailStatus = '<span class="text-success">Sent</span>';
                     } elseif ($row->$emailField == 2) {
                         $emailStatus = '<span class="text-warning">Failed</span>';

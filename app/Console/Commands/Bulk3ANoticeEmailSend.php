@@ -125,9 +125,7 @@ class Bulk3ANoticeEmailSend extends Command
 
         // Apply condition for type 5 notices (existing and statuses are not fully sent OR doesn't exist)
             ->where(function ($query) {
-                $query->whereDoesntHave('notices', function ($q) {
-                    $q->where('notice_type', 5);
-                })->orWhereHas('notices', function ($q) {
+                $query->WhereHas('notices', function ($q) {
                     $q->where('notice_type', 5)
                         ->where(function ($inner) {
                             $inner->where('email_status', 0);
@@ -161,8 +159,8 @@ class Bulk3ANoticeEmailSend extends Command
                 $noticeData     = Notice::where('file_case_id', $value->id)->where('notice_type', 5)->first();
                 $notice         = $noticeData->notice;
                 // $noticedataFetchArbitrator = Notice::where('file_case_id', $value->id)->where('notice_type', 5)->first();
-                // dd($noticedataFetchArbitrator);
-                if (($assigncaseData->receiveto_casemanager == 0)) {
+           
+                if (! empty($assigncaseData->case_manager_id)) {
                     $arbitratorIds   = explode(',', $assigncaseData->arbitrator_id);
                     $arbitratorsName = Drp::whereIn('id', $arbitratorIds)->pluck('name')->implode(', ');
                     $arbitratorsData = Drp::whereIn('id', $arbitratorIds)->first();

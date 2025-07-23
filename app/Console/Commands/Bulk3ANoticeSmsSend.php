@@ -106,7 +106,7 @@ class Bulk3ANoticeSmsSend extends Command
             try {
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();
 
-                if (($assigncaseData->receiveto_casemanager == 0)) {
+                if (! empty($assigncaseData->case_manager_id)) {
 
                     $now = now();
 
@@ -118,11 +118,12 @@ class Bulk3ANoticeSmsSend extends Command
                     // ################ Send SMS using Mobile Number #################
                     if (!empty($value->respondent_mobile)){
                           
-                            $mobile     = '91' . preg_replace('/\D/', '', trim($value->respondent_mobile));
-                            $smsmessage = "Subject: Appointment of Arbitrator – Action Required Dear Sir/Ma’am, A case under A/c No. {$value->loan_number} has been filed by {$value->claimant_first_name} at MediateWay ADR Centre. Names of proposed Sole Arbitrators have been sent to your registered email/WhatsApp. Please confirm your consent to any one within 7 days. No response & no objection. Arbitration will be online. Raise any venue objections within 7 days. Regards, Team Mediateway";
+                            $mobile     = preg_replace('/\D/', '', trim($value->respondent_mobile));
+                            $smsmessage = "Subject: Appointment of Arbitrator – Action Required Dear Sir/Ma’am, A case under A/c No. {$value->loan_number} has been filed by {$value->claimant_first_name} at MediateWay ADR Centre. Names of proposed Sole Arbitrators have been sent to your registered email/WhatsApp. Please confirm your consent to any one within 7 days. No response & no objection. Arbitration will be online. Raise any venue objections within 7 days. Regards, Team Mediateway
+";
 
                         try {
-                            $response = Http::post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+                            $response = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
                                 "sender"      => "MDTWAY",
                                 "peId"        => "1001292642501782120",
                                 "teId"        => "1007139751667881032",

@@ -18,7 +18,7 @@
                     <div class="card-header">
                         <div class="row flex-between-end">
                             <div class="col-auto align-self-center">
-                                <h6 class="mb-0" data-anchor="data-anchor">Organization Case File :: Upload Documents </h6>
+                                <h6 class="mb-0" data-anchor="data-anchor">Organization Case File :: Upload Documents</h6>
                             </div>
                             <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon flex-grow-1" role="tablist">
@@ -28,55 +28,71 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="d-flex justify-content-between text-center mt-2">
+                            <p class="mb-0"><b>Case Number : </b> {{ $caseviewData['case_number'] }}</p>
+                            <p class="mb-0"><b>Loan Number : </b> {{ $caseviewData['loan_number'] }}</p>
+                        </div>
                     </div>
-                    
+
                     <div class="card-body">
-                        <form class="row" id="uploadnoticeView" method="POST" action="{{ route('organization.cases.filecaseview.store', $caseviewData['id']) }}" enctype="multipart/form-data">
+
+                        <form class="row" id="uploadnoticeView" method="POST"
+                            action="{{ route('organization.cases.filecaseview.store', $caseviewData['id']) }}"
+                            enctype="multipart/form-data">
                             @csrf
                             {{-- ####### Notices - 1, 1A, 1B ######## --}}
                             <h4 class="livemeetingcard-heading text-center justify-content-center"
-                            style="background-color: black;color: white;padding: 5px;border-radius: 8px">Upload Notices - 1, 1A and 1B</h4>
+                                style="background-color: black;color: white;padding: 5px;border-radius: 8px">Upload Notices
+                                - 1, 1A and 1B</h4>
 
                             <div class="col-md-6 col-12 mb-3">
-                                <label class="form-label">1. Notice - 1</label><br>
-                                @if(isset($noticeType1))
-                                <a class="text-decoration-none text-secondary" style="font-size: 13px"
-                                    href="{{ asset('storage/' . $noticeType1->notice) }}" target="_blank">
-                                    <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
-                                        alt="PDF File" />
-                                    View Notice PDF
-                                </a>
+                                <label class="form-label">1. Notice - 1 with First Notice Date</label><br>
+                                @if (isset($noticeType1))
+                                    <a class="text-decoration-none text-secondary" style="font-size: 13px"
+                                        href="{{ asset('storage/' . $noticeType1->notice) }}" target="_blank">
+                                        <img src="{{ asset('assets/img/pdf.png') }}" height="30" alt="PDF File" />
+                                        View Notice PDF
+                                    </a>
                                 @else
-                                <label for="notice_first" class="custom-file-upload">
-                                    <span style="font-weight: 500;" id="file-label-notice_first">
-                                        <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
-                                        Attach PDF
-                                    </span>
-                                </label>
-                                <input type="file" id="notice_first" name="notice_first" accept="application/pdf" hidden/>
+                                    <div class="mb-2">
+                                        <input type="date" class="form-control" name="notice_first_date"
+                                            id="notice_first_date" value="{{ old('notice_first_date') }}">
+                                        @error('notice_first_date')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <label for="notice_first" class="custom-file-upload">
+                                        <span style="font-weight: 500;" id="file-label-notice_first">
+                                            <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
+                                            Attach PDF
+                                        </span>
+                                    </label>
+                                    <input type="file" id="notice_first" name="notice_first" accept="application/pdf"
+                                        hidden />
                                     @error('notice_first')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 @endif
                             </div>
-                        
+
                             <div class="col-md-6 col-12 mb-3">
                                 <label class="form-label">2. Notice - 1A</label><br>
-                                @if(isset($noticeType2))
+                                @if (isset($noticeType2))
                                     <a class="text-decoration-none text-secondary" style="font-size: 13px"
-                                                    href="{{ asset('storage/' . $noticeType2->notice) }}" target="_blank">
-                                                    <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
-                                                        alt="PDF File" />
-                                                    View Notice PDF
-                                                </a>
+                                        href="{{ asset('storage/' . $noticeType2->notice) }}" target="_blank">
+                                        <img src="{{ asset('assets/img/pdf.png') }}" height="30" alt="PDF File" />
+                                        View Notice PDF
+                                    </a>
                                 @else
-                                <label for="notice_second" class="custom-file-upload">
-                                    <span style="font-weight: 500;" id="file-label-notice_second">
-                                        <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
-                                        Attach PDF
-                                    </span>
-                                </label>
-                                <input type="file" id="notice_second" name="notice_second" accept="application/pdf" hidden/>
+                                    <label for="notice_second" class="custom-file-upload">
+                                        <span style="font-weight: 500;" id="file-label-notice_second">
+                                            <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
+                                            Attach PDF
+                                        </span>
+                                    </label>
+                                    <input type="file" id="notice_second" name="notice_second" accept="application/pdf"
+                                        hidden />
                                     @error('notice_second')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -85,59 +101,60 @@
 
                             <div class="col-md-6 col-12 mb-3">
                                 <label class="form-label">3. Notice - 1B</label><br>
-                                @if(isset($noticeType3))
+                                @if (isset($noticeType3))
                                     <a class="text-decoration-none text-secondary" style="font-size: 13px"
-                                                    href="{{ asset('storage/' . $noticeType3->notice) }}" target="_blank">
-                                                    <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
-                                                        alt="PDF File" />
-                                                    View Notice PDF
-                                                </a>
+                                        href="{{ asset('storage/' . $noticeType3->notice) }}" target="_blank">
+                                        <img src="{{ asset('assets/img/pdf.png') }}" height="30" alt="PDF File" />
+                                        View Notice PDF
+                                    </a>
                                 @else
-                                <label for="notice_third" class="custom-file-upload">
-                                    <span style="font-weight: 500;" id="file-label-notice_third">
-                                        <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
-                                        Attach PDF
-                                    </span>
-                                </label>
-                                <input type="file" id="notice_third" name="notice_third" accept="application/pdf" hidden/>
+                                    <label for="notice_third" class="custom-file-upload">
+                                        <span style="font-weight: 500;" id="file-label-notice_third">
+                                            <span style="border:2px solid black; border-radius:50%; padding: 1px;">➕</span>
+                                            Attach PDF
+                                        </span>
+                                    </label>
+                                    <input type="file" id="notice_third" name="notice_third" accept="application/pdf"
+                                        hidden />
                                     @error('notice_third')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 @endif
                             </div>
-                        
-                            @if(!isset($noticeType1) || !isset($noticeType2) || !isset($noticeType3))
+
+                            @if (!isset($noticeType1) || !isset($noticeType2) || !isset($noticeType3))
                                 <div class="col-12 mb-3">
-                                <button type="submit" class="btn btn-md btn-primary py-1 px-3">Save Notices</button>
+                                    <button type="submit" class="btn btn-md btn-primary py-1 px-3">Save Notices</button>
                                 </div>
                             @endif
                         </form>
-                        
+
                         {{-- ####### Claim Petition ######## --}}
                         <div class="row mb-3">
                             <h4 class="livemeetingcard-heading text-center justify-content-center"
-                            style="background-color: black;color: white;padding: 5px;border-radius: 8px">Filed Claim Petition</h4>
+                                style="background-color: black;color: white;padding: 5px;border-radius: 8px">Filed Claim
+                                Petition</h4>
                             <label class="form-label">Claim Petition</label><br>
-                            @if(isset($caseviewData['claim_petition']))
+                            @if (isset($caseviewData['claim_petition']))
                                 <a class="text-decoration-none text-secondary" style="font-size: 13px"
-                                                href="{{ asset('storage/' . $caseviewData['claim_petition']) }}" target="_blank">
-                                                <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
-                                                    alt="PDF File" />
-                                                View Notice PDF
-                                            </a>
+                                    href="{{ asset('storage/' . $caseviewData['claim_petition']) }}" target="_blank">
+                                    <img src="{{ asset('assets/img/pdf.png') }}" height="30" alt="PDF File" />
+                                    View Notice PDF
+                                </a>
                             @else
                                 <small>No Claim Petition Filed Yet</small>
                             @endif
                         </div>
-                        
+
                         {{-- ####### Other Documents ######## --}}
                         <form class="row" id="editcaseview" method="POST"
                             action="{{ route('organization.cases.filecaseview.update', $caseviewData['id']) }}"
                             enctype='multipart/form-data'>
                             @csrf
-                            
+
                             <h4 class="livemeetingcard-heading text-center justify-content-center"
-                            style="background-color: black;color: white;padding: 5px;border-radius: 8px">Upload Documents</h4>
+                                style="background-color: black;color: white;padding: 5px;border-radius: 8px">Upload
+                                Documents</h4>
 
                             {{-- claimant details  --}}
                             {{-- <div class="col-12 text-center justify-content-center">
@@ -487,7 +504,7 @@
                                             @elseif ($extension === 'pdf')
                                                 <a class="text-decoration-none case-text" style="font-size: 13px"
                                                     href="{{ $filePath }}" target="_blank">
-                                                    <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                                    <img src="{{ asset('assets/img/pdf.png') }}" height="30"
                                                         alt="PDF File" />
                                                     View PDF
                                                 </a>
@@ -499,7 +516,8 @@
                                                     View Document
                                                 </a>
                                             @else
-                                                <a class="text-decoration-none case-text" style="font-size: 13px" href="{{ $filePath }}" target="_blank">Download File</a>
+                                                <a class="text-decoration-none case-text" style="font-size: 13px"
+                                                    href="{{ $filePath }}" target="_blank">Download File</a>
                                             @endif
                                         </div>
                                     @endif
@@ -536,7 +554,7 @@
 
 @section('js')
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             // Combine both your documents and notices into one array
             const documents = [
                 "application_form",
@@ -550,15 +568,15 @@
             ];
 
             // Loop through each item and bind the event listener
-            documents.forEach(function (id) {
+            documents.forEach(function(id) {
                 const inputFile = document.getElementById(id);
                 const fileLabel = document.getElementById("file-label-" + id);
 
                 if (inputFile) {
-                    inputFile.addEventListener("change", function (event) {
-                        let fileName = event.target.files.length > 0 
-                            ? event.target.files[0].name 
-                            : "Attach PDF";
+                    inputFile.addEventListener("change", function(event) {
+                        let fileName = event.target.files.length > 0 ?
+                            event.target.files[0].name :
+                            "Attach PDF";
 
                         // Update the label text
                         fileLabel.textContent = fileName;
@@ -568,42 +586,42 @@
         });
     </script>
     <script type="text/javascript">
-       $("#uploadnoticeView").validate({
+        $("#uploadnoticeView").validate({
             errorClass: "text-danger fs-custom",
             errorElement: "span",
             ignore: [], // ensure hidden fields aren't skipped
             rules: {
-                @if(!isset($noticeType1))
-                notice_first: {
-                    required: false
-                },
+                @if (!isset($noticeType1))
+                    notice_first: {
+                        required: false
+                    },
                 @endif
-                @if(!isset($noticeType2))
-                notice_second: {
-                    required: false
-                },
+                @if (!isset($noticeType2))
+                    notice_second: {
+                        required: false
+                    },
                 @endif
-                @if(!isset($noticeType3))
-                notice_third: {
-                    required: false
-                },
+                @if (!isset($noticeType3))
+                    notice_third: {
+                        required: false
+                    },
                 @endif
             },
             messages: {
-                @if(!isset($noticeType1))
-                notice_first: {
-                    required: "Please upload First Notice PDF"
-                },
+                @if (!isset($noticeType1))
+                    notice_first: {
+                        required: "Please upload First Notice PDF"
+                    },
                 @endif
-                @if(!isset($noticeType2))
-                notice_second: {
-                    required: "Please upload Second Notice PDF"
-                },
+                @if (!isset($noticeType2))
+                    notice_second: {
+                        required: "Please upload Second Notice PDF"
+                    },
                 @endif
-                @if(!isset($noticeType3))
-                notice_third: {
-                    required: "Please upload Second Notice PDF"
-                },
+                @if (!isset($noticeType3))
+                    notice_third: {
+                        required: "Please upload Second Notice PDF"
+                    },
                 @endif
             },
         });

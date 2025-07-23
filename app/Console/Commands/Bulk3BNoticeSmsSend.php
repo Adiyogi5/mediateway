@@ -123,11 +123,12 @@ class Bulk3BNoticeSmsSend extends Command
                     // ################ Send SMS using Mobile Number #################
                      if (!empty($value->respondent_mobile)){
                           
-                            $mobile     = '91' . preg_replace('/\D/', '', trim($value->respondent_mobile));
-                            $smsmessage = "Subject: Appointment of Sole Arbitrator – MediateWay ADR CentreDear Sir/Ma’am,A case has been registered against you under A/c No. {$value->loan_number}.As no objection was received, Mr./Ms. {$arbitratorsData->name} is appointed as Sole Arbitrator as per your Loan Agreement.Proceedings will be conducted online under MediateWay Arbitration Rules.Regards, Team Mediateway";
+                            $mobile     = preg_replace('/\D/', '', trim($value->respondent_mobile));
+                            $smsmessage = "Subject: Appointment of Sole Arbitrator – MediateWay ADR Centre Dear Sir/Ma’am, A case has been registered against you under A/c No. {$value->loan_number}. As no objection was received, Mr./Ms. {$arbitratorsData->name} is appointed as Sole Arbitrator as per your Loan Agreement. Proceedings will be conducted online under MediateWay Arbitration Rules. Regards, Team Mediateway
+";
 
                         try {
-                            $response = Http::post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+                            $response = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
                                 "sender"      => "MDTWAY",
                                 "peId"        => "1001292642501782120",
                                 "teId"        => "1007824285746901456",

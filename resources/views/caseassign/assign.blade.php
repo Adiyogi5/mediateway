@@ -48,6 +48,16 @@
                         </li>
                     @endif
 
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <strong>Case Number :</strong>
+                        <span class="">{{ $caseData['case_number'] }}</span>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <strong>Loan Number :</strong>
+                        <span class="">{{ $caseData['loan_number'] }}</span>
+                    </li>
+
                     @php
                         $caseType = config('constant.case_type')[$caseData['case_type']] ?? null;
                     @endphp
@@ -206,8 +216,10 @@
                 </div>
 
                 @php
-                    $selectedArbitrators = explode(',', old('arbitrator_id', $assignCase?->arbitrator_id ?? ''));
+                    $arbitratorValue = old('arbitrator_id', $assignCase?->arbitrator_id ?? '');
+                    $selectedArbitrators = is_array($arbitratorValue) ? $arbitratorValue : explode(',', (string) $arbitratorValue);
                 @endphp
+
                 
                 <div class="col-lg-6 mt-2">
                     <label class="form-label" for="arbitrator_id">Arbitrator</label>
@@ -224,25 +236,7 @@
                             <strong>{{ $message }}</strong>
                         </span>
                     @enderror
-                </div>            
-
-                {{-- <div class="col-lg-6 mt-2">
-                    <label class="form-label" for="advocate_id">Advocate</label>
-                    <select name="advocate_id" class="form-select" id="advocate_id">
-                        <option value="">Select Advocate</option>
-                        @foreach ($advocates as $advocate)
-                            <option value="{{ $advocate->id }}" 
-                                @selected(old('advocate_id', $assignCase?->advocate_id) == $advocate->id)>
-                                {{ $advocate->name }}
-                            </option>                        
-                        @endforeach
-                    </select>                    
-                    @error('advocate_id')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div> --}}
+                </div>
 
                 <div class="col-lg-6 mt-2">
                     <label class="form-label" for="case_manager_id">Case Manager</label>
@@ -256,6 +250,24 @@
                         @endforeach
                     </select>                    
                     @error('case_manager_id')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                </div>            
+
+                <div class="col-lg-6 mt-2">
+                    <label class="form-label" for="advocate_id">Advocate</label>
+                    <select name="advocate_id" class="form-select" id="advocate_id">
+                        <option value="">Select Advocate</option>
+                        @foreach ($advocates as $advocate)
+                            <option value="{{ $advocate->id }}" 
+                                @selected(old('advocate_id', $assignCase?->advocate_id) == $advocate->id)>
+                                {{ $advocate->name }}
+                            </option>                        
+                        @endforeach
+                    </select>                    
+                    @error('advocate_id')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>
@@ -335,9 +347,9 @@
                 arbitrator_id: {
                     required: true,
                 },
-                // advocate_id: {
-                //     required: true, 
-                // },
+                advocate_id: {
+                    required: false, 
+                },
                 case_manager_id: {
                     required: true,
                 },
@@ -352,9 +364,9 @@
                 arbitrator_id: {
                     required: "Please Select Arbitrator",
                 },
-                // advocate_id: {
-                //     required: "Please Select Advocate",
-                // },
+                advocate_id: {
+                    required: "Please Select Advocate",
+                },
                 case_manager_id: {
                     required: "Please Select Case Manager",
                 },

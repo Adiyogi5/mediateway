@@ -56,6 +56,22 @@ class CaseAssignController extends Controller
             if ($request->filled('status')) {
                 $data->where('file_cases.status', $request->status);
             }
+            if ($request->filled('send_status')) {
+                $data->where('assign_cases.sendto_casemanager', $request->send_status);
+            }
+            if ($request->filled('receive_status')) {
+                $data->where('assign_cases.receiveto_casemanager', $request->receive_status);
+            }
+            if ($request->filled('arbitrator_status')) {
+                $data->where('assign_cases.confirm_to_arbitrator', $request->arbitrator_status);
+            }
+            if ($request->filled('assigned_status')) {
+                if ($request->assigned_status == 1) {
+                    $data->whereNotNull('assign_cases.id');
+                } else {
+                    $data->whereNull('assign_cases.id');
+                }
+            }
             if ($request->filled('date_from') && $request->filled('date_to')) {
                 $data->whereBetween('file_cases.created_at', [
                     $request->date_from . ' 00:00:00',
@@ -196,6 +212,7 @@ class CaseAssignController extends Controller
 
     public function updateassigndetail(Request $request, $id): RedirectResponse
     {
+        // dd($request->all());
         $caseData = FileCase::with('file_case_details')->find($id);
         
         if (!$caseData) return to_route('caseassign')->withError('Case Not Found..!!');
@@ -209,7 +226,7 @@ class CaseAssignController extends Controller
         $data = $request->validate([
             // 'case_id'          => ['required'],
             'arbitrator_id'    => ['nullable'],
-            'advocate_id'      => ['required'],
+            'advocate_id'      => ['nullable'],
             'case_manager_id'  => ['required'],
             'mediator_id'      => ['nullable'],
             'conciliator_id'   => ['nullable'],
@@ -246,8 +263,8 @@ class CaseAssignController extends Controller
                     $noticetemplateData = NoticeTemplate::where('id', 5)->first();
                     $noticeTemplate     = $noticetemplateData->notice_format;
 
-                    $noticedateData = FileCase::
-                        join(DB::raw("(
+                    $noticedateData = FileCase::with('file_case_details','guarantors')
+                        ->join(DB::raw("(
                             SELECT
                                 id AS org_id,
                                 name AS org_name,
@@ -279,7 +296,7 @@ class CaseAssignController extends Controller
                         )
                         ->distinct()
                         ->first();
-                         
+                   
                     $notice3adate = Carbon::parse($noticedateData->notice_type_1_date)
                         ->addDays($noticedateData->notice_3a - 1)
                         ->format('Y-m-d');
@@ -291,43 +308,90 @@ class CaseAssignController extends Controller
                         'PHONE NUMBER'                                                    => $casemanagerData->mobile ?? '',
                         'EMAIL ADDRESS'                                                   => ($casemanagerData->address1 ?? '') . '&nbsp;' . ($casemanagerData->address2 ?? ''),
 
-                        'CASE REGISTRATION NUMBER'                                        => $value->case_number ?? '',
-                        'BANK/ORGANISATION/CLAIMANT NAME'                                 => ($value->claimant_first_name ?? '') . '&nbsp;' . ($value->claimant_last_name ?? ''),
-                        'BANK/ORGANISATION/CLAIMANT REGISTERED ADDRESS'                   => ($value->claimant_address1 ?? '') . '&nbsp;' . ($value->claimant_address2 ?? ''),
+                        'CASE REGISTRATION NUMBER'                                        => $noticedateData->case_number ?? '',
+                        'BANK/ORGANISATION/CLAIMANT NAME'                                 => ($noticedateData->claimant_first_name ?? '') . '&nbsp;' . ($noticedateData->claimant_last_name ?? ''),
+                        'BANK/ORGANISATION/CLAIMANT REGISTERED ADDRESS'                   => ($noticedateData->claimant_address1 ?? '') . '&nbsp;' . ($noticedateData->claimant_address2 ?? ''),
 
-                        'CLAIM SIGNATORY/AUTHORISED OFFICER NAME'                         => $value->file_case_details->claim_signatory_authorised_officer_name ?? '',
-                        'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'                    => $value->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
-                        "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $value->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
+                        'CLAIM SIGNATORY/AUTHORISED OFFICER NAME'                         => $noticedateData->file_case_details->claim_signatory_authorised_officer_name ?? '',
+                        'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'                    => $noticedateData->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
+                        "CLAIM SIGNATORY/AUTHORISED OFFICER'S MAIL ID"                    => $noticedateData->file_case_details->claim_signatory_authorised_officer_mail_id ?? '',
 
-                        'LOAN NO'                                                         => $value->loan_number ?? '',
-                        'AGREEMENT DATE'                                                  => $value->agreement_date ?? '',
-                        'FINANCE AMOUNT'                                                  => $value->file_case_details->finance_amount ?? '',
-                        'TENURE'                                                          => $value->file_case_details->tenure ?? '',
-                        'FORECLOSURE AMOUNT'                                              => $value->file_case_details->foreclosure_amount ?? '',
-                        'FORECLOSURE DATE'                                                => $value->file_case_details->foreclosure_amount_date ?? '',
+                        'LOAN NO'                                                         => $noticedateData->loan_number ?? '',
+                        'AGREEMENT DATE'                                                  => $noticedateData->agreement_date ?? '',
+                        'FINANCE AMOUNT'                                                  => $noticedateData->file_case_details->finance_amount ?? '',
+                        'FORECLOSURE AMOUNT'                                              => $noticedateData->file_case_details->foreclosure_amount ?? '',
+                        'FORECLOSURE DATE'                                                => $noticedateData->file_case_details->foreclosure_amount_date ?? '',
 
                         "FIRST ARBITRATOR'S NAME"                                         => $firstArb->name ?? '',
-                        "FIRST ARBITRATOR'S SPECIALIZATION"                               => $firstArb->specialization ?? '',
+                        "FIRST ARBITRATOR'S SPECIALIZATION"                               => config('constant.case_type')[$firstArb->specialization] ?? '',
                         "FIRST ARBITRATOR'S ADDRESS"                                      => ($firstArb->address1 ?? '') . '&nbsp;' . ($firstArb->address2 ?? ''),
 
                         "SECOND ARBITRATOR'S NAME"                                        => $secondArb->name ?? '',
-                        "SECOND ARBITRATOR'S SPECIALIZATION"                              => $secondArb->specialization ?? '',
+                        "SECOND ARBITRATOR'S SPECIALIZATION"                              => config('constant.case_type')[$secondArb->specialization] ?? '',
                         "SECOND ARBITRATOR'S ADDRESS"                                     => ($secondArb->address1 ?? '') . '&nbsp;' . ($secondArb->address2 ?? ''),
 
                         "THIRD ARBITRATOR'S NAME"                                         => $thirdArb->name ?? '',
-                        "THIRD ARBITRATOR'S SPECIALIZATION"                               => $thirdArb->specialization ?? '',
+                        "THIRD ARBITRATOR'S SPECIALIZATION"                               => config('constant.case_type')[$thirdArb->specialization] ?? '',
                         "THIRD ARBITRATOR'S ADDRESS"                                      => ($thirdArb->address1 ?? '') . '&nbsp;' . ($thirdArb->address2 ?? ''),
 
-                        'CUSTOMER NAME'                                                   => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
-                        'CUSTOMER ADDRESS'                                                => ($value->respondent_address1 ?? '') . '&nbsp;' . ($value->respondent_address2 ?? ''),
-                        'CUSTOMER MOBILE NO'                                              => $value->respondent_mobile ?? '',
-                        'CUSTOMER MAIL ID'                                                => $value->respondent_email ?? '',
+                        'CUSTOMER NAME'                                                   => ($noticedateData->respondent_first_name ?? '') . '&nbsp;' . ($noticedateData->respondent_last_name ?? ''),
+                        'CUSTOMER ADDRESS'                                                => ($noticedateData->respondent_address1 ?? '') . '&nbsp;' . ($noticedateData->respondent_address2 ?? ''),
+                        'CUSTOMER MOBILE NO'                                              => $noticedateData->respondent_mobile ?? '',
+                        'CUSTOMER MAIL ID'                                                => $noticedateData->respondent_email ?? '',
 
-                        'ARBITRATION CLAUSE NO'                                           => $value->arbitration_clause_no ?? '',
+                        'ARBITRATION CLAUSE NO'                                           => $noticedateData->arbitration_clause_no ?? '',
+                        'ARBITRATION DATE'                                                => $noticedateData->arbitration_date ?? '',
+                        'TENURE'                                                          => $noticedateData->file_case_details->tenure ?? '',
+                        'PRODUCT'                                                         => $noticedateData->file_case_details->product ?? '',
+
+                        'GUARANTOR 1 NAME'                                                => $noticedateData->guarantors->guarantor_1_name ?? '',
+                        'GUARANTOR 1 MOBILE NO'                                           => $noticedateData->guarantors->guarantor_1_mobile_no ?? '',
+                        'GUARANTOR 1 EMAIL ID'                                            => $noticedateData->guarantors->guarantor_1_email_id ?? '',
+                        'GUARANTOR 1 ADDRESS'                                             => $noticedateData->guarantors->guarantor_1_address ?? '',
+                        'GUARANTOR 1 FATHER NAME'                                         => $noticedateData->guarantors->guarantor_1_father_name ?? '',
+                           
+                        'GUARANTOR 2 NAME'                                                => $noticedateData->guarantors->guarantor_2_name ?? '',
+                        'GUARANTOR 2 MOBILE NO'                                           => $noticedateData->guarantors->guarantor_2_mobile_no ?? '',
+                        'GUARANTOR 2 EMAIL ID'                                            => $noticedateData->guarantors->guarantor_2_email_id ?? '',
+                        'GUARANTOR 2 ADDRESS'                                             => $noticedateData->guarantors->guarantor_2_address ?? '',
+                        'GUARANTOR 2 FATHER NAME'                                         => $noticedateData->guarantors->guarantor_2_father_name ?? '',
+
+                        'GUARANTOR 3 NAME'                                                => $noticedateData->guarantors->guarantor_3_name ?? '',
+                        'GUARANTOR 3 MOBILE NO'                                           => $noticedateData->guarantors->guarantor_3_mobile_no ?? '',
+                        'GUARANTOR 3 EMAIL ID'                                            => $noticedateData->guarantors->guarantor_3_email_id ?? '',
+                        'GUARANTOR 3 ADDRESS'                                             => $noticedateData->guarantors->guarantor_3_address ?? '',
+                        'GUARANTOR 3 FATHER NAME'                                         => $noticedateData->guarantors->guarantor_3_father_name ?? '',
+                            
+                        'GUARANTOR 4 NAME'                                                => $noticedateData->guarantors->guarantor_4_name ?? '',
+                        'GUARANTOR 4 MOBILE NO'                                           => $noticedateData->guarantors->guarantor_4_mobile_no ?? '',
+                        'GUARANTOR 4 EMAIL ID'                                            => $noticedateData->guarantors->guarantor_4_email_id ?? '',
+                        'GUARANTOR 4 ADDRESS'                                             => $noticedateData->guarantors->guarantor_4_address ?? '',
+                        'GUARANTOR 4 FATHER NAME'                                         => $noticedateData->guarantors->guarantor_4_father_name ?? '',
+                            
+                        'GUARANTOR 5 NAME'                                                => $noticedateData->guarantors->guarantor_5_name ?? '',
+                        'GUARANTOR 5 MOBILE NO'                                           => $noticedateData->guarantors->guarantor_5_mobile_no ?? '',
+                        'GUARANTOR 5 EMAIL ID'                                            => $noticedateData->guarantors->guarantor_5_email_id ?? '',
+                        'GUARANTOR 5 ADDRESS'                                             => $noticedateData->guarantors->guarantor_5_address ?? '',
+                        'GUARANTOR 5 FATHER NAME'                                         => $noticedateData->guarantors->guarantor_5_father_name ?? '',
+                            
+                        'GUARANTOR 6 NAME'                                                => $noticedateData->guarantors->guarantor_6_name ?? '',
+                        'GUARANTOR 6 MOBILE NO'                                           => $noticedateData->guarantors->guarantor_6_mobile_no ?? '',
+                        'GUARANTOR 6 EMAIL ID'                                            => $noticedateData->guarantors->guarantor_6_email_id ?? '',
+                        'GUARANTOR 6 ADDRESS'                                             => $noticedateData->guarantors->guarantor_6_address ?? '',
+                        'GUARANTOR 6 FATHER NAME'                                         => $noticedateData->guarantors->guarantor_6_father_name ?? '',
+                            
+                        'GUARANTOR 7 NAME'                                                => $noticedateData->guarantors->guarantor_7_name ?? '',
+                        'GUARANTOR 7 MOBILE NO'                                           => $noticedateData->guarantors->guarantor_7_mobile_no ?? '',
+                        'GUARANTOR 7 EMAIL ID'                                            => $noticedateData->guarantors->guarantor_7_email_id ?? '',
+                        'GUARANTOR 7 ADDRESS'                                             => $noticedateData->guarantors->guarantor_7_address ?? '',
+                        'GUARANTOR 7 FATHER NAME'                                         => $noticedateData->guarantors->guarantor_7_father_name ?? '',
 
                         'DATE'                                                            => now()->format('d-m-Y'),
-                        'STAGE 1 NOTICE DATE'                                             => $value->file_case_details->stage_1_notice_date ?? '',
-                        'STAGE 2B NOTICE DATE'                                            => $value->file_case_details->stage_2b_notice_date ?? '',
+
+                        'STAGE 1 NOTICE DATE'                                             => $noticedateData->file_case_details->stage_1_notice_date ?? '',
+                        'STAGE 1A NOTICE DATE'                                            => $noticedateData->file_case_details->stage_1a_notice_date ?? '',
+                        'STAGE 1B NOTICE DATE'                                            => $noticedateData->file_case_details->stage_1b_notice_date ?? '',
+                        'STAGE 2B NOTICE DATE'                                            => $noticedateData->file_case_details->stage_2b_notice_date ?? '',
                         'STAGE 3A NOTICE DATE'                                            => $notice3adate ?? '',
                     ];
 
@@ -354,35 +418,47 @@ class CaseAssignController extends Controller
                     $finalNotice = $replaceSummernotePlaceholders($noticeTemplate, $data);
 
                     $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
-                    // Append the signature image at the end of the content, aligned right
-                    $finalNotice .= '
-                        <div style="text-align: right; margin-top: 0px;">
-                            <img src="' . asset('storage/' . $signature['mediateway_signature']) . '" style="height: 80px;" alt="Signature">
+                        
+                    // Image URLs
+                    $headerImg = url('storage/' . $signature['mediateway_letterhead']);
+                    $signatureImg = asset('storage/' . $signature['mediateway_signature']);
+
+                    // 🟢 Add header image at the top
+                    $headerHtml = '
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <img src="' . $headerImg . '" style="width: 100%; max-height: 120px;" alt="Header">
                         </div>
                     ';
 
-                    // 1. Prepare your HTML with custom styles
-                    $html = '
-                    <style>
-                        @page {
-                            size: A4;
-                            margin: 12mm;
-                        }
-                        body {
-                            font-family: DejaVu Sans, sans-serif;
-                            font-size: 12px;
-                            line-height: 1.4;
-                        }
-                        p {
-                            margin: 0px 0;
-                            padding: 0;
-                        }
-                        img {
-                            max-width: 100%;
-                            height: auto;
-                        }
-                    </style>
-                    ' . $finalNotice;
+                    // Add signature at the bottom
+                    $finalNotice .= '
+                        <div style="text-align: right; margin-top: 0px;">
+                            <img src="' . $signatureImg . '" style="height: 80px;" alt="Signature">
+                        </div>
+                    ';
+
+                        // Prepare HTML
+                        $html = '
+                            <style>
+                                @page {
+                                    size: A4;
+                                    margin: 12mm;
+                                }
+                                body {
+                                    font-family: DejaVu Sans, sans-serif;
+                                    font-size: 12px;
+                                    line-height: 1.4;
+                                }
+                                p {
+                                    margin: 0px 0;
+                                    padding: 0;
+                                }
+                                img {
+                                    max-width: 100%;
+                                    height: auto;
+                                }
+                            </style>
+                            ' . $headerHtml . $finalNotice;
 
                     // 2. Generate PDF with A4 paper size
                     $pdf = PDF::loadHTML($html)->setPaper('A4', 'portrait')->setOptions(['isRemoteEnabled' => true]);

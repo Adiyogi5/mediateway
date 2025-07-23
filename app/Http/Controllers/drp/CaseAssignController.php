@@ -69,6 +69,12 @@ class CaseAssignController extends Controller
             if ($request->filled('case_type')) {
                 $data->where('file_cases.case_type', $request->case_type);
             }
+            if ($request->filled('case_number')) {
+                $data->where('file_cases.case_number', 'like', '%' . $request->case_number . '%');
+            }
+            if ($request->filled('loan_number')) {
+                $data->where('file_cases.loan_number', 'like', '%' . $request->loan_number . '%');
+            }
             if ($request->filled('status')) {
                 $data->where('file_cases.status', $request->status);
             }

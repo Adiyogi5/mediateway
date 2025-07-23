@@ -326,7 +326,7 @@ Contact Information: [{$settingdata['phone']}/{$settingdata['email']}]";
                             try {
                                 Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($savedPath, $subject, $email) {
                                     $message->to($email)
-                                        ->cc('legaldesk@rblbank.com')
+                                        // ->cc('legaldesk@rblbank.com')
                                         ->subject($subject)
                                         ->attach(public_path(str_replace('\\', '/', 'storage/' . $savedPath)), [
                                             'mime' => 'application/pdf',
@@ -419,7 +419,7 @@ Contact Information: [{$settingdata['phone']}/{$settingdata['email']}]";
                             try {
                                 Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($value, $subject, $email) {
                                     $message->to($email)
-                                        ->cc('legaldesk@rblbank.com')
+                                        // ->cc('legaldesk@rblbank.com')
                                         ->subject($subject)
                                         ->attach(public_path(str_replace('\\', '/', 'storage/' . $value->notice_copy)), [
                                             'mime' => 'application/pdf',

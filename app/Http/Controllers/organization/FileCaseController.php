@@ -161,7 +161,7 @@ class FileCaseController extends Controller
     {
         $title = 'Edit Filed Case';
         $organization_authData = auth('organization')->user();
-        
+       
         // Fetch both notices by type
         $noticeType1 = Notice::where('file_case_id', $id)->where('notice_type', 1)->first();
         $noticeType2 = Notice::where('file_case_id', $id)->where('notice_type', 2)->first();
@@ -169,7 +169,7 @@ class FileCaseController extends Controller
 
         $caseviewData   = FileCase::Find($id);
         $states = State::all();
-        
+       
         if (!$caseviewData) {
             return to_route('organization.cases.filecaseview')->withError('Filed Case Not Found..!!');
         }
@@ -331,17 +331,21 @@ class FileCaseController extends Controller
         }
 
         $request->validate([
-            'notice_first'  => 'nullable|mimes:pdf|max:5120',
-            'notice_second' => 'nullable|mimes:pdf|max:5120',
-            'notice_third'  => 'nullable|mimes:pdf|max:5120',
+            'notice_first'       => 'nullable|mimes:pdf|max:5120',
+            'notice_first_date'  => 'required_with:notice_first|date',
+            'notice_second'      => 'nullable|mimes:pdf|max:5120',
+            'notice_third'       => 'nullable|mimes:pdf|max:5120',
+        ], [
+            'notice_first_date.required_with' => 'Please select a date for Notice - 1.',
         ]);
+
 
         // 🗓️ Get the date increments from $noticeTimeline
         $noticeSecondDays   = $noticeTimeline->notice_1a ?? 0;
         $noticeThirdDays    = $noticeTimeline->notice_1b ?? 0;
 
         // 🕒 Calculate the dates based on current date + days
-        $firstNoticeDate    = now(); // Today's date
+        $firstNoticeDate = $request->filled('notice_first_date') ? Carbon::parse($request->notice_first_date) : now();
         $secondNoticeDate   = now()->copy()->addDays($noticeSecondDays - 1);
         $thirdNoticeDate    = now()->copy()->addDays($noticeThirdDays - 1);
 
@@ -463,6 +467,7 @@ class FileCaseController extends Controller
             return back()->with('error', 'File import failed. Please check the format.');
         }
     }
+    
 
     public function downloadSample()
     {

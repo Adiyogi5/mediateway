@@ -110,7 +110,7 @@ class Bulk3ANoticeWhatsappSend extends Command
                 $notice         = $noticeData->notice;
                 // $noticedataFetchArbitrator = Notice::where('file_case_id', $value->id)->where('notice_type', 5)->first();
                
-                if (($assigncaseData->receiveto_casemanager == 0)) {
+                if (! empty($assigncaseData->case_manager_id)) {
                     $arbitratorIds   = explode(',', $assigncaseData->arbitrator_id);
                     $arbitratorsData = Drp::whereIn('id', $arbitratorIds)->first();
 

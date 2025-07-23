@@ -53,12 +53,15 @@ class PreMediationNoticeSmsSend extends Command
                     ->where('file_cases.respondent_mobile', '!=', '');
             })
             ->where('mediation_notices.sms_status', 0)
+            ->whereNull('mediation_notices.deleted_at')
             ->select(
                 'file_cases.*',
                 'mediation_notices.file_case_id',
                 'mediation_notices.mediation_notice_type',
                 'mediation_notices.notice_copy',
                 'mediation_notices.email_status',
+                'mediation_notices.whatsapp_notice_status',
+                'mediation_notices.sms_status',
             )
             ->limit(4)
             ->get();
@@ -91,21 +94,21 @@ class PreMediationNoticeSmsSend extends Command
                             ]);
  
                             if ($response->json('isSuccess')) {
-                                MediationNotice::where('file_case_id', $value->id)
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notices', 1)
                                     ->update([
                                         'sms_send_date' => $now,
                                         'sms_status'    => 1,
                                     ]);
-                                    Log::info("Mediation SMS sent successfully for FileCase ID: {$fileCaseId}");
+                                    Log::info("Pre-Mediation SMS sent successfully for FileCase ID: {$fileCaseId}");
                             } else {
-                                Log::warning("Mediation SMS failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
-                                MediationNotice::where('file_case_id', $value->id)
+                                Log::warning("Pre-Mediation SMS failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notices', 1)
                                     ->update([
                                         'sms_status' => 2,
                                     ]);
                             }
                         } catch (\Throwable $th) {
-                            Log::error("Mediation SMS API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
+                            Log::error("Pre-Mediation SMS API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
                             return false;
                         }
                         

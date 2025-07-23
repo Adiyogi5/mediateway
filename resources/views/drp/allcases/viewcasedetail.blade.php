@@ -623,7 +623,7 @@
                                                                                     <a class="text-decoration-none text-dark"
                                                                                         href="{{ asset('storage/' . $notice->notice) }}"
                                                                                         target="_blank">
-                                                                                        <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                                        <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                             height="30"
                                                                                             alt="PDF File" />
                                                                                         View
@@ -869,7 +869,7 @@
                                                                                     <a class="text-decoration-none text-dark"
                                                                                         href="{{ asset('storage/' . $notice->notice) }}"
                                                                                         target="_blank">
-                                                                                        <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                                        <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                             height="30"
                                                                                             alt="PDF File" />
                                                                                         View
@@ -1058,7 +1058,7 @@
                                                                     <td class="text-start ps-3"><a
                                                                             class="text-decoration-none text-dark"
                                                                             href="#" target="_blank">
-                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                            <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                 height="30" alt="PDF File" /> File
                                                                             Name
                                                                         </a></td>
@@ -1068,7 +1068,7 @@
                                                                     <td class="text-start ps-3"><a
                                                                             class="text-decoration-none text-dark"
                                                                             href="#" target="_blank">
-                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                            <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                 height="30" alt="PDF File" /> File
                                                                             Name
                                                                         </a></td>
@@ -1078,7 +1078,7 @@
                                                                     <td class="text-start ps-3"><a
                                                                             class="text-decoration-none text-dark"
                                                                             href="#" target="_blank">
-                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                            <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                 height="30" alt="PDF File" /> File
                                                                             Name
                                                                         </a></td>
@@ -1088,7 +1088,7 @@
                                                                     <td class="text-start ps-3"><a
                                                                             class="text-decoration-none text-dark"
                                                                             href="#" target="_blank">
-                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                            <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                 height="30" alt="PDF File" /> File
                                                                             Name
                                                                         </a></td>
@@ -1130,7 +1130,7 @@
                                                                     <td class="text-start ps-3"><a
                                                                             class="text-decoration-none text-dark"
                                                                             href="#" target="_blank">
-                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                            <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                 height="30" alt="PDF File" /> File
                                                                             Name
                                                                         </a></td>
@@ -1141,7 +1141,7 @@
                                                                     <td class="text-start ps-3"><a
                                                                             class="text-decoration-none text-dark"
                                                                             href="#" target="_blank">
-                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                            <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                 height="30" alt="PDF File" /> File
                                                                             Name
                                                                         </a></td>
@@ -1152,7 +1152,7 @@
                                                                     <td class="text-start ps-3"><a
                                                                             class="text-decoration-none text-dark"
                                                                             href="#" target="_blank">
-                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                            <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                 height="30" alt="PDF File" /> File
                                                                             Name
                                                                         </a></td>
@@ -1163,7 +1163,7 @@
                                                                     <td class="text-start ps-3"><a
                                                                             class="text-decoration-none text-dark"
                                                                             href="#" target="_blank">
-                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                            <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                 height="30" alt="PDF File" /> File
                                                                             Name
                                                                         </a></td>
@@ -1235,7 +1235,7 @@
                                                                                         style="font-size: 13px"
                                                                                         href="{{ $filePath }}"
                                                                                         target="_blank">
-                                                                                        <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                                        <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                             height="30"
                                                                                             alt="PDF File" />
                                                                                         View PDF
@@ -1282,7 +1282,7 @@
                                                                             style="font-size: 13px"
                                                                             href="{{ asset('storage/' . $case->claim_petition) }}"
                                                                             target="_blank">
-                                                                            <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                            <img src="{{ asset('assets/img/pdf.png') }}"
                                                                                 height="30" alt="PDF File" />
                                                                             View
                                                                         </a>
@@ -1301,7 +1301,7 @@
                                                                 <a class="text-decoration-none case-text"
                                                                     style="font-size: 13px" href="#"
                                                                     target="_blank">
-                                                                    <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                    <img src="{{ asset('assets/img/pdf.png') }}"
                                                                         height="30" alt="PDF File" />
                                                                     View PDF
                                                                 </a>
@@ -1313,7 +1313,7 @@
                                                                 <a class="text-decoration-none case-text"
                                                                     style="font-size: 13px" href="#"
                                                                     target="_blank">
-                                                                    <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                    <img src="{{ asset('assets/img/pdf.png') }}"
                                                                         height="30" alt="PDF File" />
                                                                     View PDF
                                                                 </a>
@@ -1325,7 +1325,7 @@
                                                                 <a class="text-decoration-none case-text"
                                                                     style="font-size: 13px" href="#"
                                                                     target="_blank">
-                                                                    <img src="{{ asset('public/assets/img/pdf.png') }}"
+                                                                    <img src="{{ asset('assets/img/pdf.png') }}"
                                                                         height="30" alt="PDF File" />
                                                                     View PDF
                                                                 </a>

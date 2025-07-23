@@ -68,6 +68,16 @@
                                         <span>{{ $caseData->organization?->name ?? 'N/A' }}</span>
                                     </li>
                                 @endif
+                                
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>Case Number :</strong>
+                                    <span class="">{{ $caseData['case_number'] }}</span>
+                                </li>
+
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>Loan Number :</strong>
+                                    <span class="">{{ $caseData['loan_number'] }}</span>
+                                </li>
 
                                 @php
                                     $caseType = config('constant.case_type')[$caseData['case_type']] ?? null;

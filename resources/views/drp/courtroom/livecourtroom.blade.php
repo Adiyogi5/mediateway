@@ -432,7 +432,7 @@
                                 let pdfLink = notice.notice ? `
                                     <a class="text-decoration-none text-secondary" style="font-size: 13px"
                                         href="${storageBaseUrl}/${notice.notice}" target="_blank">
-                                        <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
+                                        <img src="{{ asset('assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
                                     </a>` :
                                     `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;
 
@@ -503,7 +503,7 @@
                                 let pdfLink = notice.notice ? `
                                     <a class="text-decoration-none text-secondary" style="font-size: 13px"
                                         href="${storageBaseUrl}/${notice.notice}" target="_blank">
-                                        <img src="{{ asset('public/assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
+                                        <img src="{{ asset('assets/img/pdf.png') }}" alt="PDF File" style="width: 20px;height: 24px;" />
                                     </a>` :
                                     `<span class="text-muted" style="font-size: 13px">No PDF Available</span>`;
 

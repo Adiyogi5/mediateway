@@ -101,7 +101,7 @@ class Bulk3BNoticeEmailSend extends Command
         //     ->limit(20)
         //     ->get();
 
-        $caseData = FileCase::with('file_case_details')
+        $caseData = FileCase::with('file_case_details','guarantors')
             ->join(DB::raw("(
                 SELECT
                     id AS org_id,
@@ -197,7 +197,6 @@ class Bulk3BNoticeEmailSend extends Command
                             'LOAN NO'                                       => $value->loan_number ?? '',
                             'AGREEMENT DATE'                                => $value->agreement_date ?? '',
                             'FINANCE AMOUNT'                                => $value->file_case_details->finance_amount ?? '',
-                            'TENURE'                                        => $value->file_case_details->tenure ?? '',
                             'FORECLOSURE AMOUNT'                            => $value->file_case_details->foreclosure_amount ?? '',
                             'CLAIM SIGNATORY/AUTHORISED OFFICER NAME'       => $value->file_case_details->claim_signatory_authorised_officer_name ?? '',
                             'CLAIM SIGNATORY/AUTHORISED OFFICER MOBILE NO'  => $value->file_case_details->claim_signatory_authorised_officer_mobile_no ?? '',
@@ -206,7 +205,53 @@ class Bulk3BNoticeEmailSend extends Command
                             "ARBITRATOR'S NAME"                             => $arbitratorsData->name ?? '',
                             "ARBITRATOR'S SPECIALIZATION"                   => $arbitratorsData->specialization ?? '',
                             "ARBITRATOR'S ADDRESS"                          => ($arbitratorsData->address1 ?? '') . '&nbsp;' . ($arbitratorsData->address2 ?? ''),
+                            
                             'ARBITRATION CLAUSE NO'                         => $value->arbitration_clause_no ?? '',
+                            'ARBITRATION DATE'                              => $value->arbitration_date ?? '',
+                            'TENURE'                                        => $value->file_case_details->tenure ?? '',
+                            'PRODUCT'                                       => $value->file_case_details->product ?? '',
+
+                            'GUARANTOR 1 NAME'                              => $value->guarantors->guarantor_1_name ?? '',
+                            'GUARANTOR 1 MOBILE NO'                         => $value->guarantors->guarantor_1_mobile_no ?? '',
+                            'GUARANTOR 1 EMAIL ID'                          => $value->guarantors->guarantor_1_email_id ?? '',
+                            'GUARANTOR 1 ADDRESS'                           => $value->guarantors->guarantor_1_address ?? '',
+                            'GUARANTOR 1 FATHER NAME'                       => $value->guarantors->guarantor_1_father_name ?? '',
+                           
+                            'GUARANTOR 2 NAME'                              => $value->guarantors->guarantor_2_name ?? '',
+                            'GUARANTOR 2 MOBILE NO'                         => $value->guarantors->guarantor_2_mobile_no ?? '',
+                            'GUARANTOR 2 EMAIL ID'                          => $value->guarantors->guarantor_2_email_id ?? '',
+                            'GUARANTOR 2 ADDRESS'                           => $value->guarantors->guarantor_2_address ?? '',
+                            'GUARANTOR 2 FATHER NAME'                       => $value->guarantors->guarantor_2_father_name ?? '',
+
+                            'GUARANTOR 3 NAME'                              => $value->guarantors->guarantor_3_name ?? '',
+                            'GUARANTOR 3 MOBILE NO'                         => $value->guarantors->guarantor_3_mobile_no ?? '',
+                            'GUARANTOR 3 EMAIL ID'                          => $value->guarantors->guarantor_3_email_id ?? '',
+                            'GUARANTOR 3 ADDRESS'                           => $value->guarantors->guarantor_3_address ?? '',
+                            'GUARANTOR 3 FATHER NAME'                       => $value->guarantors->guarantor_3_father_name ?? '',
+                            
+                            'GUARANTOR 4 NAME'                              => $value->guarantors->guarantor_4_name ?? '',
+                            'GUARANTOR 4 MOBILE NO'                         => $value->guarantors->guarantor_4_mobile_no ?? '',
+                            'GUARANTOR 4 EMAIL ID'                          => $value->guarantors->guarantor_4_email_id ?? '',
+                            'GUARANTOR 4 ADDRESS'                           => $value->guarantors->guarantor_4_address ?? '',
+                            'GUARANTOR 4 FATHER NAME'                       => $value->guarantors->guarantor_4_father_name ?? '',
+                            
+                            'GUARANTOR 5 NAME'                              => $value->guarantors->guarantor_5_name ?? '',
+                            'GUARANTOR 5 MOBILE NO'                         => $value->guarantors->guarantor_5_mobile_no ?? '',
+                            'GUARANTOR 5 EMAIL ID'                          => $value->guarantors->guarantor_5_email_id ?? '',
+                            'GUARANTOR 5 ADDRESS'                           => $value->guarantors->guarantor_5_address ?? '',
+                            'GUARANTOR 5 FATHER NAME'                       => $value->guarantors->guarantor_5_father_name ?? '',
+                            
+                            'GUARANTOR 6 NAME'                              => $value->guarantors->guarantor_6_name ?? '',
+                            'GUARANTOR 6 MOBILE NO'                         => $value->guarantors->guarantor_6_mobile_no ?? '',
+                            'GUARANTOR 6 EMAIL ID'                          => $value->guarantors->guarantor_6_email_id ?? '',
+                            'GUARANTOR 6 ADDRESS'                           => $value->guarantors->guarantor_6_address ?? '',
+                            'GUARANTOR 6 FATHER NAME'                       => $value->guarantors->guarantor_6_father_name ?? '',
+                            
+                            'GUARANTOR 7 NAME'                              => $value->guarantors->guarantor_7_name ?? '',
+                            'GUARANTOR 7 MOBILE NO'                         => $value->guarantors->guarantor_7_mobile_no ?? '',
+                            'GUARANTOR 7 EMAIL ID'                          => $value->guarantors->guarantor_7_email_id ?? '',
+                            'GUARANTOR 7 ADDRESS'                           => $value->guarantors->guarantor_7_address ?? '',
+                            'GUARANTOR 7 FATHER NAME'                       => $value->guarantors->guarantor_7_father_name ?? '',
 
                             'CUSTOMER NAME'                                 => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
                             'CUSTOMER ADDRESS'                              => ($value->respondent_address1 ?? '') . '&nbsp;' . ($value->respondent_address2 ?? ''),
@@ -214,7 +259,10 @@ class Bulk3BNoticeEmailSend extends Command
                             'CUSTOMER MAIL ID'                              => $value->respondent_email ?? '',
 
                             'DATE'                                          => now()->format('d-m-Y'),
+
                             'STAGE 1 NOTICE DATE'                           => $value->file_case_details->stage_1_notice_date ?? '',
+                            'STAGE 1A NOTICE DATE'                          => $value->file_case_details->stage_1a_notice_date ?? '',
+                            'STAGE 1B NOTICE DATE'                          => $value->file_case_details->stage_1b_notice_date ?? '',
                             'STAGE 2B NOTICE DATE'                          => $value->file_case_details->stage_2b_notice_date ?? '',
                             'STAGE 3A NOTICE DATE'                          => $value->file_case_details->stage_3a_notice_date ?? '',
                             'STAGE 3B NOTICE DATE'                          => now()->format('d-m-Y'),
@@ -243,35 +291,47 @@ class Bulk3BNoticeEmailSend extends Command
                         $finalNotice = $replaceSummernotePlaceholders($noticeTemplate, $data);
 
                         $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
-                        // Append the signature image at the end of the content, aligned right
-                        $finalNotice .= '
-                        <div style="text-align: right; margin-top: 0px;">
-                            <img src="' . asset('storage/' . $signature['mediateway_signature']) . '" style="height: 80px;" alt="Signature">
-                        </div>
+                        
+                        // Image URLs
+                        $headerImg = url('storage/' . $signature['mediateway_letterhead']);
+                        $signatureImg = asset('storage/' . $signature['mediateway_signature']);
+
+                        // 🟢 Add header image at the top
+                        $headerHtml = '
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <img src="' . $headerImg . '" style="width: 100%; max-height: 120px;" alt="Header">
+                            </div>
                         ';
 
-                        // 1. Prepare your HTML with custom styles
+                        // Add signature at the bottom
+                        $finalNotice .= '
+                            <div style="text-align: right; margin-top: 0px;">
+                                <img src="' . $signatureImg . '" style="height: 80px;" alt="Signature">
+                            </div>
+                        ';
+
+                        // Prepare HTML
                         $html = '
-                        <style>
-                            @page {
-                                size: A4;
-                                margin: 12mm;
-                            }
-                            body {
-                                font-family: DejaVu Sans, sans-serif;
-                                font-size: 12px;
-                                line-height: 1.4;
-                            }
-                            p {
-                                margin: 0px 0;
-                                padding: 0;
-                            }
-                            img {
-                                max-width: 100%;
-                                height: auto;
-                            }
-                        </style>
-                        ' . $finalNotice;
+                            <style>
+                                @page {
+                                    size: A4;
+                                    margin: 12mm;
+                                }
+                                body {
+                                    font-family: DejaVu Sans, sans-serif;
+                                    font-size: 12px;
+                                    line-height: 1.4;
+                                }
+                                p {
+                                    margin: 0px 0;
+                                    padding: 0;
+                                }
+                                img {
+                                    max-width: 100%;
+                                    height: auto;
+                                }
+                            </style>
+                            ' . $headerHtml . $finalNotice;
 
                         // 2. Generate PDF with A4 paper size
                         $pdf = PDF::loadHTML($html)->setPaper('A4', 'portrait')->setOptions(['isRemoteEnabled' => true]);

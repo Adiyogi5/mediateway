@@ -96,13 +96,14 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
 
         Route::get('export-conciliation-notices', 'exportconciliationNotice')->name('conciliation.export');
 
-       Route::delete('/drp/conciliation-notice-master/delete/{id}', 'deleteConciliationMaster')->name('conciliationprocess.conciliationnoticemaster.delete');
+       Route::delete('/conciliation-notice-master/delete/{id}', 'deleteConciliationMaster')->name('conciliationprocess.conciliationnoticemaster.delete');
     });
 
 
     // ----------------------- Case Manager - Send Notices (Pre-Mediation and Mediation) Routes ---------------------------
     Route::controller(SendMediationNoticeController::class)->group(function () {
-        Route::get('mediationnoticelist', 'mediationnoticelist')->name('mediationprocess.mediationnoticelist');
+        Route::get('mediationnoticemasterlist', 'mediationnoticemasterlist')->name('mediationprocess.mediationnoticemasterlist');
+        Route::get('mediationnoticelist/{master_id}', 'mediationnoticelist')->name('mediationprocess.mediationnoticelist');
 
         Route::get('/mediation-process/case-list', 'caseList')->name('mediationprocess.caseList');
         Route::post('/mediation-process/send-notices', 'sendpremediationNotices')->name('mediationprocess.sendpremediationNotices');
@@ -114,6 +115,8 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
         Route::get('/mediation-notice/{id}', 'getMediationNotice')->name('mediationprocess.viewdetail');
 
         Route::get('export-mediation-notices', 'exportmediationNotice')->name('mediation.export');
+
+        Route::delete('/mediation-notice-master/delete/{id}', 'deleteMediationMaster')->name('mediationprocess.mediationnoticemaster.delete');
     });
 
 

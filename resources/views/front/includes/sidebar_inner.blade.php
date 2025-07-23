@@ -181,11 +181,11 @@
 
                     {{-- ############################# SEND MEDIATION NOTICES ############################### --}}
                     <li
-                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.mediationprocess.mediationnoticelist') ? 'text-white bg-lime' : '' }}">
-                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.mediationprocess.mediationnoticelist') ? 'text-white bg-lime' : '' }}"
+                        class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.mediationprocess.mediationnoticemasterlist') ? 'text-white bg-lime' : '' }}">
+                        <a class="nav-link sidebar-link {{ request()->routeIs($currentGuard . '.mediationprocess.mediationnoticemasterlist') ? 'text-white bg-lime' : '' }}"
                             aria-current="page"
-                            style="{{ request()->routeIs($currentGuard . '.mediationprocess.mediationnoticelist') ? 'color:white !important;;' : '' }}"
-                            href="{{ route($currentGuard . '.' . 'mediationprocess.mediationnoticelist') }}"><i
+                            style="{{ request()->routeIs($currentGuard . '.mediationprocess.mediationnoticemasterlist') ? 'color:white !important;;' : '' }}"
+                            href="{{ route($currentGuard . '.' . 'mediationprocess.mediationnoticemasterlist') }}"><i
                                 class="fa-solid fa-paper-plane faa-profile"></i> Mediation Process</a>
                     </li>
 

@@ -97,6 +97,7 @@ class CaseNoticeListController extends Controller
                 ->leftJoinSub($latestNoticesQuery, 'n', 'file_cases.id', '=', 'n.file_case_id')
                 ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
                 ->where('assign_cases.arbitrator_id', $drp->id)
+                ->where('file_cases.case_type', 1)
                 ->where('file_cases.status', 1);
 
             // Apply filters if present
@@ -150,7 +151,7 @@ class CaseNoticeListController extends Controller
                     // Generate the PDF link if the file exists
                     $html = $row->$noticeType
                         ? '<a href="' . asset('storage/' . $row->$noticeType) . '" target="_blank">
-                                <img src="' . asset('public/assets/img/pdf.png') . '" height="30" alt="PDF File" />
+                                <img src="' . asset('assets/img/pdf.png') . '" height="30" alt="PDF File" />
                         </a>'
                         : '--';
 

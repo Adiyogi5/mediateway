@@ -43,7 +43,7 @@
                                     @if (isset($noticeType1))
                                         <a class="text-decoration-none text-secondary" style="font-size: 13px"
                                             href="{{ asset('storage/' . $noticeType1->notice) }}" target="_blank">
-                                            <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                            <img src="{{ asset('assets/img/pdf.png') }}" height="30"
                                                 alt="PDF File" />
                                             View Second Notice PDF
                                         </a>
@@ -68,7 +68,7 @@
                                     @if (isset($noticeType2))
                                         <a class="text-decoration-none text-secondary" style="font-size: 13px"
                                             href="{{ asset('storage/' . $noticeType2->notice) }}" target="_blank">
-                                            <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                            <img src="{{ asset('assets/img/pdf.png') }}" height="30"
                                                 alt="PDF File" />
                                             View Second Notice PDF
                                         </a>
@@ -478,7 +478,7 @@
                                             @elseif ($extension === 'pdf')
                                                 <a class="text-decoration-none case-text" style="font-size: 13px"
                                                     href="{{ $filePath }}" target="_blank">
-                                                    <img src="{{ asset('public/assets/img/pdf.png') }}" height="30"
+                                                    <img src="{{ asset('assets/img/pdf.png') }}" height="30"
                                                         alt="PDF File" />
                                                     View PDF
                                                 </a>

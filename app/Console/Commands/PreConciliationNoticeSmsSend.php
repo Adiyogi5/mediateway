@@ -53,12 +53,15 @@ class PreConciliationNoticeSmsSend extends Command
                     ->where('file_cases.respondent_mobile', '!=', '');
             })
             ->where('conciliation_notices.sms_status', 0)
+            ->whereNull('conciliation_notices.deleted_at')
             ->select(
                 'file_cases.*',
                 'conciliation_notices.file_case_id',
                 'conciliation_notices.conciliation_notice_type',
                 'conciliation_notices.notice_copy',
                 'conciliation_notices.email_status',
+                'conciliation_notices.whatsapp_notice_status',
+                'conciliation_notices.sms_status',
             )
             ->limit(4)
             ->get();
@@ -91,21 +94,21 @@ class PreConciliationNoticeSmsSend extends Command
                             ]);
  
                             if ($response->json('isSuccess')) {
-                                ConciliationNotice::where('file_case_id', $value->id)
+                                ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
                                     ->update([
                                         'sms_send_date' => $now,
                                         'sms_status'    => 1,
                                     ]);
-                                    Log::info("Conciliation SMS sent successfully for FileCase ID: {$fileCaseId}");
+                                    Log::info("Pre-Conciliation SMS sent successfully for FileCase ID: {$fileCaseId}");
                             } else {
-                                Log::warning("Conciliation SMS failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
-                                ConciliationNotice::where('file_case_id', $value->id)
+                                Log::warning("Pre-Conciliation SMS failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
+                                ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
                                     ->update([
                                         'sms_status' => 2,
                                     ]);
                             }
                         } catch (\Throwable $th) {
-                            Log::error("Conciliation SMS API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
+                            Log::error("Pre-Conciliation SMS API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
                             return false;
                         }
                         
@@ -113,7 +116,7 @@ class PreConciliationNoticeSmsSend extends Command
 
             } catch (\Throwable $th) {
                 // Log the error and update the email status
-                Log::error("Error processing Conciliation SMS FileCase ID: {$value->id}. Exception: " . $th->getMessage());
+                Log::error("Error processing Pre-Conciliation SMS FileCase ID: {$value->id}. Exception: " . $th->getMessage());
                 // $value->update(['email_status' => 2]);
             }
         }
