@@ -125,6 +125,11 @@ class Bulk3CNoticeWhatsappSend extends Command
                         try {
                             $mobileNumber = preg_replace('/\D/', '', trim($arbitratorsData->mobile));
 
+                            // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
+                            if (strlen($mobileNumber) === 12 && str_starts_with($mobileNumber, '91')) {
+                                $mobileNumber = substr($mobileNumber, 2);
+                            }
+
                             $message = "Subject: Notice of Arbitrators Acceptance & Disclosure
 Dear Sir/Madam,
 I have been appointed as Sole Arbitrator by MediateWay ADR Centre to adjudicate the dispute under Loan Agreement No. {$value->loan_number} dated {$value->agreement_date}, between {$value->claimant_first_name} {$value->claimant_last_name}  and {$value->respondent_first_name} {$value->respondent_last_name}.

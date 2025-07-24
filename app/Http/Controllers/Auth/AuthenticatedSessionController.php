@@ -5,12 +5,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\RegistrationOtp;
 use App\Models\Setting;
+use App\Rules\ReCaptcha;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
-use App\Rules\ReCaptcha;
+
 use Illuminate\Support\Facades\Hash;
 
 

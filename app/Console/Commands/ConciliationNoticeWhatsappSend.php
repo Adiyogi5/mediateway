@@ -78,6 +78,11 @@ class ConciliationNoticeWhatsappSend extends Command
                         try {
                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
+                            // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
+                            if (strlen($mobileNumber) === 12 && str_starts_with($mobileNumber, '91')) {
+                                $mobileNumber = substr($mobileNumber, 2);
+                            }
+
                             $message = "Sub.: Invitation for Online Conciliation
 Dear Sir/Ma’am,
 As per Section 62 of the Arbitration and Conciliation Act, 1996, you are invited to participate in an Online Conciliation Meeting regarding the dispute with {$value->claimant_first_name} {$value->claimant_last_name} concerning your CC / Loan Account No. {$value->loan_number}.

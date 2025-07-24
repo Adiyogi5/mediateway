@@ -126,6 +126,11 @@ class Bulk2BNoticeWhatsappSend extends Command
                             
                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
+                            // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
+                            if (strlen($mobileNumber) === 12 && str_starts_with($mobileNumber, '91')) {
+                                $mobileNumber = substr($mobileNumber, 2);
+                            }
+
                             $message = "Dear {$value->respondent_first_name} {$value->respondent_last_name},
                             A case has been registered by {$value->claimant_first_name} {$value->claimant_last_name} against you at MediateWay ADR Centre under Clause {$value->arbitration_clause_no} of your loan agreement for online arbitration as per the Arbitration & Conciliation Act, 1996.
 Case Manager:

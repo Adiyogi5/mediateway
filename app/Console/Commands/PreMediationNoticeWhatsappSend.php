@@ -81,6 +81,11 @@ class PreMediationNoticeWhatsappSend extends Command
                         try {
                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
+                            // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
+                            if (strlen($mobileNumber) === 12 && str_starts_with($mobileNumber, '91')) {
+                                $mobileNumber = substr($mobileNumber, 2);
+                            }
+
                             $message = "Dear {$value->respondent_first_name} {$value->respondent_last_name},
 [ {$value->loan_number} (Co-branded with Bajaj Finserv)]
 

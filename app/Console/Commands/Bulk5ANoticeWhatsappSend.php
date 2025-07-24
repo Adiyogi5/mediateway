@@ -132,6 +132,11 @@ class Bulk5ANoticeWhatsappSend extends Command
                         try {
                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
+                            // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
+                            if (strlen($mobileNumber) === 12 && str_starts_with($mobileNumber, '91')) {
+                                $mobileNumber = substr($mobileNumber, 2);
+                            }
+
                             $message = "Second Hearing Notice : Loan A/c {$value->loan_number}
 Dear Sir/Madam,
 You missed the first hearing notice dated [Stage 4-A Notice: Arbitrator 1st  Notice]. Submit your reply & documents on MediateWay portal within 15 days.

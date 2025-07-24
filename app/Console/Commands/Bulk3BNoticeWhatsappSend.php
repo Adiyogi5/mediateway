@@ -125,6 +125,11 @@ class Bulk3BNoticeWhatsappSend extends Command
                         try {
                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
+                            // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
+                            if (strlen($mobileNumber) === 12 && str_starts_with($mobileNumber, '91')) {
+                                $mobileNumber = substr($mobileNumber, 2);
+                            }
+
                             $message = "Subject: Appointment of Arbitrator : MediateWay ADR Centre
 Dear {$value->respondent_first_name} {$value->respondent_last_name},
 A case has been registered by {$value->claimant_first_name} {$value->claimant_last_name} against you for online arbitration under Loan A/c No. {$value->loan_number}.
