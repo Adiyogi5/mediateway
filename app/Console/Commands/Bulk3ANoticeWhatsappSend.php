@@ -103,6 +103,7 @@ class Bulk3ANoticeWhatsappSend extends Command
             ->limit(5)
             ->get();
 
+
         foreach ($caseData as $key => $value) {
             try {
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();

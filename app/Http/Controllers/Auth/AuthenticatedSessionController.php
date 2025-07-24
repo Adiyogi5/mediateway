@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\RegistrationOtp;
+use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
+use App\Rules\ReCaptcha;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -21,6 +23,13 @@ class AuthenticatedSessionController extends Controller
 
     public function create($guard = 'admin'): View
     {
+        $googleRecaptchaData = Setting::where('setting_type', '8')
+            ->get()
+            ->pluck('filed_value', 'setting_name')
+            ->toArray();
+
+        $googleRecaptchaData['GOOGLE_RECAPTCHA_KEY'] = $googleRecaptchaData['GOOGLE_RECAPTCHA_KEY'] ?? env('GOOGLE_RECAPTCHA_KEY');
+
         // Separate login pages for each user type
         $view = match ($guard) {
             'individual'   => 'auth.login-front',
@@ -29,7 +38,7 @@ class AuthenticatedSessionController extends Controller
             default        => 'auth.login', // Admin login
         };
 
-        return view($view, ['guard' => $guard]);
+        return view($view, ['guard' => $guard],compact('googleRecaptchaData'));
     }
 
     public function store(LoginRequest $request, $guard = 'admin'): RedirectResponse
@@ -51,6 +60,7 @@ class AuthenticatedSessionController extends Controller
             $request->validate([
                 'mobile'   => 'required|string|max:15',
                 'password' => 'required|string|min:6',
+                'g-recaptcha-response' => ['required', new ReCaptcha]
             ]);
 
             $userModel = '\App\Models\\' . ucfirst($guard);

@@ -137,6 +137,7 @@
                                                 </div>
                                             </div>
 
+
                                             {{-- Password + Confirm Password Fields (initially hidden for all except organization) --}}
                                             <div class="col-md-6 mb-4 password-fields"
                                                 @if ($guard !== 'organization') style="display: none;" @endif>
@@ -159,6 +160,14 @@
                                                     <input type="password" name="password_confirmation"
                                                         style="border-left: 1px solid #ffffff00;" class="form-control">
                                                 </div>
+                                            </div>
+
+                                            <div class="col-md-6 mb-4 password-fields"
+                                                @if ($guard !== 'organization') style="display: none;" @endif>
+                                                <div class="g-recaptcha" data-sitekey="{{ $googleRecaptchaData['GOOGLE_RECAPTCHA_KEY'] }}"></div>
+                                                @if ($errors->has('g-recaptcha-response'))
+                                                    <span class="text-danger">{{ $errors->first('g-recaptcha-response') }}</span>
+                                                @endif
                                             </div>
 
                                             <div class="col-8">
@@ -209,6 +218,7 @@
 
 
 @section('js')
+    <script src='https://www.google.com/recaptcha/api.js'></script>
     <script>
         $(function() {
             // Set default active tab (Individual)

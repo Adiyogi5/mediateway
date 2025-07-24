@@ -68,7 +68,7 @@
                                                 @enderror
                                             </div>
 
-                                            <div class="col-md-12 mb-5 password-fields"
+                                            <div class="col-md-12 mb-3 password-fields"
                                                 @if ($guard !== 'organization') style="display: none;" @endif>
                                                 <label for="password">Password</label>
                                                 <div class="input-group">
@@ -80,6 +80,14 @@
                                                 @error('password')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
+                                            </div>
+                                            
+                                            <div class="col-md-12 mb-5 password-fields"
+                                                @if ($guard !== 'organization') style="display: none;" @endif>
+                                                <div class="g-recaptcha" data-sitekey="{{ $googleRecaptchaData['GOOGLE_RECAPTCHA_KEY'] }}"></div>
+                                                @if ($errors->has('g-recaptcha-response'))
+                                                    <span class="text-danger">{{ $errors->first('g-recaptcha-response') }}</span>
+                                                @endif
                                             </div>
 
                                             <div class="col-6 mb-3">
@@ -119,6 +127,7 @@
 
 
 @section('js')
+    <script src='https://www.google.com/recaptcha/api.js'></script>
     <script>
         $(function() {
             // OTP sending logic

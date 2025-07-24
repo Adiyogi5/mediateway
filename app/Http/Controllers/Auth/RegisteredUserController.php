@@ -13,16 +13,25 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Models\OrganizationPermission;
+use App\Models\Setting;
+use App\Rules\ReCaptcha;
 use Carbon\Carbon;
 
 class RegisteredUserController extends Controller
 {
     public function create(): View
     {
-        return view('auth.register');
+        $googleRecaptchaData = Setting::where('setting_type', '8')
+            ->get()
+            ->pluck('filed_value', 'setting_name')
+            ->toArray();
+
+        $googleRecaptchaData['GOOGLE_RECAPTCHA_KEY'] = $googleRecaptchaData['GOOGLE_RECAPTCHA_KEY'] ?? env('GOOGLE_RECAPTCHA_KEY');
+
+        return view('auth.register',compact('googleRecaptchaData'));
     }
 
-     public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $guard = $request->guard;
 
@@ -48,6 +57,7 @@ class RegisteredUserController extends Controller
                 'email' => 'required|string|email|max:255|unique:organizations',
                 'mobile' => 'required|string|max:15|unique:organizations',
                 'password' => 'required|string|min:6|confirmed',
+                'g-recaptcha-response' => ['required', new ReCaptcha]
             ]);
 
             $userModel = '\App\Models\Organization';
