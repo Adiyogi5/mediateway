@@ -79,12 +79,48 @@ class CasesAllNoticeListController extends Controller
             }
 
             // Execute the main query
-            $data = DB::table('file_cases')
+            // $data = DB::table('file_cases')
+            //     ->select($selectFields)
+            //     ->leftJoinSub($latestNoticesQuery, 'n', 'file_cases.id', '=', 'n.file_case_id')
+            //     ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
+            //     ->where('file_cases.status', 1)
+            //     ->where('file_cases.case_type', 1)
+            //     ->orderBy('file_cases.created_at', 'DESC')
+            //     ->groupBy(
+            //         'file_cases.id',
+            //         'file_cases.case_type',
+            //         'file_cases.case_number',
+            //         'file_cases.loan_number',
+            //         'file_cases.status',
+            //         'file_cases.created_at'
+            //     )
+            //     ->get();
+
+            $query = DB::table('file_cases')
                 ->select($selectFields)
                 ->leftJoinSub($latestNoticesQuery, 'n', 'file_cases.id', '=', 'n.file_case_id')
                 ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
                 ->where('file_cases.status', 1)
-                ->where('file_cases.case_type', 1)
+                ->where('file_cases.case_type', 1);
+
+            // Apply filters
+            if ($request->filled('case_type')) {
+                $query->where('file_cases.case_type', $request->case_type);
+            }
+            if ($request->filled('case_number')) {
+                $query->where('file_cases.case_number', 'like', '%' . $request->case_number . '%');
+            }
+            if ($request->filled('loan_number')) {
+                $query->where('file_cases.loan_number', 'like', '%' . $request->loan_number . '%');
+            }
+            if ($request->filled('from_date')) {
+                $query->whereDate('file_cases.created_at', '>=', $request->from_date);
+            }
+            if ($request->filled('to_date')) {
+                $query->whereDate('file_cases.created_at', '<=', $request->to_date);
+            }
+
+            $data = $query
                 ->orderBy('file_cases.created_at', 'DESC')
                 ->groupBy(
                     'file_cases.id',

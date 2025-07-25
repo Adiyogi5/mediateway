@@ -31,7 +31,7 @@
                     </div>
                     <div>
                         <div class="row my-2 gy-2 border-bottom border-1 pb-2">
-                            <div class="col-md-3">
+                            {{-- <div class="col-md-3">
                                 <select id="filter-case-type" class="form-control form-select py-1">
                                     <option value="">All Case Types</option>
                                       @foreach (config('constant.case_type') as $key => $value)
@@ -39,7 +39,7 @@
                                     @endforeach
                                     <!-- add more options based on your `case_type` config -->
                                 </select>
-                            </div>
+                            </div> --}}
                             <div class="col-md-3">
                                 <input type="text" id="filter_case_number" class="form-control py-1"
                                     placeholder="Enter Case Number">
@@ -62,10 +62,10 @@
                                 <input type="date" id="filter-to-date" class="form-control py-1" placeholder="To Date">
                             </div>
                             <div class="col-md-2">
-                                <button id="btn-search" class="btn btn-primary w-100 py-1">Search</button>
+                                <button id="btn-search" class="btn btn-primary w-100 py-1">Filter</button>
                             </div>
                             <div class="col-md-2">
-                                <button id="btn-clear" class="btn btn-secondary w-100 py-1">Clear</button>
+                                <button id="btn-clear" class="btn btn-secondary w-100 py-1">Reset</button>
                             </div>
                         </div>
                     </div>

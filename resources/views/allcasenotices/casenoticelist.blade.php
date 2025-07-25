@@ -10,6 +10,42 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                {{-- <div class="col-md-3">
+                                    <label for="filter_case_type">Case Type</label>
+                                    <select id="filter_case_type" class="form-select py-1">
+                                        <option value="">All</option>
+                                        @foreach(config('constant.case_type') as $key => $label)
+                                            <option value="{{ $key }}">{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                </div> --}}
+                                <div class="col-md-3">
+                                    <label for="filter_case_number">Case Number</label>
+                                    <input type="text" id="filter_case_number" class="form-control py-1" placeholder="Enter Case Number">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="filter_loan_number">Loan Number</label>
+                                    <input type="text" id="filter_loan_number" class="form-control py-1" placeholder="Enter Loan Number">
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="filter_from_date">From Date</label>
+                                    <input type="date" id="filter_from_date" class="form-control py-1">
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="filter_to_date">To Date</label>
+                                    <input type="date" id="filter_to_date" class="form-control py-1">
+                                </div>
+                                <div class="col-md-2 align-self-end">
+                                    <button id="btn-filter" class="btn btn-primary py-1">Filter</button>
+                                    <button id="btn-reset" class="btn btn-secondary py-1">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card-body table-padding">
                         <div class="table-responsive scrollbar">
                             <table id="cases-table" class="table custom-table table-striped dt-table-hover fs--1 mb-0 table-datatable"
@@ -52,7 +88,16 @@
             var table = $('#cases-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('allcasenotices.casenoticelist') }}",
+                ajax: {
+                    url: "{{ route('allcasenotices.casenoticelist') }}",
+                    data: function(d) {
+                        d.case_type     = $('#filter_case_type').val();
+                        d.case_number   = $('#filter_case_number').val();
+                        d.loan_number   = $('#filter_loan_number').val();
+                        d.from_date     = $('#filter_from_date').val();
+                        d.to_date       = $('#filter_to_date').val();
+                    }
+                },
                 order: [[4, 'desc']],
                 columns: [
                     { data: 'case_type', name: 'file_cases.case_type' },
@@ -71,6 +116,21 @@
                     { data: 'notice_4a', name: 'notice_4a', orderable: false, searchable: false },
                     { data: 'notice_5a', name: 'notice_5a', orderable: false, searchable: false },
                 ]
+            });
+            
+            // Filter button
+            $('#btn-filter').click(function() {
+                table.draw();
+            });
+
+            // Reset button
+            $('#btn-reset').click(function() {
+                $('#filter_case_type').val('');
+                $('#filter_case_number').val('');
+                $('#filter_loan_number').val('');
+                $('#filter_from_date').val('');
+                $('#filter_to_date').val('');
+                table.draw();
             });
         });
     </script>

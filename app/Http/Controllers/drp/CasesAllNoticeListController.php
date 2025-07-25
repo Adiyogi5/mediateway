@@ -96,6 +96,7 @@ class CasesAllNoticeListController extends Controller
                 ->select($selectFields)
                 ->leftJoinSub($latestNoticesQuery, 'n', 'file_cases.id', '=', 'n.file_case_id')
                 ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
+                ->where('file_cases.case_type', 1)
                 ->where('file_cases.status', 1);
 
             // Apply filters if present

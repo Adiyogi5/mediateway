@@ -52,9 +52,9 @@ class CreateClaimPetition extends Command
      */
     public function handle()
     {
-        // ##############################################
-        // Create Claim Petition - 3D - Save Pdf
-        // ##############################################
+        // ##################################################
+        // Create Claim Petition - Stage 3D Notice - Save Pdf
+        // ##################################################
         $caseData = FileCase::with('file_case_details','guarantors')
             ->join(DB::raw("(
                 SELECT
