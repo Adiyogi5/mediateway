@@ -212,7 +212,6 @@ class CaseAssignController extends Controller
 
     public function updateassigndetail(Request $request, $id): RedirectResponse
     {
-        // dd($request->all());
         $caseData = FileCase::with('file_case_details')->find($id);
         
         if (!$caseData) return to_route('caseassign')->withError('Case Not Found..!!');

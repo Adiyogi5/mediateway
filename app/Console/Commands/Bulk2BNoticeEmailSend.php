@@ -183,8 +183,9 @@ class Bulk2BNoticeEmailSend extends Command
                         $data = [
                             "ARBITRATOR'S NAME"                             => $arbitratorsName ?? '',
                             "CASE MANAGER'S NAME"                           => $casemanagerData->name ?? '',
-                            'PHONE NUMBER'                                  => $casemanagerData->mobile ?? '',
-                            'EMAIL ADDRESS'                                 => ($casemanagerData->address1 ?? '') . '&nbsp;' . ($casemanagerData->address2 ?? ''),
+                            "CASE MANAGER'S PHONE NUMBER"                   => $casemanagerData->mobile ?? '',
+                            "CASE MANAGER'S EMAIL"                          => $casemanagerData->email ?? '',
+                            "CASE MANAGER'S ADDRESS"                        => ($casemanagerData->address1 ?? '') . '&nbsp;' . ($casemanagerData->address2 ?? ''),
 
                             'CASE REGISTRATION NUMBER'                      => $value->case_number ?? '',
                             'BANK/ORGANISATION/CLAIMANT NAME'               => ($value->claimant_first_name ?? '') . '&nbsp;' . ($value->claimant_last_name ?? ''),

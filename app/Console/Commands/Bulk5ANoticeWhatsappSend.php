@@ -149,7 +149,7 @@ I confirm my independence.
 (Sole Arbitrator)
 {$arbitratorsData->name}";
 
-                            $pdfUrl = url(str_replace('\\', '/', 'public/storage/' . $value->notice10));
+                            $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice10));
 
                             if (! empty($value->respondent_mobile)) {
                                 $response = Http::get(config('services.whatsapp.url'), [

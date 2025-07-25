@@ -28,16 +28,16 @@ class Kernel extends ConsoleKernel
         // $schedule->command('bulk:send-1b-notice')->everyTenMinutes();
 
         $schedule->command('bulk:send-email-2b-notice')->everyMinute();
-        $schedule->command('bulk:send-whatsapp-2b-notice')->everyMinute();
+        // $schedule->command('bulk:send-whatsapp-2b-notice')->everyMinute();
         $schedule->command('bulk:send-sms-2b-notice')->everyMinute();
 
         $schedule->command('bulk:send-email-3a-notice')->everyMinute();
-        $schedule->command('bulk:send-whatsapp-3a-notice')->everyMinute();
+        // $schedule->command('bulk:send-whatsapp-3a-notice')->everyMinute();
         $schedule->command('bulk:send-sms-3a-notice')->everyMinute();
 
-        // $schedule->command('bulk:send-email-3b-notice')->everyMinute();
+        $schedule->command('bulk:send-email-3b-notice')->everyMinute();
         // $schedule->command('bulk:send-whatsapp-3b-notice')->everyMinute();
-        // $schedule->command('bulk:send-sms-3b-notice')->everyMinute();
+        $schedule->command('bulk:send-sms-3b-notice')->everyMinute();
         
         // $schedule->command('bulk:send-email-3c-notice')->everyMinute();
         // $schedule->command('bulk:send-whatsapp-3c-notice')->everyMinute();

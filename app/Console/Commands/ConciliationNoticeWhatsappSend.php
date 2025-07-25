@@ -95,7 +95,7 @@ We look forward to your participation.
 MediateWay ADR Centre
 Contact Information: [ 9461165841/mediatewayinfo@gmail.com]";
 
-                            $pdfUrl = url(str_replace('\\', '/', 'public/storage/' . $value->notice_copy));
+                            $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice_copy));
 
                             if (! empty($value->respondent_mobile)) {
                                 $response = Http::get(config('services.whatsapp.url'), [

@@ -139,7 +139,7 @@ Ph: {$settingdata['phone']} | Email: {$settingdata['email']}
 For details, visit: https://mediateway.com/
 MediateWay ADR Centre";
 
-                            $pdfUrl = url(str_replace('\\', '/', 'public/storage/' . $value->notice4));
+                            $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice4));
 
                             if (! empty($value->respondent_mobile)) {
                                 $response = Http::get(config('services.whatsapp.url'), [

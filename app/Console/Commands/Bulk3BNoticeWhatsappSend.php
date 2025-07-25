@@ -139,7 +139,7 @@ This serves as official notice under MediateWay Arbitration Rules.
 Regards,
 MediateWay ADR Centre";
 
-                            $pdfUrl = url(str_replace('\\', '/', 'public/storage/' . $value->notice6));
+                            $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice6));
 
                             if (! empty($value->respondent_mobile)) {
                                 $response = Http::get(config('services.whatsapp.url'), [

@@ -134,7 +134,7 @@ Failure to appear may lead to ex-parte proceedings (Sec. 25, A&C Act).
 (Sole Arbitrator)
 {$arbitratorsData->name}";
 
-                            $pdfUrl = url(str_replace('\\', '/', 'public/storage/' . $value->notice9));
+                            $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice9));
 
                             if (! empty($value->respondent_mobile)) {
                                 $response = Http::get(config('services.whatsapp.url'), [

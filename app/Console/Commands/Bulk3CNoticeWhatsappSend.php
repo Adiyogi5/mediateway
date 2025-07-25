@@ -138,7 +138,7 @@ If the respondent fails to participate, the matter may proceed ex-parte. If the 
 (Sole Arbitrator)
 {$arbitratorsData->name}";
 
-                            $pdfUrl = url(str_replace('\\', '/', 'public/storage/' . $value->notice7));
+                            $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice7));
 
                             if (! empty($mobileNumber)) {
                                 $response = Http::get(config('services.whatsapp.url'), [

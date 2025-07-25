@@ -103,8 +103,9 @@
                                         @php
                                             $arbitratorVariable = "{{ARBITRATOR'S NAME}}";
                                             $caseManagerVariable = "{{CASE MANAGER'S NAME}}";
-                                            $PhoneNoVariable = "{{PHONE NUMBER}}";
-                                            $EmailVariable = "{{EMAIL ADDRESS}}";
+                                            $PhoneNoVariable = "{{CASE MANAGER'S PHONE NUMBER}}";
+                                            $EmailVariable = "{{CASE MANAGER'S EMAIL}}";
+                                            $AddressVariable = "{{CASE MANAGER'S ADDRESS}}";
 
                                             $caseRegistrationNoVariable = "{{CASE REGISTRATION NUMBER}}";
                                             $claimantOrganizationNameVariable = "{{BANK/ORGANISATION/CLAIMANT NAME}}";
@@ -481,6 +482,10 @@
                                         <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
                                             <span class="variable-text">{{ $EmailVariable }}</span>
                                             <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $EmailVariable }}">Copy</button>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
+                                            <span class="variable-text">{{ $AddressVariable }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn py-1" data-variable="{{ $AddressVariable }}">Copy</button>
                                         </div>
                                         <div class="col-md-6 col-12 d-flex align-items-center justify-content-between my-1">
                                             <span class="variable-text">{{ $stage2bNoticeVariable }}</span>

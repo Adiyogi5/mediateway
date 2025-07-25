@@ -113,7 +113,10 @@ class Bulk3ANoticeWhatsappSend extends Command
                
                 if (! empty($assigncaseData->case_manager_id)) {
                     $arbitratorIds   = explode(',', $assigncaseData->arbitrator_id);
-                    $arbitratorsData = Drp::whereIn('id', $arbitratorIds)->first();
+                    $arbitratorsData = Drp::whereIn('id', $arbitratorIds)->get();
+                    $firstArb  = $arbitratorsData[0] ?? null;
+                    $secondArb = $arbitratorsData[1] ?? null;
+                    $thirdArb  = $arbitratorsData[2] ?? null;
 
                     $now = now();
                     $fileCaseId = $value->id;
@@ -135,13 +138,13 @@ class Bulk3ANoticeWhatsappSend extends Command
 Dear {$value->respondent_first_name} {$value->respondent_last_name},
 A case has been filed by {$value->claimant_first_name} {$value->claimant_last_name} under Loan A/c No. {$value->loan_number} at MediateWay ADR Centre for online arbitration.
 We propose the following as Sole Arbitrator:
-    1. {$arbitratorsData->name}
-    2. {$arbitratorsData->name}
-    3. {$arbitratorsData->name}
+    1. {$firstArb->name}
+    2. {$secondArb->name}
+    3. {$thirdArb->name}
 Please confirm your consent to any one within 7 days. No response will be treated as no objection. Arbitration will be held online. Objections to the venue must also be raised within 7 days.
 MediateWay ADR Centre";
 
-                            $pdfUrl = url(str_replace('\\', '/', 'public/storage/' . $value->notice5));
+                            $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice5));
 
                             if (! empty($mobileNumber)) {
                                 $response = Http::get(config('services.whatsapp.url'), [
