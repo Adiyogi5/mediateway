@@ -156,20 +156,24 @@ class Bulk3CNoticeEmailSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(5)
+            ->limit(4)
             ->get();
 
         foreach ($caseData as $key => $value) {
             try {
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();
                 // $noticedataFetchArbitrator = Notice::where('file_case_id', $value->id)->where('notice_type', 7)->first();
-                // dd($assigncaseData);
+                
                 if (! empty($assigncaseData)) {
                     $arbitratorIds   = explode(',', $assigncaseData->arbitrator_id);
                     $arbitratorsName = Drp::whereIn('id', $arbitratorIds)->pluck('name')->implode(', ');
                     $arbitratorsData = Drp::whereIn('id', $arbitratorIds)->first();
 
                     $casemanagerData = Drp::where('id', $assigncaseData->case_manager_id)->first();
+
+                    $total_pending_claims = AssignCase::where('arbitrator_id', $arbitratorsData->id)
+                        ->where('case_id', '<', $value->id) 
+                        ->count();
 
                     $noticetemplateData = NoticeTemplate::where('id', 7)->first();
                     $noticeTemplate     = $noticetemplateData->notice_format;
@@ -205,6 +209,7 @@ class Bulk3CNoticeEmailSend extends Command
 
                             "ARBITRATOR'S NAME"                             => $arbitratorsData->name ?? '',
                             "ARBITRATOR'S SPECIALIZATION"                   => $arbitratorsData->specialization ?? '',
+                            "ARBITRATOR'S MOBILE NO"                        => $arbitratorsData->mobile ?? '',
                             "ARBITRATOR'S ADDRESS"                          => ($arbitratorsData->address1 ?? '') . '&nbsp;' . ($arbitratorsData->address2 ?? ''),
 
                             'ARBITRATION CLAUSE NO'                         => $value->arbitration_clause_no ?? '',
@@ -259,7 +264,7 @@ class Bulk3CNoticeEmailSend extends Command
                             'CUSTOMER MOBILE NO'                            => $value->respondent_mobile ?? '',
                             'CUSTOMER MAIL ID'                              => $value->respondent_email ?? '',
 
-                            'TOTAL NUMBER OF PENDING ARBITRATION CLAIMS'    => 1,
+                            'TOTAL NUMBER OF PENDING ARBITRATION CLAIMS'    => $total_pending_claims,
 
                             'DATE'                                          => now()->format('d-m-Y'),
 
@@ -294,18 +299,19 @@ class Bulk3CNoticeEmailSend extends Command
 
                         $finalNotice = $replaceSummernotePlaceholders($noticeTemplate, $data);
 
-                        $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
+                        // $signature = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
                         
                         // Image URLs
-                        $headerImg = url('storage/' . $signature['mediateway_letterhead']);
-                        $signatureImg = asset('storage/' . $signature['mediateway_signature']);
+                        // $headerImg = url('storage/' . $signature['mediateway_letterhead']);
+                        // $signatureImg = asset('storage/' . $signature['mediateway_signature']);
+                        $signatureImg = url('storage/' . $arbitratorsData->signature_drp);
 
                         // 🟢 Add header image at the top
-                        $headerHtml = '
-                            <div style="text-align: center; margin-bottom: 20px;">
-                                <img src="' . $headerImg . '" style="width: 100%; max-height: 120px;" alt="Header">
-                            </div>
-                        ';
+                        // $headerHtml = '
+                        //     <div style="text-align: center; margin-bottom: 20px;">
+                        //         <img src="' . $headerImg . '" style="width: 100%; max-height: 120px;" alt="Header">
+                        //     </div>
+                        // ';
 
                         // Add signature at the bottom
                         $finalNotice .= '
@@ -335,7 +341,7 @@ class Bulk3CNoticeEmailSend extends Command
                                     height: auto;
                                 }
                             </style>
-                            ' . $headerHtml . $finalNotice;
+                            ' . $finalNotice;
 
                         // 2. Generate PDF with A4 paper size
                         $pdf = PDF::loadHTML($html)->setPaper('A4', 'portrait')->setOptions(['isRemoteEnabled' => true]);
@@ -419,6 +425,7 @@ class Bulk3CNoticeEmailSend extends Command
                                 try {
                                     Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($savedPath, $subject, $email) {
                                         $message->to($email)
+                                            ->cc('legaldesk@rblbank.com')
                                             ->subject($subject)
                                         // ->attach(url(str_replace('\\', '/', 'public/storage/' . $savedPath)), [
                                         //     'mime' => 'application/pdf',
@@ -487,6 +494,7 @@ class Bulk3CNoticeEmailSend extends Command
                                 try {
                                     Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($value, $subject, $email) {
                                         $message->to($email)
+                                            ->cc('legaldesk@rblbank.com')
                                             ->subject($subject)
                                         // ->attach(url(str_replace('\\', '/', 'public/storage/' . $value->notice7)), [
                                         //     'mime' => 'application/pdf',

@@ -91,7 +91,7 @@ class Bulk1NoticeSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(20)
+            ->limit(2)
             ->get();
 
         foreach ($caseData as $key => $value) {
@@ -173,7 +173,7 @@ class Bulk1NoticeSend extends Command
                 // ############ Send Whatsapp Message using Mobile Number ############
                 if ($value->whatsapp_notice_status == 0 && ! empty($value->notice)) {
                     try {
-                        $settingdata  = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
+                        $whatsappApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                         $mobileNumber = $value->respondent_mobile;
 
                         $message = "RE: Loan Recall & Arbitration Intimation
@@ -187,7 +187,7 @@ Final reminder before legal action.
 
                         if (! empty($value->respondent_mobile)) {
                             $response = Http::get(config('services.whatsapp.url'), [
-                                'apikey' => config('services.whatsapp.api_key'),
+                                'apikey' => $whatsappApiData['whatsapp_api_key'],
                                 'mobile' => $mobileNumber,
                                 'msg'    => $message,
                                 'pdf'    => $pdfUrl,

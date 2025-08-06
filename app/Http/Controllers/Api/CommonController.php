@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\RegistrationOtp;
+use App\Models\Setting;
 use App\Models\SmsCount;
 use App\Rules\CheckUnique;
 use Illuminate\Http\Request;
@@ -69,9 +70,10 @@ class CommonController extends Controller
             ]);
         }
 
+        $smsApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
         $mobile = '91' . $request->mobile;
         $message =  "Hello User, Your login verification code is $otp. Do not share it with anyone. Team Mediateway";
-        $smsResponse = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+        $smsResponse = Http::withHeaders(['apiKey' => $smsApiData['sms_api_key'],])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
                                 "sender"      => "MDTWAY",
                                 "peId"        => "1001292642501782120",
                                 "teId"        => "1007183533861090202",

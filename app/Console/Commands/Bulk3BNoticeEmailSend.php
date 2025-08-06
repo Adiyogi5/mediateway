@@ -204,6 +204,7 @@ class Bulk3BNoticeEmailSend extends Command
 
                             "ARBITRATOR'S NAME"                             => $arbitratorsData->name ?? '',
                             "ARBITRATOR'S SPECIALIZATION"                   => $arbitratorsData->specialization ?? '',
+                            "ARBITRATOR'S MOBILE NO"                        => $arbitratorsData->mobile ?? '',
                             "ARBITRATOR'S ADDRESS"                          => ($arbitratorsData->address1 ?? '') . '&nbsp;' . ($arbitratorsData->address2 ?? ''),
                             
                             'ARBITRATION CLAUSE NO'                         => $value->arbitration_clause_no ?? '',

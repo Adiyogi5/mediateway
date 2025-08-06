@@ -187,9 +187,13 @@ Route::get('/bulk_send_sms_conciliation_notice', function () {
     return '<h1>update bulk send sms conciliation notice</h1>';
 });
 //########### Create Live Meeting Rooms - Conciliator ###########
-Route::get('/create_live_conciliator_meeting_room', function () {
-    Artisan::call('bulk:create-live-conciliator-meeting-room');   
-    return '<h1>create live conciliator meeting room</h1>';
+Route::get('/create_live_email_conciliator_meeting_room', function () {
+    Artisan::call('bulk:create-live-email-conciliator-meeting-room');   
+    return '<h1>create live email conciliator meeting room</h1>';
+});
+Route::get('/create_live_whatsapp_conciliator_meeting_room', function () {
+    Artisan::call('bulk:create-live-whatsapp-conciliator-meeting-room');   
+    return '<h1>create live whatsapp conciliator meeting room</h1>';
 });
 //########### Status Live Meeting Rooms - Conciliator ###########
 Route::get('/status_live_conciliator_meeting_room', function () {
@@ -231,9 +235,13 @@ Route::get('/bulk_send_sms_mediation_notice', function () {
     return '<h1>update bulk send sms mediation notice</h1>';
 });
 //########### Create Live Meeting Rooms - Mediator ###########
-Route::get('/create_live_mediator_meeting_room', function () {
-    Artisan::call('bulk:create-live-mediator-meeting-room');   
-    return '<h1>create live mediator meeting room</h1>';
+Route::get('/create_live_email_mediator_meeting_room', function () {
+    Artisan::call('bulk:create-live-email-mediator-meeting-room');   
+    return '<h1>create live email mediator meeting room</h1>';
+});
+Route::get('/create_live_whatsapp_mediator_meeting_room', function () {
+    Artisan::call('bulk:create-live-whatsapp-mediator-meeting-room');   
+    return '<h1>create live whatsapp mediator meeting room</h1>';
 });
 //########### Status Live Meeting Rooms - Mediator ###########
 Route::get('/status_live_mediator_meeting_room', function () {

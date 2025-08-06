@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 use App\Models\FileCase;
 use App\Models\FileCaseDetail;
 use App\Models\Notice;
+use App\Models\Setting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -108,16 +109,14 @@ class Bulk4ANoticeSmsSend extends Command
                 // ###############################################################
                 // ################ Send SMS using Mobile Number #################
                 if (! empty($value->respondent_mobile)) {
-
+                    $smsApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                     $first_hearingDate = $value->first_hearing_date;
-
                     $mobile = preg_replace('/\D/', '', trim($value->respondent_mobile));
-
                     $smsmessage = "Ref: Arbitration Hearing – A/c {$value->loan_number} Dear Sir/Ma’am, Your first virtual hearing is on {$first_hearingDate} at 11.30 AM Digital Room details have been sent to your registered email and WhatsApp. Submit your reply/documents via the MediateWay portal before the hearing. Non-appearance may result in ex-parte proceedings (Sec. 25, A&C Act). (Sole Arbitrator)
 ";
 
                     try {
-                        $response = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+                        $response = Http::withHeaders(['apiKey' => $smsApiData['sms_api_key'],])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
                             "sender"      => "MDTWAY",
                             "peId"        => "1001292642501782120",
                             "teId"        => "1007875445521607304",

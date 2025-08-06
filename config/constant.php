@@ -12,7 +12,7 @@ return [
         '1'             => 'General Settings',
         '2'             => 'Social Links Setting',
         '3'             => 'Mail Setting',
-        '5'             => 'SMS Setting',
+        '5'             => 'Whatsapp & SMS Setting',
         '8'             => 'Google Recaptcha',
         '9'             => 'Counters',
         '10'            => 'Razor Pay',

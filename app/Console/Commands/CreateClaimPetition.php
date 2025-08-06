@@ -86,6 +86,7 @@ class CreateClaimPetition extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
+            ->limit(10)
             ->get();
                 
         foreach ($caseData as $key => $value) {
@@ -96,19 +97,21 @@ class CreateClaimPetition extends Command
                 if (!empty($assigncaseData)) {
                     $arbitratorIds   = explode(',', $assigncaseData->arbitrator_id);
                     $arbitratorsName = Drp::whereIn('id', $arbitratorIds)->pluck('name')->implode(', ');
+                    $arbitratorsData = Drp::whereIn('id', $arbitratorIds)->first();
                     $casemanagerData = Drp::where('id', $assigncaseData->case_manager_id)->first();
 
                     $organizationManager_signature = Organization::where('id', $value['organization_id'])->select('signature_org')->first();
-                    $organizationLetterHead_header = Organization::where('id', $value['organization_id'])->select('header_letterhead')->first();
-                    $organizationLetterHead_footer = Organization::where('id', $value['organization_id'])->select('footer_letterhead')->first();
-
 
                     $claimpetitionData = ClaimPetition::where('product_type', $value->product_type)->first();
                     $claimPetition     = $claimpetitionData->notice_format;
 
                     // Define your replacement values
                     $data = [
-                        "ARBITRATOR'S NAME"                                               => $arbitratorsName ?? '',
+                        "ARBITRATOR'S NAME"                                               => $arbitratorsData->name ?? '',
+                        "ARBITRATOR'S SPECIALIZATION"                                     => $arbitratorsData->specialization ?? '',
+                        "ARBITRATOR'S MOBILE NO"                                          => $arbitratorsData->mobile ?? '',
+                        "ARBITRATOR'S ADDRESS"                                            => ($arbitratorsData->address1 ?? '') . '&nbsp;' . ($arbitratorsData->address2 ?? ''),
+
                         "CASE MANAGER'S NAME"                                             => $casemanagerData->name ?? '',
                         "CASE MANAGER'S PHONE NUMBER"                                     => $casemanagerData->mobile ?? '',
                         "CASE MANAGER'S EMAIL ADDRESS"                                    => ($casemanagerData->address1 ?? '') . '&nbsp;' . ($casemanagerData->address2 ?? ''),
@@ -135,10 +138,6 @@ class CreateClaimPetition extends Command
                         'FORECLOSURE AMOUNT'                                              => $value->file_case_details->foreclosure_amount ?? '',
                         'FORECLOSURE AMOUNT IN WORDS'                                     => $value->file_case_details->foreclosure_amount_in_words ?? '',
                         'FORECLOSURE AMOUNT DATE'                                         => $value->file_case_details->foreclosure_amount_date ?? '',
-
-                        "ARBITRATOR'S NAME"                                               => $arbitratorsData->name ?? '',
-                        "ARBITRATOR'S SPECIALIZATION"                                     => $arbitratorsData->specialization ?? '',
-                        "ARBITRATOR'S ADDRESS"                                            => ($arbitratorsData->address1 ?? '') . '&nbsp;' . ($arbitratorsData->address2 ?? ''),
 
                         'CUSTOMER NAME'                                                   => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
                         'CUSTOMER FATHER NAME'                                            => ($value->respondent_first_name ?? '') . '&nbsp;' . ($value->respondent_last_name ?? ''),
@@ -203,6 +202,9 @@ class CreateClaimPetition extends Command
                         'STAGE 3C NOTICE DATE'                                            => $value->file_case_details->stage_3c_notice_date ?? '',
                         'STAGE 3D NOTICE DATE'                                            => now()->format('d-m-Y'),
                     ];
+                  
+                    $signatureImg = url('storage/' . $organizationManager_signature['signature_org']);
+                    $data['CLAIMENT_SIGNATURE'] = '<img src="' . $signatureImg . '" style="height: 80px;" alt="Signature">';
                  
                     $replaceSummernotePlaceholders = function ($html, $replacements) {
                         foreach ($replacements as $key => $value) {
@@ -225,18 +227,6 @@ class CreateClaimPetition extends Command
                     };
 
                     $finalNotice = $replaceSummernotePlaceholders($claimPetition, $data);
-
-                    // Use full URLs
-                    $headerImg    = url('storage/' . $organizationLetterHead_header['header_letterhead']);
-                    $footerImg    = url('storage/' . $organizationLetterHead_footer['footer_letterhead']);
-                    $signatureImg = url('storage/' . $organizationManager_signature['signature_org']);
-
-                    // Append signature at the end of the notice
-                    $finalNotice .= '
-                        <div style="text-align: left; margin-top: 10px;">
-                            <img src="' . $signatureImg . '" style="height: 80px;" alt="Signature">
-                        </div>
-                    ';
 
                     // Now wrap everything in proper HTML with real headers/footers
                     $html = '
@@ -262,23 +252,11 @@ class CreateClaimPetition extends Command
                             }
                         </style>
                     </head>
-
-                    <!-- Define actual header -->
-                    <htmlpageheader name="myHeader">
-                        <img src="' . $headerImg . '" alt="Header Image" />
-                    </htmlpageheader>
-
                     <body>
 
                     ' . $finalNotice . '
 
                     </body>
-
-                    <!-- Define actual footer -->
-                    <htmlpagefooter name="myFooter">
-                        <img src="' . $footerImg . '" alt="Footer Image" />
-                    </htmlpagefooter>
-
                     </html>';
 
                     // 2. Generate PDF with A4 paper size

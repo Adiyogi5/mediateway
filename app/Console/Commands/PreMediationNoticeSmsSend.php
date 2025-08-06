@@ -94,7 +94,7 @@ class PreMediationNoticeSmsSend extends Command
                             ]);
  
                             if ($response->json('isSuccess')) {
-                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notices', 1)
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)
                                     ->update([
                                         'sms_send_date' => $now,
                                         'sms_status'    => 1,
@@ -102,7 +102,7 @@ class PreMediationNoticeSmsSend extends Command
                                     Log::info("Pre-Mediation SMS sent successfully for FileCase ID: {$fileCaseId}");
                             } else {
                                 Log::warning("Pre-Mediation SMS failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
-                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notices', 1)
+                                MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)
                                     ->update([
                                         'sms_status' => 2,
                                     ]);

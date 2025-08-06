@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 use App\Models\AssignCase;
 use App\Models\FileCase;
 use App\Models\Notice;
+use App\Models\Setting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -116,13 +117,13 @@ class Bulk2BNoticeSmsSend extends Command
                     // ###############################################################
                     // ################ Send SMS using Mobile Number #################
                     if (!empty($value->respondent_mobile)) {
-                        
+                        $smsApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                         $mobile        = preg_replace('/\D/', '', trim($value->respondent_mobile));
                         $smsmessage = "Subject: Intimation of Case Registration – MediateWay ADR Centre Dear {$value->respondent_first_name}, A case has been registered by {$value->claimant_first_name} against you at MediateWay ADR Centre under Clause of your loan agreement/credit card facility form for online arbitration as per the A & C Act, 1996. For details, visit: https://mediateway.com/ MediateWay ADR Centre
 ";
 
                         try {
-                            $response = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+                            $response = Http::withHeaders(['apiKey' => $smsApiData['sms_api_key'],])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
                                 "sender"      => "MDTWAY",
                                 "peId"        => "1001292642501782120",
                                 "teId"        => "1007612740524993540",

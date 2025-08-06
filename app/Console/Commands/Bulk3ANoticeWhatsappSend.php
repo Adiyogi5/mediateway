@@ -5,6 +5,7 @@ use App\Models\AssignCase;
 use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\Notice;
+use App\Models\Setting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -100,7 +101,7 @@ class Bulk3ANoticeWhatsappSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(5)
+            ->limit(2)
             ->get();
 
 
@@ -126,7 +127,9 @@ class Bulk3ANoticeWhatsappSend extends Command
                     // ###################################################################
                     // ############ Send Whatsapp Message using Mobile Number ############
                     if (!empty($value->notice5)) {
+                        $responseData = [];
                         try {
+                            $whatsappApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
                             // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
@@ -148,13 +151,15 @@ MediateWay ADR Centre";
 
                             if (! empty($mobileNumber)) {
                                 $response = Http::get(config('services.whatsapp.url'), [
-                                    'apikey' => config('services.whatsapp.api_key'),
+                                    'apikey' => $whatsappApiData['whatsapp_api_key'],
                                     'mobile' => $mobileNumber,
                                     'msg'    => $message,
                                     'pdf'    => $pdfUrl,
                                 ]);
 
-                                if ($response->successful()) {
+                                $responseData = $response->json();
+
+                                if ($response->successful() && isset($responseData['status']) && $responseData['status'] == 1) {
                                     Notice::where('file_case_id', $value->id)->where('notice_type', 5)
                                         ->update([
                                             'whatsapp_dispatch_datetime' => $now,
@@ -162,7 +167,10 @@ MediateWay ADR Centre";
                                         ]);
                                     Log::info("Notice 3A Whatsapp sent successfully for FileCase ID: {$fileCaseId}");
                                 } else {
-                                    Log::warning("Notice 3A Whatsapp failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
+                                    $errorMsg = $responseData['errormsg'] ?? 'Unknown Error';
+                                    $statusCode = $responseData['statuscode'] ?? 'No status code';
+                                    Log::warning("Notice 3A Whatsapp failed for FileCase ID: {$fileCaseId}. Reason: $errorMsg (Code: $statusCode)");
+
                                     Notice::where('file_case_id', $value->id)->where('notice_type', 5)
                                         ->update([
                                             'whatsapp_notice_status' => 2,

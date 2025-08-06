@@ -58,7 +58,7 @@
                             <input type="date" class="form-control py-1" id="filter_date_to" placeholder="To Date">
                         </div>
                         <div class="col-md-3 d-flex gap-2">
-                            <button class="btn btn-primary w-100 py-1" id="btn-maintable-filter">Search</button>
+                            <button class="btn btn-primary w-100 py-1" id="btn-maintable-filter">Filter</button>
                             <button class="btn btn-secondary w-100 py-1" id="btn-maintable-reset">Reset</button>
                         </div>
                     </div>
@@ -132,7 +132,7 @@
                                     </div>
                                     <div class="col-md-3 d-flex justify-content-between gap-1">
                                         <button type="button" class="btn btn-primary w-100 py-1"
-                                            id="btn-filter">Search</button>
+                                            id="btn-filter">Filter</button>
                                         <button type="button" class="btn btn-secondary w-100 py-1"
                                             id="btn-reset">Reset</button>
                                     </div>
@@ -223,7 +223,7 @@
                                     </div>
                                     <div class="col-md-3 d-flex gap-2">
                                         <button type="button" class="btn btn-primary w-100 py-1"
-                                            id="btn2-filter">Search</button>
+                                            id="btn2-filter">Filter</button>
                                         <button type="button" class="btn btn-secondary w-100 py-1"
                                             id="btn2-reset">Reset</button>
                                     </div>
@@ -368,6 +368,47 @@
                 order: [
                     [3, 'desc'] // ordering by the "date" column (index 4)
                 ],
+            });
+
+            //####### RE SEND Button for email, whatsapp and sms ########
+            $(document).on('click', '.resend-notice', function () {
+                var masterId = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to reset and resend the failed notices?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, resend them!',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // User confirmed, proceed with AJAX call
+                        $.ajax({
+                            url: "{{ route('drp.mediationprocess.resend') }}",
+                            method: 'POST',
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                mediation_master_id: masterId
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    toastr.success(response.success);
+                                    table.ajax.reload();
+                                } else if (response.error) {
+                                    toastr.error(response.error);
+                                }
+                            },
+                            error: function (xhr) {
+                                if (xhr.responseJSON && xhr.responseJSON.error) {
+                                    toastr.error(xhr.responseJSON.error);
+                                } else {
+                                    toastr.error('Something went wrong. Please try again.');
+                                }
+                            }
+                        });
+                    }
+                });
             });
 
             // Filter button

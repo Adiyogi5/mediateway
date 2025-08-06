@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 use App\Helper\Helper;
 use App\Models\ConciliationNotice;
 use App\Models\FileCase;
+use App\Models\Setting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
@@ -64,7 +65,7 @@ class PreConciliationNoticeWhatsappSend extends Command
                 'conciliation_notices.whatsapp_notice_status',
                 'conciliation_notices.sms_status',
             )
-            ->limit(4)
+            ->limit(2)
             ->get();
         
         foreach ($caseData as $key => $value) {
@@ -78,7 +79,9 @@ class PreConciliationNoticeWhatsappSend extends Command
                     // ###################################################################
                     // ############ Send Whatsapp Message using Mobile Number ############
                     if (!empty($value->notice_copy)) {
+                        $responseData = [];
                         try {
+                            $whatsappApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
                             // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
@@ -112,13 +115,15 @@ WhatsApp Services Provided by MediateWay ADR Centre LLP, Online Platform.";
 
                             if (! empty($value->respondent_mobile)) {
                                 $response = Http::get(config('services.whatsapp.url'), [
-                                    'apikey' => config('services.whatsapp.api_key'),
+                                    'apikey' => $whatsappApiData['whatsapp_api_key'],
                                     'mobile' => $mobileNumber,
                                     'msg'    => $message,
                                     'pdf'    => $pdfUrl,
                                 ]);
 
-                                if ($response->successful()) {
+                                $responseData = $response->json();
+
+                                if ($response->successful() && isset($responseData['status']) && $responseData['status'] == 1) {
                                     ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
                                         ->update([
                                             'whatsapp_dispatch_datetime' => $now,
@@ -126,7 +131,10 @@ WhatsApp Services Provided by MediateWay ADR Centre LLP, Online Platform.";
                                         ]);
                                         Log::info("Pre-Conciliation Whatsapp sent successfully for FileCase ID: {$fileCaseId}");
                                 } else {
-                                    Log::warning("Pre-Conciliation Whatsapp failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
+                                    $errorMsg = $responseData['errormsg'] ?? 'Unknown Error';
+                                    $statusCode = $responseData['statuscode'] ?? 'No status code';
+                                    Log::warning("Pre-Conciliation Whatsapp failed for FileCase ID: {$fileCaseId}. Reason: $errorMsg (Code: $statusCode)");
+
                                     ConciliationNotice::where('file_case_id', $value->id)->where('conciliation_notice_type', 1)
                                         ->update([
                                             'whatsapp_notice_status' => 2,

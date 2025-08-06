@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 use App\Helper\Helper;
 use App\Models\MediationNotice;
 use App\Models\FileCase;
+use App\Models\Setting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
@@ -64,7 +65,7 @@ class PreMediationNoticeWhatsappSend extends Command
                 'mediation_notices.whatsapp_notice_status',
                 'mediation_notices.sms_status',
             )
-            ->limit(4)
+            ->limit(2)
             ->get();
         
         foreach ($caseData as $key => $value) {
@@ -78,7 +79,9 @@ class PreMediationNoticeWhatsappSend extends Command
                     // ###################################################################
                     // ############ Send Whatsapp Message using Mobile Number ############
                     if (!empty($value->notice_copy)) {
+                        $responseData = [];
                         try {
+                            $whatsappApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
                             // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
@@ -109,22 +112,27 @@ Services Provided by MediateWay ADR Centre LLP, Online Platform";
 
                             if (! empty($value->respondent_mobile)) {
                                 $response = Http::get(config('services.whatsapp.url'), [
-                                    'apikey' => config('services.whatsapp.api_key'),
+                                    'apikey' => $whatsappApiData['whatsapp_api_key'],
                                     'mobile' => $mobileNumber,
                                     'msg'    => $message,
                                     'pdf'    => $pdfUrl,
                                 ]);
 
-                                if ($response->successful()) {
-                                    MediationNotice::where('file_case_id', $value->id)->where('mediation_notices', 1)
+                                $responseData = $response->json();
+
+                                if ($response->successful() && isset($responseData['status']) && $responseData['status'] == 1) {
+                                    MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)
                                         ->update([
                                             'whatsapp_dispatch_datetime' => $now,
                                             'whatsapp_notice_status'     => 1,
                                         ]);
                                         Log::info("Pre-Mediation Whatsapp sent successfully for FileCase ID: {$fileCaseId}");
                                 } else {
-                                    Log::warning("Pre-Mediation Whatsapp failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
-                                    MediationNotice::where('file_case_id', $value->id)->where('mediation_notices', 1)
+                                    $errorMsg = $responseData['errormsg'] ?? 'Unknown Error';
+                                    $statusCode = $responseData['statuscode'] ?? 'No status code';
+                                    Log::warning("Pre-Mediation Whatsapp failed for FileCase ID: {$fileCaseId}. Reason: $errorMsg (Code: $statusCode)");
+
+                                    MediationNotice::where('file_case_id', $value->id)->where('mediation_notice_type', 1)
                                         ->update([
                                             'whatsapp_notice_status' => 2,
                                             'whatsapp_bounce_datetime' => $now,

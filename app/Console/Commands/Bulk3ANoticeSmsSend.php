@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 use App\Models\AssignCase;
 use App\Models\FileCase;
 use App\Models\Notice;
+use App\Models\Setting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -117,13 +118,13 @@ class Bulk3ANoticeSmsSend extends Command
                     // ###############################################################
                     // ################ Send SMS using Mobile Number #################
                     if (!empty($value->respondent_mobile)){
-                          
+                            $smsApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                             $mobile     = preg_replace('/\D/', '', trim($value->respondent_mobile));
                             $smsmessage = "Subject: Appointment of Arbitrator – Action Required Dear Sir/Ma’am, A case under A/c No. {$value->loan_number} has been filed by {$value->claimant_first_name} at MediateWay ADR Centre. Names of proposed Sole Arbitrators have been sent to your registered email/WhatsApp. Please confirm your consent to any one within 7 days. No response & no objection. Arbitration will be online. Raise any venue objections within 7 days. Regards, Team Mediateway
 ";
 
                         try {
-                            $response = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+                            $response = Http::withHeaders(['apiKey' => $smsApiData['sms_api_key'],])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
                                 "sender"      => "MDTWAY",
                                 "peId"        => "1001292642501782120",
                                 "teId"        => "1007139751667881032",

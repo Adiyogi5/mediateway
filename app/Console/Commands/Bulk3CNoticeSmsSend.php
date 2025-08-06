@@ -5,6 +5,7 @@ use App\Models\AssignCase;
 use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\Notice;
+use App\Models\Setting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -100,7 +101,7 @@ class Bulk3CNoticeSmsSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(5)
+            ->limit(4)
             ->get();
 
 
@@ -121,13 +122,13 @@ class Bulk3CNoticeSmsSend extends Command
                     // ###############################################################
                     // ################ Send SMS using Mobile Number #################
                     if (!empty($arbitratorsData->mobile)) {
-                    
+                        $smsApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                         $mobile     = preg_replace('/\D/', '', trim($arbitratorsData->mobile));
                         $smsmessage = "Subject: Arbitrator’s Acceptance & Disclosure Dear Sir/Madam, I am appointed Sole Arbitrator by MediateWay ADR Centre in the dispute under Loan A/c No. {$value->loan_number} between {$value->claimant_first_name} and you. I accept the role and confirm my independence under the A&C Act, 1996. Proceedings will be online, in English, as per MediateWay Rules. Non-participation may lead to ex-parte or case closure. (Sole Arbitrator)
 ";
 
                         try {
-                            $response = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+                            $response = Http::withHeaders(['apiKey' => $smsApiData['sms_api_key'],])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
                                 "sender"      => "MDTWAY",
                                 "peId"        => "1001292642501782120",
                                 "teId"        => "1007770766842477944",

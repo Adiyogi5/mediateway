@@ -5,7 +5,7 @@
         <div class="card-header">
             <div class="row flex-between-end">
                 <div class="col-auto align-self-center">
-                    <h5 class="mb-0" data-anchor="data-anchor">File Cases :: Conciliation File Cases List </h5>
+                    <h5 class="mb-0" data-anchor="data-anchor">File Cases :: Mediation File Cases List </h5>
                 </div>
                 <div class="col-auto align-self-center ms-auto">
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#assignCaseModal">
@@ -66,10 +66,10 @@
 
     <div class="modal fade" id="assignCaseModal" tabindex="-1" aria-labelledby="assignCaseModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
-            <form method="POST" action="{{ route('conciliation_caseassign.bulkassign') }}" class="modal-content">
+            <form method="POST" action="{{ route('mediation_caseassign.bulkassign') }}" class="modal-content">
                 @csrf
                 <div class="modal-header bg-secondary">
-                    <h5 class="modal-title text-white">Assign All Unassigned Conciliation Cases</h5>
+                    <h5 class="modal-title text-white">Assign All Unassigned Mediation Cases</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body row g-3 px-3">
@@ -83,11 +83,11 @@
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Conciliator</label>
-                        <select name="conciliator_id" class="form-select" required>
-                            <option value="">Select Conciliator</option>
-                            @foreach ($conciliators as $conciliator)
-                                <option value="{{ $conciliator->id }}">{{ $conciliator->name }}</option>
+                        <label class="form-label">Mediator</label>
+                        <select name="mediator_id" class="form-select" required>
+                            <option value="">Select Mediator</option>
+                            @foreach ($mediators as $mediator)
+                                <option value="{{ $mediator->id }}">{{ $mediator->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -123,7 +123,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('conciliation_caseassign') }}",
+                    url: "{{ route('mediation_caseassign') }}",
                     data: function(d) {
                         d.user_type = $('#filter_user_type').val();
                         d.status = $('#filter_status').val();
@@ -209,7 +209,7 @@
                 }).then((willDelete) => {
                     if (willDelete) {
                         $.ajax({
-                            url: "{{ route('conciliation_caseassign.delete') }}",
+                            url: "{{ route('mediation_caseassign.delete') }}",
                             data: {
                                 'id': id
                             },
@@ -238,7 +238,7 @@
                 unassignedTable = $('#unassignedCasesTable').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: "{{ route('conciliation_caseassign.unassigneddata') }}",
+                    ajax: "{{ route('mediation_caseassign.unassigneddata') }}",
                     columns: [{
                             data: 'case_number',
                             name: 'case_number'

@@ -91,7 +91,7 @@ class Bulk1BNoticeSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(20)
+            ->limit(2)
             ->get();
 
         foreach ($caseData as $key => $value) {
@@ -173,15 +173,15 @@ class Bulk1BNoticeSend extends Command
                 // ############ Send Whatsapp Message using Mobile Number ############
                 if ($value->whatsapp_notice_status == 0 && ! empty($value->notice)) {
                     try {
-                        $settingdata  = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
+                        $whatsappApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                         $mobileNumber = $value->respondent_mobile;
 
                         $message = "Subject: Invocation of Arbitration : Loan A/c No. {$value->loan_number}
 Despite notice dated {$value->file_case_details->stage_1_notice_date}, dues of  ₹{$value->file_case_details->foreclosure_amount} remain unpaid. As per Clause {$value->arbitration_clause_no} of the Loan Agreement dated {$value->agreement_date}, arbitration is now invoked.
 MediateWay ADR Centre is appointed to conduct the proceedings.
-📍 Plot No. 173-A, S-1, 2nd Floor, Narayan Dham-6th, Kalwar Road, Jaipur : 302012
-📞 9461165841
-📧 mediatewayinfo@gmail.com
+Plot No. 173-A, S-1, 2nd Floor, Narayan Dham-6th, Kalwar Road, Jaipur : 302012
+9461165841
+mediatewayinfo@gmail.com
 Please respond within 7 days to avoid legal action.
 {$value->claimant_first_name} {$value->claimant_last_name}";
 
@@ -189,7 +189,7 @@ Please respond within 7 days to avoid legal action.
 
                         if (! empty($value->respondent_mobile)) {
                             $response = Http::get(config('services.whatsapp.url'), [
-                                'apikey' => config('services.whatsapp.api_key'),
+                                'apikey' => $whatsappApiData['whatsapp_api_key'],
                                 'mobile' => $mobileNumber,
                                 'msg'    => $message,
                                 'pdf'    => $pdfUrl,

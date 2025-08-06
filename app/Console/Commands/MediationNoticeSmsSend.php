@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 use App\Helper\Helper;
 use App\Models\MediationNotice;
 use App\Models\FileCase;
+use App\Models\Setting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
@@ -74,7 +75,7 @@ class MediationNoticeSmsSend extends Command
                     // ###############################################################
                     // ################ Send SMS using Mobile Number #################
                     if ($value->respondent_mobile) {
-                    
+                        $smsApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                         // $mobile     = '91' . preg_replace('/\D/', '', trim($value->respondent_mobile));
                         $mobile     = preg_replace('/\D/', '', trim($value->respondent_mobile));
                         $smsmessage = "Sub.: Invitation for Online Mediation
@@ -88,7 +89,7 @@ MediateWay ADR Centre
 Contact Information: [ 9461165841/mediatewayinfo@gmail.com]";
                       
                         try {
-                            $response = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+                            $response = Http::withHeaders(['apiKey' => $smsApiData['sms_api_key'],])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
                                 "sender"      => "MDTWAY",
                                 "peId"        => "1001292642501782120",
                                 "teId"        => "1007947872162122055",

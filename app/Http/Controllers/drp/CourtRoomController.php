@@ -402,6 +402,45 @@ class CourtRoomController extends Controller
             ->make(true);
     }
 
+     public function ordersheetroom(Request $request): View | JsonResponse | RedirectResponse
+    {
+        $title = 'Draw OrderSheet Room';
+        $drp = auth('drp')->user();
+
+        if (!$drp) {
+            return to_route('front.home')->withInfo('Please enter your valid details.');
+        }
+        if ($drp->approve_status !== 1) {
+            return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+        }
+        if ($drp->drp_type !== 1) {
+            return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
+        }
+
+        // Fetch the case data with all joins and relationships
+        $caseData = FileCase::select('file_cases.*', 'drps.name as arbitrator_name')
+            ->with(['file_case_details', 'guarantors'])
+            ->join('assign_cases', 'assign_cases.case_id', '=', 'file_cases.id')
+            ->join('drps', 'drps.id', '=', 'assign_cases.arbitrator_id')
+            ->join('notices','notices.file_case_id','=','file_cases.id')
+            ->where('notices.notice_type', 8)
+            ->get();
+       
+        $flattenedCaseData = $this->flattenCaseData($caseData);
+     
+        $orderSheetTemplates = OrderSheet::where('status', 1)->where('drp_type', 1)->get();
+        $settlementLetterTemplates = SettlementLetter::where('status', 1)->where('drp_type', 1)->get();
+        
+        return view('drp.courtroom.ordersheetroom', compact(
+            'drp',
+            'title',
+            'caseData',
+            'orderSheetTemplates',
+            'settlementLetterTemplates',
+            'flattenedCaseData'
+        ));
+    }
+
 
     public function livecourtroom(Request $request, $room_id): View | JsonResponse | RedirectResponse
     {
@@ -588,35 +627,35 @@ class CourtRoomController extends Controller
         {    
             // Set $noticeType based on $request->tempType
             switch ($request->tempType) {
-                case 1: $noticeType = 9;
+                case 1: $noticeType = 11;
                     break;
-                case 2: $noticeType = 10;
+                case 2: $noticeType = 12;
                     break;
-                case 3: $noticeType = 11;
+                case 3: $noticeType = 13;
                     break;
-                case 4: $noticeType = 12;
+                case 4: $noticeType = 14;
                     break;
-                case 5: $noticeType = 13;
+                case 5: $noticeType = 15;
                     break;
-                case 6: $noticeType = 14;
+                case 6: $noticeType = 16;
                     break;
-                case 7: $noticeType = 15;
+                case 7: $noticeType = 17;
                     break;
-                case 8: $noticeType = 16;
+                case 8: $noticeType = 18;
                     break;
-                case 9: $noticeType = 17;
+                case 9: $noticeType = 19;
                     break;
-                case 10: $noticeType = 18;
+                case 10: $noticeType = 20;
                     break;
-                case 11: $noticeType = 19;
+                case 11: $noticeType = 21;
                     break;
-                case 12: $noticeType = 20;
+                case 12: $noticeType = 22;
                     break;
-                case 13: $noticeType = 21;
+                case 13: $noticeType = 23;
                     break;
-                case 14: $noticeType = 22;
+                case 14: $noticeType = 24;
                     break;
-                case 15: $noticeType = 23;
+                case 15: $noticeType = 25;
                     break;
                 default: $noticeType = 0; // default case or fallback value
                     break;
@@ -708,7 +747,7 @@ class CourtRoomController extends Controller
 
         elseif($request->docType == 'settlementletter')
         {
-            $noticeType = $request->tempType == 1 ? 24 : 25;
+            $noticeType = $request->tempType == 1 ? 26 : 27;
 
             $noticeexistData = Notice::where('file_case_id', $request->file_case_id)
                                     ->where('notice_type', $noticeType)->first();

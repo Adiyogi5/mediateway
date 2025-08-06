@@ -97,6 +97,7 @@ class SendMediationNoticeController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
                     $btn .= '<a class="dropdown-item" href="' . route('drp.mediationprocess.mediationnoticelist', ['master_id' => $row->id]) . '">View Details</a>';
+                    $btn .= '<button class="dropdown-item text-warning resend-notice" data-id="' . $row['id'] . '">ReSend</button>';
                     $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
                     return $btn;
                 })
@@ -108,6 +109,42 @@ class SendMediationNoticeController extends Controller
         }
 
         return view('drp.mediationprocess.mediationnoticemasterlist', compact('drp','title'));
+    }
+
+
+    //####### RE SEND Button for email, whatsapp and sms ########
+    public function resendMediationNotice(Request $request)
+    {
+        $drp = auth('drp')->user();
+        if (!auth('drp')->check() || $drp->drp_type != 3) {
+            return response()->json(['error' => 'Unauthenticated Access.'], 403);
+        }
+
+        $mediationMaster = MediationNoticeMaster::find($request->mediation_master_id);
+        if (!$mediationMaster) {
+            return response()->json(['error' => 'Mediation Notice Master not found.'], 404);
+        }
+
+        $mediationNotices = MediationNotice::where('mediation_master_id', $mediationMaster->id)
+            ->where(function($query) {
+                $query->where('email_status', 2)
+                    ->orWhere('whatsapp_notice_status', 2)
+                    ->orWhere('sms_status', 2);
+            })
+            ->get();
+       
+        if ($mediationNotices->isEmpty()) {
+            return response()->json(['error' => 'No Mediation Notices to Resend.'], 404);
+        }
+
+        foreach ($mediationNotices as $notice) {
+                $notice->email_status = 0;
+                $notice->whatsapp_notice_status = 0;
+                $notice->sms_status = 0;
+                $notice->save();
+        }
+
+        return response()->json(['success' => 'Mediation Notices Successfully Reset for Re-Sending.'], 200);
     }
 
 

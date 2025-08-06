@@ -97,6 +97,7 @@ class SendConciliationNoticeController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn = '<button class="text-600 btn-reveal dropdown-toggle btn btn-link btn-sm" id="drop" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button><div class="dropdown-menu" aria-labelledby="drop">';
                     $btn .= '<a class="dropdown-item" href="' . route('drp.conciliationprocess.conciliationnoticelist', ['master_id' => $row->id]) . '">View Details</a>';
+                    $btn .= '<button class="dropdown-item text-warning resend-notice" data-id="' . $row['id'] . '">ReSend</button>';
                     $btn .= '<button class="dropdown-item text-danger delete" data-id="' . $row['id'] . '">Delete</button>';
                     return $btn;
                 })
@@ -108,6 +109,42 @@ class SendConciliationNoticeController extends Controller
         }
 
         return view('drp.conciliationprocess.conciliationnoticemasterlist', compact('drp','title'));
+    }
+
+
+    //####### RE SEND Button for email, whatsapp and sms ########
+    public function resendConciliationNotice(Request $request)
+    {
+        $drp = auth('drp')->user();
+        if (!auth('drp')->check() || $drp->drp_type != 3) {
+            return response()->json(['error' => 'Unauthenticated Access.'], 403);
+        }
+
+        $conciliationMaster = ConciliationNoticeMaster::find($request->conciliation_master_id);
+        if (!$conciliationMaster) {
+            return response()->json(['error' => 'Conciliation Notice Master not found.'], 404);
+        }
+
+        $conciliationNotices = ConciliationNotice::where('conciliation_master_id', $conciliationMaster->id)
+            ->where(function($query) {
+                $query->where('email_status', 2)
+                    ->orWhere('whatsapp_notice_status', 2)
+                    ->orWhere('sms_status', 2);
+            })
+            ->get();
+       
+        if ($conciliationNotices->isEmpty()) {
+            return response()->json(['error' => 'No Conciliation Notices to Resend.'], 404);
+        }
+
+        foreach ($conciliationNotices as $notice) {
+                $notice->email_status = 0;
+                $notice->whatsapp_notice_status = 0;
+                $notice->sms_status = 0;
+                $notice->save();
+        }
+
+        return response()->json(['success' => 'Conciliation Notices Successfully Reset for Re-Sending.'], 200);
     }
 
 

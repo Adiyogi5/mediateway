@@ -146,8 +146,13 @@ body {
 .dropdown-toggle::after {
     display: none !important;
 }
-.dropdown-item {
+.navbar .dropdown-item {
     color: #565656 !important;
+    padding: 3px 8px !important;
+    text-align: start !important;
+    font-size: 13px !important;
+}
+.dropdown-item {
     padding: 3px 8px !important;
     text-align: start !important;
     font-size: 13px !important;
@@ -1293,7 +1298,7 @@ table.dataTable thead > tr > th.sorting_desc {
 }
 .table > tbody > tr > td {
     font-size: 13px;
-    padding: 10px 18px 10px 18px;
+    padding: 8px 10px 8px 10px;
 }
 .dataTables_wrapper {
     padding: 0 !important;

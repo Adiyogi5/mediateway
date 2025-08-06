@@ -79,7 +79,7 @@
                             <input type="date" class="form-control py-1" id="filter_date_to" placeholder="To Date">
                         </div>
                         <div class="col-md-3 d-flex gap-2">
-                            <button class="btn btn-primary w-100 py-1" id="btn-filter">Search</button>
+                            <button class="btn btn-primary w-100 py-1" id="btn-filter">Filter</button>
                             <button class="btn btn-secondary w-100 py-1" id="btn-reset">Reset</button>
                         </div>
                     </div>

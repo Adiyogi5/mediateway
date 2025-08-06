@@ -1,25 +1,6 @@
 @extends('layouts.front')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/summernote/summernote.min.css') }}">
-<style type="text/css">
-    #local-video,
-    #remote-video {
-        width: 100%;
-        height: 600px;
-        border: 1px solid #dfdfdf;
-    }
 
-    #local-video {
-        position: relative;
-        margin: 0 auto;
-        display: block;
-    }
-
-    #remote-video {
-        display: flex;
-        margin: auto;
-        position: relative !important;
-    }
-</style>
 @section('content')
     {{-- ===============Breadcrumb Start============= --}}
     @include('front.includes.profile_header')
@@ -38,14 +19,13 @@
                     <div class="card-header">
                         <div class="row flex-between-end">
                             <div class="col-auto align-self-center">
-                                <h5 class="mb-0" data-anchor="data-anchor">Arbitrator Court Room - Live</h5>
+                                <h5 class="mb-0" data-anchor="data-anchor">Arbitrator Draw OrderSheet Room</h5>
                             </div>
                             <div class="col-auto ms-auto">
                                 <div class="nav nav-pills nav-pills-falcon">
-                                    <a href="javascript:void(0);" class="btn btn-outline-danger py-1" id="endCourtRoom"
-                                        data-room-id="{{ $roomID }}">
-                                        <i class="fa-solid fa-rectangle-xmark"></i>
-                                        End Court Room
+                                    <a href="{{ route('drp.courtroom.courtroomlist') }}" class="btn btn-outline-secondary">
+                                        <i class="fa fa-list me-1"></i>
+                                        Court Room List
                                     </a>
                                 </div>
                             </div>
@@ -53,14 +33,6 @@
                     </div>
                     <div class="card-body px-0 pb-0 table-meetinglist">
                         <div class="row gy-3">
-                            <div class="col-12 mb-3">
-
-                                <div class="livemeeting-card">
-                                    <div class="w-100" id="root"></div>
-                                </div>
-
-                            </div>
-
 
                             <div class="col-lg-12 col-12">
                                 <form id="sendnoticeForm" action="{{ route('drp.courtroom.savenotice') }}" method="POST">
@@ -68,7 +40,7 @@
                                     <div class="livemeeting-card h-100">
                                         <h4 class="livemeetingcard-heading text-center justify-content-center"
                                             style="background-color: black;color: white;padding: 5px;border-radius: 8px">
-                                            Live Cases Hearing Activity</h4>
+                                            Cases OrderSheet Activity</h4>
                                         <!-- Case Number Select -->
                                         <div class="row">
                                             <div class="col-md-6 col-12 form-group mb-3">
@@ -85,14 +57,6 @@
                                                 </select>
                                                 {{-- data-case="{{ json_encode($case) }}" --}}
                                             </div>
-                                            @if(($finalHeaingDate->hearing_type == 2))
-                                            <div class="col-md-6 col-12 form-group mb-3" id="finalHearingDateGroup" style="display: none;">
-                                                <label for="final_hearing_date" class="form-label fw-bold">Select Final Hearing Date</label>
-                                                <input type="date" id="final_hearing_date" name="final_hearing_date"
-                                                    class="form-control"
-                                                    style="background-color: #fff2dc !important;">
-                                            </div>
-                                            @endif
                                         </div>
                                         
                                         <!-- Document Type and File Upload -->
@@ -175,10 +139,10 @@
     <!-- Include in your <head> or before </body> -->
     <link href="{{ asset('assets/plugins/select2/select2.min.css') }}" rel="stylesheet" />
     <script src="{{ asset('assets/plugins/select2/select2.min.js') }}"></script>
+
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/summernote/summernote.min.js') }}"></script>
-    <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
-    
+
     <script>
         $('#caseSelector').select2({
             placeholder: "Select Case / Loan Number",
@@ -186,136 +150,6 @@
             width: '100%'
         });
     </script>
-
-    {{-- ######### Gegocloud for live court room ######### --}}
-    <script>
-        const roomID = "{{ $roomID }}";
-        const userID = "{{ $localUserID }}";
-        const userName = "{{ $drp->name }}";
-        const appID = {{ config('services.zegocloud.app_id') }};
-        const serverSecret = "{{ config('services.zegocloud.server_secret') }}";
-
-        // Generate a Kit Token using test method (ONLY for dev, not production)
-        const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, userID, userName);
-
-        try {
-            const zp = ZegoUIKitPrebuilt.create(kitToken);
-            zp.joinRoom({
-                container: document.querySelector("#root"),
-                sharedLinks: [{
-                    url: window.location.protocol + '//' + window.location.host + window.location.pathname +
-                        '?roomID=' + roomID,
-                }],
-                scenario: {
-                    mode: ZegoUIKitPrebuilt.VideoConference,
-                    config: {
-                        recording: {
-                            isRecording: true, // Enable recording
-                        }
-                    }
-                },
-                turnOnCameraWhenJoining: true,
-                turnOnMicrophoneWhenJoining: true,
-                showPreJoinView: false
-            });
-
-            // const startRecording = async () => {
-            //     const response = await axios.post(
-            //         'https://api.zegocloud.com/v1/room/recording/start', {
-            //             roomID: roomID,
-            //             userID: userID,
-            //             userName: userName,
-            //             appID: appID,
-            //         }, {
-            //             headers: {
-            //                 'Authorization': `Bearer ${kitToken}`,
-            //                 'Content-Type': 'application/json',
-            //             }
-            //         }
-            //     );
-
-            //     console.log('Recording started:', response.data);
-            //     return response.data.recordingID; // Save this ID for later when stopping the recording
-            // };
-
-            // // Stop Recording API Call
-            // const stopRecording = async (recordingID) => {
-            //     const token = generateJWT(appID, serverSecret, roomID, userID, userName);
-
-            //     const response = await axios.post(
-            //         'https://api.zegocloud.com/v1/room/recording/stop', {
-            //             roomID: roomID,
-            //             recordingID: recordingID,
-            //         }, {
-            //             headers: {
-            //                 'Authorization': `Bearer ${token}`,
-            //                 'Content-Type': 'application/json',
-            //             }
-            //         }
-            //     );
-
-            //     console.log('Recording stopped:', response.data);
-            //     return response.data.recordingURL; // This is the URL of the recorded video
-            // };
-
-            // // Example usage
-            // startRecording()
-            //     .then((recordingID) => {
-            //         // After some time (or when session ends), stop the recording
-            //         setTimeout(() => {
-            //             stopRecording(recordingID)
-            //                 .then((recordingURL) => {
-            //                     console.log('Recording URL:',
-            //                     recordingURL); // The URL of the recorded video
-            //                 })
-            //                 .catch((error) => console.error('Error stopping recording:', error));
-            //         }, 30000); // Simulate a 30-second recording
-            //     })
-            //     .catch((error) => console.error('Error starting recording:', error));
-
-            // === ⚡️ Listen for recording completion event ⚡️ ===
-            // zp.on('recordingCompleted', async (event) => {
-            //     console.log("Recording Completed Event: ", event);
-
-            //     // Assuming event.data.blob contains the recording
-            //     const recordingBlob = event.data.blob;
-            //     const formData = new FormData();
-            //     formData.append('room_id', roomID);
-            //     formData.append('recording', recordingBlob, `recording_${roomID}.mp4`);
-
-            //     try {
-            //         const response = await fetch("{{ route('drp.courtroom.saveRecording') }}", {
-            //             method: "POST",
-            //             headers: {
-            //                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            //             },
-            //             body: formData
-            //         });
-
-            //         if (response.ok) {
-            //             const data = await response.json();
-            //             console.log("Recording saved successfully: ", data);
-            //         } else {
-            //             console.error("Failed to save recording");
-            //         }
-            //     } catch (error) {
-            //         console.error("Error saving recording: ", error);
-            //     }
-            // });
-
-            // // Handle when the conference ends or the user quits the room
-            // zp.on('roomWillEnd', () => {
-            //     console.log("Conference ended or user is leaving the room");
-            //     // Here, you can trigger any final steps or checks
-            //     // e.g., ensure the recording is saved automatically before the user leaves
-            // });
-
-        } catch (e) {
-            alert("Unable to access camera or microphone. Please check your device and browser permissions.");
-            console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(e));
-        }
-    </script>
-
 
     {{-- ####### Fetch the flattened data dynamically #######
          ####### Replace placeholders in the template ####### --}}
@@ -328,7 +162,7 @@
 
         $(document).ready(function() {
             $('#livemeetingdata').summernote({
-                height: 200,
+                height: 350,
                 toolbar: [
                     ['font', ['bold', 'italic', 'underline', 'clear']],
                     ['para', ['paragraph']],
@@ -630,94 +464,6 @@
                     }
                 });
             });
-        });
-    </script>
-
-    {{-- ############# Final Hearing date Change According to Case Id ############### --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const caseSelector = document.getElementById('caseSelector');
-            const finalHearingDateGroup = document.getElementById('finalHearingDateGroup');
-            const finalHearingDateInput = document.getElementById('final_hearing_date');
-
-            caseSelector.addEventListener('change', function () {
-                const selectedOption = this.options[this.selectedIndex];
-                const finalDate = selectedOption.getAttribute('data-final_hearing_date');
-                const today = new Date().toISOString().split('T')[0];
-
-                finalHearingDateInput.setAttribute('min', today);
-                finalHearingDateGroup.style.display = 'block';
-
-                if (finalDate && finalDate !== 'null') {
-                    finalHearingDateInput.value = finalDate;
-                    finalHearingDateInput.disabled = true;
-                } else {
-                    finalHearingDateInput.value = '';
-                    finalHearingDateInput.disabled = false;
-                }
-            });
-        });
-    </script>
-
-    {{-- ############# End Live Court Room ############### --}}
-    <script>
-        $(document).on('click', '#endCourtRoom', function() {
-            const roomId = $(this).data('room-id');
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You want to close this Court Room?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, Close it!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{{ route('drp.courtroom.close') }}",
-                        method: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            room_id: roomId
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    title: 'Closed!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    confirmButtonText: 'OK'
-                                }).then(() => {
-                                    // Redirect with success message
-                                    window.location.href =
-                                        "{{ route('drp.courtroom.courtroomlist') }}?success=1";
-                                });
-                            } else {
-                                Swal.fire('Error', response.message, 'error');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            Swal.fire('Error', 'Something went wrong. Please try again.',
-                                'error');
-                        }
-                    });
-                }
-            });
-        });
-
-        // Display SweetAlert on page load if redirected with success message
-        $(document).ready(function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('success') === '1') {
-                Swal.fire({
-                    title: 'Success',
-                    text: 'Court Room has been closed successfully.',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-            }
         });
     </script>
 @endsection

@@ -83,6 +83,8 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
     // ----------------------- Case Manager - Send Notices (Pre-Conciliation and Conciliation) Routes ---------------------------
     Route::controller(SendConciliationNoticeController::class)->group(function () {
         Route::get('conciliationnoticemasterlist', 'conciliationnoticemasterlist')->name('conciliationprocess.conciliationnoticemasterlist');
+        Route::post('/conciliation-notice/resend', 'resendConciliationNotice')->name('conciliationprocess.resend');
+
         Route::get('conciliationnoticelist/{master_id}', 'conciliationnoticelist')->name('conciliationprocess.conciliationnoticelist');
 
         Route::get('/conciliation-process/case-list', 'caseList')->name('conciliationprocess.caseList');
@@ -103,6 +105,8 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
     // ----------------------- Case Manager - Send Notices (Pre-Mediation and Mediation) Routes ---------------------------
     Route::controller(SendMediationNoticeController::class)->group(function () {
         Route::get('mediationnoticemasterlist', 'mediationnoticemasterlist')->name('mediationprocess.mediationnoticemasterlist');
+        Route::post('/mediation-notice/resend', 'resendMediationNotice')->name('mediationprocess.resend');
+
         Route::get('mediationnoticelist/{master_id}', 'mediationnoticelist')->name('mediationprocess.mediationnoticelist');
 
         Route::get('/mediation-process/case-list', 'caseList')->name('mediationprocess.caseList');
@@ -169,6 +173,7 @@ Route::name('drp.')->middleware(['ensure.drp.session'])->prefix('drp')->group(fu
     // ----------------------- Arbitrator - Court Room Routes ---------------------------------------
     Route::controller(CourtRoomController::class)->group(function () {
         Route::get('courtroomlist', 'index')->name('courtroom.courtroomlist');
+        Route::get('ordersheetroom', 'ordersheetroom')->name('courtroom.ordersheetroom');
         Route::get('livecourtroom/{room_id}', 'livecourtroom')->name('courtroom.livecourtroom');
         Route::post('/courtroom/save-recording', 'saveRecording')->name('courtroom.saveRecording');
         Route::get('/courtroom/get-flattened-case-data/{caseId}', 'getFlattenedCaseData')->name('courtroom.getFlattenedCaseData');

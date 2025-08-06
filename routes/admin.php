@@ -21,6 +21,7 @@ use App\Http\Controllers\FaqController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\HomeCmsController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MediationCaseAssignController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\NoticeTemplateController;
 use App\Http\Controllers\OrderSheetController;
@@ -145,12 +146,20 @@ Route::middleware(['auth', 'permission', 'authCheck', 'verified'])->group(functi
         Route::put('caseassign/casedetail/{id}', 'updateCaseDetail')->name('caseassign.updatecasedetail')->middleware('isAllow:111,can_edit');
     });
 
-    // ----------------------- CaseAssign Routes -------------------------------------------------
+    // ----------------------- Conciliation CaseAssign Routes -------------------------------------------------
     Route::controller(ConciliationCaseAssignController::class)->group(function () {
         Route::get('conciliation-caseassign', 'index')->name('conciliation_caseassign')->middleware('isAllow:111,can_view');
         Route::post('conciliation-caseassign/bulkassign', 'bulkAssign')->name('conciliation_caseassign.bulkassign');
         Route::get('conciliation-caseassign/unassigned-data', 'unassignedCases')->name('conciliation_caseassign.unassigneddata');
         Route::delete('conciliation-caseassign', 'delete')->name('conciliation_caseassign.delete')->middleware('isAllow:111,can_delete');
+    });
+
+    // ----------------------- Mediation CaseAssign Routes -------------------------------------------------
+    Route::controller(MediationCaseAssignController::class)->group(function () {
+        Route::get('mediation-caseassign', 'index')->name('mediation_caseassign')->middleware('isAllow:111,can_view');
+        Route::post('mediation-caseassign/bulkassign', 'bulkAssign')->name('mediation_caseassign.bulkassign');
+        Route::get('mediation-caseassign/unassigned-data', 'unassignedCases')->name('mediation_caseassign.unassigneddata');
+        Route::delete('mediation-caseassign', 'delete')->name('mediation_caseassign.delete')->middleware('isAllow:111,can_delete');
     });
 
     // ----------------------- All Case Notices Routes -------------------------------------------

@@ -5,6 +5,7 @@ use App\Models\AssignCase;
 use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\Notice;
+use App\Models\Setting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -75,12 +76,10 @@ class Bulk3BNoticeSmsSend extends Command
 
         // Apply condition for type 6 notices (existing and statuses are not fully sent OR doesn't exist)
             ->where(function ($query) {
-                $query->whereDoesntHave('notices', function ($q) {
-                    $q->where('notice_type', 6);
-                })->orWhereHas('notices', function ($q) {
+                $query->WhereHas('notices', function ($q) {
                     $q->where('notice_type', 6)
                         ->where(function ($inner) {
-                            $inner->where('email_status', 0);
+                            $inner->where('sms_status', 0);
                         });
                 });
             })
@@ -122,13 +121,13 @@ class Bulk3BNoticeSmsSend extends Command
                     // ###############################################################
                     // ################ Send SMS using Mobile Number #################
                      if (!empty($value->respondent_mobile)){
-                          
+                            $smsApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                             $mobile     = preg_replace('/\D/', '', trim($value->respondent_mobile));
                             $smsmessage = "Subject: Appointment of Sole Arbitrator – MediateWay ADR Centre Dear Sir/Ma’am, A case has been registered against you under A/c No. {$value->loan_number}. As no objection was received, Mr./Ms. {$arbitratorsData->name} is appointed as Sole Arbitrator as per your Loan Agreement. Proceedings will be conducted online under MediateWay Arbitration Rules. Regards, Team Mediateway
 ";
 
                         try {
-                            $response = Http::withHeaders(['apiKey' => 'aHykmbPNHOE9KGE',])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
+                            $response = Http::withHeaders(['apiKey' => $smsApiData['sms_api_key'],])->post('https://api.bulksmsadmin.com/BulkSMSapi/keyApiSendSMS/sendSMS', [
                                 "sender"      => "MDTWAY",
                                 "peId"        => "1001292642501782120",
                                 "teId"        => "1007824285746901456",

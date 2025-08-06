@@ -1,18 +1,14 @@
 <?php
 namespace App\Console\Commands;
 
-use App\Library\TextLocal;
-use App\Models\Country;
 use App\Models\CourtRoom;
 use App\Models\FileCase;
 use App\Models\Setting;
-use App\Models\SmsCount;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use Twilio\Rest\Client;
 
 class CreateLiveCourtRoom extends Command
 {
@@ -48,7 +44,7 @@ class CreateLiveCourtRoom extends Command
     public function handle()
     {
         // ##############################################
-        // Create Live Court Room
+        // Create Live Arbitrator Court Room - Send Email
         // ##############################################
 
         try {
@@ -58,15 +54,6 @@ class CreateLiveCourtRoom extends Command
                 2 => 'second_hearing_date',
                 3 => 'final_hearing_date',
             ];
-
-            // Initialize Twilio client and country code lookup once
-            $sid    = env("TWILIO_ACCOUNT_SID");
-            $token  = env("TWILIO_AUTH_TOKEN");
-            $sender = env("TWILIO_SENDER");
-            $client = new Client($sid, $token);
-
-            $country_data = Country::where('id', 101)->where('status', 1)->first();
-            $phone_code   = $country_data->phone_code ?? '';
 
             // Fetch SMTP settings only once
             $data = Setting::where('setting_type', '3')
@@ -140,16 +127,24 @@ class CreateLiveCourtRoom extends Command
                             'status'             => 0,
                         ]);
 
+                        $allEmailsSent = true; // Flag to track if all emails succeed
+
                         foreach ($cases as $case) {
-                            $email = filter_var($case->respondent_email, FILTER_SANITIZE_EMAIL);
+                            $email = strtolower(filter_var(trim($case->respondent_email), FILTER_SANITIZE_EMAIL));
+
+                            if (empty($email)) {
+                                Log::warning("Empty or malformed email for FileCase ID: {$case->id}");
+                                $allEmailsSent = false;
+                                continue;
+                            }
 
                             $validator = Validator::make(['email' => $email], [
                                 'email' => 'required|email:rfc,dns',
                             ]);
 
                             if ($validator->fails()) {
-                                Log::warning("Invalid email address: $email");
-                                $courtRoom->update(['send_mail_to_respondent' => 2]);
+                                Log::warning("Invalid email address for FileCase ID {$case->id}: $email");
+                                $allEmailsSent = false;
                                 continue;
                             }
 
@@ -161,72 +156,28 @@ class CreateLiveCourtRoom extends Command
                             $description    = route('front.guest.livecourtroom', ['room_id' => $room_id]) . "?case_id=$case_id&message=$encodedMessage";
 
                             // Send Email
-                            Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($subject, $email) {
-                                $message->to($email)
-                                    ->subject($subject);
-                            });
-
-                            if (Mail::failures()) {
-                                Log::error("Failed to send email to: $email");
-                                $courtRoom->update(['send_mail_to_respondent' => 2]);
-                            } else {
-                                $courtRoom->update([
-                                    'email_send_date'         => now(),
-                                    'send_mail_to_respondent' => 1,
-                                ]);
-                            }
-
-                            // Send WhatsApp
                             try {
-                                $message = $description;
-                                $client->messages->create($phone_code . $case->respondent_mobile, [
-                                    'from' => $sender,
-                                    'body' => $message,
-                                ]);
-                            } catch (\Throwable $th) {
-                                Log::error('SMS sending failed: ' . $th->getMessage());
+                                Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($subject, $email) {
+                                    $message->to($email)->subject($subject);
+                                });
+
+                                Log::info("Arbitration Court Room Email sent successfully for FileCase ID: {$case_id}");
+                            } catch (\Exception $e) {
+                                Log::warning("Arbitration Court Room Email failed for FileCase ID: {$case_id}. Error: " . $e->getMessage());
+                                $allEmailsSent = false;
                             }
+                        }
 
-                            // ############# Send Message using Mobile Number #############
-                            if (! empty($case->respondent_mobile)) {
-                                $approved_sms_count = SmsCount::where('count', '>', 0)->first();
-
-                                if (! $approved_sms_count) {
-                                    return response()->json([
-                                        'status'  => false,
-                                        'message' => "Message can't be sent because your SMS quota is empty.",
-                                    ], 422);
-                                }
-
-                                $mobile        = preg_replace('/\D/', '', trim($case->respondent_mobile));
-                                $mobilemessage = "Hello User Your Login Verification Code is $otp. Thanks AYT";
-                                try {
-                                    $smsResponse = TextLocal::sendSms(['+91' . $mobile], $mobilemessage);
-
-                                    if ($smsResponse) {
-                                        $approved_sms_count->decrement('count');
-
-                                        return response()->json([
-                                            'status'  => true,
-                                            'message' => 'Message sent successfully to your mobile!',
-                                            'data'    => '',
-                                        ]);
-                                    } else {
-                                        return response()->json([
-                                            'status'  => false,
-                                            'message' => "Message couldn't be sent, please retry later.",
-                                            'data'    => '',
-                                        ], 422);
-                                    }
-                                } catch (\Exception $e) {
-                                    Log::error('SMS send failed: ' . $e->getMessage());
-
-                                    return response()->json([
-                                        'status'  => false,
-                                        'message' => 'An error occurred while sending SMS.',
-                                    ], 500);
-                                }
-                            }
+                        // ✅ Update only if all emails succeeded
+                        if ($allEmailsSent) {
+                            $courtRoom->update([
+                                'email_send_date'         => now(),
+                                'send_mail_to_respondent' => 1,
+                            ]);
+                        } else {
+                            // Optional: log or flag if partial or complete failure
+                            Log::error("Arbitration Court Room Email Failed to send email to: $email");
+                            $courtRoom->update(['send_mail_to_respondent' => 2]);
                         }
                     }
                 }

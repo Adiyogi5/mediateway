@@ -27,6 +27,14 @@
                             <div class="col-auto align-self-center">
                                 <h5 class="mb-0" data-anchor="data-anchor">Court Room Lists</h5>
                             </div>
+                            <div class="col-auto ms-auto">
+                                <div class="nav nav-pills nav-pills-falcon">
+                                    <a href="{{ route('drp.courtroom.ordersheetroom') }}" class="btn btn-outline-secondary">
+                                        <i class="fa fa-plus me-1"></i>
+                                        Draw Order Sheet
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body px-0 pb-0 table-meetinglist">

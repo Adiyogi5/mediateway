@@ -5,6 +5,7 @@ use App\Models\AssignCase;
 use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\Notice;
+use App\Models\Setting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -75,12 +76,10 @@ class Bulk3BNoticeWhatsappSend extends Command
 
         // Apply condition for type 6 notices (existing and statuses are not fully sent OR doesn't exist)
             ->where(function ($query) {
-                $query->whereDoesntHave('notices', function ($q) {
-                    $q->where('notice_type', 6);
-                })->orWhereHas('notices', function ($q) {
+                $query->WhereHas('notices', function ($q) {
                     $q->where('notice_type', 6)
                         ->where(function ($inner) {
-                            $inner->where('email_status', 0);
+                            $inner->where('whatsapp_notice_status', 0);
                         });
                 });
             })
@@ -96,15 +95,16 @@ class Bulk3BNoticeWhatsappSend extends Command
             ->select(
                 'file_cases.*',
                 'notice6.notice as notice6',
-                'notice6.whatsapp_notice_status as whatsapp_notice_status6',
+                'notice6.whatsapp_notice_status as whatsapp_status6',
                 'organization_notice_timelines.notice_3b',
                 DB::raw('org_with_parent.effective_parent_id as parent_id'),
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(5)
+            ->limit(2)
             ->get();
 
+            
         foreach ($caseData as $key => $value) {
             try {
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();
@@ -122,7 +122,9 @@ class Bulk3BNoticeWhatsappSend extends Command
                     // ###################################################################
                     // ############ Send Whatsapp Message using Mobile Number ############
                     if (!empty($value->notice6)) {
+                        $responseData = [];
                         try {
+                            $whatsappApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
                             // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
@@ -140,16 +142,30 @@ Regards,
 MediateWay ADR Centre";
 
                             $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice6));
+                            $pdfPath = public_path(str_replace(url('/'), '', $pdfUrl)); // converts URL to file path
+                            $pdfName = basename($pdfPath);
 
                             if (! empty($value->respondent_mobile)) {
-                                $response = Http::get(config('services.whatsapp.url'), [
-                                    'apikey' => config('services.whatsapp.api_key'),
-                                    'mobile' => $mobileNumber,
-                                    'msg'    => $message,
-                                    'pdf'    => $pdfUrl,
+                                // $response = Http::get(config('services.whatsapp.url'), [
+                                //     'apikey' => $whatsappApiData['whatsapp_api_key'],
+                                //     'mobile' => $mobileNumber,
+                                //     'msg'    => $message,
+                                //     'pdf'    => $pdfUrl,
+                                // ]);
+                                $response = Http::withHeaders([
+                                    'Authorization' => 'Bearer 8348c5b0-7123-11f0-98fc-02c8a5e042bd',
+                                    'Accept'        => 'application/json',
+                                ])
+                                ->attach('attachment', file_get_contents($pdfPath), $pdfName)
+                                ->post('https://consolev1.pinbot.ai/api/send', [
+                                    'mobile' => '91' . $mobileNumber, // adding back +91
+                                    'message' => $message,
+                                    'type' => 'pdf', // or omit if not required
                                 ]);
 
-                                if ($response->successful()) {
+                                $responseData = $response->json();
+
+                                if ($response->successful() && isset($responseData['status']) && $responseData['status'] == 1) {
                                     Notice::where('file_case_id', $value->id)->where('notice_type', 6)
                                         ->update([
                                             'whatsapp_dispatch_datetime' => $now,
@@ -157,7 +173,10 @@ MediateWay ADR Centre";
                                         ]);
                                     Log::info("Notice 3B Whatsapp sent successfully for FileCase ID: {$fileCaseId}");
                                 } else {
-                                    Log::warning("Notice 3B Whatsapp failed for FileCase ID: {$fileCaseId}. Response: " . $response->body());
+                                    $errorMsg = $responseData['errormsg'] ?? 'Unknown Error';
+                                    $statusCode = $responseData['statuscode'] ?? 'No status code';
+                                    Log::warning("Notice 3B Whatsapp failed for FileCase ID: {$fileCaseId}. Reason: $errorMsg (Code: $statusCode)");
+
                                     Notice::where('file_case_id', $value->id)->where('notice_type', 6)
                                         ->update([
                                             'whatsapp_notice_status' => 2,

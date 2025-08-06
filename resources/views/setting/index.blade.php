@@ -403,39 +403,23 @@
 		$("#settingForm5").validate({
 			ignore: [],
 			rules: {
-				textlocal_key: {
+				whatsapp_api_key: {
 					required: true,
 					minlength: 2,
 					maxlength: 100,
 				},
-				textlocal_url: {
-					required: true,
-					minlength: 2,
-					maxlength: 100,
-				},
-				textlocal_hash: {
-					required: true,
-					minlength: 2,
-					maxlength: 100,
-				},
-				textlocal_sender: {
+				sms_api_key: {
 					required: true,
 					minlength: 2,
 					maxlength: 100,
 				},
 			},
 			messages: {
-				textlocal_key: {
-					required: "Please enter TextLocal Key",
+				whatsapp_api_key: {
+					required: "Please Enter Whatsapp API Key",
 				},
-				textlocal_url: {
-					required: "Please enter TextLocal URL",
-				},
-				textlocal_hash: {
-					required: "Please enter TextLocal Hash",
-				},
-				textlocal_sender: {
-					required: "Please enter TextLocal Sender Id.",
+				sms_api_key: {
+					required: "Please Enter SMS API Key",
 				},
 			},
 			errorPlacement: function (label, element) {

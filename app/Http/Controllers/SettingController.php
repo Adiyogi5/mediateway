@@ -81,10 +81,8 @@ class SettingController extends Controller
 
             if ($id == 5) {
                 $request->validate([
-                    'textlocal_key'     => 'required|max:100',
-                    'textlocal_url'     => 'required|max:100',
-                    'textlocal_hash'    => 'required|max:100',
-                    'textlocal_sender'  => 'required|max:100',
+                    'whatsapp_api_key'  => 'required|max:100',
+                    'sms_api_key'       => 'required|max:100',
                 ]);
             }
 
