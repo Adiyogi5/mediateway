@@ -15,8 +15,10 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         // $schedule->command('db:backup')->twiceDaily(6, 18, 3);
         
-        // $schedule->command('bulk:create-live-court-room')->dailyAt('00:00');
-        // $schedule->command('bulk:status-live-court-room')->everyMinute();
+        $schedule->command('bulk:create-live-court-room')->dailyAt('00:00');
+        $schedule->command('bulk:create-email-live-court-room')->everyMinute();
+        $schedule->command('bulk:create-whatsapp-live-court-room')->everyMinute();
+        $schedule->command('bulk:status-live-court-room')->everyMinute();
 
         // $schedule->command('bulk:create-live-email-conciliator-meeting-room')->dailyAt('00:00')();
         // $schedule->command('bulk:create-live-whatsapp-conciliator-meeting-room')->dailyAt('00:00')();

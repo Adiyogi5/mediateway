@@ -15,6 +15,8 @@ class CourtroomHearingLink extends Model
         'file_case_id',
         'hearing_type',
         'link',
+        'date',
+        'time',
         'email_status',
         'email_send_date',
         'whatsapp_status',

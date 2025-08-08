@@ -2,13 +2,10 @@
 namespace App\Console\Commands;
 
 use App\Models\CourtRoom;
+use App\Models\CourtroomHearingLink;
 use App\Models\FileCase;
-use App\Models\Setting;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 
 class CreateLiveCourtRoom extends Command
 {
@@ -43,9 +40,9 @@ class CreateLiveCourtRoom extends Command
      */
     public function handle()
     {
-        // ##############################################
-        // Create Live Arbitrator Court Room - Send Email
-        // ##############################################
+        // ##################################
+        // Create Live Arbitrator Court Room 
+        // ##################################
 
         try {
             // Handle the three different hearing types
@@ -54,28 +51,6 @@ class CreateLiveCourtRoom extends Command
                 2 => 'second_hearing_date',
                 3 => 'final_hearing_date',
             ];
-
-            // Fetch SMTP settings only once
-            $data = Setting::where('setting_type', '3')
-                ->get()
-                ->pluck('filed_value', 'setting_name')
-                ->toArray();
-
-            Config::set("mail.mailers.smtp", [
-                'transport'  => 'smtp',
-                'host'       => $data['smtp_host'],
-                'port'       => $data['smtp_port'],
-                'encryption' => in_array((int) $data['smtp_port'], [587, 2525]) ? 'tls' : 'ssl',
-                'username'   => $data['smtp_user'],
-                'password'   => $data['smtp_pass'],
-                'timeout'    => null,
-                'auth_mode'  => null,
-            ]);
-
-            Config::set("mail.from", [
-                'address' => $data['email_from'],
-                'name'    => config('app.name'),
-            ]);
 
             // Define hearing types for email subjects
             $hearingTypeLabels = [
@@ -126,59 +101,35 @@ class CreateLiveCourtRoom extends Command
                             'time'               => '11:00:00',
                             'status'             => 0,
                         ]);
-
-                        $allEmailsSent = true; // Flag to track if all emails succeed
-
+                       
+                        // hearing link generate for all cases
                         foreach ($cases as $case) {
-                            $email = strtolower(filter_var(trim($case->respondent_email), FILTER_SANITIZE_EMAIL));
-
-                            if (empty($email)) {
-                                Log::warning("Empty or malformed email for FileCase ID: {$case->id}");
-                                $allEmailsSent = false;
-                                continue;
-                            }
-
-                            $validator = Validator::make(['email' => $email], [
-                                'email' => 'required|email:rfc,dns',
-                            ]);
-
-                            if ($validator->fails()) {
-                                Log::warning("Invalid email address for FileCase ID {$case->id}: $email");
-                                $allEmailsSent = false;
-                                continue;
-                            }
-
-                            $subject = $hearingTypeLabels[$hearingType] ?? 'Hearing Link';
+                            $hearingName = $hearingTypeLabels[$hearingType] ?? 'Hearing Link';
                             $case_id = $case->id;
 
-                            $messageContent = "Your $subject at Mediateway is scheduled for Date: $courtRoom->date at 11:00 AM. Join using this link. Thank you! Mediateway.";
-                            $encodedMessage = urlencode($messageContent);
-                            $description    = route('front.guest.livecourtroom', ['room_id' => $room_id]) . "?case_id=$case_id&message=$encodedMessage";
+                            $messageContent = "Your $hearingName at Mediateway is scheduled for Date: $courtRoom->date at 11:00 AM. Join using this link. Thank you! Mediateway.";
+                            $link = route('front.guest.livecourtroom', ['room_id' => $room_id]) . "?case_id=$case_id";
+                            $description = $link . "\n" . $messageContent;
 
-                            // Send Email
-                            try {
-                                Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($subject, $email) {
-                                    $message->to($email)->subject($subject);
-                                });
+                            $hearingLink = CourtroomHearingLink::create([
+                                'file_case_id'     => $case_id,
+                                'hearing_type'     => $hearingType,
+                                'link'             => $description,
+                                'date'             => $date,
+                                'time'             => '11:00:00',
+                                'email_status'     => 0,
+                                'whatsapp_status'  => 0,
+                                'sms_status'       => 0,
+                            ]);
 
-                                Log::info("Arbitration Court Room Email sent successfully for FileCase ID: {$case_id}");
-                            } catch (\Exception $e) {
-                                Log::warning("Arbitration Court Room Email failed for FileCase ID: {$case_id}. Error: " . $e->getMessage());
-                                $allEmailsSent = false;
+                            if ($hearingLink && $hearingLink->id) {
+                                Log::info("CourtroomHearingLink created for FileCase ID: $case_id");
+                            } else {
+                                Log::warning("Failed to create CourtroomHearingLink for FileCase ID: $case_id");
                             }
                         }
-
-                        // ✅ Update only if all emails succeeded
-                        if ($allEmailsSent) {
-                            $courtRoom->update([
-                                'email_send_date'         => now(),
-                                'send_mail_to_respondent' => 1,
-                            ]);
-                        } else {
-                            // Optional: log or flag if partial or complete failure
-                            Log::error("Arbitration Court Room Email Failed to send email to: $email");
-                            $courtRoom->update(['send_mail_to_respondent' => 2]);
-                        }
+                        // Optional: Log success
+                        Log::info("Courtroom hearing links created for hearing type $hearingType on date $date for " . count($cases) . " cases.");
                     }
                 }
             }
