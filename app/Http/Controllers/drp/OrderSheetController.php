@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Drp;
 
 use App\Http\Controllers\Controller;
 use App\Helper\Helper;
+use App\Models\Drp;
 use App\Models\OrderSheet;
 use App\Models\OrderSheetVariable;
 use Illuminate\View\View;
@@ -27,9 +28,30 @@ class OrderSheetController extends Controller
         }
         
         $drp = auth('drp')->user();
+        $title = "Order Sheet";
         
         if ($drp->approve_status !== 1) {
             return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
+        }
+        
+        if (!$request->ajax()) {
+            ################## Profile Incomplete Start ##################
+            $drpdata = Drp::with('drpDetail')->where('id', $drp->id)->first();
+
+            // Required fields to check
+            $requiredFields = [
+                'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image',
+                'signature_drp', 'dob', 'nationality', 'gender', 'address1', 'profession', 'specialization',
+            ];
+
+            // Check if any field is null or empty
+            $missingFields = collect($requiredFields)->filter(fn($field) => empty($drpdata->$field));
+
+            if ($missingFields->isNotEmpty()) {
+                return view('drp.ordersheet.index', compact('drpdata', 'title'))
+                    ->with('showProfilePopup', true);
+            }
+            ################## Profile Incomplete End ##################
         }
         
         if ($request->ajax()) {
@@ -62,7 +84,6 @@ class OrderSheetController extends Controller
                 ->make(true);
         }
 
-        $title = "Order Sheet";
         return view('drp.ordersheet.index', compact('title'));
     }
 

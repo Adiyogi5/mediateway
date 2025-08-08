@@ -175,7 +175,7 @@ class Bulk4ANoticeEmailSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(1)
+            ->limit(3)
             ->get();
 
         foreach ($caseData as $key => $value) {
@@ -190,7 +190,7 @@ class Bulk4ANoticeEmailSend extends Command
                     $casemanagerData = Drp::where('id', $assigncaseData->case_manager_id)->first();
 
                     $noticetemplateData = NoticeTemplate::where('id', 9)->first();
-                    $noticeTemplate     = $noticetemplateData->notice;
+                    $noticeTemplate     = $noticetemplateData->notice_format;
                     $now                = now();
 
                     $fileCaseId = $value->id;
@@ -279,6 +279,9 @@ class Bulk4ANoticeEmailSend extends Command
 
                             'DATE'                                          => now()->format('d-m-Y'),
 
+                            'FIRST HEARING DATE'                            => $value->first_hearing_date ?? '',
+                            'SECOND HEARING DATE'                           => $value->second_hearing_date ?? '',
+
                             'STAGE 1 NOTICE DATE'                           => $value->file_case_details->stage_1_notice_date ?? '',
                             'STAGE 1A NOTICE DATE'                          => $value->file_case_details->stage_1a_notice_date ?? '',
                             'STAGE 1B NOTICE DATE'                          => $value->file_case_details->stage_1b_notice_date ?? '',
@@ -338,12 +341,12 @@ class Bulk4ANoticeEmailSend extends Command
                             <style>
                                 @page {
                                     size: A4;
-                                    margin: 12mm;
+                                    margin: 8mm;
                                 }
                                 body {
                                     font-family: DejaVu Sans, sans-serif;
                                     font-size: 12px;
-                                    line-height: 1.4;
+                                    line-height: 1.35;
                                 }
                                 p {
                                     margin: 0px 0;
@@ -432,7 +435,7 @@ class Bulk4ANoticeEmailSend extends Command
                             } else {
 
                                 $subject     = $noticetemplateData->subject;
-                                $description = 'https://mediateway.com/drp/login';
+                                $description = $noticetemplateData->email_content;
 
                                 try {
                                     Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($value, $savedPath, $subject, $email) {
@@ -442,7 +445,7 @@ class Bulk4ANoticeEmailSend extends Command
                                         // ->attach(url(str_replace('\\', '/', 'public/storage/' . $savedPath)), [
                                         //     'mime' => 'application/pdf',
                                         // ]);
-                                        if (! empty($value->notice9)) {
+                                        if (! empty($savedPath)) {
                                             $message->attach(public_path(str_replace('\\', '/', 'storage/' . $savedPath)), [
                                                 'mime' => 'application/pdf',
                                             ]);
@@ -451,6 +454,37 @@ class Bulk4ANoticeEmailSend extends Command
                                         // Attach notice8 if exists
                                         if (! empty($value->notice8)) {
                                             $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->notice8)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        // Attach Documents if exists
+                                        if (! empty($value->section_seventeen_document)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->section_seventeen_document)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        if (! empty($value->application_form)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->application_form)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        if (! empty($value->account_statement)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->account_statement)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        if (! empty($value->foreclosure_statement)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->foreclosure_statement)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        if (! empty($value->loan_agreement)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->loan_agreement)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        if (! empty($value->other_document)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->other_document)), [
                                                 'mime' => 'application/pdf',
                                             ]);
                                         }
@@ -517,6 +551,7 @@ class Bulk4ANoticeEmailSend extends Command
                                 try {
                                     Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($value, $subject, $email) {
                                         $message->to($email)
+                                            ->cc('legaldesk@rblbank.com')
                                             ->subject($subject);
                                         // ->attach(public_path(str_replace('\\', '/', $notice)), [
                                         //     'mime' => 'application/pdf',
@@ -531,6 +566,37 @@ class Bulk4ANoticeEmailSend extends Command
                                         // Attach notice8 if exists
                                         if (! empty($value->notice8)) {
                                             $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->notice8)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        // Attach Documents if exists
+                                        if (! empty($value->section_seventeen_document)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->section_seventeen_document)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        if (! empty($value->application_form)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->application_form)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        if (! empty($value->account_statement)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->account_statement)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        if (! empty($value->foreclosure_statement)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->foreclosure_statement)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        if (! empty($value->loan_agreement)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->loan_agreement)), [
+                                                'mime' => 'application/pdf',
+                                            ]);
+                                        }
+                                        if (! empty($value->other_document)) {
+                                            $message->attach(public_path(str_replace('\\', '/', 'storage/' . $value->other_document)), [
                                                 'mime' => 'application/pdf',
                                             ]);
                                         }

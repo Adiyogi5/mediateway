@@ -216,6 +216,7 @@ class FileCaseController extends Controller
             // 'case_type' => 'required',
             // 'language' => 'nullable',
             // 'agreement_exist' => 'nullable',
+            'section_seventeen_document' => 'nullable|max:4096',
             'application_form' => 'nullable|max:4096',
             'foreclosure_statement' => 'nullable|max:4096',
             'loan_agreement' => 'nullable|max:4096',
@@ -228,6 +229,11 @@ class FileCaseController extends Controller
         }
 
         // Handle file uploads only if new files are uploaded
+        if ($request->hasFile('section_seventeen_document')) {
+            $sectionseventeenPath = Helper::saveFile($request->file('section_seventeen_document'), 'organization/casefile');
+        } else {
+            $sectionseventeenPath = $caseviewData->section_seventeen_document; 
+        }
         if ($request->hasFile('application_form')) {
             $applicationFormPath = Helper::saveFile($request->file('application_form'), 'organization/casefile');
         } else {
@@ -285,11 +291,12 @@ class FileCaseController extends Controller
             // 'case_type'                 => $request->case_type,
             // 'language'                  => $request->language,
             // 'agreement_exist'           => $request->agreement_exist,
-            'application_form'          => $applicationFormPath,
-            'foreclosure_statement'     => $foreclosureStatementPath,
-            'loan_agreement'            => $loanAgreementPath,
-            'account_statement'         => $accountStatementPath,
-            'other_document'            => $otherDocumentPath,
+            'section_seventeen_document'    => $sectionseventeenPath,
+            'application_form'              => $applicationFormPath,
+            'foreclosure_statement'         => $foreclosureStatementPath,
+            'loan_agreement'                => $loanAgreementPath,
+            'account_statement'             => $accountStatementPath,
+            'other_document'                => $otherDocumentPath,
         ]);
 
         return to_route('organization.cases.filecaseview')->withSuccess('Filed Case Documents Upload Successfully..!!');

@@ -144,6 +144,7 @@ class FileCaseController extends Controller
             'case_type' => 'required',
             'language' => 'nullable',
             'agreement_exist' => 'nullable',
+            'section_seventeen_document' => 'nullable|max:4096',
             'application_form' => 'nullable|max:4096',
             'foreclosure_statement' => 'nullable|max:4096',
             'loan_agreement' => 'nullable|max:4096',
@@ -163,6 +164,7 @@ class FileCaseController extends Controller
         // }
 
         // Initialize variables
+        $uploadSectionSeventeenPath = null;
         $uploadApplicationFormPath = null;
         $uploadForeclosureStatementPath = null;
         $uploadLoanAgreementPath = null;
@@ -170,6 +172,9 @@ class FileCaseController extends Controller
         $uploadOtherDocumentPath = null;
     
         // Handle file uploads
+        if ($request->hasFile('section_seventeen_document')) {
+            $uploadSectionSeventeenPath = Helper::saveFile($request->file('section_seventeen_document'), 'individuals/casefile');
+        }
         if ($request->hasFile('application_form')) {
             $uploadApplicationFormPath = Helper::saveFile($request->file('application_form'), 'individuals/casefile');
         }
@@ -241,6 +246,7 @@ class FileCaseController extends Controller
             'case_type'                 => $request->case_type,
             'language'                  => $request->language,
             'agreement_exist'           => $request->agreement_exist,
+            'section_seventeen_document'=> $uploadSectionSeventeenPath,
             'application_form'          => $uploadApplicationFormPath,
             'foreclosure_statement'     => $uploadForeclosureStatementPath,
             'loan_agreement'            => $uploadLoanAgreementPath,

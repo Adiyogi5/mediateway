@@ -503,13 +503,11 @@ class HomeController extends Controller
             'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image', 'signature_drp','dob',
             'nationality', 'gender','address1', 'profession', 'specialization',
         ];
-        $requiredDetailFields = ['registration_no', 'registration_certificate', 'attach_registration_certificate'];
 
         // Check if any field is null or empty
         $missingFields = collect($requiredFields)->filter(fn($field) => empty($drpdata->$field));
-        $missingDetailFields = collect($requiredDetailFields)->filter(fn($field) => empty($drpdata->drpDetail?->$field));
 
-        if ($missingFields->isNotEmpty() || $missingDetailFields->isNotEmpty()) {
+        if ($missingFields->isNotEmpty()) {
             return view('drp.dashboard', compact(
                 'drpdata',
                 'drps',

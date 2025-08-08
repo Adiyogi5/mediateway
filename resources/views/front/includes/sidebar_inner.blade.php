@@ -220,7 +220,7 @@
                             aria-current="page"
                             style="{{ request()->routeIs($currentGuard . '.award') ? 'color:white !important;;' : '' }}"
                             href="{{ route($currentGuard . '.' . 'award') }}"><i
-                                class="fa-solid fa-file-shield faa-profile"></i> Awards</a>
+                                class="fa-solid fa-file-shield faa-profile"></i> Award Templates</a>
                     </li>
                     <li
                         class="nav-item px-3 text-center justify-content-start d-flex border-bottom {{ request()->routeIs($currentGuard . '.allcases.caselist') ? 'text-white bg-lime' : '' }}">
@@ -258,7 +258,7 @@
                             aria-current="page"
                             style="{{ request()->routeIs($currentGuard . '.ordersheet') ? 'color:white !important;;' : '' }}"
                             href="{{ route($currentGuard . '.' . 'ordersheet') }}"><i
-                                class="fa-solid fa-file-pen faa-profile"></i> Case Order Sheets</a>
+                                class="fa-solid fa-file-pen faa-profile"></i> Order Sheet Templates</a>
                     </li>
                 @endif
 
@@ -272,7 +272,7 @@
                             aria-current="page"
                             style="{{ request()->routeIs($currentGuard . '.settlementletter') ? 'color:white !important;;' : '' }}"
                             href="{{ route($currentGuard . '.' . 'settlementletter') }}"><i
-                                class="fa-solid fa-file-zipper faa-profile"></i> Settlement Agreements</a>
+                                class="fa-solid fa-file-zipper faa-profile"></i> Settlement Agreement Templates</a>
                     </li>
                 @endif
 

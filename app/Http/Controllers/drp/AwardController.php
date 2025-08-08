@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Helper\Helper;
 use App\Models\Award;
 use App\Models\AwardVariable;
+use App\Models\Drp;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
 use \Yajra\Datatables\Datatables;
@@ -23,6 +24,7 @@ class AwardController extends Controller
     public function index(Request $request): View|JsonResponse|RedirectResponse
     {
         $drp = auth('drp')->user();
+        $title = "Award";
         // Ensure the user is authenticated and has drp_type == 1
         if (!auth('drp')->check() || auth('drp')->user()->drp_type != 1) {
             return redirect()->route('drp.dashboard')->with('error', 'UnAuthentication Access..!!');
@@ -31,6 +33,26 @@ class AwardController extends Controller
             return redirect()->route('drp.dashboard')->withError('DRP is Not Approved by Mediateway.');
         }
 
+        if (!$request->ajax()) {
+            ################## Profile Incomplete Start ##################
+            $drpdata = Drp::with('drpDetail')->where('id', $drp->id)->first();
+
+            // Required fields to check
+            $requiredFields = [
+                'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image',
+                'signature_drp', 'dob', 'nationality', 'gender', 'address1', 'profession', 'specialization',
+            ];
+
+            // Check if any field is null or empty
+            $missingFields = collect($requiredFields)->filter(fn($field) => empty($drpdata->$field));
+
+            if ($missingFields->isNotEmpty()) {
+                return view('drp.award.index', compact('drpdata', 'title'))
+                    ->with('showProfilePopup', true);
+            }
+            ################## Profile Incomplete End ##################
+        }
+        
         if ($request->ajax()) {
             $data = Award::select('id', 'name', 'status', 'created_at');
 
@@ -62,7 +84,6 @@ class AwardController extends Controller
                 ->make(true);
         }
 
-        $title = "Award";
         return view('drp.award.index', compact('title'));
     }
 

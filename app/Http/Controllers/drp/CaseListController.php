@@ -6,6 +6,7 @@ use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\AssignCase;
 use App\Models\CourtRoom;
+use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\Notice;
 use Illuminate\Http\RedirectResponse;
@@ -37,6 +38,26 @@ class CaseListController extends Controller
         }
         if ($drp->drp_type !== 1) {
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
+        }
+
+        if (!$request->ajax()) {
+            ################## Profile Incomplete Start ##################
+            $drpdata = Drp::with('drpDetail')->where('id', $drp->id)->first();
+
+            // Required fields to check
+            $requiredFields = [
+                'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image',
+                'signature_drp', 'dob', 'nationality', 'gender', 'address1', 'profession', 'specialization',
+            ];
+
+            // Check if any field is null or empty
+            $missingFields = collect($requiredFields)->filter(fn($field) => empty($drpdata->$field));
+
+            if ($missingFields->isNotEmpty()) {
+                return view('drp.allcases.caselist', compact('drpdata', 'drp', 'title'))
+                    ->with('showProfilePopup', true);
+            }
+            ################## Profile Incomplete End ##################
         }
 
         if ($request->ajax()) {

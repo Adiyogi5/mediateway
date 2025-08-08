@@ -34,7 +34,28 @@ class CasesAllNoticeListController extends Controller
         if ($drp->drp_type !== 3) {
             return redirect()->route('drp.dashboard')->withError('Unauthorized access.');
         }
-         if ($request->ajax()) {
+        
+        if (!$request->ajax()) {
+            ################## Profile Incomplete Start ##################
+            $drpdata = Drp::with('drpDetail')->where('id', $drp->id)->first();
+
+            // Required fields to check
+            $requiredFields = [
+                'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image',
+                'signature_drp', 'dob', 'nationality', 'gender', 'address1', 'profession', 'specialization',
+            ];
+
+            // Check if any field is null or empty
+            $missingFields = collect($requiredFields)->filter(fn($field) => empty($drpdata->$field));
+
+            if ($missingFields->isNotEmpty()) {
+                return view('drp.allnotices.cashmanagercasenoticelist', compact('drpdata', 'drp', 'title'))
+                    ->with('showProfilePopup', true);
+            }
+            ################## Profile Incomplete End ##################
+        }
+        
+        if ($request->ajax()) {
             // Get the latest notices per file_case_id and notice_type
             $latestNoticesQuery = DB::table('notices as n1')
                 ->select(

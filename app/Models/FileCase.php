@@ -54,6 +54,7 @@ class FileCase extends Model
         'product_type',
         'language',
         'agreement_exist',
+        'section_seventeen_document',
         'application_form',
         'foreclosure_statement',
         'loan_agreement',

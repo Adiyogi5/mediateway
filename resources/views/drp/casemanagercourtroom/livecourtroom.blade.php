@@ -327,12 +327,12 @@
 
                                 const formattedDate = new Date(notice.notice_date).toLocaleDateString('en-GB');
 
-                                const whatsappStatus = notice.whatsapp_status == 0 ? 'Unseen' :
-                                    notice.whatsapp_status == 1 ? 'Seen' :
-                                    notice.whatsapp_status == 2 ? 'Failed' : 'Unknown';
+                                const whatsappStatus = notice.whatsapp_notice_status == 0 ? 'Pending' :
+                                    notice.whatsapp_notice_status == 1 ? 'Sent' :
+                                    notice.whatsapp_notice_status == 2 ? 'Failed' : 'Unknown';
 
-                                const emailStatus = notice.email_status == 0 ? 'Unsend' :
-                                    notice.email_status == 1 ? 'Send' :
+                                const emailStatus = notice.email_status == 0 ? 'Pending' :
+                                    notice.email_status == 1 ? 'Sent' :
                                     notice.email_status == 2 ? 'Failed' : 'Unknown';
 
                                 $('#noticesContainer').append(`

@@ -115,17 +115,18 @@ return [
     
 
     'notice_type' => [
-        '1' => 'Arbitrator FIRST Notice Date', 
-        '2' => '1st hearing Date',
-        '3' => '2nd hearing Date for RO',
-        '4' => 'Arbitrator 2nd  Notice Date',
-        '5' => '2nd hearing Date',
-        '6' => 'Ex parte Date',
-        '7' => 'Affidavit Date',
-        '8' => 'Final Arguments Date',
-        '9' => 'Award Date',
-        '10' => 'Award Dispatch Date',
-        '11' => 'Remark',
+        '1' => 'Stage 1 Notice', 
+        '2' => 'Stage 1A Notice',
+        '3' => 'Stage 1B Notice',
+        '4' => 'Stage 2A Notice',
+        '5' => 'Stage 3A Notice',
+        '6' => 'Stage 3B Notice',
+        '7' => 'Stage 3C Notice',
+        '8' => 'Stage 3D Notice',
+        '9' => 'Stage 4A Notice',
+        '10' => 'Stage 5A Notice',
+        '11' => '4A OrderSheet',
+        '12' => '5A OrderSheet',
     ],
 
 

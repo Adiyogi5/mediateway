@@ -91,24 +91,15 @@ class PreConciliationNoticeWhatsappSend extends Command
 
                             $message = "Dear {$value->respondent_first_name} {$value->respondent_last_name},
 (Account No. {$value->loan_number})
-
 Please be informed that a Legal Notice has been issued to you on behalf of our client, RBL Bank Ltd., concerning non-payment of dues against your CC/Loan Account.
-
 A copy of the said notice is being sent to you via this WhatsApp message for your urgent attention and necessary action.
-
-Attachment: Legal Notice (PDF)
-
 Kindly treat this matter with priority. This communication is issued without prejudice to any legal rights and remedies available to our client, all of which are expressly reserved.
-
 Regards,
-
 Anil  Kumar  Sharma  And  Associates
-
 Advocates And Legal Consultants
 LITIGATION | ADVISORY | COMPLIANCE
 (M) +91-9414295841/7852891583
 EMAIL: advocatejdr@gmail.com
-
 WhatsApp Services Provided by MediateWay ADR Centre LLP, Online Platform.";
 
                             $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice_copy));

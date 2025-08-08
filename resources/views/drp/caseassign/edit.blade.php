@@ -95,6 +95,7 @@
 
                             @php
                                 $documents = [
+                                    'section_seventeen_document' => 'Section Seventeen Document',
                                     'application_form' => 'Application Form',
                                     'foreclosure_statement' => 'Foreclosure Statement',
                                     'loan_agreement' => 'Loan Agreement',

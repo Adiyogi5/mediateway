@@ -90,18 +90,12 @@ class PreMediationNoticeWhatsappSend extends Command
                             }
 
                             $message = "Dear {$value->respondent_first_name} {$value->respondent_last_name},
-[ {$value->loan_number} (Co-branded with Bajaj Finserv)]
-
+(Account No. {$value->loan_number})
 Please be informed that a RECALL NOTICE/ DEMAND NOTICE dated 24-06-2025 has been issued to you on behalf of our client, RBL Bank Ltd., concerning non-payment of dues against your Credit Card account.
-
 A copy of the said notice is being sent to you via this WhatsApp message for your urgent attention and necessary action.
-
 Kindly treat this matter with priority. This communication is issued without prejudice to any legal rights and remedies available to our client, all of which are expressly reserved.
-
 Regards,
-
 Anil  Kumar  Sharma  And  Associates
-
 Advocates And Legal Consultants
 LITIGATION | ADVISORY | COMPLIANCE
 (M) +91-9414295841/7852891583

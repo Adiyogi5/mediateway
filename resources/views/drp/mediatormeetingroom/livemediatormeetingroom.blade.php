@@ -425,6 +425,33 @@
 
     {{-- ############# Show Notices Using Ajax ############### --}}
     <script>
+        function getStatusLabel(status, type = 'general') {
+            let label = '';
+            let className = '';
+
+            switch (status) {
+                case 0:
+                    label = 'Pending';
+                    className = 'text-warning';
+                    break;
+                case 1:
+                    label = 'Sent';
+                    className = 'text-success';
+                    break;
+                case 2:
+                    label = 'Failed';
+                    className = 'text-danger';
+                    break;
+                default:
+                    label = 'Unknown';
+                    className = 'text-danger';
+                    break;
+            }
+
+            return `<small class="${className}">${label}</small>`;
+        }
+    </script>
+    <script>
         $(document).ready(function() {
             const noticeTypes = @json(config('constant.notice_type'));
 
@@ -456,6 +483,10 @@
 
                                 const formattedDate = new Date(notice.notice_date).toLocaleDateString('en-GB');
 
+                                const smsStatus = notice.sms_status == 0 ? 'Pending' :
+                                    notice.sms_status == 1 ? 'Sent' :
+                                    notice.sms_status == 2 ? 'Failed' : 'Unknown';
+
                                 const whatsappStatus = notice.whatsapp_status == 0 ? 'Unseen' :
                                     notice.whatsapp_status == 1 ? 'Seen' :
                                     notice.whatsapp_status == 2 ? 'Failed' : 'Unknown';
@@ -474,12 +505,16 @@
                                                         <small>${formattedDate}</small>
                                                     </div>
                                                     <div class="text-center d-grid">
+                                                        <h4 class="livemeetingcard-title mb-0">SMS :</h4>
+                                                        ${getStatusLabel(notice.sms_status)}
+                                                    </div>
+                                                    <div class="text-center d-grid">
                                                         <h4 class="livemeetingcard-title mb-0">Whatsapp :</h4>
-                                                        <small>${whatsappStatus}</small>
+                                                        ${getStatusLabel(notice.whatsapp_notice_status)}
                                                     </div>
                                                     <div class="text-center d-grid">
                                                         <h4 class="livemeetingcard-title mb-0">Email :</h4>
-                                                        <small>${emailStatus}</small>
+                                                        ${getStatusLabel(notice.email_status)}
                                                     </div>
                                                 </div>
                                                 <div class="col">

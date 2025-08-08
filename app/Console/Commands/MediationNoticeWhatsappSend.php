@@ -85,15 +85,12 @@ class MediationNoticeWhatsappSend extends Command
                             }
 
                             $message = "Sub.: Invitation for Online Mediation
-
 Dear Sir/Ma’am,
 As per Clause 6 of the Mediation Bill, 2021, you are invited to participate in an Online Mediation Meeting regarding the dispute with {$value->claimant_first_name} {$value->claimant_last_name} concerning your CC /Loan Account No. {$value->loan_number}.
 The Mediation Meeting will be conducted via the MediateWay Online Platform. All relevant details—including the date, time, meeting link, and name of the Mediator —have been shared with you on your registered WhatsApp number and email address for your convenience.
-
 This is your final opportunity to settle the matter amicably before legal action is initiated. Your cooperation is requested to resolve the dispute in a fair and efficient manner.
 For any queries or support, you may reach us via the contact details mentioned below.
 We look forward to your participation.
-
 MediateWay ADR Centre
 Contact Information: [ 9461165841/mediatewayinfo@gmail.com]";
 

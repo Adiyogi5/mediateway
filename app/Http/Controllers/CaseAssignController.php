@@ -155,6 +155,10 @@ class CaseAssignController extends Controller
         $case = FileCase::findOrFail($id);
 
         // Handle file uploads only if new files are uploaded
+        $uploadSectionSeventeenPath = $request->hasFile('section_seventeen_document') 
+            ? Helper::saveFile($request->file('section_seventeen_document'), 'casefile') 
+            : $case->section_seventeen_document;
+
         $uploadApplicationFormPath = $request->hasFile('application_form') 
             ? Helper::saveFile($request->file('application_form'), 'casefile') 
             : $case->application_form;
@@ -180,11 +184,12 @@ class CaseAssignController extends Controller
             'respondent_first_name' => $request->respondent_name,
             'case_type' => $request->case_type,
             'status' => $request->status,
-            'application_form'          => $uploadApplicationFormPath,
-            'foreclosure_statement'     => $uploadForeclosureStatementPath,
-            'loan_agreement'            => $uploadLoanAgreementPath,
-            'account_statement'         => $uploadAccountStatementPath,
-            'other_document'            => $uploadOtherDocumentPath,
+            'section_seventeen_document'    => $uploadSectionSeventeenPath,
+            'application_form'              => $uploadApplicationFormPath,
+            'foreclosure_statement'         => $uploadForeclosureStatementPath,
+            'loan_agreement'                => $uploadLoanAgreementPath,
+            'account_statement'             => $uploadAccountStatementPath,
+            'other_document'                => $uploadOtherDocumentPath,
         ]);
 
         return redirect()->route('caseassign')->with('success', 'Case details updated successfully.');

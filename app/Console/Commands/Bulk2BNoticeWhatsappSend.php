@@ -101,7 +101,7 @@ class Bulk2BNoticeWhatsappSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(1)
+            ->limit(3)
             ->get();
 
         foreach ($caseData as $key => $value) {
@@ -121,59 +121,6 @@ class Bulk2BNoticeWhatsappSend extends Command
                     // ###################################################################
                     // ############ Send Whatsapp Message using Mobile Number ############
                     if (!empty($value->notice4)) {
-//                         $responseData = [];
-//                         try {
-//                             $settingdata  = Setting::where('setting_type', '1')->get()->pluck('filed_value', 'setting_name')->toArray();
-//                             $whatsappApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
-//                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
-
-//                             // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
-//                             if (strlen($mobileNumber) === 12 && str_starts_with($mobileNumber, '91')) {
-//                                 $mobileNumber = substr($mobileNumber, 2);
-//                             }
-
-//                             $message = "Dear {$value->respondent_first_name} {$value->respondent_last_name},
-//                             A case has been registered by {$value->claimant_first_name} {$value->claimant_last_name} against you at MediateWay ADR Centre under Clause {$value->arbitration_clause_no} of your loan agreement for online arbitration as per the Arbitration & Conciliation Act, 1996.
-// Case Manager:
-// Name: {$casemanagerData->name}
-// Ph: {$settingdata['phone']} | Email: {$settingdata['email']}
-// For details, visit: https://mediateway.com/
-// MediateWay ADR Centre";
-
-//                             $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice4));
-
-//                             if (! empty($value->respondent_mobile)) {
-//                                 $response = Http::get(config('services.whatsapp.url'), [
-//                                     'apikey' => $whatsappApiData['whatsapp_api_key'],
-//                                     'mobile' => $mobileNumber,
-//                                     'msg'    => $message,
-//                                     'pdf'    => $pdfUrl,
-//                                 ]);
-
-//                                 $responseData = $response->json();
-
-//                                 if ($response->successful() && isset($responseData['status']) && $responseData['status'] == 1) {
-//                                     Notice::where('file_case_id', $value->id)->where('notice_type', 4)
-//                                         ->update([
-//                                             'whatsapp_dispatch_datetime' => $now,
-//                                             'whatsapp_notice_status'     => 1,
-//                                         ]);
-//                                     Log::info("Notice 2B Whatsapp sent successfully for FileCase ID: {$fileCaseId}");
-//                                 } else {
-//                                     $errorMsg = $responseData['errormsg'] ?? 'Unknown Error';
-//                                     $statusCode = $responseData['statuscode'] ?? 'No status code';
-//                                     Log::warning("Notice 2B Whatsapp failed for FileCase ID: {$fileCaseId}. Reason: $errorMsg (Code: $statusCode)");
-
-//                                     Notice::where('file_case_id', $value->id)->where('notice_type', 4)
-//                                         ->update([
-//                                             'whatsapp_notice_status' => 2,
-//                                         ]);
-//                                 }
-//                             }
-//                         } catch (\Throwable $th) {
-//                             Log::error("Notice 2B Whatsapp API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
-//                         }
-
                         $responseData = [];
 
                         try {
@@ -230,7 +177,11 @@ class Bulk2BNoticeWhatsappSend extends Command
 
                             $responseData = $response->json();
 
-                            if ($response->successful() && isset($responseData['code']) && $responseData['code'] == 200) {
+                            if (
+                                $response->successful() &&
+                                isset($responseData['messages'][0]['message_status']) &&
+                                $responseData['messages'][0]['message_status'] === 'accepted'
+                            ){
                                 Notice::where('file_case_id', $value->id)->where('notice_type', 4)
                                     ->update([
                                         'whatsapp_dispatch_datetime' => $now,

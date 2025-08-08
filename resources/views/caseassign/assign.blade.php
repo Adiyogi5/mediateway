@@ -171,6 +171,7 @@
                 <ul class="list-group">
                     @php
                         $documents = [
+                            'section_seventeen_document' => 'Section Seventeen Document',
                             'application_form' => 'Application Form',
                             'account_statement' => 'Account Statement',
                             'foreclosure_statement' => 'Foreclosure Statement',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Drp;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CourtRoom;
+use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\OrderSheet;
 use App\Models\SettlementLetter;
@@ -162,6 +163,27 @@ class CourtRoomController extends Controller
 
         $upcomingRooms = $courtRoomLiveUpcoming;
         $closedRooms = $courtRoomLiveClosed;
+
+        
+        ################## Profile Incomplete Start ##################
+        $drpdata = Drp::with('drpDetail')->where('id', $drp->id)->first();
+
+        // Required fields to check
+        $requiredFields = [
+            'name', 'email', 'mobile', 'state_id', 'city_id', 'pincode', 'image', 'signature_drp','dob',
+            'nationality', 'gender','address1', 'profession', 'specialization',
+        ];
+
+        // Check if any field is null or empty
+        $missingFields = collect($requiredFields)->filter(fn($field) => empty($drpdata->$field));
+
+        if ($missingFields->isNotEmpty()) {
+            return view('drp.courtroom.courtroomlist', compact(
+                'drpdata','drp','title','upcomingRooms','closedRooms','upcomingroomCount','closedroomCount'
+                ))
+                ->with('showProfilePopup', true);
+        }
+        ################## Profile Incomplete End ##################
         
         return view('drp.courtroom.courtroomlist', compact('drp','title','upcomingRooms','closedRooms','upcomingroomCount','closedroomCount'));
     }
@@ -402,7 +424,7 @@ class CourtRoomController extends Controller
             ->make(true);
     }
 
-     public function ordersheetroom(Request $request): View | JsonResponse | RedirectResponse
+    public function ordersheetroom(Request $request): View | JsonResponse | RedirectResponse
     {
         $title = 'Draw OrderSheet Room';
         $drp = auth('drp')->user();
@@ -579,7 +601,6 @@ class CourtRoomController extends Controller
         $caseId = $request->case_id;
         $notices = Notice::where('file_case_id', $caseId)
             ->whereIn('notice_type', [11,12,13,14,15,16,17,18,19,20,21,22,23,24,25])
-            // ->where('email_status', 1)
             ->get();
 
         return response()->json($notices);

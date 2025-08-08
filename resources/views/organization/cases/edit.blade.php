@@ -474,6 +474,7 @@
 
                             @php
                                 $documents = [
+                                    'section_seventeen_document' => 'Section Seventeen Document',
                                     'application_form' => 'Application Form',
                                     'foreclosure_statement' => 'Foreclosure Statement',
                                     'loan_agreement' => 'Loan Agreement',
@@ -557,6 +558,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             // Combine both your documents and notices into one array
             const documents = [
+                "section_seventeen_document",
                 "application_form",
                 "foreclosure_statement",
                 "loan_agreement",

@@ -165,7 +165,7 @@ class Bulk5ANoticeEmailSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(1)
+            ->limit(3)
             ->get();
 
         foreach ($caseData as $key => $value) {
@@ -180,7 +180,7 @@ class Bulk5ANoticeEmailSend extends Command
                     $casemanagerData = Drp::where('id', $assigncaseData->case_manager_id)->first();
 
                     $noticetemplateData = NoticeTemplate::where('id', 10)->first();
-                    $noticeTemplate     = $noticetemplateData->notice;
+                    $noticeTemplate     = $noticetemplateData->notice_format;
                     $now                = now();
 
                     $fileCaseId = $value->id;
@@ -267,6 +267,9 @@ class Bulk5ANoticeEmailSend extends Command
 
                             'DATE'                                          => now()->format('d-m-Y'),
 
+                            'FIRST HEARING DATE'                            => $value->first_hearing_date ?? '',
+                            'SECOND HEARING DATE'                           => $value->second_hearing_date ?? '',
+
                             'STAGE 1 NOTICE DATE'                           => $value->file_case_details->stage_1_notice_date ?? '',
                             'STAGE 1A NOTICE DATE'                          => $value->file_case_details->stage_1a_notice_date ?? '',
                             'STAGE 1B NOTICE DATE'                          => $value->file_case_details->stage_1b_notice_date ?? '',
@@ -327,7 +330,7 @@ class Bulk5ANoticeEmailSend extends Command
                             <style>
                                 @page {
                                     size: A4;
-                                    margin: 12mm;
+                                    margin: 10mm;
                                 }
                                 body {
                                     font-family: DejaVu Sans, sans-serif;
@@ -421,7 +424,7 @@ class Bulk5ANoticeEmailSend extends Command
                             } else {
 
                                 $subject     = $noticetemplateData->subject;
-                                $description = 'https://mediateway.com/drp/login';
+                                $description = $noticetemplateData->email_content;
 
                                 try {
                                     Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($savedPath, $subject, $email) {
@@ -497,6 +500,7 @@ class Bulk5ANoticeEmailSend extends Command
                                 try {
                                     Mail::send('emails.simple', compact('subject', 'description'), function ($message) use ($value, $subject, $email) {
                                         $message->to($email)
+                                            ->cc('legaldesk@rblbank.com')
                                             ->subject($subject)
                                         // ->attach(public_path(str_replace('\\', '/', $notice)), [
                                         //     'mime' => 'application/pdf',

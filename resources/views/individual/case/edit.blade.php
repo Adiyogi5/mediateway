@@ -448,6 +448,7 @@
                             </div>
                             @php
                                 $documents = [
+                                    'section_seventeen_document' => 'Section Seventeen Document',
                                     'application_form' => 'Application Form',
                                     'foreclosure_statement' => 'Foreclosure Statement',
                                     'loan_agreement' => 'Loan Agreement',
@@ -538,6 +539,7 @@
             const documents = [
                 "notice_first",
                 "notice_second",
+                "section_seventeen_document",
                 "application_form",
                 "foreclosure_statement",
                 "loan_agreement",
@@ -703,6 +705,10 @@
                 case_type: {
                     required: true
                 },
+                section_seventeen_document: {
+                    extension: "jpg|jpeg|png|pdf|doc",
+                    filesize: 4
+                },
                 application_form: {
                     extension: "jpg|jpeg|png|pdf|doc",
                     filesize: 4
@@ -778,6 +784,9 @@
                 },
                 case_type: {
                     required: "Please select case type"
+                },
+                section_seventeen_document: {
+                    extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"
                 },
                 application_form: {
                     extension: "Supported Format Only: jpg, jpeg, png, pdf, doc"

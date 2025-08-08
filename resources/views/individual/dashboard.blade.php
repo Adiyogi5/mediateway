@@ -247,6 +247,7 @@
                                                 <div class="row gx-5 gy-3">
                                                     @php
                                                         $documents = [
+                                                            'section_seventeen_document' => $case->section_seventeen_document,
                                                             'application_form' => $case->application_form,
                                                             'account_statement' => $case->account_statement,
                                                             'foreclosure_statement' => $case->foreclosure_statement,
