@@ -118,9 +118,9 @@ class CreateEmailLiveCourtRoom extends Command
                         'email_send_date' => now(),
                     ]);
 
-                    Log::info("Live Hearing Court Room Email sent successfully for FileCase ID: {$fileCase->id}");
+                    Log::info("Live First Hearing Court Room Email sent successfully for FileCase ID: {$fileCase->id}");
                 } catch (\Exception $e) {
-                    Log::error("Live Hearing Court Room Email failed for FileCase ID: {$fileCase->id}, Error: " . $e->getMessage());
+                    Log::error("Live First Hearing Court Room Email failed for FileCase ID: {$fileCase->id}, Error: " . $e->getMessage());
                     $link->update(['email_status' => 2]);
                 }
             }

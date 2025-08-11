@@ -51,6 +51,9 @@ class CreateWhatsappLiveCourtRoom extends Command
                         ->limit(3)->get();
            
             foreach ($links as $link) {
+                
+                $responseData = [];
+
                 $fileCase = FileCase::find($link->file_case_id);
 
                 if (! $fileCase) {
@@ -105,11 +108,11 @@ class CreateWhatsappLiveCourtRoom extends Command
                         'whatsapp_status'    => 1,
                         'whatsapp_send_date' => now(),
                     ]);
-                    Log::info("Live First Hearing Court Room Email sent successfully for FileCase ID: {$fileCase->id}");
+                    Log::info("Live First Hearing Court Room Whatsapp sent successfully for FileCase ID: {$fileCase->id}");
                 } else {
                     $errorMsg   = $responseData['message'] ?? 'Unknown Error';
                     $statusCode = $responseData['code'] ?? 'No status code';
-                    Log::error("Live First Hearing Court Room Email failed for FileCase ID: {$fileCase->id}. Reason: $errorMsg (Code: $statusCode)");
+                    Log::error("Live First Hearing Court Room Whatsapp failed for FileCase ID: {$fileCase->id}. Reason: $errorMsg (Code: $statusCode)");
                     $link->update(['whatsapp_status' => 2]);
                 }
             }

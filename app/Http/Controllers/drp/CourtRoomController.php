@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Drp;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CourtRoom;
+use App\Models\CourtroomHearingLink;
 use App\Models\Drp;
 use App\Models\FileCase;
 use App\Models\OrderSheet;
@@ -605,6 +606,18 @@ class CourtRoomController extends Controller
 
         return response()->json($notices);
     }
+
+    public function fetchHearingsByCaseId(Request $request)
+    {
+        $caseId = $request->case_id;
+
+        $hearings = CourtroomHearingLink::where('file_case_id', $caseId)
+            ->orderBy('date', 'desc')
+            ->get();
+
+        return response()->json($hearings);
+    }
+
 
     function flattenCaseData($caseData) {
         $flat = [];

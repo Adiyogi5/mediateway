@@ -163,6 +163,21 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Hearing Data Display Area -->
+                            <div class="col-12">
+                                <div class="livemeeting-card h-100">
+                                    <h4 class="livemeetingcard-heading text-center justify-content-center"
+                                        style="background-color: black;color: white;padding: 5px;border-radius: 8px">
+                                        Hearing Updates</h4>
+                                    <!-- OrderSheet Display Area -->
+                                    <div id="hearingsContainer">
+
+                                        {{-- Data Comes via selecting Case_id using Ajax script --}}
+
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -582,6 +597,78 @@
                     },
                     error: function(xhr, status, error) {
                         console.error("Error fetching OrderSheet:", error);
+                    }
+                });
+
+                // Fetch Hearings
+                // Hearing type mapping
+                const hearingTypesMap = {
+                    1: "First Hearing",
+                    2: "Second Hearing",
+                    3: "Final Hearing"
+                };
+                $.ajax({
+                    url: "{{ route('drp.courtroom.fetch.hearings') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        case_id: caseId
+                    },
+                    success: function(response) {
+                        $('#hearingsContainer').empty(); // Clear the container
+
+                        if (response.length > 0) {
+                            response.forEach(hearing => {
+                                const formattedDate = new Date(hearing.date).toLocaleDateString('en-GB');
+                                const formattedTime = hearing.time ? hearing.time : '-';
+                                const hearingType = hearingTypesMap[hearing.hearing_type] || 'Unknown Hearing';
+
+                                $('#hearingsContainer').append(`
+                                    <div class="card mt-3 border-1 active overflow-hidden">
+                                        <div class="card-body py-2 px-md-3 px-2">
+                                            <div class="row">
+                                                <div class="col-12 border-bottom d-md-flex justify-content-md-between d-flex justify-content-around text-center item-align-self">
+                                                    <div class="text-center d-grid">
+                                                        <h4 class="livemeetingcard-title mb-0">Hearing Type :</h4>
+                                                        <small>${hearingType}</small>
+                                                    </div>
+                                                    <div class="text-center d-grid">
+                                                        <h4 class="livemeetingcard-title mb-0">Hearing Date :</h4>
+                                                        <small>${formattedDate}</small>
+                                                    </div>
+                                                    <div class="text-center d-grid">
+                                                        <h4 class="livemeetingcard-title mb-0">Time :</h4>
+                                                        <small>${formattedTime}</small>
+                                                    </div>
+                                                    <div class="text-center d-grid">
+                                                        <h4 class="livemeetingcard-title mb-0">SMS :</h4>
+                                                        ${getStatusLabel(hearing.sms_status)}
+                                                    </div>
+                                                    <div class="text-center d-grid">
+                                                        <h4 class="livemeetingcard-title mb-0">Whatsapp :</h4>
+                                                        ${getStatusLabel(hearing.whatsapp_status)}
+                                                    </div>
+                                                    <div class="text-center d-grid">
+                                                        <h4 class="livemeetingcard-title mb-0">Email :</h4>
+                                                        ${getStatusLabel(hearing.email_status)}
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <p class="livemeetingcard-text text-muted small text-start">
+                                                        ${hearing.link}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `);
+                            });
+                        } else {
+                            $('#hearingsContainer').append(`<p class="text-muted mt-3">No hearing data found for the selected case.</p>`);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching hearing data:", error);
                     }
                 });
             });
