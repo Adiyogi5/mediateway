@@ -41,6 +41,10 @@ Route::get('/create_whatsapp_live_court_room', function () {
     Artisan::call('bulk:create-whatsapp-live-court-room');   
     return '<h1>create whatsapp live court room</h1>';
 });
+Route::get('/create_sms_live_court_room', function () {
+    Artisan::call('bulk:create-sms-live-court-room');   
+    return '<h1>create sms live court room</h1>';
+});
 //Status Live Court Rooms - Arbitrator
 Route::get('/status_live_court_room', function () {
     Artisan::call('bulk:status-live-court-room');   

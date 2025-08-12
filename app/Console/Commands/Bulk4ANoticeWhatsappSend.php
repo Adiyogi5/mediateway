@@ -191,7 +191,7 @@ class Bulk4ANoticeWhatsappSend extends Command
                                         ]);
                             }
                         } catch (\Throwable $th) {
-                            Log::error("Notice 2B Whatsapp API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
+                            Log::error("Notice 4A Whatsapp API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());
                         }
                     }
                 }

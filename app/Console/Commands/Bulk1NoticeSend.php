@@ -91,7 +91,7 @@ class Bulk1NoticeSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(2)
+            ->limit(3)
             ->get();
 
         foreach ($caseData as $key => $value) {

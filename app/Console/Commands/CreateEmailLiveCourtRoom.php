@@ -77,7 +77,7 @@ class CreateEmailLiveCourtRoom extends Command
                 3 => 'Final Hearing Link',
             ];
 
-            $links = CourtroomHearingLink::where('email_status', 0)->limit(4)->get();
+            $links = CourtroomHearingLink::where('email_status', 0)->limit(3)->get();
             
             foreach ($links as $link) {
                 $fileCase = FileCase::find($link->file_case_id);

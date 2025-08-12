@@ -98,7 +98,7 @@ class Bulk5ANoticeSmsSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(5)
+            ->limit(3)
             ->get();
 
         foreach ($caseData as $key => $value) {

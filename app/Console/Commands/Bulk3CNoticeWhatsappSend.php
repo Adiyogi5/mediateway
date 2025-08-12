@@ -101,7 +101,7 @@ class Bulk3CNoticeWhatsappSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(2)
+            ->limit(3)
             ->get();
 
 
@@ -125,42 +125,69 @@ class Bulk3CNoticeWhatsappSend extends Command
                         $responseData = [];
                         try {
                             $whatsappApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
-                            $mobileNumber = preg_replace('/\D/', '', trim($arbitratorsData->mobile));
+                            $mobileNumber = '91' . preg_replace('/\D/', '', trim($arbitratorsData->mobile));
 
-                            // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
-                            if (strlen($mobileNumber) === 12 && str_starts_with($mobileNumber, '91')) {
-                                $mobileNumber = substr($mobileNumber, 2);
-                            }
-
-                            $message = "Subject: Notice of Arbitrators Acceptance & Disclosure
-Dear Sir/Madam,
-I have been appointed as Sole Arbitrator by MediateWay ADR Centre to adjudicate the dispute under Loan Agreement No. {$value->loan_number} dated {$value->agreement_date}, between {$value->claimant_first_name} {$value->claimant_last_name}  and {$value->respondent_first_name} {$value->respondent_last_name}.
-I confirm my acceptance and declare my independence and impartiality as per the Arbitration & Conciliation Act, 1996. The arbitration will follow due process, based on the MediateWay ADR Centre Rules, conducted in English and held online.
-If the respondent fails to participate, the matter may proceed ex-parte. If the claimant fails, the case may be closed.
-(Sole Arbitrator)
-{$arbitratorsData->name}";
-
+                            // Generate PDF link
                             $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice7));
 
-                            if (! empty($mobileNumber)) {
-                                $response = Http::get(config('services.whatsapp.url'), [
-                                    'apikey' => $whatsappApiData['whatsapp_api_key'],
-                                    'mobile' => $mobileNumber,
-                                    'msg'    => $message,
-                                    'pdf'    => $pdfUrl,
-                                ]);
+                            // Build the payload
+                            $payload = [
+                                "messaging_product" => "whatsapp",
+                                "recipient_type" => "individual",
+                                "to" => $mobileNumber,
+                                "type" => "template",
+                                "template" => [
+                                    "name" => "stage_3c_notice",
+                                    "language" => [
+                                        "code" => "en"
+                                    ],
+                                    "components" => [
+                                        [
+                                            "type" => "header",
+                                            "parameters" => [
+                                                [
+                                                    "type" => "document",
+                                                    "document" => [
+                                                        "link" => $pdfUrl
+                                                    ]
+                                                ]
+                                            ]
+                                        ],
+                                        [
+                                            "type" => "body",
+                                            "parameters" => [
+                                                ["type" => "text", "text" => "{$value->loan_number}"],
+                                                ["type" => "text", "text" => "{$value->agreement_date}"],
+                                                ["type" => "text", "text" => "{$value->claimant_first_name} {$value->claimant_last_name}"],
+                                                ["type" => "text", "text" => "{$value->respondent_first_name} {$value->respondent_last_name}"],
+                                                ["type" => "text", "text" => "{$arbitratorsData->name}"]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ];
+                            
+                            // Make the HTTP POST request
+                            $response = Http::withHeaders([
+                                'Content-Type' => 'application/json',
+                                'apikey'       => $whatsappApiData['whatsapp_api_key'],
+                            ])->post("https://partnersv1.pinbot.ai/v3/781572805032525/messages", $payload);
 
-                                $responseData = $response->json();
-
-                                if ($response->successful() && isset($responseData['status']) && $responseData['status'] == 1) {
+                            $responseData = $response->json();
+                         
+                            if (
+                                $response->successful() &&
+                                isset($responseData['messages'][0]['message_status']) &&
+                                $responseData['messages'][0]['message_status'] === 'accepted'
+                            ){
                                     Notice::where('file_case_id', $value->id)->where('notice_type', 7)
                                         ->update([
                                             'whatsapp_dispatch_datetime' => $now,
-                                            'whatsapp_notice_status'     => 1,
+                                            'whatsapp_notice_status' => 1,
                                         ]);
                                     Log::info("Notice 3C Whatsapp sent successfully for FileCase ID: {$fileCaseId}");
-                                } else {
-                                    $errorMsg = $responseData['errormsg'] ?? 'Unknown Error';
+                            } else {
+                                 $errorMsg = $responseData['errormsg'] ?? 'Unknown Error';
                                     $statusCode = $responseData['statuscode'] ?? 'No status code';
                                     Log::warning("Notice 3C Whatsapp failed for FileCase ID: {$fileCaseId}. Reason: $errorMsg (Code: $statusCode)");
 
@@ -168,7 +195,6 @@ If the respondent fails to participate, the matter may proceed ex-parte. If the 
                                         ->update([
                                             'whatsapp_notice_status' => 2,
                                         ]);
-                                }
                             }
                         } catch (\Throwable $th) {
                             Log::error("Notice 3C Whatsapp API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());

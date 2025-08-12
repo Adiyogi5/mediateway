@@ -66,7 +66,7 @@ class PreConciliationNoticeEmailSend extends Command
                 'conciliation_notices.whatsapp_notice_status',
                 'conciliation_notices.sms_status',
             )
-            ->limit(4)
+            ->limit(3)
             ->get();
       
         foreach ($caseData as $key => $value) {

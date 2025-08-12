@@ -101,7 +101,7 @@ class Bulk3CNoticeSmsSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(4)
+            ->limit(3)
             ->get();
 
 

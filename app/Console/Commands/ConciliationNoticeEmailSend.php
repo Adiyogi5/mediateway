@@ -75,7 +75,7 @@ class ConciliationNoticeEmailSend extends Command
                 'conciliation_notices.notice_copy',
                 'conciliation_notices.email_status'
             )
-            ->limit(4)
+            ->limit(3)
             ->get();
        
         foreach ($caseData as $key => $value) {

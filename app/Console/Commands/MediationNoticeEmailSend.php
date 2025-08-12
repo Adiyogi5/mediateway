@@ -75,7 +75,7 @@ class MediationNoticeEmailSend extends Command
                 'mediation_notices.notice_copy',
                 'mediation_notices.email_status'
             )
-            ->limit(4)
+            ->limit(3)
             ->get();
        
         foreach ($caseData as $key => $value) {

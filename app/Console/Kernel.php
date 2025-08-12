@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('bulk:create-live-court-room')->dailyAt('00:00');
         $schedule->command('bulk:create-email-live-court-room')->everyMinute();
         $schedule->command('bulk:create-whatsapp-live-court-room')->everyMinute();
+        $schedule->command('bulk:create-sms-live-court-room')->everyMinute();
         $schedule->command('bulk:status-live-court-room')->everyMinute();
 
         // $schedule->command('bulk:create-live-email-conciliator-meeting-room')->dailyAt('00:00')();
@@ -36,15 +37,15 @@ class Kernel extends ConsoleKernel
         $schedule->command('bulk:send-sms-2b-notice')->everyMinute();
 
         $schedule->command('bulk:send-email-3a-notice')->everyMinute();
-        // $schedule->command('bulk:send-whatsapp-3a-notice')->everyMinute();
+        $schedule->command('bulk:send-whatsapp-3a-notice')->everyMinute();
         $schedule->command('bulk:send-sms-3a-notice')->everyMinute();
 
         $schedule->command('bulk:send-email-3b-notice')->everyMinute();
-        // $schedule->command('bulk:send-whatsapp-3b-notice')->everyMinute();
+        $schedule->command('bulk:send-whatsapp-3b-notice')->everyMinute();
         $schedule->command('bulk:send-sms-3b-notice')->everyMinute();
         
         $schedule->command('bulk:send-email-3c-notice')->everyMinute();
-        // $schedule->command('bulk:send-whatsapp-3c-notice')->everyMinute();
+        $schedule->command('bulk:send-whatsapp-3c-notice')->everyMinute();
         $schedule->command('bulk:send-sms-3c-notice')->everyMinute();
 
         $schedule->command('bulk:create-claim-petition')->everyMinute();

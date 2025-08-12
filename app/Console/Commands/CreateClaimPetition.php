@@ -86,9 +86,9 @@ class CreateClaimPetition extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(10)
+            ->limit(5)
             ->get();
-                
+            
         foreach ($caseData as $key => $value) {
             try {
                 $assigncaseData = AssignCase::where('case_id', $value->id)->first();

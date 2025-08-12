@@ -101,7 +101,7 @@ class Bulk3ANoticeWhatsappSend extends Command
                 DB::raw('org_with_parent.effective_parent_name as parent_name')
             )
             ->distinct()
-            ->limit(2)
+            ->limit(3)
             ->get();
 
 
@@ -132,42 +132,68 @@ class Bulk3ANoticeWhatsappSend extends Command
                             $whatsappApiData = Setting::where('setting_type', '5')->get()->pluck('filed_value', 'setting_name')->toArray();
                             $mobileNumber = preg_replace('/\D/', '', trim($value->respondent_mobile));
 
-                            // Only remove '91' if it's a country code (i.e., 12 digits and starts with 91)
-                            if (strlen($mobileNumber) === 12 && str_starts_with($mobileNumber, '91')) {
-                                $mobileNumber = substr($mobileNumber, 2);
-                            }
-
-                            $message = "Subject: Proposal for Appointment of Arbitrator
-Dear {$value->respondent_first_name} {$value->respondent_last_name},
-A case has been filed by {$value->claimant_first_name} {$value->claimant_last_name} under Loan A/c No. {$value->loan_number} at MediateWay ADR Centre for online arbitration.
-We propose the following as Sole Arbitrator:
-    1. {$firstArb->name}
-    2. {$secondArb->name}
-    3. {$thirdArb->name}
-Please confirm your consent to any one within 7 days. No response will be treated as no objection. Arbitration will be held online. Objections to the venue must also be raised within 7 days.
-MediateWay ADR Centre";
-
+                            // Generate PDF link
                             $pdfUrl = url(str_replace('\\', '/', 'storage/' . $value->notice5));
 
-                            if (! empty($mobileNumber)) {
-                                $response = Http::get(config('services.whatsapp.url'), [
-                                    'apikey' => $whatsappApiData['whatsapp_api_key'],
-                                    'mobile' => $mobileNumber,
-                                    'msg'    => $message,
-                                    'pdf'    => $pdfUrl,
-                                ]);
+                            // Build the payload
+                            $payload = [
+                                "messaging_product" => "whatsapp",
+                                "recipient_type" => "individual",
+                                "to" => $mobileNumber,
+                                "type" => "template",
+                                "template" => [
+                                    "name" => "stage_3a_notice",
+                                    "language" => [
+                                        "code" => "en"
+                                    ],
+                                    "components" => [
+                                        [
+                                            "type" => "header",
+                                            "parameters" => [
+                                                [
+                                                    "type" => "document",
+                                                    "document" => [
+                                                        "link" => $pdfUrl
+                                                    ]
+                                                ]
+                                            ]
+                                        ],
+                                        [
+                                            "type" => "body",
+                                            "parameters" => [
+                                                ["type" => "text", "text" => "{$value->respondent_first_name} {$value->respondent_last_name}"],
+                                                ["type" => "text", "text" => "{$value->claimant_first_name} {$value->claimant_last_name}"],
+                                                ["type" => "text", "text" => "{$value->loan_number}"],
+                                                ["type" => "text", "text" => "{$firstArb->name}"],
+                                                ["type" => "text", "text" => "{$secondArb->name}"],
+                                                ["type" => "text", "text" => "{$thirdArb->name}"]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ];
+                            
+                            // Make the HTTP POST request
+                            $response = Http::withHeaders([
+                                'Content-Type' => 'application/json',
+                                'apikey'       => $whatsappApiData['whatsapp_api_key'],
+                            ])->post("https://partnersv1.pinbot.ai/v3/781572805032525/messages", $payload);
 
-                                $responseData = $response->json();
-
-                                if ($response->successful() && isset($responseData['status']) && $responseData['status'] == 1) {
+                            $responseData = $response->json();
+                         
+                            if (
+                                $response->successful() &&
+                                isset($responseData['messages'][0]['message_status']) &&
+                                $responseData['messages'][0]['message_status'] === 'accepted'
+                            ){
                                     Notice::where('file_case_id', $value->id)->where('notice_type', 5)
                                         ->update([
                                             'whatsapp_dispatch_datetime' => $now,
                                             'whatsapp_notice_status' => 1,
                                         ]);
                                     Log::info("Notice 3A Whatsapp sent successfully for FileCase ID: {$fileCaseId}");
-                                } else {
-                                    $errorMsg = $responseData['errormsg'] ?? 'Unknown Error';
+                            } else {
+                                 $errorMsg = $responseData['errormsg'] ?? 'Unknown Error';
                                     $statusCode = $responseData['statuscode'] ?? 'No status code';
                                     Log::warning("Notice 3A Whatsapp failed for FileCase ID: {$fileCaseId}. Reason: $errorMsg (Code: $statusCode)");
 
@@ -175,7 +201,6 @@ MediateWay ADR Centre";
                                         ->update([
                                             'whatsapp_notice_status' => 2,
                                         ]);
-                                }
                             }
                         } catch (\Throwable $th) {
                             Log::error("Notice 3A Whatsapp API exception for FileCase ID: {$fileCaseId}. Error: " . $th->getMessage());

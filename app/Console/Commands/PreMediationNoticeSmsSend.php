@@ -63,7 +63,7 @@ class PreMediationNoticeSmsSend extends Command
                 'mediation_notices.whatsapp_notice_status',
                 'mediation_notices.sms_status',
             )
-            ->limit(4)
+            ->limit(3)
             ->get();
 
         foreach ($caseData as $key => $value) {
